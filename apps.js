@@ -10,6 +10,7 @@
 //              (p. ex. "mates/pizzeria/"). Si està buida "", la targeta
 //              surt com a "pendent".
 //    estat   → opcional: "beta" posa l'etiqueta «🧪 beta»
+//    novaFinestra → opcional: true perquè s'obri en una pestanya nova
 //    versions→ opcional: altres versions, p. ex. [ { nom: "Versió 1", url: "..." } ]
 //  Compte amb les comes entre línies!
 // ============================================================
@@ -68,4 +69,5 @@ const APPS = [
   { titol: "Els models atòmics",     materia: "altres",   nivell: "4t ESO", desc: "Dalton, Thomson, Rutherford, Bohr i el model actual, amb l'Einsteinet.", url: "altres/models-atomics/" },
   { titol: "Models atòmics (mòbil)", materia: "altres",   nivell: "4t ESO", desc: "La mateixa presentació, en vertical per al mòbil.", url: "altres/models-atomics-mobil/" },
   { titol: "Repàs d'electrònica analògica", materia: "altres", nivell: "4t ESO", desc: "Tecnologia: formulari, teoria, exercicis resolts i preguntes.", url: "altres/electronica/" },
+  { titol: "L'Ammo al mar juràssic",  materia: "altres",   nivell: "", novaFinestra: true, desc: "Animació: l'Ammo neda entre ictiosaures i treu el cap per veure dinosaures. Amb so.", url: "altres/ammo-banner/" },
 ];
