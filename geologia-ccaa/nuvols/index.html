@@ -1,0 +1,1193 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Laboratori de núvols</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Escenari fix 1600×900 escalat a la pantalla · menú de blocs a dalt · una diapositiva cada cop · barra de pas a baix */
+:root{
+  --paper:#FFFFFF; --ink:#111111; --ink2:#55504A; --line:#D9D4CF; --mist:#F5F3F1;
+  --or:#FF6A13; --or-d:#C24A00; --or-s:#FFE8D8;
+  --water:#3B6E8F; --cloudline:#8E8A85;
+  --f-d:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --f-b:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  color-scheme: light;
+}
+html,body{height:100%}
+body{margin:0;background:#0E0E0E;color:var(--ink);font-family:var(--f-b);overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1600px;height:900px;background:var(--paper);transform-origin:0 0;overflow:hidden}
+button{font-family:var(--f-b);color:var(--ink)}
+:focus-visible{outline:4px solid var(--or);outline-offset:3px}
+
+/* ---- Menú ---- */
+#menu{position:absolute;left:0;right:0;top:0;height:108px;background:var(--paper);border-bottom:3px solid var(--ink);z-index:20;display:grid;grid-template-rows:58px 47px;padding:0 24px}
+.row1{display:flex;align-items:center;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;background:none;border:0;padding:0;font:800 24px var(--f-d)}
+.tabs{display:flex;gap:6px;margin-left:12px}
+.tab{border:2px solid transparent;background:none;border-radius:999px;padding:6px 16px;font:700 20px var(--f-b);cursor:pointer}
+.tab:hover{border-color:var(--line)}
+.tab.on{background:var(--ink);color:var(--paper)}
+.tools{margin-left:auto;display:flex;gap:6px}
+.tool{width:42px;height:42px;border:2px solid var(--ink);border-radius:10px;background:var(--paper);font:700 18px var(--f-b);cursor:pointer;display:grid;place-items:center}
+.tool.on{background:var(--or);border-color:var(--or)}
+.row2{display:flex;align-items:center;gap:8px;overflow:hidden}
+.sb{border:2px solid var(--line);background:var(--paper);border-radius:10px;padding:4px 14px;font:700 18px var(--f-b);cursor:pointer;white-space:nowrap}
+.sb.on{border-color:var(--or);background:var(--or-s)}
+.sb .ok{color:var(--or-d);margin-left:6px}
+
+/* ---- Diapositives ---- */
+#slides{position:absolute;left:0;right:0;top:108px;height:748px;transform-origin:0 0;transition:transform .35s ease}
+.slide{position:absolute;inset:0;padding:24px 56px 18px;display:none;flex-direction:column;gap:18px}
+.slide.on{display:flex}
+h1,h2,h3{font-family:var(--f-d);margin:0;text-wrap:balance}
+h2{font-weight:800;font-size:50px;line-height:1.05;letter-spacing:-.01em}
+h2 em{font-style:normal;color:var(--or-d)}
+h3{font-weight:700;font-size:32px;line-height:1.1}
+p{margin:0}
+.lead{font-size:27px;line-height:1.35;color:var(--ink2);max-width:60ch}
+.eyebrow{font:700 18px var(--f-b);letter-spacing:.09em;text-transform:uppercase;color:var(--or-d)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.card{border:3px solid var(--ink);border-radius:18px;padding:20px 26px;background:var(--paper);display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.or{border-color:var(--or)}
+.card.soft{border:0;background:var(--mist)}
+.card p{font-size:25px;line-height:1.35}
+.big{font:700 33px/1.2 var(--f-d)}
+.formula{font:700 34px/1.2 var(--f-d)}
+.formula small{font-size:.6em}
+.box{background:var(--or-s);border-radius:14px;padding:16px 22px;font-size:25px;line-height:1.35}
+.box.ink{background:var(--ink);color:var(--paper)}
+.note{font-size:24px;line-height:1.35;color:var(--ink2)}
+[data-s]{transition:opacity .35s ease,transform .35s ease}
+.hid{opacity:0!important;visibility:hidden;transform:translateY(10px)}
+svg text{font-family:var(--f-b)}
+.num{font-variant-numeric:tabular-nums}
+
+/* controls */
+.ctrl{display:flex;flex-direction:column;gap:14px}
+.sl{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:end}
+.sl span{font:700 20px var(--f-b);color:var(--ink2)}
+.sl output{font:800 30px var(--f-d);font-variant-numeric:tabular-nums}
+.sl input{grid-column:1/-1;width:100%;accent-color:var(--or);height:30px}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:8px;background:var(--line);border-radius:4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--or);border:3px solid var(--ink);margin-top:-11px;cursor:grab}
+input[type=range]::-moz-range-track{height:8px;background:var(--line);border-radius:4px}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--or);border:3px solid var(--ink);cursor:grab}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:3px solid var(--ink);background:var(--paper);border-radius:999px;padding:9px 20px;font:700 21px var(--f-b);cursor:pointer}
+.btn:hover{background:var(--mist)}
+.btn.pri{background:var(--or);border-color:var(--or)}
+.btn.pri:hover{background:#FF8640}
+.read{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:22px;align-items:baseline}
+.read b{font:800 28px var(--f-d);font-variant-numeric:tabular-nums;text-align:right}
+.read .hi{color:var(--or-d)}
+
+/* barra inferior */
+#bar{position:absolute;left:0;right:0;bottom:0;height:44px;border-top:2px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 24px;background:var(--paper);z-index:20;font-size:18px;color:var(--ink2)}
+#bar .nav{border:2px solid var(--ink);background:var(--paper);border-radius:8px;width:44px;height:32px;font:700 18px var(--f-b);cursor:pointer}
+.dots{display:flex;gap:6px}
+.dots i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);display:block}
+.dots i.f{background:var(--or);border-color:var(--or)}
+#bar .pg{margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* eines */
+#draw{position:absolute;left:0;top:108px;width:1600px;height:748px;z-index:15;pointer-events:none}
+#draw.on{pointer-events:auto;cursor:crosshair}
+#draw.white{background:#fff}
+.panel{position:absolute;z-index:30;background:var(--paper);border:3px solid var(--ink);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:14px}
+.panel[hidden]{display:none!important}
+.phead{display:flex;align-items:center;gap:10px;font:800 20px var(--f-d);cursor:move;user-select:none;margin-bottom:10px}
+.phead .x{margin-left:auto;border:0;background:none;font:700 24px var(--f-b);cursor:pointer}
+#dtools{left:520px;top:120px;display:flex;gap:8px;align-items:center;padding:10px 14px}
+#dtools .c{width:36px;height:36px;border-radius:50%;border:3px solid var(--paper);outline:2px solid var(--line);cursor:pointer}
+#dtools .c.on{outline:3px solid var(--ink)}
+#dtools .btn{padding:5px 14px;font-size:17px;border-width:2px}
+#calc{left:1180px;top:130px;width:340px}
+#cdisp{background:var(--mist);border-radius:10px;padding:8px 12px;min-height:84px;text-align:right;margin-bottom:10px}
+#cexpr{font-size:20px;color:var(--ink2);word-break:break-all;min-height:26px}
+#cres{font:800 34px var(--f-d);font-variant-numeric:tabular-nums}
+.ckeys{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.ckeys button{height:46px;border:2px solid var(--line);border-radius:10px;background:var(--paper);font:700 20px var(--f-b);cursor:pointer}
+.ckeys button.op{background:var(--mist)}
+.ckeys button.eq{background:var(--or);border-color:var(--or)}
+#timer{left:800px;top:130px;width:340px}
+#tdisp{font:800 72px var(--f-d);text-align:center;font-variant-numeric:tabular-nums}
+#timer.end #tdisp{color:var(--or-d);animation:blink .6s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+#timer .btns{justify-content:center}
+#timer .btn{padding:6px 14px;font-size:18px;border-width:2px}
+#r2 .card p{font-size:28px}#r2 .formula{font-size:34px}
+#stage.lupa #slides{cursor:zoom-in}
+#stage.lupa.zoomed #slides{cursor:zoom-out}
+
+/* portada i mapa */
+.cover{display:grid;grid-template-columns:1fr 760px;gap:40px;align-items:center;height:100%}
+.cover h1{font-weight:800;font-size:104px;line-height:.95;letter-spacing:-.02em}
+.cover h1 span{color:var(--or)}
+.keys{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:6px 12px;font-size:19px;color:var(--ink2);align-items:center;max-width:620px}
+kbd{font:700 17px var(--f-b);border:2px solid var(--ink);border-bottom-width:4px;border-radius:7px;padding:1px 9px;color:var(--ink);background:var(--paper);text-align:center}
+.map{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.mcard{border:3px solid var(--ink);border-radius:18px;padding:20px 24px;background:var(--paper);text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.mcard:hover{background:var(--or-s)}
+.mcard .n{font:800 46px var(--f-d);color:var(--or)}
+.mcard h3{font-size:31px}
+.mcard p{font-size:21px;color:var(--ink2);line-height:1.3}
+
+/* test */
+.qopt{display:flex;gap:16px;align-items:center;text-align:left;border:3px solid var(--line);border-radius:16px;background:var(--paper);padding:18px 22px;font-size:29px;cursor:pointer;width:100%}
+.qopt kbd{flex:none}
+.qopt:hover{border-color:var(--ink)}
+.qopt.right{border-color:var(--or);background:var(--or-s)}
+.qopt.wrong{border-color:var(--ink);background:var(--mist);text-decoration:line-through;color:var(--ink2)}
+.pbar{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--or);transition:width .3s}
+
+/* núvols */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--ink);border-radius:999px;background:var(--paper);padding:5px 14px;font:700 19px var(--f-b);cursor:pointer}
+.chip.on{background:var(--or);border-color:var(--or)}
+.cg{cursor:pointer;transition:opacity .25s}
+.dimmed .cg{opacity:.25}
+.dimmed .cg.sel{opacity:1}
+
+@keyframes drift{0%{transform:translate(0,0)}25%{transform:translate(6px,-5px)}50%{transform:translate(-4px,4px)}75%{transform:translate(5px,3px)}100%{transform:translate(0,0)}}
+@keyframes grow{0%{transform:scale(.15)}70%{transform:scale(1)}100%{transform:scale(1)}}
+.drift{animation:drift 3s ease-in-out infinite;transform-box:fill-box}
+.grow{animation:grow 3.5s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+
+<div id="stage">
+  <header id="menu">
+    <div class="row1">
+      <button class="logo" id="logo" title="Mapa">
+        <svg width="46" height="34" viewBox="0 0 46 34" aria-hidden="true"><circle cx="15" cy="20" r="10" fill="#fff" stroke="#111" stroke-width="3"/><circle cx="27" cy="14" r="12" fill="#fff" stroke="#111" stroke-width="3"/><circle cx="36" cy="22" r="8" fill="#fff" stroke="#111" stroke-width="3"/><rect x="12" y="20" width="28" height="11" fill="#fff"/><line x1="8" y1="30" x2="44" y2="30" stroke="#111" stroke-width="3" stroke-linecap="round"/><circle cx="27" cy="14" r="4" fill="#FF6A13"/></svg>
+        Núvols
+      </button>
+      <nav class="tabs" id="tabs"></nav>
+      <div class="tools">
+        <button class="tool" id="tE" title="Esborrany (E)">✎</button>
+        <button class="tool" id="tC" title="Calculadora (C)">C</button>
+        <button class="tool" id="tT" title="Temporitzador (T)">⏱</button>
+        <button class="tool" id="tL" title="Lupa (L)">⌕</button>
+        <button class="tool" id="tF" title="Pantalla completa (F)">⛶</button>
+      </div>
+    </div>
+    <div class="row2" id="row2"></div>
+  </header>
+
+  <main id="slides">
+
+<!-- ================= INICI ================= -->
+<section class="slide" id="p0" data-block="0" data-label="Portada">
+  <div class="cover">
+    <div style="display:flex;flex-direction:column;gap:26px">
+      <div class="eyebrow">Ciències de la Terra · Batxillerat · 2.5.2</div>
+      <h1>Laboratori<br>de <span>núvols</span></h1>
+      <p class="lead">Humitat, refredament adiabàtic, gradients sec i humit, efecte foehn, tipus de núvols i precipitació.</p>
+      <div class="btns"><button class="btn pri" id="start">Comença →</button><button class="btn" id="fsbtn">Pantalla completa</button></div>
+      <div class="keys">
+        <kbd>→</kbd><span>avança (o espai)</span><kbd>←</kbd><span>diapositiva anterior</span>
+        <kbd>E</kbd><span>esborrany</span><kbd>C</kbd><span>calculadora</span>
+        <kbd>T</kbd><span>temporitzador</span><kbd>L</kbd><span>lupa</span>
+        <kbd>F</kbd><span>pantalla completa</span><kbd>Esc</kbd><span>tanca eines</span>
+      </div>
+    </div>
+    <svg viewBox="0 0 760 620" width="760" height="620" aria-label="Muntanya amb núvol a sobrevent i cel serè a sotavent" id="coverSvg"></svg>
+  </div>
+</section>
+
+<section class="slide" id="p1" data-block="0" data-label="Mapa">
+  <h2>Mapa de la sessió</h2>
+  <div class="map" id="mapCards"></div>
+</section>
+
+<!-- ================= 1 HUMITAT ================= -->
+<section class="slide" id="h1" data-block="1" data-label="Absoluta i relativa" data-steps="4">
+  <h2>Humitat <em>absoluta</em> i humitat <em>relativa</em></h2>
+  <div class="two" style="flex:1">
+    <div class="card" data-s="1">
+      <div class="eyebrow">Humitat absoluta · HA</div>
+      <p class="big">Grams de vapor d'aigua que hi ha en 1&nbsp;m³ d'aire</p>
+      <div class="formula">Unitat: g/m³</div>
+      <svg viewBox="0 0 640 250" width="100%" height="250">
+        <g transform="translate(70,20)">
+          <polygon points="0,60 60,0 260,0 200,60" fill="#F5F3F1" stroke="#111" stroke-width="3"/>
+          <polygon points="200,60 260,0 260,180 200,240" fill="#E9E5E1" stroke="#111" stroke-width="3"/>
+          <rect x="0" y="60" width="200" height="180" fill="#fff" stroke="#111" stroke-width="3"/>
+          <g fill="#3B6E8F" id="cubeDots"></g>
+          <text x="100" y="270" text-anchor="middle" font-size="22" font-weight="700">1 m³ d'aire</text>
+        </g>
+        <text x="370" y="120" font-size="54" font-weight="800" style="font-family:var(--f-d)">10,4 g</text>
+        <text x="370" y="160" font-size="22" fill="#55504A">de vapor d'aigua</text>
+      </svg>
+    </div>
+    <div class="card or" data-s="2">
+      <div class="eyebrow">Humitat relativa · Hr</div>
+      <p class="big">Quin percentatge del vapor màxim té l'aire a aquella temperatura</p>
+      <div class="formula">Hr = <span style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.8em;line-height:1.1"><span style="border-bottom:3px solid #111;padding:0 6px">HA</span><span>HA<small>màx</small></span></span> × 100</div>
+      <p>A 20&nbsp;°C l'aire en pot tenir com a màxim <b>17,3 g/m³</b>. Amb 10,4 g/m³:</p>
+      <svg viewBox="0 0 640 90" width="100%" height="90">
+        <rect x="0" y="16" width="600" height="44" rx="10" fill="#F5F3F1" stroke="#111" stroke-width="3"/>
+        <rect x="3" y="19" width="358" height="38" rx="8" fill="#FF6A13"/>
+        <text x="20" y="47" font-size="24" font-weight="700">10,4 g/m³</text>
+        <text x="590" y="47" font-size="22" text-anchor="end" fill="#55504A">màx 17,3</text>
+        <text x="361" y="86" font-size="24" font-weight="800" text-anchor="middle">Hr = 60 %</text>
+      </svg>
+    </div>
+  </div>
+  <div class="two">
+    <div class="box" data-s="3">Es mesura amb l'<b>higròmetre</b>. HA<sub>màx</sub> depèn només de la <b>temperatura</b>: l'aire calent pot contenir més vapor.</div>
+    <div class="box ink" data-s="4"><b>Compte:</b> «↑ T → ↓ Hr» només és cert si l'aire no guanya ni perd vapor (HA constant).</div>
+  </div>
+</section>
+
+<section class="slide" id="h2" data-block="1" data-label="Corba de saturació">
+  <h2>La corba de saturació <span style="font-size:.55em;color:#55504A;font-weight:500">arrossega el punt o fes servir els controls</span></h2>
+  <div style="display:grid;grid-template-columns:930px 1fr;gap:28px;flex:1;min-height:0">
+    <svg id="satSvg" viewBox="0 0 930 610" width="930" height="610" style="touch-action:none"></svg>
+    <div class="ctrl">
+      <label class="sl"><span>Temperatura de l'aire</span><output id="satTo"></output><input type="range" id="satT" min="-10" max="40" step="1" value="25"></label>
+      <label class="sl"><span>Vapor (humitat absoluta)</span><output id="satHo"></output><input type="range" id="satH" min="1" max="50" step="0.5" value="10"></label>
+      <div class="btns"><button class="btn pri" id="satCool">❄ Refreda fins a 0 °C</button><button class="btn" id="satStep">−1 °C</button><button class="btn" id="satReset">↺</button></div>
+      <div class="read" id="satRead"></div>
+      <svg id="satMini" viewBox="0 0 520 150" width="100%" height="150"></svg>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="h3" data-block="1" data-label="Repte" data-steps="4">
+  <h2>Repte: aire a <em>25 °C</em> amb <em>10 g/m³</em> de vapor</h2>
+  <div style="display:grid;grid-template-columns:1fr 640px;gap:30px;flex:1;min-height:0">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card soft"><p><b>1.</b> Quina humitat relativa té?</p><p class="formula" data-s="1">HA<small>màx</small>(25 °C) = 23,0 g/m³ → Hr = 10 / 23,0 × 100 ≈ <span style="color:#C24A00">43 %</span></p></div>
+      <div class="card soft"><p><b>2.</b> Fins a quina temperatura s'ha de refredar per saturar-se?</p><p class="formula" data-s="2">On la corba val 10 g/m³ → punt de rosada ≈ <span style="color:#C24A00">11 °C</span></p></div>
+      <div class="card soft"><p><b>3.</b> Si es refreda fins a 5 °C, quanta aigua condensa?</p><p class="formula" data-s="3">HA<small>màx</small>(5 °C) = 6,8 g/m³ → condensen 10 − 6,8 = <span style="color:#C24A00">3,2 g per m³</span></p></div>
+      <div class="box" data-s="4">Un núvol d'1&nbsp;km³ amb 3,2&nbsp;g/m³ d'aigua condensada porta unes <b>3&nbsp;200 tones</b> d'aigua.</div>
+    </div>
+    <svg id="chalSvg" viewBox="0 0 640 560" width="640" height="560"></svg>
+  </div>
+</section>
+
+<!-- ================= 2 ASCENS ================= -->
+<section class="slide" id="a1" data-block="2" data-label="Per què es refreda" data-steps="4">
+  <h2>Per què es refreda l'aire que <em>puja</em>?</h2>
+  <div style="display:grid;grid-template-columns:720px 1fr;gap:34px;flex:1;min-height:0">
+    <svg id="ascSvg" viewBox="0 0 720 620" width="720" height="620"></svg>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card soft" data-s="1"><p><b>1.</b> Com més amunt, menys aire a sobre: <b>menys pressió</b>.</p></div>
+      <div class="card soft" data-s="2"><p><b>2.</b> La bombolla d'aire que puja <b>s'expandeix</b>.</p></div>
+      <div class="card soft" data-s="3"><p><b>3.</b> Per expandir-se, l'aire fa feina contra l'entorn i gasta energia interna: <b>es refreda</b>.</p></div>
+      <div class="box ink" data-s="4">Refredament <b>adiabàtic</b>: sense intercanviar calor amb l'aire del voltant. L'aire que baixa es comprimeix i s'escalfa.</div>
+      <label class="sl" style="margin-top:auto"><span>Altitud de la bombolla</span><output id="ascZo"></output><input type="range" id="ascZ" min="0" max="4000" step="50" value="0"></label>
+      <div class="btns"><button class="btn pri" id="ascPlay">▶ Fes-la pujar</button><button class="btn" id="ascReset">↺</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="a2" data-block="2" data-label="Causes d'ascens" data-steps="4">
+  <h2>Quatre maneres de fer pujar l'aire</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;align-items:start">
+    <div class="card" data-s="1">
+      <svg viewBox="0 0 320 190" width="100%" height="190">
+        <polygon points="10,180 170,40 310,180" fill="#E9E5E1" stroke="#111" stroke-width="3"/>
+        <path d="M20 160 L150 52" stroke="#FF6A13" stroke-width="6" fill="none" marker-end="url(#arr)"/>
+        <g id="orCloud"></g>
+      </svg>
+      <h3>Orogràfic</h3>
+      <p>L'aire xoca amb una muntanya i l'ha de remuntar.</p>
+      <p class="note">Núvols al vessant de sobrevent i capçal al cim.</p>
+    </div>
+    <div class="card" data-s="2">
+      <svg viewBox="0 0 320 190" width="100%" height="190">
+        <circle cx="270" cy="38" r="22" fill="#FF6A13"/>
+        <rect x="10" y="168" width="300" height="16" fill="#FF6A13" opacity=".35"/>
+        <line x1="10" y1="168" x2="310" y2="168" stroke="#111" stroke-width="3"/>
+        <path d="M90 160 C80 130 100 120 92 90" stroke="#FF6A13" stroke-width="6" fill="none" marker-end="url(#arr)"/>
+        <path d="M150 160 C140 128 162 116 152 84" stroke="#FF6A13" stroke-width="6" fill="none" marker-end="url(#arr)"/>
+        <g id="cvCloud"></g>
+      </svg>
+      <h3>Convectiu</h3>
+      <p>El sol escalfa el terra; l'aire calent és menys dens i puja (tèrmiques).</p>
+      <p class="note">Cúmuls i cumulonimbus: tempestes d'estiu a la tarda.</p>
+    </div>
+    <div class="card" data-s="3">
+      <svg viewBox="0 0 320 190" width="100%" height="190">
+        <polygon points="10,180 10,120 310,180" fill="#D9D4CF" stroke="#111" stroke-width="3"/>
+        <text x="40" y="168" font-size="20" font-weight="700">aire fred</text>
+        <text x="190" y="120" font-size="20" font-weight="700" fill="#C24A00">aire càlid</text>
+        <path d="M300 170 L80 118" stroke="#FF6A13" stroke-width="6" fill="none" marker-end="url(#arr)" transform="translate(0,-14)"/>
+        <g id="frCloud"></g>
+      </svg>
+      <h3>Frontal</h3>
+      <p>Aire càlid i aire fred es troben; el càlid, més lleuger, puja per sobre.</p>
+      <p class="note">Nimbostratus i altostratus; cumulonimbus al front fred.</p>
+    </div>
+    <div class="card" data-s="4">
+      <svg viewBox="0 0 320 190" width="100%" height="190">
+        <path d="M14 168 L130 168" stroke="#FF6A13" stroke-width="6" marker-end="url(#arr)"/>
+        <path d="M306 168 L190 168" stroke="#FF6A13" stroke-width="6" marker-end="url(#arr)"/>
+        <path d="M160 160 L160 90" stroke="#FF6A13" stroke-width="6" marker-end="url(#arr)"/>
+        <text x="160" y="186" text-anchor="middle" font-size="22" font-weight="800">B</text>
+        <g id="cgCloud"></g>
+      </svg>
+      <h3>Convergència</h3>
+      <p>Vents que conflueixen en una baixa pressió: l'aire només pot anar amunt.</p>
+      <p class="note">Núvols i pluja de les borrasques.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="a3" data-block="2" data-label="Nuclis de condensació" data-steps="3">
+  <h2>Sense <em>nuclis de condensació</em> no hi ha gotes</h2>
+  <div class="two" style="flex:1">
+    <div class="card" data-s="1">
+      <div class="eyebrow">Aire molt net · Hr 100 %</div>
+      <svg viewBox="0 0 640 300" width="100%" height="300" id="nucA"></svg>
+      <p>El vapor no troba on condensar. Caldria una Hr de <b>diversos centenars per cent</b>.</p>
+    </div>
+    <div class="card or" data-s="2">
+      <div class="eyebrow">Aire amb partícules · Hr 100 %</div>
+      <svg viewBox="0 0 640 300" width="100%" height="300" id="nucB"></svg>
+      <p>Sal marina, pols, fum, cendra volcànica, pol·len: el vapor s'hi condensa al voltant.</p>
+    </div>
+  </div>
+  <div class="box" data-s="3" style="display:flex;gap:26px;align-items:center;justify-content:space-between">
+    <span><b>Nucli</b> ~0,2 µm</span><span>→ ×100 →</span><span><b>Gota de núvol</b> ~0,02 mm</span><span>→ ×100 →</span><span><b>Gota de pluja</b> ~2 mm</span>
+    <span style="color:#C24A00;font-weight:700">≈ 1 milió de gotes de núvol per fer una gota de pluja</span>
+  </div>
+</section>
+
+<!-- ================= 3 GRADIENTS ================= -->
+<section class="slide" id="g1" data-block="3" data-label="Sec i humit" data-steps="5">
+  <h2>Gradient adiabàtic <em>sec</em> i gradient adiabàtic <em>humit</em></h2>
+  <div style="display:grid;grid-template-columns:900px 1fr;gap:30px;flex:1;min-height:0">
+    <svg id="gradSvg" viewBox="0 0 900 600" width="900" height="600"></svg>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card" data-s="1"><div class="eyebrow">GAS · aire no saturat</div><p class="formula">−1 °C / 100 m</p><p class="note">Des del terra fins a la base del núvol.</p></div>
+      <div class="card or" data-s="3"><div class="eyebrow">GAH · aire saturat</div><p class="formula">≈ −0,5 °C / 100 m</p><p class="note">Dins del núvol. Varia entre ~0,4 (aire càlid) i ~0,9 (aire molt fred).</p></div>
+      <div class="box ink" data-s="5"><b>No el confonguis amb el GVT</b> (gradient vertical de temperatura): és com canvia la temperatura de l'aire quiet de l'atmosfera. Mitjana ≈ 0,65 °C/100 m.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="g2" data-block="3" data-label="Calor latent" data-steps="3">
+  <h2>Per què dins del núvol es refreda <em>més a poc a poc</em>?</h2>
+  <div style="display:grid;grid-template-columns:1fr 700px;gap:34px;flex:1;min-height:0">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card soft" data-s="1"><p>Quan el vapor es converteix en gota, retorna la calor que va fer servir per evaporar-se: la <b>calor latent</b>, uns <b>2&nbsp;500 J per gram</b> d'aigua.</p></div>
+      <div class="card soft" data-s="2"><p>L'expansió continua refredant 1&nbsp;°C cada 100&nbsp;m, però la condensació n'hi torna aproximadament la meitat.</p></div>
+      <div class="box ink" data-s="3">Aquesta calor fa que l'aire del núvol sigui més calent que l'entorn i continuï pujant: és el motor dels <b>cumulonimbus</b>. Com més vapor (aire càlid), més calor alliberada i GAH més petit.</div>
+    </div>
+    <svg viewBox="0 0 700 560" width="700" height="560">
+      <g data-s="1">
+        <circle cx="120" cy="120" r="10" fill="#3B6E8F" opacity=".5"/><circle cx="150" cy="100" r="10" fill="#3B6E8F" opacity=".5"/><circle cx="100" cy="90" r="10" fill="#3B6E8F" opacity=".5"/>
+        <text x="125" y="170" text-anchor="middle" font-size="22">vapor</text>
+        <path d="M200 110 L320 110" stroke="#111" stroke-width="4" marker-end="url(#arrK)"/>
+        <circle cx="400" cy="110" r="34" fill="#3B6E8F"/>
+        <text x="400" y="180" text-anchor="middle" font-size="22">gota</text>
+        <path d="M440 80 C500 40 540 60 560 40" stroke="#FF6A13" stroke-width="6" fill="none" marker-end="url(#arr)"/>
+        <text x="570" y="34" font-size="24" font-weight="800" fill="#C24A00">calor</text>
+      </g>
+      <g data-s="2" transform="translate(0,200)">
+        <line x1="60" y1="140" x2="660" y2="140" stroke="#111" stroke-width="3"/>
+        <rect x="100" y="140" width="120" height="160" fill="#111"/>
+        <text x="160" y="130" text-anchor="middle" font-size="22" font-weight="700">expansió</text>
+        <text x="160" y="290" text-anchor="middle" font-size="26" font-weight="800" fill="#fff">−1</text>
+        <rect x="290" y="60" width="120" height="80" fill="#FF6A13"/>
+        <text x="350" y="50" text-anchor="middle" font-size="22" font-weight="700">calor latent</text>
+        <text x="350" y="112" text-anchor="middle" font-size="26" font-weight="800">+0,5</text>
+        <rect x="480" y="140" width="120" height="80" fill="#fff" stroke="#111" stroke-width="3" stroke-dasharray="8 6"/>
+        <text x="540" y="130" text-anchor="middle" font-size="22" font-weight="700">resultat</text>
+        <text x="540" y="192" text-anchor="middle" font-size="26" font-weight="800">−0,5</text>
+        <text x="360" y="330" text-anchor="middle" font-size="22" fill="#55504A">°C per cada 100 m de pujada dins el núvol</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section class="slide" id="g3" data-block="3" data-label="Base del núvol" data-steps="1">
+  <h2>On comença el núvol? El <em>nivell de condensació</em></h2>
+  <div style="display:grid;grid-template-columns:860px 1fr;gap:30px;flex:1;min-height:0">
+    <svg id="lclSvg" viewBox="0 0 860 600" width="860" height="600"></svg>
+    <div class="ctrl">
+      <label class="sl"><span>Temperatura a terra (T)</span><output id="lclTo"></output><input type="range" id="lclT" min="5" max="35" step="1" value="20"></label>
+      <label class="sl"><span>Punt de rosada a terra (Td)</span><output id="lclDo"></output><input type="range" id="lclD" min="-5" max="35" step="1" value="12"></label>
+      <div class="card or" style="gap:6px">
+        <div class="formula">z ≈ 125 · (T − Td)</div>
+        <div id="lclCalc" style="font-size:24px;line-height:1.4" class="num"></div>
+      </div>
+      <div class="box" data-s="1" style="font-size:22px">Pujant sense saturar, T baixa 1&nbsp;°C/100&nbsp;m i Td només uns 0,2&nbsp;°C/100&nbsp;m. S'acosten 0,8&nbsp;°C cada 100&nbsp;m → <b>100 / 0,8 = 125&nbsp;m</b> per grau de diferència.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4 FOEHN ================= -->
+<section class="slide" id="f1" data-block="4" data-label="Simulador">
+  <h2>Efecte <em>foehn</em> <span style="font-size:.55em;color:#55504A;font-weight:500">primer predicció, després simula</span></h2>
+  <svg id="fSvg" viewBox="0 0 1600 470" width="1488" height="437" style="margin:0 -10px"></svg>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr) 1.25fr;gap:26px;align-items:end">
+    <label class="sl"><span>Temperatura a sobrevent</span><output id="fTo"></output><input type="range" id="fT" min="5" max="35" step="1" value="20"></label>
+    <label class="sl"><span>Humitat relativa a sobrevent</span><output id="fHo"></output><input type="range" id="fH" min="20" max="100" step="5" value="60"></label>
+    <label class="sl"><span>Alçada del cim</span><output id="fZo"></output><input type="range" id="fZ" min="500" max="4000" step="100" value="3000"></label>
+    <div class="btns" style="justify-content:flex-end"><button class="btn pri" id="fPlay">▶ Fes passar l'aire</button><button class="btn" id="fAll">Mostra-ho tot</button><button class="btn" id="fReset">↺</button></div>
+  </div>
+</section>
+
+<section class="slide" id="f2" data-block="4" data-label="Dos vessants" data-steps="3">
+  <h2>El mateix aire, dos vessants molt diferents</h2>
+  <div data-s="1" style="display:grid;grid-template-columns:260px 1fr 1fr;gap:0;border:3px solid #111;border-radius:18px;overflow:hidden;font-size:25px">
+    <div style="padding:14px 20px;background:#111;color:#fff;font-weight:700"></div>
+    <div style="padding:14px 20px;background:#111;color:#fff;font-weight:700">Sobrevent (puja)</div>
+    <div style="padding:14px 20px;background:#FF6A13;font-weight:700">Sotavent (baixa)</div>
+    <div class="trow" style="display:contents" id="ftab"></div>
+  </div>
+  <div class="two" style="flex:1;align-items:start">
+    <div class="card soft" data-s="2"><p><b>Pregunta:</b> si a sobrevent no es forma cap núvol, hi ha efecte foehn?</p></div>
+    <div class="box" data-s="3"><b>No.</b> Puja i baixa amb el GAS (−1 i +1 °C/100 m) i arriba a la mateixa temperatura. L'escalfament ve de la calor latent alliberada al núvol; l'aigua que ha plogut ja no s'ha de tornar a evaporar.</div>
+  </div>
+</section>
+
+<section class="slide" id="f3" data-block="4" data-label="Exemples" data-steps="4">
+  <h2>Foehn al món i a casa nostra</h2>
+  <div class="two" style="flex:1">
+    <div class="card" data-s="1"><div class="eyebrow">Pirineu · Empordà</div><h3>Tramuntana i mur de foehn</h3><p>Des de l'Empordà es veu una muralla de núvols aturada sobre la carena del Pirineu, mentre a baix fa cel serè i vent sec.</p></div>
+    <div class="card" data-s="2"><div class="eyebrow">Costa catalana</div><h3>Ponent</h3><p>Vent de terra que baixa cap al mar. En part per compressió en baixar, porta els dies d'estiu més calorosos i secs a la costa.</p></div>
+    <div class="card" data-s="3"><div class="eyebrow">Alps</div><h3>Föhn</h3><p>Dona nom al fenomen. Desglaç ràpid, risc d'allaus a la primavera i d'incendis a les valls.</p></div>
+    <div class="card" data-s="4"><div class="eyebrow">Muntanyes Rocalloses</div><h3>Chinook</h3><p>El «menjador de neu»: la temperatura pot pujar més de 20&nbsp;°C en poques hores.</p></div>
+  </div>
+</section>
+
+<!-- ================= 5 NÚVOLS I PRECIPITACIÓ ================= -->
+<section class="slide" id="n1" data-block="5" data-label="Gèneres de núvols">
+  <h2>Els 10 gèneres de núvols <span style="font-size:.55em;color:#55504A;font-weight:500">clica un núvol</span></h2>
+  <div style="display:grid;grid-template-columns:1000px 1fr;gap:28px;flex:1;min-height:0">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <svg id="skySvg" viewBox="0 0 1000 560" width="1000" height="560"></svg>
+      <div class="chips" id="skyChips"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card or" id="cloudInfo" style="flex:1"></div>
+      <div class="card soft" style="gap:4px;font-size:21px;line-height:1.45">
+        <div class="eyebrow">Prefixos</div>
+        <div><b>cirro-</b> alt · <b>alto-</b> mitjà · <b>strato-</b> en capa</div>
+        <div><b>cumulo-</b> en munt · <b>nimbo-</b> porta precipitació</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="n2" data-block="5" data-label="Com creix una gota" data-steps="3">
+  <h2>Com es fa prou grossa una gota per caure?</h2>
+  <div class="two" style="flex:1">
+    <div class="card" data-s="1">
+      <div class="eyebrow">Núvols càlids · per sobre de 0 °C</div>
+      <h3>Coalescència</h3>
+      <svg viewBox="0 0 640 220" width="100%" height="220">
+        <circle cx="140" cy="60" r="34" fill="#3B6E8F"/>
+        <path d="M140 104 L140 170" stroke="#111" stroke-width="4" marker-end="url(#arrK)"/>
+        <circle cx="120" cy="190" r="9" fill="#3B6E8F" opacity=".6"/><circle cx="160" cy="200" r="7" fill="#3B6E8F" opacity=".6"/><circle cx="140" cy="210" r="8" fill="#3B6E8F" opacity=".6"/>
+        <path d="M240 120 L330 120" stroke="#111" stroke-width="4" marker-end="url(#arrK)"/>
+        <circle cx="440" cy="120" r="56" fill="#3B6E8F"/>
+        <text x="440" y="206" text-anchor="middle" font-size="20" fill="#55504A">gota més grossa</text>
+      </svg>
+      <p>Les gotes grosses cauen més ràpid, xoquen amb les petites i les absorbeixen.</p>
+      <p class="note">Plugim i pluja de núvols tropicals.</p>
+    </div>
+    <div class="card or" data-s="2">
+      <div class="eyebrow">Núvols freds · per sota de 0 °C</div>
+      <h3>Procés de Bergeron</h3>
+      <svg viewBox="0 0 640 220" width="100%" height="220">
+        <g transform="translate(320,110)" stroke="#111" stroke-width="5" stroke-linecap="round">
+          <line x1="-50" y1="0" x2="50" y2="0"/><line x1="-25" y1="-43" x2="25" y2="43"/><line x1="-25" y1="43" x2="25" y2="-43"/>
+          <line x1="35" y1="0" x2="45" y2="-10"/><line x1="35" y1="0" x2="45" y2="10"/><line x1="-35" y1="0" x2="-45" y2="-10"/><line x1="-35" y1="0" x2="-45" y2="10"/>
+        </g>
+        <circle cx="90" cy="60" r="24" fill="#3B6E8F" opacity=".7"/><circle cx="80" cy="170" r="20" fill="#3B6E8F" opacity=".7"/>
+        <circle cx="560" cy="70" r="22" fill="#3B6E8F" opacity=".7"/><circle cx="550" cy="170" r="18" fill="#3B6E8F" opacity=".7"/>
+        <path d="M120 70 L240 100" stroke="#FF6A13" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+        <path d="M110 160 L240 125" stroke="#FF6A13" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+        <path d="M530 80 L400 100" stroke="#FF6A13" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+        <path d="M525 160 L400 125" stroke="#FF6A13" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+        <text x="320" y="210" text-anchor="middle" font-size="20" fill="#55504A">el vapor passa de les gotes al cristall</text>
+      </svg>
+      <p>Hi conviuen gotes <b>subfoses</b> (líquides sota 0 °C) i cristalls de gel. El cristall creix a costa de les gotes.</p>
+      <p class="note">A latituds mitjanes, molta pluja comença com a neu que es fon en baixar.</p>
+    </div>
+  </div>
+  <div class="box ink" data-s="3">Per què no plou de tots els núvols? Una gota de núvol cau a ~1 cm/s: qualsevol corrent d'aire la sosté. Una gota de pluja de 2 mm cau a ~6,5 m/s.</div>
+</section>
+
+<section class="slide" id="n3" data-block="5" data-label="Tipus de precipitació" data-steps="3">
+  <h2>Tipus de precipitació</h2>
+  <div data-s="1" style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px">
+    <div class="card"><h3>Plugim</h3><p>Gotes molt petites (&lt; 0,5 mm). Sovint d'estrats.</p></div>
+    <div class="card"><h3>Pluja</h3><p>Gotes d'entre 0,5 i uns 5 mm.</p></div>
+    <div class="card"><h3>Neu</h3><p>Cristalls de gel agregats en flocs.</p></div>
+    <div class="card"><h3>Aiguaneu</h3><p>Neu mig fosa barrejada amb pluja.</p></div>
+    <div class="card or"><h3>Calamarsa i pedra</h3><p>Boles de gel dels cumulonimbus; pedra &gt; 5 mm.</p></div>
+  </div>
+  <div data-s="2" style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">No són precipitació: el vapor condensa a terra</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <div class="card soft"><h3>Rosada</h3><p>Gotes sobre superfícies que la nit ha refredat per sota del punt de rosada.</p></div>
+      <div class="card soft"><h3>Gebre</h3><p>El vapor passa directament a gel sobre superfícies sota 0 °C.</p></div>
+      <div class="card soft"><h3>Boira</h3><p>Un núvol que toca a terra.</p></div>
+    </div>
+  </div>
+  <div class="box" data-s="3">Segons l'origen de l'ascens, la precipitació és <b>convectiva</b> (xàfecs), <b>orogràfica</b> (sobrevent) o <b>frontal</b> (contínua, en àrees grans).</div>
+</section>
+
+<section class="slide" id="n4" data-block="5" data-label="Pluja o neu?" data-steps="1">
+  <h2>Pluja o neu? La <em>cota de neu</em></h2>
+  <div style="display:grid;grid-template-columns:1050px 1fr;gap:28px;flex:1;min-height:0">
+    <svg id="snowSvg" viewBox="0 0 1050 600" width="1050" height="600"></svg>
+    <div class="ctrl">
+      <label class="sl"><span>Isoterma de 0 °C</span><output id="isoO"></output><input type="range" id="iso" min="0" max="2500" step="50" value="1300"></label>
+      <div class="read" id="snowRead"></div>
+      <div class="box" data-s="1" style="font-size:22px">Els flocs triguen a fondre's: la neu arriba uns <b>300 m per sota</b> de la isoterma de 0 °C. Regla aproximada: cota de neu ≈ isozero − 300 m.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6 REPÀS ================= -->
+<section class="slide" id="r1" data-block="6" data-label="Test">
+  <div style="display:flex;align-items:center;gap:24px">
+    <h2>Test</h2>
+    <div class="pbar" style="flex:1"><i id="qbar" style="width:0"></i></div>
+    <div id="qnum" class="num" style="font:800 28px var(--f-d)"></div>
+  </div>
+  <div id="quiz" style="display:flex;flex-direction:column;gap:14px;flex:1"></div>
+</section>
+
+<section class="slide" id="r2" data-block="6" data-label="Resum" style="--rs:1">
+  <h2>Idees clau</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;flex:1">
+    <div class="card"><div class="eyebrow">Humitat</div>
+      <p class="formula">Hr = HA / HA<small>màx</small> × 100</p>
+      <p>HA en g/m³. HA<small>màx</small> depèn de la temperatura.</p>
+      <p>Punt de rosada: temperatura a la qual l'aire se satura si es refreda.</p></div>
+    <div class="card"><div class="eyebrow">Ascens i núvol</div>
+      <p>L'aire que puja s'expandeix i es refreda (adiabàtic).</p>
+      <p class="formula">GAS = 1 °C/100 m<br>GAH ≈ 0,5 °C/100 m</p>
+      <p class="formula">z<small>base</small> ≈ 125 · (T − Td)</p>
+      <p>Cal nuclis de condensació.</p></div>
+    <div class="card or"><div class="eyebrow">Foehn</div>
+      <p>Puja amb GAS fins a la base del núvol i amb GAH fins al cim; baixa amb GAS.</p>
+      <p class="formula">Guany ≈ (cim − base) × 0,5 / 100</p>
+      <p>Sotavent: més calent i més sec. Sense núvol, no hi ha foehn.</p></div>
+  </div>
+</section>
+
+  </main>
+
+  <canvas id="draw" width="1600" height="748"></canvas>
+
+  <div class="panel" id="dtools" hidden>
+    <span class="phead" style="margin:0">✎</span>
+    <button class="c on" data-c="#111111" style="background:#111" title="Negre"></button>
+    <button class="c" data-c="#FF6A13" style="background:#FF6A13" title="Taronja"></button>
+    <button class="c" data-c="#3B6E8F" style="background:#3B6E8F" title="Blau"></button>
+    <button class="btn" id="dEraser">Goma</button>
+    <button class="btn" id="dClear">Esborra tot</button>
+    <button class="btn" id="dBg">Full blanc</button>
+    <button class="btn" id="dClose">Tanca</button>
+  </div>
+
+  <div class="panel" id="calc" hidden>
+    <div class="phead">Calculadora <button class="x" data-close="calc">×</button></div>
+    <div id="cdisp"><div id="cexpr"></div><div id="cres">0</div></div>
+    <div class="ckeys" id="ckeys"></div>
+  </div>
+
+  <div class="panel" id="timer" hidden>
+    <div class="phead">Temporitzador <button class="x" data-close="timer">×</button></div>
+    <div id="tdisp">05:00</div>
+    <div class="btns" style="margin-bottom:8px"><button class="btn" data-m="1">1 min</button><button class="btn" data-m="3">3</button><button class="btn" data-m="5">5</button><button class="btn" data-m="10">10</button></div>
+    <div class="btns"><button class="btn" id="tMinus">−1</button><button class="btn pri" id="tGo">▶ Inicia</button><button class="btn" id="tPlus">+1</button></div>
+  </div>
+
+  <footer id="bar">
+    <button class="nav" id="bPrev" title="Anterior (←)">←</button>
+    <button class="nav" id="bNext" title="Endavant (→)">→</button>
+    <div class="dots" id="dots"></div>
+    <span id="btitle" style="font-weight:700;color:#111"></span>
+    <span class="pg" id="pg"></span>
+  </footer>
+
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#FF6A13"/></marker>
+      <marker id="arrK" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#111"/></marker>
+    </defs>
+  </svg>
+</div>
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fmt(x,d=0){
+  let s=(Math.round(x*10**d)/10**d).toFixed(d);
+  if(/^-0(\.0+)?$/.test(s)) s=s.slice(1);
+  let [i,f]=s.split('.');
+  const neg=i.startsWith('-'); if(neg) i=i.slice(1);
+  i=i.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+  return (neg?'−':'')+i+(f?','+f:'');
+}
+/* ---- física ---- */
+const es=T=>6.112*Math.exp(17.67*T/(T+243.5));          // hPa (Magnus)
+const rhoS=T=>216.7*es(T)/(T+273.15);                   // g/m³ màxim
+function tdFromRho(r){let a=-60,b=60;for(let i=0;i<60;i++){const m=(a+b)/2; if(rhoS(m)<r)a=m;else b=m;}return (a+b)/2;}
+function tdFromHr(T,hr){const g=Math.log(hr/100)+17.67*T/(T+243.5);return 243.5*g/(17.67-g);}
+const hrFromTd=(T,Td)=>Math.min(100,100*es(Td)/es(T));
+const pres=z=>1013.25*Math.pow(1-2.25577e-5*z,5.25588);
+
+/* ---- dibuix de núvols ---- */
+function puff(cx,base,w,h,fill='#fff',stroke='#8E8A85'){
+  const n=Math.max(3,Math.round(w/(h*0.9)));const cs=[];
+  for(let i=0;i<n;i++){const x=cx-w/2+(i+0.5)*w/n;const r=h*(0.42+0.38*Math.sin(Math.PI*(i+0.5)/n));cs.push([x,base-r,r]);}
+  const rw=w/n*0.5;
+  const o=cs.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r+3}" fill="${stroke}"/>`).join('')+`<rect x="${cx-w/2+rw-3}" y="${base-h*0.45}" width="${w-2*rw+6}" height="${h*0.45+3}" fill="${stroke}"/>`;
+  const f=cs.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}"/>`).join('')+`<rect x="${cx-w/2+rw}" y="${base-h*0.45}" width="${w-2*rw}" height="${h*0.45}" fill="${fill}"/>`;
+  return `<g>${o}${f}</g>`;
+}
+function axisText(x,y,t,o=''){return `<text x="${x}" y="${y}" font-size="20" fill="#55504A" ${o}>${t}</text>`}
+
+/* ================= MOTOR ================= */
+const stage=$('#stage'), slidesEl=$('#slides');
+const slides=$$('.slide');
+const BLOCKS=['Inici','Humitat','Ascens','Gradients','Foehn','Núvols i precipitació','Repàs'];
+let cur=0, step=0; const visited=new Set(); const hooks={};
+const maxS=el=>+(el.dataset.steps||0);
+
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`scale(${s})`;stage.style.left=((innerWidth-1600*s)/2)+'px';stage.style.top=((innerHeight-900*s)/2)+'px';}
+addEventListener('resize',fit);fit();
+
+function applyStep(){
+  const el=slides[cur];
+  $$('[data-s]',el).forEach(e=>e.classList.toggle('hid',+e.dataset.s>step));
+  hooks[el.id]?.step?.(step);
+  renderBar();
+}
+function go(i,st=0){
+  i=clamp(i,0,slides.length-1);
+  saveDraw();
+  slides[cur].classList.remove('on'); hooks[slides[cur].id]?.leave?.();
+  cur=i; const el=slides[cur];
+  step= st==='end'?maxS(el):st;
+  el.classList.add('on'); visited.add(cur);
+  hooks[el.id]?.enter?.();
+  applyStep(); renderMenu(); loadDraw(); unzoom();
+}
+function next(){ if(step<maxS(slides[cur])){step++;applyStep();} else if(cur<slides.length-1) go(cur+1,0); }
+function prev(){ if(cur>0) go(cur-1,'end'); }
+
+const tabsEl=$('#tabs'), row2=$('#row2');
+BLOCKS.forEach((b,i)=>{const t=document.createElement('button');t.className='tab';t.textContent=b;t.onclick=()=>go(slides.findIndex(s=>+s.dataset.block===i));tabsEl.append(t);});
+function renderMenu(){
+  const blk=+slides[cur].dataset.block;
+  $$('.tab',tabsEl).forEach((t,i)=>t.classList.toggle('on',i===blk));
+  row2.innerHTML='';
+  slides.forEach((s,i)=>{ if(+s.dataset.block!==blk) return;
+    const b=document.createElement('button');b.className='sb'+(i===cur?' on':'');
+    b.innerHTML=s.dataset.label+(visited.has(i)&&i!==cur?'<span class="ok">✓</span>':'');
+    b.onclick=()=>go(i);row2.append(b);});
+}
+function renderBar(){
+  const el=slides[cur], m=maxS(el);
+  $('#dots').innerHTML=m?Array.from({length:m},(_,k)=>`<i class="${k<step?'f':''}"></i>`).join(''):'';
+  $('#btitle').textContent=BLOCKS[+el.dataset.block]+' · '+el.dataset.label;
+  $('#pg').textContent=(cur+1)+' / '+slides.length;
+}
+$('#bPrev').onclick=prev; $('#bNext').onclick=next;
+$('#logo').onclick=()=>go(1);
+$('#start').onclick=()=>go(1);
+
+/* ---- tecles ---- */
+document.addEventListener('keydown',e=>{
+  const t=e.target, tag=t.tagName;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const inRange=tag==='INPUT';
+  const k=e.key;
+  if(slides[cur].id==='r1' && /^[1-4]$/.test(k)){quizKey(+k);e.preventDefault();return;}
+  if((k==='ArrowRight'||k==='PageDown'||k===' ')){ if(inRange&&k!==' '&&k!=='PageDown') return; if(tag==='BUTTON'&&k===' ') return; e.preventDefault(); next(); return;}
+  if(k==='ArrowLeft'||k==='PageUp'){ if(inRange&&k==='ArrowLeft') return; e.preventDefault(); prev(); return;}
+  if(k==='Home'){go(0);return;}
+  const K=k.toLowerCase();
+  if(K==='f') toggleFS(); else if(K==='e') toggleDraw(); else if(K==='c') togglePanel('calc'); else if(K==='t') togglePanel('timer'); else if(K==='l') toggleLupa();
+  else if(k==='Escape'){ ['calc','timer'].forEach(p=>$('#'+p).hidden=true); if(drawOn) toggleDraw(); if(lupa) toggleLupa(); syncTools(); }
+});
+
+/* ---- pantalla completa ---- */
+function toggleFS(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{}); else document.exitFullscreen?.(); }catch(_){} }
+$('#tF').onclick=toggleFS; $('#fsbtn').onclick=toggleFS;
+
+/* ---- panells arrossegables ---- */
+function togglePanel(id){const p=$('#'+id);p.hidden=!p.hidden;syncTools();}
+$$('[data-close]').forEach(b=>b.onclick=()=>{$('#'+b.dataset.close).hidden=true;syncTools();});
+function stagePt(e){const r=stage.getBoundingClientRect();const s=r.width/1600;return [(e.clientX-r.left)/s,(e.clientY-r.top)/s];}
+$$('.panel .phead').forEach(h=>{
+  const p=h.parentElement; let d=null;
+  h.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const [x,y]=stagePt(e);d=[x-p.offsetLeft,y-p.offsetTop];h.setPointerCapture(e.pointerId);});
+  h.addEventListener('pointermove',e=>{if(!d)return;const [x,y]=stagePt(e);p.style.left=clamp(x-d[0],0,1600-p.offsetWidth)+'px';p.style.top=clamp(y-d[1],0,900-60)+'px';});
+  h.addEventListener('pointerup',()=>d=null);
+});
+function syncTools(){$('#tC').classList.toggle('on',!$('#calc').hidden);$('#tT').classList.toggle('on',!$('#timer').hidden);$('#tE').classList.toggle('on',drawOn);$('#tL').classList.toggle('on',lupa);}
+$('#tC').onclick=()=>togglePanel('calc'); $('#tT').onclick=()=>togglePanel('timer');
+
+/* ---- calculadora ---- */
+const CK=['7','8','9','÷','⌫','4','5','6','×','C','1','2','3','−','(','0',',','π','+',')','x²','√','EXP','Ans','='];
+let cexp='', cans=0;
+$('#ckeys').innerHTML=CK.map(k=>`<button class="${/[÷×−+=]/.test(k)?(k==='='?'eq':'op'):''}">${k}</button>`).join('');
+$$('#ckeys button').forEach(b=>b.onclick=()=>cpress(b.textContent));
+function cpress(k){
+  if(k==='C'){cexp='';$('#cres').textContent='0';}
+  else if(k==='⌫'){cexp=cexp.replace(/(×10\^|√\(|Ans|.)$/,'');}
+  else if(k==='='){cevalShow();return;}
+  else if(k==='x²'){cexp+='²';}
+  else if(k==='√'){cexp+='√(';}
+  else if(k==='EXP'){cexp+='×10^';}
+  else cexp+=k;
+  $('#cexpr').textContent=cexp;
+}
+function ceval(s){
+  let j=s.replace(/×10\^(−?)/g,(m,n)=>'*10**'+(n?'-':'')).replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/,/g,'.')
+   .replace(/π/g,'(Math.PI)').replace(/√\(/g,'Math.sqrt(').replace(/²/g,'**2').replace(/Ans/g,'('+cans+')');
+  if(!/^[0-9+\-*/(). Mathsqrtpi PI]*$/.test(j)) throw 0;
+  const v=Function('"use strict";return ('+j+')')(); if(!isFinite(v)) throw 0; return v;
+}
+function cevalShow(){try{const v=ceval(cexp);cans=v;const a=Math.abs(v);$('#cres').textContent=(a!==0&&(a>=1e9||a<1e-4))?v.toExponential(4).replace('.',',').replace('e','×10^'):fmt(v,+(a<1?6:4)).replace(/,?0+$/,'');}catch(_){$('#cres').textContent='Error';}}
+
+/* ---- temporitzador ---- */
+let tLeft=300, tRun=null;
+function tShow(){const m=Math.floor(tLeft/60),s=tLeft%60;$('#tdisp').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+$$('#timer [data-m]').forEach(b=>b.onclick=()=>{tLeft=60*b.dataset.m;$('#timer').classList.remove('end');tShow();});
+$('#tMinus').onclick=()=>{tLeft=Math.max(0,tLeft-60);tShow();}; $('#tPlus').onclick=()=>{tLeft+=60;tShow();};
+$('#tGo').onclick=()=>{ if(tRun){clearInterval(tRun);tRun=null;$('#tGo').textContent='▶ Continua';return;}
+  $('#timer').classList.remove('end'); $('#tGo').textContent='⏸ Pausa';
+  tRun=setInterval(()=>{tLeft--;tShow();if(tLeft<=0){clearInterval(tRun);tRun=null;$('#tGo').textContent='▶ Inicia';$('#timer').classList.add('end');beep();}},1000);};
+function beep(){try{const a=new AudioContext();[0,.35,.7].forEach(t=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;g.gain.value=.08;o.connect(g).connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+.2);});}catch(_){}}
+
+/* ---- esborrany ---- */
+const cv=$('#draw'), cx=cv.getContext('2d'); let drawOn=false, dColor='#111111', eraser=false, drawing=false; const drawStore={}; const bgStore={};
+function toggleDraw(){drawOn=!drawOn;cv.classList.toggle('on',drawOn);$('#dtools').hidden=!drawOn;syncTools();}
+$('#tE').onclick=toggleDraw; $('#dClose').onclick=toggleDraw;
+$$('#dtools .c').forEach(b=>b.onclick=()=>{dColor=b.dataset.c;eraser=false;$$('#dtools .c').forEach(c=>c.classList.toggle('on',c===b));$('#dEraser').classList.remove('pri');});
+$('#dEraser').onclick=()=>{eraser=!eraser;$('#dEraser').classList.toggle('pri',eraser);};
+$('#dClear').onclick=()=>cx.clearRect(0,0,1600,748);
+$('#dBg').onclick=()=>{cv.classList.toggle('white');$('#dBg').textContent=cv.classList.contains('white')?'Full transparent':'Full blanc';};
+function cvPt(e){const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*1600/r.width,(e.clientY-r.top)*748/r.height];}
+cv.addEventListener('pointerdown',e=>{drawing=true;cv.setPointerCapture(e.pointerId);const [x,y]=cvPt(e);cx.beginPath();cx.moveTo(x,y);});
+cv.addEventListener('pointermove',e=>{if(!drawing)return;const [x,y]=cvPt(e);cx.globalCompositeOperation=eraser?'destination-out':'source-over';cx.strokeStyle=dColor;cx.lineWidth=eraser?40:5;cx.lineCap='round';cx.lineJoin='round';cx.lineTo(x,y);cx.stroke();});
+cv.addEventListener('pointerup',()=>drawing=false);
+function saveDraw(){try{drawStore[cur]=cx.getImageData(0,0,1600,748);bgStore[cur]=cv.classList.contains('white');}catch(_){}}
+function loadDraw(){cx.clearRect(0,0,1600,748);if(drawStore[cur])cx.putImageData(drawStore[cur],0,0);cv.classList.toggle('white',!!bgStore[cur]);$('#dBg').textContent=cv.classList.contains('white')?'Full transparent':'Full blanc';}
+
+/* ---- lupa ---- */
+let lupa=false;
+function toggleLupa(){lupa=!lupa;stage.classList.toggle('lupa',lupa);if(!lupa)unzoom();syncTools();}
+function unzoom(){slidesEl.style.transform='';stage.classList.remove('zoomed');}
+$('#tL').onclick=toggleLupa;
+slidesEl.addEventListener('click',e=>{ if(!lupa) return; e.preventDefault(); e.stopPropagation();
+  if(stage.classList.contains('zoomed')){unzoom();return;}
+  const [x,y]=stagePt(e); slidesEl.style.transformOrigin=`${x}px ${y-108}px`; slidesEl.style.transform='scale(2)'; stage.classList.add('zoomed');},true);
+
+/* ================= CONTINGUT ================= */
+
+/* portada */
+(function(){
+  const s=$('#coverSvg');
+  let g=`<rect x="0" y="0" width="760" height="620" rx="24" fill="#F5F3F1"/>`;
+  g+=`<circle cx="640" cy="110" r="46" fill="#FF6A13"/>`;
+  g+=`<polygon points="20,560 380,150 740,560" fill="#D9D4CF" stroke="#111" stroke-width="4" stroke-linejoin="round"/>`;
+  g+=`<polygon points="330,207 380,150 430,207 405,198 380,214 355,198" fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+  g+=puff(240,330,190,70)+puff(330,240,150,62)+puff(150,410,140,56);
+  for(let i=0;i<9;i++){const x=120+i*22,y=360+((i*37)%40);g+=`<line x1="${x}" y1="${y}" x2="${x-8}" y2="${y+26}" stroke="#3B6E8F" stroke-width="4" stroke-linecap="round"/>`;}
+  g+=`<path d="M60 470 C150 420 230 330 330 230 C360 200 390 190 420 220 C500 300 590 420 700 470" stroke="#FF6A13" stroke-width="7" fill="none" stroke-dasharray="2 16" stroke-linecap="round" marker-end="url(#arr)"/>`;
+  g+=`<text x="70" y="600" font-size="24" font-weight="700">sobrevent: núvol i pluja</text><text x="700" y="600" font-size="24" font-weight="700" text-anchor="end" fill="#C24A00">sotavent: sec i calent</text>`;
+  s.innerHTML=g;
+})();
+
+/* mapa */
+(function(){
+  const items=[[1,'Humitat','Absoluta, relativa, corba de saturació, punt de rosada'],[2,'Ascens','Refredament adiabàtic, causes d\'ascens, nuclis'],[3,'Gradients','GAS, GAH, calor latent, base del núvol'],[4,'Foehn','Simulador, sobrevent i sotavent, exemples'],[5,'Núvols i precipitació','10 gèneres, creixement de gotes, pluja o neu'],[6,'Repàs','Test de 8 preguntes i idees clau']];
+  const m=$('#mapCards');
+  items.forEach(([n,t,d])=>{const b=document.createElement('button');b.className='mcard';b.innerHTML=`<span class="n">${n}</span><h3>${t}</h3><p>${d}</p>`;b.onclick=()=>go(slides.findIndex(s=>+s.dataset.block===n));m.append(b);});
+})();
+
+/* h1: punts del cub */
+(function(){let d='';let seed=7;const r=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};for(let i=0;i<34;i++)d+=`<circle cx="${12+r()*176}" cy="${72+r()*156}" r="5"/>`;$('#cubeDots').innerHTML=d;})();
+
+/* h2: corba de saturació */
+(function(){
+  const svg=$('#satSvg'); const W=930,H=610,L=100,R=30,T=24,B=74, x0=-10,x1=40,y1=55;
+  const X=t=>L+(t-x0)/(x1-x0)*(W-L-R), Y=v=>H-B-(v/y1)*(H-B-T);
+  const st={T:25,HA:10,T0:25,HA0:10,cond:0,anim:null};
+  const curve=[];for(let t=x0;t<=x1+.01;t+=.5)curve.push([X(t),Y(Math.min(rhoS(t),y1))]);
+  const cpath='M'+curve.map(p=>p.join(' ')).join(' L');
+  // punts aleatoris fixos per al mini-dibuix
+  let seed=3;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+  const pts=Array.from({length:60},()=>{const a=rnd()*Math.PI*2,r=Math.sqrt(rnd())*52;return [r*Math.cos(a),r*Math.sin(a)];});
+  function draw(){
+    let g='';
+    for(let t=x0;t<=x1;t+=10){g+=`<line x1="${X(t)}" y1="${T}" x2="${X(t)}" y2="${H-B}" stroke="#ECE8E4"/>`+axisText(X(t),H-B+28,fmt(t)+' °C','text-anchor="middle"');}
+    for(let v=0;v<=50;v+=10){g+=`<line x1="${L}" y1="${Y(v)}" x2="${W-R}" y2="${Y(v)}" stroke="#ECE8E4"/>`+axisText(L-12,Y(v)+7,v,'text-anchor="end"');}
+    g+=`<path d="${cpath} L ${X(x1)} ${T} L ${X(x0)} ${T} Z" fill="#FFE8D8" opacity=".7"/>`;
+    g+=`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#111" stroke-width="3"/><line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#111" stroke-width="3"/>`;
+    g+=`<text x="${(L+W-R)/2}" y="${H-12}" text-anchor="middle" font-size="22" font-weight="700">Temperatura (°C)</text>`;
+    g+=`<text transform="translate(28 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-size="22" font-weight="700">Vapor d'aigua (g/m³)</text>`;
+    g+=`<path d="${cpath}" stroke="#FF6A13" stroke-width="6" fill="none"/>`;
+    g+=`<text x="${X(9)}" y="${Y(36)}" font-size="22" font-weight="700" fill="#C24A00">el vapor de més condensa</text>`;
+    g+=`<text x="${X(26)}" y="${Y(6)}" font-size="22" font-weight="700" fill="#55504A">aire no saturat</text>`;
+    g+=`<text x="${X(33.5)}" y="${Y(41)}" font-size="22" font-weight="700" fill="#C24A00" text-anchor="end">corba de saturació</text>`;
+    const Td=tdFromRho(st.HA0);
+    // camí de refredament
+    if(st.T<st.T0){
+      const tA=Math.max(st.T,Td);
+      g+=`<line x1="${X(st.T0)}" y1="${Y(st.HA0)}" x2="${X(tA)}" y2="${Y(st.HA0)}" stroke="#111" stroke-width="4" stroke-dasharray="10 7"/>`;
+      if(st.T<Td){const seg=[];for(let t=Td;t>=st.T-.01;t-=.25)seg.push(X(t)+' '+Y(rhoS(t)));g+=`<path d="M${seg.join(' L')}" stroke="#111" stroke-width="5" fill="none"/>`;
+        g+=`<line x1="${X(st.T)+16}" y1="${Y(st.HA0)}" x2="${X(st.T)+16}" y2="${Y(st.HA)}" stroke="#3B6E8F" stroke-width="5"/>`+`<text x="${X(st.T)+30}" y="${Y(st.HA)+44}" font-size="22" font-weight="700" fill="#3B6E8F" style="paint-order:stroke;stroke:#fff;stroke-width:6px">${fmt(st.cond,1)} g/m³ condensats</text>`;}
+      g+=`<circle cx="${X(st.T0)}" cy="${Y(st.HA0)}" r="8" fill="#fff" stroke="#111" stroke-width="3"/>`;
+    } else {
+      g+=`<line x1="${X(Td)}" y1="${Y(st.HA0)}" x2="${X(st.T)}" y2="${Y(st.HA0)}" stroke="#111" stroke-width="3" stroke-dasharray="8 8"/>`;
+    }
+    g+=`<line x1="${X(Td)}" y1="${Y(st.HA0)}" x2="${X(Td)}" y2="${H-B}" stroke="#C24A00" stroke-width="3" stroke-dasharray="6 6"/>`;
+    g+=`<circle cx="${X(Td)}" cy="${Y(st.HA0)}" r="9" fill="#C24A00"/>`;
+    g+=`<text x="${X(Td)}" y="${H-B-12}" font-size="20" font-weight="700" fill="#C24A00" text-anchor="${Td<0?'start':'end'}" dx="${Td<0?8:-8}">Td</text>`;
+    g+=`<circle cx="${X(st.T)}" cy="${Y(st.HA)}" r="16" fill="#111" stroke="#fff" stroke-width="4" style="cursor:grab" id="satPt"/>`;
+    svg.innerHTML=g;
+    const hr=100*st.HA/rhoS(st.T);
+    $('#satRead').innerHTML=`<span>Humitat absoluta</span><b>${fmt(st.HA,1)} g/m³</b><span>HA màx a ${fmt(st.T)} °C</span><b>${fmt(rhoS(st.T),1)} g/m³</b><span>Humitat relativa</span><b class="hi">${fmt(hr)} %</b><span>Punt de rosada</span><b>${fmt(Td,1)} °C</b>`;
+    $('#satTo').textContent=fmt(st.T)+' °C'; $('#satHo').textContent=fmt(st.HA0,1)+' g/m³';
+    // mini: bombolla com als apunts
+    let m=`<circle cx="80" cy="75" r="62" fill="#fff" stroke="#111" stroke-width="5"/>`;
+    const nv=Math.round(st.HA/50*60), nd=Math.min(14,Math.round(st.cond*2.2));
+    pts.slice(0,nv).forEach(([a,b])=>m+=`<circle cx="${80+a}" cy="${75+b}" r="3" fill="#3B6E8F" opacity=".55"/>`);
+    pts.slice(0,nd).forEach(([a,b])=>m+=`<circle cx="${80-b*.9}" cy="${75+a*.9}" r="7" fill="none" stroke="#3B6E8F" stroke-width="3"/>`);
+    const lab=st.cond>0.05?'Condensació: es formen gotes':(hr>99.5?'Saturat: Hr = 100 %':'No saturat: Hr = '+fmt(hr)+' %');
+    m+=`<text x="166" y="70" font-size="24" font-weight="700">${lab}</text><text x="166" y="104" font-size="20" fill="#55504A">· vapor   ○ gotes</text>`;
+    $('#satMini').innerHTML=m;
+  }
+  function setStart(T,HA){stop();st.T=st.T0=T;st.HA=st.HA0=Math.min(HA,rhoS(T));st.cond=0;$('#satT').value=T;$('#satH').value=st.HA0;draw();}
+  function setT(T){st.T=T;const mx=rhoS(T);if(st.HA0>mx){st.HA=mx;st.cond=st.HA0-mx;}else{st.HA=st.HA0;st.cond=0;}draw();}
+  function stop(){if(st.anim){clearInterval(st.anim);st.anim=null;}}
+  $('#satT').oninput=e=>setStart(+e.target.value,st.HA0);
+  $('#satH').oninput=e=>setStart(st.T0,+e.target.value);
+  $('#satReset').onclick=()=>setStart(25,10);
+  $('#satStep').onclick=()=>{stop();if(st.T>x0)setT(Math.round(st.T-1));};
+  $('#satCool').onclick=()=>{stop();if(RM){setT(0);return;}st.anim=setInterval(()=>{if(st.T<=0){stop();return;}setT(Math.max(0,st.T-.25));},45);};
+  let drag=false;
+  svg.addEventListener('pointerdown',e=>{drag=true;svg.setPointerCapture(e.pointerId);move(e);});
+  svg.addEventListener('pointermove',e=>{if(drag)move(e);});
+  svg.addEventListener('pointerup',()=>drag=false);
+  function move(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());
+    const T=Math.round(clamp(x0+(q.x-L)/(W-L-R)*(x1-x0),x0,x1)); const v=Math.round(clamp((H-B-q.y)/(H-B-T)*y1,1,50)*2)/2; setStart(T,v);}
+  hooks.h2={enter:()=>draw(),leave:stop};
+  draw();
+})();
+
+/* h3: repte */
+(function(){
+  const svg=$('#chalSvg');const W=640,H=560,L=80,R=20,T=20,B=60,x0=0,x1=30,y1=30;
+  const X=t=>L+(t-x0)/(x1-x0)*(W-L-R), Y=v=>H-B-(v/y1)*(H-B-T);
+  const td=tdFromRho(10);
+  function draw(s){
+    let g='';
+    for(let t=0;t<=30;t+=5){g+=`<line x1="${X(t)}" y1="${T}" x2="${X(t)}" y2="${H-B}" stroke="#ECE8E4"/>`+axisText(X(t),H-B+28,t,'text-anchor="middle"');}
+    for(let v=0;v<=30;v+=5){g+=`<line x1="${L}" y1="${Y(v)}" x2="${W-R}" y2="${Y(v)}" stroke="#ECE8E4"/>`+axisText(L-10,Y(v)+7,v,'text-anchor="end"');}
+    g+=`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#111" stroke-width="3"/><line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#111" stroke-width="3"/>`;
+    g+=axisText(W-R,H-8,'°C','text-anchor="end"')+axisText(L+10,T+16,'g/m³');
+    const c=[];for(let t=0;t<=30;t+=.5)c.push(X(t)+' '+Y(rhoS(t)));g+=`<path d="M${c.join(' L')}" stroke="#FF6A13" stroke-width="5" fill="none"/>`;
+    g+=`<circle cx="${X(25)}" cy="${Y(10)}" r="11" fill="#111"/><text x="${X(25)}" y="${Y(10)+38}" text-anchor="middle" font-size="20" font-weight="700">25 °C · 10 g/m³</text>`;
+    if(s>=1){g+=`<line x1="${X(25)}" y1="${Y(10)}" x2="${X(25)}" y2="${Y(rhoS(25))}" stroke="#C24A00" stroke-width="4" stroke-dasharray="8 6"/><circle cx="${X(25)}" cy="${Y(rhoS(25))}" r="8" fill="#C24A00"/><text x="${X(25)-12}" y="${Y(rhoS(25))-2}" font-size="20" font-weight="700" fill="#C24A00" text-anchor="end">23,0</text>`;}
+    if(s>=2){g+=`<line x1="${X(25)}" y1="${Y(10)}" x2="${X(td)}" y2="${Y(10)}" stroke="#111" stroke-width="4" stroke-dasharray="10 7"/><circle cx="${X(td)}" cy="${Y(10)}" r="9" fill="#C24A00"/><line x1="${X(td)}" y1="${Y(10)}" x2="${X(td)}" y2="${H-B}" stroke="#C24A00" stroke-width="3" stroke-dasharray="6 6"/><text x="${X(td)}" y="${H-B-10}" font-size="20" font-weight="700" fill="#C24A00" dx="8">Td ≈ 11 °C</text>`;}
+    if(s>=3){const seg=[];for(let t=td;t>=5;t-=.25)seg.push(X(t)+' '+Y(rhoS(t)));g+=`<path d="M${seg.join(' L')}" stroke="#111" stroke-width="5" fill="none"/><line x1="${X(5)-14}" y1="${Y(10)}" x2="${X(5)-14}" y2="${Y(rhoS(5))}" stroke="#3B6E8F" stroke-width="5"/><text x="${X(5)-22}" y="${Y(8.4)}" font-size="20" font-weight="700" fill="#3B6E8F" text-anchor="end">3,2</text><circle cx="${X(5)}" cy="${Y(rhoS(5))}" r="8" fill="#111"/>`;}
+    svg.innerHTML=g;
+  }
+  hooks.h3={step:draw}; draw(0);
+})();
+
+/* a1: ascens adiabàtic */
+(function(){
+  const svg=$('#ascSvg');const Y=z=>580-z/4000*540;let z=0,anim=null;
+  function draw(){
+    let g=`<rect x="110" y="20" width="600" height="560" fill="#F5F3F1" rx="10"/>`;
+    for(let h=0;h<=4000;h+=1000){g+=`<line x1="110" y1="${Y(h)}" x2="710" y2="${Y(h)}" stroke="#D9D4CF" stroke-dasharray="6 6"/>`+axisText(100,Y(h)+7,fmt(h)+' m','text-anchor="end"')+`<text x="700" y="${Y(h)-8}" text-anchor="end" font-size="20" fill="#55504A">${fmt(Math.round(pres(h)/10)*10)} hPa</text>`;}
+    g+=`<line x1="110" y1="580" x2="710" y2="580" stroke="#111" stroke-width="4"/>`;
+    const p=pres(z), vol=Math.pow(1013.25/p,1/1.4), r=48*vol, T=20-z/100;
+    g+=`<circle cx="330" cy="${Y(0)-48}" r="48" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="5 6" opacity="${z>200?0.6:0}"/>`;
+    g+=`<line x1="330" y1="${Y(0)-48}" x2="330" y2="${Y(z)-r}" stroke="#FF6A13" stroke-width="4" stroke-dasharray="3 10" stroke-linecap="round"/>`;
+    g+=`<circle cx="330" cy="${Y(z)-r}" r="${r}" fill="#fff" stroke="#111" stroke-width="5"/>`;
+    g+=`<text x="330" y="${Y(z)-r+12}" text-anchor="middle" font-size="34" font-weight="800" style="font-family:var(--f-d)">${fmt(T,1)} °C</text>`;
+    g+=`<g transform="translate(480,${Math.max(110,Y(z)-r-20)})"><text font-size="22" font-weight="700">pressió ${fmt(p)} hPa</text><text y="32" font-size="22" font-weight="700">volum ×${fmt(vol,2)}</text><text y="64" font-size="22" font-weight="700" fill="#C24A00">−1 °C / 100 m</text></g>`;
+    svg.innerHTML=g; $('#ascZo').textContent=fmt(z)+' m'; $('#ascZ').value=z;
+  }
+  const stop=()=>{if(anim){cancelAnimationFrame(anim);anim=null;}};
+  $('#ascZ').oninput=e=>{stop();z=+e.target.value;draw();};
+  $('#ascReset').onclick=()=>{stop();z=0;draw();};
+  $('#ascPlay').onclick=()=>{stop();if(RM){z=4000;draw();return;}if(z>=4000)z=0;let t0=null;const z0=z;const f=ts=>{t0??=ts;z=Math.min(4000,z0+(ts-t0)*0.7);draw();if(z<4000)anim=requestAnimationFrame(f);else anim=null;};anim=requestAnimationFrame(f);};
+  hooks.a1={enter:draw,leave:stop}; draw();
+})();
+
+/* a2: núvols petits */
+$('#orCloud').innerHTML=puff(175,48,110,36);
+$('#cvCloud').innerHTML=puff(125,70,140,44);
+$('#frCloud').innerHTML=puff(150,96,120,30)+puff(250,60,100,30);
+$('#cgCloud').innerHTML=puff(160,76,130,44);
+
+/* a3: nuclis */
+(function(){
+  let a=`<rect x="4" y="4" width="632" height="292" rx="14" fill="#F5F3F1"/>`, b=a;
+  let seed=11;const r=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+  for(let i=0;i<46;i++){a+=`<circle class="drift" style="animation-delay:-${(r()*3).toFixed(2)}s" cx="${30+r()*580}" cy="${30+r()*240}" r="5" fill="#3B6E8F" opacity=".55"/>`;}
+  for(let i=0;i<26;i++){b+=`<circle class="drift" style="animation-delay:-${(r()*3).toFixed(2)}s" cx="${30+r()*580}" cy="${30+r()*240}" r="5" fill="#3B6E8F" opacity=".45"/>`;}
+  const nuc=[[110,90],[260,190],[420,80],[540,200],[330,110],[160,220]];
+  nuc.forEach(([x,y],i)=>{b+=`<circle class="grow" style="animation-delay:-${i*0.55}s" cx="${x}" cy="${y}" r="26" fill="#3B6E8F" opacity=".35" stroke="#3B6E8F" stroke-width="3"/><circle cx="${x}" cy="${y}" r="5" fill="#111"/>`;});
+  $('#nucA').innerHTML=a; $('#nucB').innerHTML=b;
+})();
+
+/* g1: diagrama de gradients */
+(function(){
+  const svg=$('#gradSvg');const W=900,H=600,L=100,R=30,T=20,B=70,x0=-25,x1=25,z1=4000;
+  const X=t=>L+(t-x0)/(x1-x0)*(W-L-R), Y=z=>H-B-z/z1*(H-B-T);
+  let g='';
+  for(let t=-20;t<=20;t+=10){g+=`<line x1="${X(t)}" y1="${T}" x2="${X(t)}" y2="${H-B}" stroke="#ECE8E4"/>`+axisText(X(t),H-B+28,fmt(t)+' °C','text-anchor="middle"');}
+  for(let z=0;z<=4000;z+=1000){g+=`<line x1="${L}" y1="${Y(z)}" x2="${W-R}" y2="${Y(z)}" stroke="#ECE8E4"/>`+axisText(L-12,Y(z)+7,fmt(z)+' m','text-anchor="end"');}
+  g+=`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#111" stroke-width="3"/><line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#111" stroke-width="3"/>`;
+  g+=`<text x="${(L+W-R)/2}" y="${H-10}" text-anchor="middle" font-size="22" font-weight="700">Temperatura de la bombolla</text>`;
+  g+=`<g data-s="2"><rect x="${L+2}" y="${Y(4000)}" width="${W-R-L-2}" height="${Y(1000)-Y(4000)}" fill="#F5F3F1"/>${puff(X(16),Y(1000),180,90)}<line x1="${L}" y1="${Y(1000)}" x2="${W-R}" y2="${Y(1000)}" stroke="#111" stroke-width="3" stroke-dasharray="12 8"/><text x="${X(-24)}" y="${Y(1000)-12}" font-size="21" font-weight="700">nivell de condensació (base del núvol)</text>
+    <line x1="${X(12)}" y1="${Y(0)}" x2="${X(10)}" y2="${Y(1000)}" stroke="#3B6E8F" stroke-width="4" stroke-dasharray="8 6"/><text x="${X(11)-10}" y="${Y(120)}" font-size="20" fill="#3B6E8F" font-weight="700" text-anchor="end">Td −0,2 °C/100 m</text></g>`;
+  g+=`<g data-s="1"><line x1="${X(20)}" y1="${Y(0)}" x2="${X(10)}" y2="${Y(1000)}" stroke="#111" stroke-width="7"/><circle cx="${X(20)}" cy="${Y(0)}" r="10" fill="#111"/><text x="${X(20)+14}" y="${Y(0)-14}" font-size="21" font-weight="700">20 °C</text><text x="${X(16.3)}" y="${Y(700)}" font-size="22" font-weight="800">GAS</text><text x="${X(16.3)}" y="${Y(700)+26}" font-size="22" font-weight="800">−1 °C/100 m</text></g>`;
+  g+=`<g data-s="4"><line x1="${X(10)}" y1="${Y(1000)}" x2="${X(-20)}" y2="${Y(4000)}" stroke="#111" stroke-width="4" stroke-dasharray="3 10" stroke-linecap="round"/><text x="${X(-24)}" y="${Y(2650)}" font-size="20" font-weight="700">si no condensés:</text><text x="${X(-24)}" y="${Y(2650)+24}" font-size="20" font-weight="700">−20 °C al cim</text></g>`;
+  g+=`<g data-s="3"><line x1="${X(10)}" y1="${Y(1000)}" x2="${X(-5)}" y2="${Y(4000)}" stroke="#FF6A13" stroke-width="7"/><circle cx="${X(10)}" cy="${Y(1000)}" r="10" fill="#FF6A13"/><text x="${X(10)+14}" y="${Y(1000)-14}" font-size="21" font-weight="700">10 °C</text><circle cx="${X(-5)}" cy="${Y(4000)}" r="10" fill="#FF6A13"/><text x="${X(-5)+16}" y="${Y(4000)+8}" font-size="21" font-weight="700">−5 °C</text><text x="${X(3)+18}" y="${Y(2400)}" font-size="22" font-weight="800" fill="#C24A00">GAH −0,5 °C/100 m</text></g>`;
+  svg.innerHTML=g;
+})();
+
+/* g3: base del núvol */
+(function(){
+  const svg=$('#lclSvg');const W=860,H=600,L=100,R=30,T=20,B=70,x0=-20,x1=35,z1=5000;
+  const X=t=>L+(t-x0)/(x1-x0)*(W-L-R), Y=z=>H-B-z/z1*(H-B-T);
+  let Tg=20,Td=12;
+  function draw(){
+    const zc=125*(Tg-Td), Tc=Tg-zc/100;
+    let g='';
+    for(let t=-20;t<=30;t+=10){g+=`<line x1="${X(t)}" y1="${T}" x2="${X(t)}" y2="${H-B}" stroke="#ECE8E4"/>`+axisText(X(t),H-B+28,fmt(t)+' °C','text-anchor="middle"');}
+    for(let z=0;z<=5000;z+=1000){g+=`<line x1="${L}" y1="${Y(z)}" x2="${W-R}" y2="${Y(z)}" stroke="#ECE8E4"/>`+axisText(L-12,Y(z)+7,fmt(z)+' m','text-anchor="end"');}
+    g+=`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#111" stroke-width="3"/><line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#111" stroke-width="3"/>`;
+    if(zc>0){g+=`<rect x="${L+2}" y="${T}" width="${W-R-L-2}" height="${Y(zc)-T}" fill="#F5F3F1"/>`;}
+    g+=`<line x1="${L}" y1="${Y(zc)}" x2="${W-R}" y2="${Y(zc)}" stroke="#111" stroke-width="3" stroke-dasharray="12 8"/>`;
+    g+=puff(X(28),Y(zc),150,Math.min(90,Y(zc)-T-4>30?80:40));
+    g+=`<line x1="${X(Tg)}" y1="${Y(0)}" x2="${X(Tc)}" y2="${Y(zc)}" stroke="#111" stroke-width="7"/>`;
+    g+=`<line x1="${X(Td)}" y1="${Y(0)}" x2="${X(Tc)}" y2="${Y(zc)}" stroke="#3B6E8F" stroke-width="5" stroke-dasharray="10 7"/>`;
+    g+=`<circle cx="${X(Tg)}" cy="${Y(0)}" r="9" fill="#111"/><circle cx="${X(Td)}" cy="${Y(0)}" r="9" fill="#3B6E8F"/>`;
+    g+=`<text x="${X(Tg)+12}" y="${Y(0)-12}" font-size="21" font-weight="700">T</text><text x="${X(Td)-12}" y="${Y(0)-12}" font-size="21" font-weight="700" fill="#3B6E8F" text-anchor="end">Td</text>`;
+    g+=`<circle cx="${X(Tc)}" cy="${Y(zc)}" r="12" fill="#FF6A13" stroke="#111" stroke-width="3"/>`;
+    g+=`<text x="${X(Tc)-18}" y="${Y(zc)-16}" font-size="22" font-weight="800" text-anchor="end">${fmt(zc)} m · ${fmt(Tc,1)} °C</text>`;
+    svg.innerHTML=g;
+    $('#lclTo').textContent=fmt(Tg)+' °C'; $('#lclDo').textContent=fmt(Td)+' °C';
+    $('#lclCalc').innerHTML=`T − Td = ${fmt(Tg-Td)} °C<br>z ≈ 125 × ${fmt(Tg-Td)} = <b>${fmt(zc)} m</b><br>A la base: ${fmt(Tg)} − ${fmt(zc/100,1)} = <b>${fmt(Tc,1)} °C</b><br><span style="color:#55504A">Hr a terra: ${fmt(hrFromTd(Tg,Td))} %</span>`;
+  }
+  $('#lclT').oninput=e=>{Tg=+e.target.value;if(Td>Tg){Td=Tg;$('#lclD').value=Td;}draw();};
+  $('#lclD').oninput=e=>{Td=Math.min(+e.target.value,Tg);e.target.value=Td;draw();};
+  draw();
+})();
+
+/* f1: simulador foehn */
+(function(){
+  const svg=$('#fSvg');const G=430,k=0.095,xL=170,xP=800,xR=1430;
+  const Y=z=>G-z*k;
+  let T0=20,H0=60,Hc=3000,u=0,shown=0,anim=null; // u: progrés 0..1 ; shown: fins on s'ha revelat
+  function calc(){
+    const Td0=tdFromHr(T0,H0); const zc=Math.max(0,125*(T0-Td0)); const cloud=zc<Hc;
+    const Tb=T0-Math.min(zc,Hc)/100; const Tpk=cloud?Tb-(Hc-zc)*0.005:T0-Hc/100;
+    const TdPk=cloud?Tpk:Td0-0.002*Hc; const Tend=Tpk+Hc/100; const TdEnd=TdPk+0.002*Hc;
+    return {Td0,zc,cloud,Tb,Tpk,TdPk,Tend,TdEnd,Hend:hrFromTd(Tend,TdEnd)};
+  }
+  const zAt=x=>x<=xL||x>=xR?0:(x<=xP?Hc*(x-xL)/(xP-xL):Hc*(xR-x)/(xR-xP));
+  function state(x,c){const z=zAt(x);let T,Td;
+    if(x<=xP){ if(z<=c.zc||!c.cloud){T=T0-z/100;Td=c.Td0-0.002*z;} else {T=c.Tb-(z-c.zc)*0.005;Td=T;} }
+    else {T=c.Tpk+(Hc-z)/100;Td=c.TdPk+0.002*(Hc-z);}
+    return {z,T,Hr:hrFromTd(T,Math.min(Td,T))};}
+  function draw(){
+    const c=calc(); const xpos=60+u*(1540-60);
+    const xB=c.cloud?xL+(c.zc/Hc)*(xP-xL):null; const uB=c.cloud?(xB-60)/1480:2; const uP=(xP-60)/1480;
+    const seen=Math.max(shown,u);
+    let g=`<rect x="0" y="0" width="1600" height="${G}" fill="#F5F3F1"/>`;
+    for(let h=0;h<=4000;h+=1000){g+=`<line x1="40" y1="${Y(h)}" x2="1600" y2="${Y(h)}" stroke="#E2DED9" stroke-dasharray="4 8"/>`+`<text x="44" y="${Y(h)-6}" font-size="18" fill="#55504A">${fmt(h)} m</text>`;}
+    // muntanya amb petita rugositat
+    let mp=`M0 ${G} L${xL-40} ${G}`; for(let x=xL-40;x<=xR+40;x+=10){const z=zAt(x);const rough=z>0?Math.abs(Math.sin(x/31))*0.06*Hc*Math.min(1,z/(0.15*Hc))*(1-z/Hc):0;mp+=` L${x} ${Y(Math.max(0,z-rough))}`;} mp+=` L1600 ${G} L1600 470 L0 470 Z`;
+    g+=`<path d="${mp}" fill="#D9D4CF" stroke="#111" stroke-width="4" stroke-linejoin="round"/>`;
+    g+=`<rect x="0" y="${G}" width="1600" height="40" fill="#111"/>`;
+    // núvol i pluja a sobrevent
+    if(c.cloud && seen>=uB){
+      let cl='';const n=Math.max(2,Math.round((xP-xB)/90));
+      for(let i=0;i<=n;i++){const x=xB+(xP+60-xB)*i/n; const z=zAt(Math.min(x,xP)); cl+=puff(x,Y(z)+18,120,62);}
+      g+=`<g opacity=".97">${cl}</g>`;
+      let rain='';for(let x=xB+20;x<xP-30;x+=34){const z=zAt(x);for(let j=0;j<2;j++){const y=Y(z)+26+j*26;if(y<G-8)rain+=`<line x1="${x+j*8}" y1="${y}" x2="${x+j*8-6}" y2="${y+16}" stroke="#3B6E8F" stroke-width="4" stroke-linecap="round"/>`;}}
+      g+=rain;
+      g+=`<line x1="40" y1="${Y(c.zc)}" x2="${xB}" y2="${Y(c.zc)}" stroke="#111" stroke-width="2" stroke-dasharray="10 8"/><text x="${xB-14}" y="${Y(c.zc)-10}" text-anchor="end" font-size="20" font-weight="700">nivell de condensació</text>`;
+    }
+    // camí i gradients
+    const segs=[[60,c.cloud?xB:xP,'GAS −1 °C/100 m','#111',c.cloud?uB:uP],[xB,xP,'GAH −0,5 °C/100 m','#C24A00',uP],[xP,1540,'GAS +1 °C/100 m','#111',1]];
+    segs.forEach(([a,b,lab,col,uu],i)=>{ if(a===null||i===1&&!c.cloud) return; const st=i===0?0:(i===1?uB:uP); if(seen<st) return; const bb=Math.min(b,60+Math.min(seen,uu)*1480);
+      const pts=[];for(let x=a;x<=bb+0.1;x+=8)pts.push(x+' '+(Y(zAt(x))-34));g+=`<path d="M${pts.join(' L')}" stroke="${col}" stroke-width="5" fill="none" stroke-dasharray="${i===1?'none':'2 12'}" stroke-linecap="round"/>`;
+      if(seen>=uu){const xm=(a+b)/2; const ST='style="paint-order:stroke;stroke:#F5F3F1;stroke-width:6px"';
+        if(i===0) g+=`<text x="${xm+10}" y="${Y(zAt(xm))-6}" font-size="20" font-weight="800" fill="${col}" ${ST}>${lab}</text>`;
+        else g+=`<text x="${xm-(i===2?10:20)}" y="${Y(zAt(xm))-50}" text-anchor="end" font-size="22" font-weight="800" fill="${col}" ${ST}>${lab}</text>`;}});
+    // fletxa de vent
+    g+=`<path d="M60 180 L140 180" stroke="#FF6A13" stroke-width="7" marker-end="url(#arr)"/><text x="160" y="187" font-size="20" font-weight="700">vent</text>`;
+    // marques dels punts sobre el camí
+    const mark=(x,l)=>`<circle cx="${x}" cy="${Y(zAt(x))-34}" r="13" fill="#111"/><text x="${x}" y="${Y(zAt(x))-27}" text-anchor="middle" font-size="17" font-weight="800" fill="#fff">${l}</text>`;
+    // caixes de punts
+    const box=(x,y,lab,s,show,anchor)=>{const w=196,h=70;const bx=anchor==='r'?x-w:anchor==='c'?x-w/2:x;
+      return `<g><rect x="${bx}" y="${y}" width="${w}" height="${h}" rx="12" fill="#fff" stroke="${show?'#111':'#D9D4CF'}" stroke-width="3"/>
+      <text x="${bx+14}" y="${y+29}" font-size="21" font-weight="800">${lab} · ${fmt(Math.round(s.z/10)*10)} m</text>
+      <text x="${bx+14}" y="${y+58}" font-size="22" font-weight="700" fill="${show?'#111':'#9A958F'}">${show?fmt(s.T,1)+' °C · Hr '+fmt(s.Hr)+' %':'? °C · Hr ? %'}</text></g>`;};
+    const sA=state(60,c), sC=state(xP,c), sD=state(1540,c);
+    g+=mark(60,'A')+mark(xP,'C')+mark(1540,'D'); if(c.cloud&&seen>=uB) g+=mark(xB,'B');
+    g+=box(52,60,'A',sA,true,'l');
+    if(c.cloud){const sB=state(xB,c);g+=box(xB-30,Math.max(4,Y(c.zc)-130),'B',sB,seen>=uB,'r');}
+    g+=box(xP+130,Math.max(4,Y(Hc)-60),'C',sC,seen>=uP,'l');
+    g+=box(1548,146,'D',sD,seen>=1,'r');
+    // bombolla
+    if(u>0&&u<1){const s=state(xpos,c);const inC=c.cloud&&xpos>xB&&xpos<=xP;g+=`<circle cx="${xpos}" cy="${Y(s.z)-34}" r="30" fill="${inC?'#E9E5E1':'#fff'}" stroke="#FF6A13" stroke-width="5"/><text x="${xpos}" y="${Y(s.z)-27}" text-anchor="middle" font-size="19" font-weight="800">${fmt(s.T,1)}°</text>`;}
+    // resultat
+    if(seen>=1){const d=c.Tend-T0;const fc=c.cloud?'#111':'#fff';g+=`<g><rect x="1150" y="10" width="435" height="124" rx="14" fill="${c.cloud?'#FF6A13':'#111'}"/><text x="1170" y="46" font-size="26" font-weight="800" fill="${fc}" style="font-family:var(--f-d)">${c.cloud?'Sotavent: '+(d>=0?'+':'')+fmt(d,1)+' °C':'Sense núvol: no hi ha foehn'}</text><text x="1170" y="82" font-size="22" font-weight="700" fill="${fc}">Hr: ${fmt(H0)} % → ${fmt(c.Hend)} %</text><text x="1170" y="114" font-size="20" fill="${fc}">${c.cloud?'L\'aigua ha caigut a sobrevent.':'Puja i baixa amb el GAS.'}</text></g>`;}
+    svg.innerHTML=g;
+    $('#fTo').textContent=fmt(T0)+' °C'; $('#fHo').textContent=fmt(H0)+' %'; $('#fZo').textContent=fmt(Hc)+' m';
+  }
+  const stop=()=>{if(anim){cancelAnimationFrame(anim);anim=null;}};
+  const reset=()=>{stop();u=0;shown=0;draw();};
+  $('#fT').oninput=e=>{T0=+e.target.value;reset();}; $('#fH').oninput=e=>{H0=+e.target.value;reset();}; $('#fZ').oninput=e=>{Hc=+e.target.value;reset();};
+  $('#fReset').onclick=reset; $('#fAll').onclick=()=>{stop();u=1;shown=1;draw();};
+  $('#fPlay').onclick=()=>{stop();if(RM){u=1;shown=1;draw();return;}u=0;shown=0;let t0=null;const f=ts=>{t0??=ts;u=Math.min(1,(ts-t0)/7000);shown=u;draw();if(u<1)anim=requestAnimationFrame(f);else anim=null;};anim=requestAnimationFrame(f);};
+  hooks.f1={enter:draw,leave:stop}; draw();
+})();
+
+/* f2: taula */
+(function(){
+  const rows=[['Núvols','Sí, a partir del nivell de condensació','Pocs o cap: cel serè'],['Precipitació','Pluja orogràfica','Ombra pluviomètrica'],['Temperatura','Més fresca','Més calenta'],['Humitat','Alta','Baixa: vent sec'],['Paisatge','Vegetació més frondosa','Més sec, risc d\'incendis']];
+  $('#ftab').innerHTML=rows.map(([a,b,c],i)=>`<div style="padding:12px 20px;font-weight:700;border-top:2px solid #D9D4CF">${a}</div><div style="padding:12px 20px;border-top:2px solid #D9D4CF">${b}</div><div style="padding:12px 20px;border-top:2px solid #D9D4CF;background:#FFE8D8">${c}</div>`).join('');
+})();
+
+/* n1: gèneres de núvols */
+(function(){
+  const svg=$('#skySvg');const Y=km=>530-km*40;
+  const C={
+    Ci:{n:'Cirrus',lvl:'Alts · 6–12 km',d:'Filaments blancs i prims de cristalls de gel.',t:'Bon temps. Si augmenten i s\'espessen, pot arribar un front.'},
+    Cc:{n:'Cirrocúmulus',lvl:'Alts · 6–12 km',d:'Flocs blancs petits en files: cel «aborregat».',t:'Bon temps, però poden anunciar un canvi.'},
+    Cs:{n:'Cirrostratus',lvl:'Alts · 6–12 km',d:'Vel blanquinós i prim que fa halo al voltant del sol o la lluna.',t:'Sovint anuncia un front càlid en 12–24 h.'},
+    Ac:{n:'Altocúmulus',lvl:'Mitjans · 2–7 km',d:'Flocs o rotlles blancs i grisos, més grossos que els cirrocúmuls.',t:'Un matí d\'estiu poden anunciar tempestes a la tarda.'},
+    As:{n:'Altostratus',lvl:'Mitjans · 2–7 km',d:'Capa grisa i uniforme; el sol es veu com rere un vidre glaçat, sense halo.',t:'Precedeix la pluja contínua.'},
+    Ns:{n:'Nimbostratus',lvl:'Mitjans i baixos · molt gruixut',d:'Capa gris fosca, gruixuda i sense forma.',t:'Pluja o neu contínua durant hores.'},
+    Sc:{n:'Estratocúmulus',lvl:'Baixos · fins a 2 km',d:'Masses grises arrodonides en capa, amb clarianes.',t:'Rarament precipitació, i feble.'},
+    St:{n:'Estratus',lvl:'Baixos · fins a 2 km',d:'Capa grisa i plana, com una boira enlairada.',t:'Plugim. Si toca a terra, és boira.'},
+    Cu:{n:'Cúmulus',lvl:'Desenvolupament vertical · base ~1 km',d:'Munts blancs de cotó amb la base plana: la base és el nivell de condensació.',t:'Bon temps si són petits; si creixen, xàfecs.'},
+    Cb:{n:'Cumulonimbus',lvl:'Desenvolupament vertical · fins a 12 km o més',d:'Torre enorme amb el cim en forma d\'enclusa a la tropopausa.',t:'Tempestes, llamps, pedra i ratxes de vent fortes.'}
+  };
+  let sel='Cb';
+  const glyph={
+    Ci:()=>{let s='';[[0,0],[60,26],[130,-6]].forEach(([dx,dy])=>{s+=`<path d="M${120+dx} ${Y(9.6)+dy} q40 -26 90 -12 q20 6 26 -14" stroke="#8E8A85" stroke-width="4" fill="none" stroke-linecap="round"/>`;});return s;},
+    Cc:()=>{let s='';for(let i=0;i<6;i++)for(let j=0;j<3;j++)s+=`<circle cx="${400+i*24+j*10}" cy="${Y(10.1)+j*20}" r="9" fill="#fff" stroke="#8E8A85" stroke-width="2"/>`;return s;},
+    Cs:()=>`<rect x="620" y="${Y(9.9)}" width="300" height="28" rx="14" fill="#fff" opacity=".85" stroke="#C7C2BC" stroke-width="2"/><circle cx="770" cy="${Y(9.5)}" r="16" fill="#FF6A13"/><circle cx="770" cy="${Y(9.5)}" r="42" fill="none" stroke="#FF6A13" stroke-width="3" opacity=".7"/>`,
+    Ac:()=>{let s='';for(let i=0;i<4;i++)for(let j=0;j<2;j++)s+=puff(140+i*55+j*25,Y(5.2)+j*30,52,26);return s;},
+    As:()=>`<rect x="430" y="${Y(5.7)}" width="250" height="44" rx="20" fill="#CFCAC4" stroke="#8E8A85" stroke-width="3"/><circle cx="520" cy="${Y(5.7)+22}" r="14" fill="#FFE8D8"/>`,
+    Ns:()=>{let s=`<rect x="440" y="${Y(3.9)}" width="190" height="${Y(1.1)-Y(3.9)}" rx="26" fill="#6E6A66" stroke="#4E4A46" stroke-width="3"/>`;for(let x=455;x<625;x+=20)s+=`<line x1="${x}" y1="${Y(1.1)+6}" x2="${x-8}" y2="${Y(0)-2}" stroke="#3B6E8F" stroke-width="3"/>`;return s;},
+    Sc:()=>{let s='';for(let i=0;i<4;i++)s+=puff(230+i*48,Y(1.5),56,26,'#E1DDD8');return s;},
+    St:()=>`<rect x="90" y="${Y(0.75)}" width="290" height="22" rx="11" fill="#CFCAC4" stroke="#8E8A85" stroke-width="2"/>`,
+    Cu:()=>puff(680,Y(1.0),130,84)+puff(692,Y(1.0)-50,80,52),
+    Cb:()=>{const x=880;
+      const anv=`M${x-125} ${Y(11.3)} Q${x-10} ${Y(12.5)} ${x+115} ${Y(11.4)} L${x+55} ${Y(10.4)} L${x-50} ${Y(10.4)} Z`;
+      const bumps=[];for(let km=1.5;km<10.4;km+=0.9){const w=50+Math.sin(km/3.2)*14;bumps.push([x-w,Y(km),34+((km*10)%8)]);bumps.push([x+w,Y(km+0.45),34+((km*13)%8)]);}[[-40,10.1],[0,10.3],[40,10.1]].forEach(([dx,km])=>bumps.push([x+dx,Y(km),36]));
+      const shape=(st,sw)=>`<path d="${anv}" fill="${st||'#fff'}" ${sw?`stroke="${st}" stroke-width="${sw}" stroke-linejoin="round"`:''}/>`+bumps.map(([bx,by,r])=>`<circle cx="${bx}" cy="${by}" r="${r+(sw?3:0)}" fill="${st||'#fff'}"/>`).join('')+`<rect x="${x-62-(sw?3:0)}" y="${Y(10.6)}" width="${124+(sw?6:0)}" height="${Y(1)-Y(10.6)+(sw?3:0)}" fill="${st||'#fff'}"/>`;
+      let s=shape('#8E8A85',6)+shape('',0);
+      s+=`<rect x="${x-62}" y="${Y(1.4)}" width="124" height="${Y(1)-Y(1.4)}" fill="#6E6A66"/>`;
+      for(let i=0;i<5;i++)s+=`<line x1="${x-46+i*23}" y1="${Y(0.6)}" x2="${x-52+i*23}" y2="${Y(0)-2}" stroke="#3B6E8F" stroke-width="3"/>`;
+      s+=`<path d="M${x+40} ${Y(0.9)} l-14 30 l14 0 l-12 26" stroke="#FF6A13" stroke-width="4" fill="none"/>`;return s;}
+  };
+  function draw(){
+    let g=`<rect x="60" y="10" width="940" height="${Y(0)-10}" fill="#F5F3F1" rx="8"/>`;
+    g+=`<rect x="60" y="${Y(12.8)}" width="940" height="${Y(6)-Y(12.8)}" fill="#EEF0F2" opacity=".6"/>`;
+    [[6,'alts ↑'],[2,'mitjans ↑'],[0,'baixos ↑']].forEach(([km,l])=>{g+=`<line x1="60" y1="${Y(km)}" x2="1000" y2="${Y(km)}" stroke="#D9D4CF" stroke-width="2" stroke-dasharray="8 8"/>`;g+=`<text x="70" y="${Y(km)-8}" font-size="18" font-weight="700" fill="#9A958F">${l}</text>`;});
+    for(let km=0;km<=12;km+=2)g+=axisText(52,Y(km)+7,km+' km','text-anchor="end"');
+    g+=`<rect x="60" y="${Y(0)}" width="940" height="30" fill="#111"/>`;
+    for(const k in glyph){g+=`<g class="cg${k===sel?' sel':''}" data-k="${k}">${glyph[k]()}</g>`;}
+    const lab={Ci:[180,9.9],Cc:[460,10.8],Cs:[690,10.6],Ac:[230,6.0],As:[560,6.2],Ns:[540,4.3],Sc:[300,2.1],St:[230,0.35],Cu:[685,2.9],Cb:[880,12.6]};
+    for(const k in lab){const [x,km]=lab[k];g+=`<text x="${x}" y="${Y(km)}" text-anchor="middle" font-size="19" font-weight="800" fill="${k===sel?'#C24A00':'#55504A'}" class="cg${k===sel?' sel':''}" data-k="${k}">${k}</text>`;}
+    svg.innerHTML=g; svg.classList.add('dimmed');
+    const c=C[sel]; $('#cloudInfo').innerHTML=`<div class="eyebrow">${c.lvl}</div><h3 style="font-size:40px">${c.n} <span style="color:#9A958F">(${sel})</span></h3><p>${c.d}</p><div class="box" style="font-size:23px"><b>Temps:</b> ${c.t}</div>`;
+    $('#skyChips').innerHTML=Object.keys(C).map(k=>`<button class="chip${k===sel?' on':''}" data-k="${k}">${C[k].n}</button>`).join('');
+    $$('#skyChips .chip').forEach(b=>b.onclick=()=>{sel=b.dataset.k;draw();});
+  }
+  svg.addEventListener('click',e=>{const g=e.target.closest('.cg');if(g&&!lupa){sel=g.dataset.k;draw();}});
+  draw();
+})();
+
+/* n4: cota de neu */
+(function(){
+  const svg=$('#snowSvg');const G=540,k=0.24,Y=z=>G-z*k;let iso=1300;
+  const places=[['Badalona',10,150],['Turó de l\'Home',1706,560],['Vic',480,900]];
+  const prof=[[0,0],[100,0],[150,10],[260,120],[380,500],[470,1100],[560,1706],[640,1250],[720,800],[820,520],[900,480],[1050,470]];
+  const type=z=>z>=iso-300?'neu':(z>=iso-500?'aiguaneu':'pluja');
+  function draw(){
+    let g=`<rect x="0" y="0" width="1050" height="${G}" fill="#F5F3F1"/>`;
+    for(let h=0;h<=2000;h+=500)g+=`<line x1="0" y1="${Y(h)}" x2="1050" y2="${Y(h)}" stroke="#E2DED9" stroke-dasharray="4 8"/><text x="8" y="${Y(h)-6}" font-size="18" fill="#55504A">${fmt(h)} m</text>`;
+    // núvol
+    let cl='';for(let x=60;x<1050;x+=110)cl+=puff(x,Y(2150)+40,140,60,'#CFCAC4','#8E8A85');
+    g+=cl;
+    // precipitació
+    for(let x=40;x<1040;x+=38){const ground=interp(x);for(let z=2050;z>ground+40;z-=150){const t=type(z);const y=Y(z)+((x*7)%60);
+      if(y>Y(ground)-6)continue;
+      if(t==='pluja')g+=`<line x1="${x}" y1="${y}" x2="${x-5}" y2="${y+16}" stroke="#3B6E8F" stroke-width="3.5" stroke-linecap="round"/>`;
+      else if(t==='neu')g+=`<text x="${x}" y="${y+12}" font-size="20" text-anchor="middle" fill="#55504A">✱</text>`;
+      else g+=`<text x="${x-6}" y="${y+10}" font-size="15" text-anchor="middle" fill="#55504A">✱</text><line x1="${x+6}" y1="${y}" x2="${x+3}" y2="${y+12}" stroke="#3B6E8F" stroke-width="3"/>`;}}
+    const pts=prof.map(([x,z])=>x+' '+Y(z)).join(' L');
+    g+=`<path d="M0 ${G} L${pts} L1050 ${G} Z" fill="#D9D4CF" stroke="#111" stroke-width="4" stroke-linejoin="round"/>`;
+    // neu al terra
+    if(iso-300<1706){const sl=Math.max(0,iso-300);const sp=[];for(let x=0;x<=1050;x+=5){const z=interp(x);if(z>=sl)sp.push([x,z]);}
+      let seg='';let prev=null;sp.forEach(([x,z])=>{seg+=(prev!==null&&x-prev<=5?' L':' M')+x+' '+(Y(z)-2);prev=x;});g+=`<path d="${seg}" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/>`;}
+    g+=`<rect x="0" y="${G}" width="1050" height="60" fill="#3B6E8F" opacity=".25"/><text x="20" y="${G+38}" font-size="20" font-weight="700">mar</text>`;
+    // línies
+    g+=`<line x1="0" y1="${Y(iso)}" x2="1050" y2="${Y(iso)}" stroke="#FF6A13" stroke-width="4" stroke-dasharray="14 8"/><text x="1040" y="${Y(iso)-10}" text-anchor="end" font-size="21" font-weight="800" fill="#C24A00" style="paint-order:stroke;stroke:#F5F3F1;stroke-width:6px">isoterma 0 °C · ${fmt(iso)} m</text>`;
+    g+=`<g data-s="1" class="${step>=1?'':'hid'}"><line x1="0" y1="${Y(Math.max(0,iso-300))}" x2="1050" y2="${Y(Math.max(0,iso-300))}" stroke="#111" stroke-width="3" stroke-dasharray="4 8"/><text x="1040" y="${Y(Math.max(0,iso-300))+26}" text-anchor="end" font-size="20" font-weight="700" style="paint-order:stroke;stroke:#F5F3F1;stroke-width:6px">cota de neu ≈ ${fmt(Math.max(0,iso-300))} m</text></g>`;
+    places.forEach(([n,z,x])=>{g+=`<circle cx="${x}" cy="${Y(z)}" r="9" fill="#111"/><text x="${x}" y="${Y(z)+34}" text-anchor="middle" font-size="20" font-weight="800" style="paint-order:stroke;stroke:#F5F3F1;stroke-width:6px">${n}</text>`;});
+    svg.innerHTML=g; $('#isoO').textContent=fmt(iso)+' m';
+    $('#snowRead').innerHTML=places.map(([n,z])=>`<span>${n} (${fmt(z)} m)</span><b class="${type(z)==='neu'?'hi':''}">${type(z)}</b>`).join('');
+  }
+  function interp(x){for(let i=1;i<prof.length;i++){if(x<=prof[i][0]){const [x0,z0]=prof[i-1],[x1,z1]=prof[i];return z0+(z1-z0)*(x-x0)/(x1-x0);}}return prof[prof.length-1][1];}
+  $('#iso').oninput=e=>{iso=+e.target.value;draw();};
+  hooks.n4={step:draw}; draw();
+})();
+
+/* r1: test */
+const QUIZ=[
+  ['Una massa d\'aire s\'escalfa sense guanyar ni perdre vapor. Què passa?',['La HA puja i la Hr es manté','La HA es manté i la Hr baixa','La HA es manté i la Hr puja','Totes dues baixen'],1,'El vapor és el mateix (HA igual), però l\'aire calent en podria tenir més: la Hr baixa.'],
+  ['El punt de rosada és…',['La humitat relativa del 100 %','La temperatura a la qual l\'aire se satura si es refreda','La quantitat màxima de vapor','El moment en què comença a ploure'],1,'És una temperatura. Quan l\'aire s\'hi refreda, Hr = 100 % i comença la condensació.'],
+  ['Per què es refreda l\'aire que puja?',['Perquè a dalt l\'aire de l\'entorn és més fred i li treu calor','Perquè s\'expandeix en baixar la pressió','Perquè perd vapor d\'aigua','Perquè el sol escalfa menys a dalt'],1,'Refredament adiabàtic: l\'expansió consumeix energia interna, sense intercanvi de calor.'],
+  ['Aire a 22 °C amb punt de rosada de 14 °C. A quina altura hi haurà la base del núvol?',['800 m','1 000 m','1 400 m','1 750 m'],1,'z ≈ 125 × (22 − 14) = 125 × 8 = 1 000 m.'],
+  ['Dins el núvol l\'aire es refreda uns 0,5 °C/100 m i no 1 °C/100 m perquè…',['hi ha menys pressió','la condensació allibera calor latent','els núvols absorbeixen la llum del sol','l\'aire saturat no s\'expandeix'],1,'La condensació retorna la calor latent d\'evaporació i compensa part del refredament.'],
+  ['Aire a 18 °C a nivell del mar; base del núvol a 800 m; cim a 2 800 m. Quina temperatura tindrà a sotavent (0 m)?',['18 °C','22 °C','28 °C','32 °C'],2,'Base: 18 − 8 = 10 °C. Cim: 10 − 2 000 × 0,5/100 = 0 °C. Baixa 2 800 m amb GAS: 0 + 28 = 28 °C.'],
+  ['Si a sobrevent no es forma cap núvol, l\'aire arriba a sotavent…',['més calent','a la mateixa temperatura','més fred','saturat'],1,'Puja i baixa amb el GAS: −1 i +1 °C cada 100 m. Sense condensació no hi ha foehn.'],
+  ['Quin núvol dona tempestes, llamps i pedra?',['Nimbostratus','Altostratus','Cumulonimbus','Cirrus'],2,'El cumulonimbus creix fins a la tropopausa, amb corrents ascendents molt forts.']
+];
+let qi=0,qscore=0,qans=null;
+function quizRender(){
+  const q=$('#quiz');
+  $('#qbar').style.width=(100*Math.min(qi,QUIZ.length)/QUIZ.length)+'%';
+  if(qi>=QUIZ.length){$('#qnum').textContent='';q.innerHTML=`<div class="card or" style="align-items:flex-start;gap:16px;padding:40px"><div class="eyebrow">Resultat</div><p style="font:800 96px var(--f-d)">${qscore} / ${QUIZ.length}</p><p>${qscore===QUIZ.length?'Totes correctes.':qscore>=6?'Molt bé. Repassa les que han fallat.':'Cal repassar: torna als blocs 1, 3 i 4.'}</p><button class="btn pri" id="qAgain">Torna a començar</button></div>`;$('#qAgain').onclick=()=>{qi=0;qscore=0;qans=null;quizRender();};return;}
+  const [t,opts,ok,exp]=QUIZ[qi];$('#qnum').textContent=(qi+1)+' / '+QUIZ.length;
+  q.innerHTML=`<p class="big" style="font-size:36px">${t}</p>`+opts.map((o,i)=>`<button class="qopt${qans!==null?(i===ok?' right':(i===qans?' wrong':'')):''}" data-i="${i}"><kbd>${i+1}</kbd><span>${o}</span></button>`).join('')+(qans!==null?`<div class="box" style="display:flex;justify-content:space-between;align-items:center;gap:20px"><span><b>${qans===ok?'Correcte.':'No.'}</b> ${exp}</span><button class="btn pri" id="qNext" style="flex:none">Següent →</button></div>`:'');
+  $$('.qopt',q).forEach(b=>b.onclick=()=>quizKey(+b.dataset.i+1));
+  if(qans!==null)$('#qNext').onclick=()=>{qi++;qans=null;quizRender();};
+}
+function quizKey(n){ if(qi>=QUIZ.length) return; if(qans!==null){ if(n) return; } qans=n-1; if(qans===QUIZ[qi][2])qscore++; quizRender(); }
+quizRender();
+
+/* inici */
+go(0);
+</script>
+
+</body></html>

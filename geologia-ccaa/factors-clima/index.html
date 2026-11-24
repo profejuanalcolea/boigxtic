@@ -1,0 +1,404 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Factors del clima</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Escenari apaisat 1600×900 escalat a l'espai disponible (Google Sites, pissarra) · blanc/negre/taronja · un factor per pantalla */
+:root{
+  --bg:#ffffff; --ink:#111111; --muted:#5b5652; --line:#e4dfda; --soft:#f6f3f0;
+  --or:#FF6A13; --or-d:#C24A00; --or-s:#FFE8D8;
+  --t:#D62828; --p:#3E8ED0; --p-d:#1F5F96; --sea:#DCEFF8; --land:#EADBC8; --land-e:#9C8063; --sun:#FFC83D;
+  --f-d:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --f-b:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  color-scheme:light;
+}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0;overflow:hidden;background:#1b1918}
+body{font-family:var(--f-b);color:var(--ink)}
+#wrap{position:fixed;inset:0;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform:translate(-50%,-50%);transform-origin:center;background:var(--bg);overflow:hidden}
+button{font-family:var(--f-b);cursor:pointer;color:var(--ink);background:var(--bg);-webkit-text-fill-color:currentColor;line-height:1.15;white-space:nowrap}
+button:disabled{color:var(--muted);background:var(--soft);border-color:var(--line)!important;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+header{position:absolute;left:0;right:0;top:0;height:78px;display:flex;align-items:center;gap:18px;padding:0 28px;border-bottom:3px solid var(--ink)}
+header h1{font:800 36px var(--f-d);margin:0;letter-spacing:-.01em;white-space:nowrap}
+header h1 span{color:var(--or)}
+header .sub{font-size:19px;color:var(--muted)}
+.sp{flex:1}
+#fsBtn{font-weight:700;font-size:20px;border:2.5px solid var(--or);background:var(--or);color:#fff;border-radius:10px;padding:8px 18px}
+.subbar{position:absolute;left:0;right:0;top:78px;height:66px;display:flex;align-items:center;gap:8px;padding:0 28px;border-bottom:2px solid var(--line)}
+.pill{font-weight:700;font-size:20px;border:2.5px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:999px;padding:7px 16px}
+.pill.on{background:var(--or);border-color:var(--or);color:#fff}
+.nav{display:flex;gap:10px;margin-left:auto}
+.nav button{font-weight:700;font-size:21px;border:2.5px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:10px;padding:8px 18px;min-height:48px}
+.nav button.pri{background:var(--ink);color:#fff}
+.nav button:disabled,.nav button.pri:disabled{background:var(--soft);color:var(--muted);border-color:var(--line)}
+.scr{position:absolute;left:0;right:0;top:144px;bottom:0}
+.fig{position:absolute;left:30px;top:14px;width:960px;height:700px}
+.fig svg{width:100%;height:100%;display:block}
+.side{position:absolute;left:1010px;right:28px;top:22px;bottom:22px;display:flex;flex-direction:column;gap:14px;min-width:0;overflow-wrap:break-word}
+.side h2{font:800 42px var(--f-d);margin:0;line-height:1.05}
+.side h2 small{display:block;font:700 18px var(--f-b);letter-spacing:.12em;text-transform:uppercase;color:var(--or-d);margin-bottom:6px}
+.side p{margin:0;font-size:22px;line-height:1.38}
+.side p b{color:var(--or-d)}
+.idea{background:var(--ink);color:#fff;border-radius:12px;padding:10px 16px;font-size:21px;line-height:1.35}
+.idea b{color:var(--or)}
+.try{margin-top:auto;border:2.5px solid var(--or);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.try .lab{font:700 17px var(--f-b);letter-spacing:.1em;text-transform:uppercase;color:var(--or-d)}
+.try .row{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:700}
+.try input[type=range]{flex:1;accent-color:var(--or);height:34px}
+.try output{font-variant-numeric:tabular-nums;color:var(--or-d);min-width:120px;text-align:right}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{font-weight:700;font-size:20px;border:2.5px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:10px;padding:8px 14px}
+.seg button.on{background:var(--ink);color:#fff}
+.side p.nota{font-size:18px;color:var(--muted);border-top:2px solid var(--line);padding-top:8px}
+.playb{font-size:22px;font-weight:700;border:2.5px solid var(--ink);background:var(--ink);color:#fff;border-radius:10px;width:56px;height:46px}
+.bars{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;font-size:19px;margin-top:6px}
+.bars i{display:block;height:16px;border-radius:4px}
+.read{font-size:22px;line-height:1.35;background:var(--or-s);border-radius:10px;padding:10px 14px}
+.read b{color:var(--or-d)}
+/* recorda */
+#s6 .col{position:absolute;top:24px;bottom:24px}
+#s6 .l{left:40px;width:700px}
+#s6 .r{left:780px;right:40px}
+#s6 h2{font:800 40px var(--f-d);margin:0 0 14px}
+#s6 h2 span{color:var(--or)}
+.rlist{display:flex;flex-direction:column;gap:12px}
+.rlist div{display:flex;gap:14px;align-items:flex-start;border:2.5px solid var(--ink);border-radius:12px;padding:10px 14px;font-size:21px;line-height:1.32}
+.rlist b.k{flex:none;width:38px;height:38px;border-radius:50%;background:var(--or);color:#fff;display:grid;place-items:center;font:800 21px var(--f-d)}
+.quiz{display:flex;flex-direction:column;gap:10px}
+.quiz button{text-align:left;white-space:normal;border:2.5px solid var(--ink);border-radius:12px;padding:10px 16px;font-size:21px;line-height:1.3;background:var(--bg);color:var(--ink)}
+.quiz button .ans{display:block;margin-top:6px;font-weight:700;color:var(--or-d)}
+.quiz button:not(.open) .ans{display:none}
+.quiz button.open{background:var(--or-s);border-color:var(--or)}
+.qhint{font-size:18px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div id="wrap"><div id="stage">
+  <header>
+    <h1>Factors del <span>clima</span></h1>
+    <span class="sub">Què fa que cada lloc tingui el seu clima?</span>
+    <div class="sp"></div>
+    <button id="fsBtn" title="Pantalla completa (F)">⛶ Pantalla completa</button>
+  </header>
+  <div class="subbar">
+    <button class="pill on" data-s="1">1 · Latitud</button>
+    <button class="pill" data-s="2">2 · Altitud</button>
+    <button class="pill" data-s="3">3 · Distància al mar</button>
+    <button class="pill" data-s="4">4 · Orientació</button>
+    <button class="pill" data-s="5">5 · Humanització</button>
+    <button class="pill" data-s="6">Recorda</button>
+    <div class="nav"><button id="prev">◀ Anterior</button><button id="next" class="pri">Següent ▶</button></div>
+  </div>
+
+  <!-- 1 LATITUD -->
+  <section class="scr" id="s1">
+    <div class="fig" id="f1"></div>
+    <div class="side">
+      <h2><small>Factor 1</small>Latitud</h2>
+      <p>La <b>translació</b> de la Terra al voltant del Sol i la <b>rotació</b> sobre un eix inclinat fan canviar al llarg de l'any l'<b>angle d'incidència</b> dels raigs i la <b>durada de la insolació</b>.</p>
+      <p>A l'equador els raigs arriben gairebé verticals i l'energia es concentra. Cap als pols arriben inclinats i la mateixa energia s'escampa per més superfície.</p>
+      <div class="idea"><b>Idea clau:</b> la temperatura mitjana <b>baixa</b> de l'equador als pols.</div>
+      <div class="try"><span class="lab">Prova-ho</span>
+        <div class="row">Latitud <input type="range" id="lat" min="0" max="60" step="1" value="41" aria-label="Latitud"><output id="latO"></output></div>
+        <div class="read" id="latR"></div></div>
+    </div>
+  </section>
+
+  <!-- 2 ALTITUD -->
+  <section class="scr" id="s2" hidden>
+    <div class="fig" id="f2"></div>
+    <div class="side">
+      <h2><small>Factor 2</small>Altitud</h2>
+      <p>A la troposfera la temperatura <b>baixa amb l'altura</b>. El <b>gradient tèrmic vertical mitjà</b> és d'uns <b>0,65 °C cada 100 m</b>. Les zones altes són <b>més fredes</b>, amb <b>vents més forts</b> i <b>més radiació solar</b>.</p>
+      <p>Les muntanyes també fan <b>ploure més</b>: obliguen l'aire a pujar, es refreda i condensa (ascens orogràfic).</p>
+      <p class="nota">Més endavant veurem com la <b>humitat relativa</b> influeix en el gradient tèrmic d'una massa d'aire que puja: l'<b>aire sec</b> (no saturat) es refreda 1 °C cada 100 m; l'<b>aire humit</b>, quan arriba a la saturació (Hr = 100 %), només uns 0,5 °C cada 100 m.</p>
+      <div class="try"><span class="lab">Prova-ho</span>
+        <div class="row">Temperatura a la costa <div class="seg" id="t0"><button data-v="8">8 °C</button><button data-v="18" class="on">18 °C</button><button data-v="28">28 °C</button></div></div>
+        <div class="row">Altitud <input type="range" id="alt" min="0" max="3200" step="50" value="1700" aria-label="Altitud"><output id="altO"></output></div>
+        <div class="read" id="altR"></div></div>
+    </div>
+  </section>
+
+  <!-- 3 MAR -->
+  <section class="scr" id="s3" hidden>
+    <div class="fig" id="f3"></div>
+    <div class="side">
+      <h2><small>Factor 3</small>Distància al mar</h2>
+      <p>L'aigua s'escalfa i es refreda <b>molt més lentament</b> que la terra. Per això a la costa les temperatures varien poc: <b>oscil·lació tèrmica petita</b>.</p>
+      <p>Lluny del mar els estius són més calorosos i els hiverns més freds: és la <b>continentalitat</b>. Els <b>corrents marins</b> càlids o freds també influeixen molt en el clima.</p>
+      <div class="try"><span class="lab">Prova-ho</span>
+        <div class="seg" id="mar"><button data-v="b">Barcelona</button><button data-v="l">Lleida</button><button data-v="bl" class="on">Totes dues</button></div>
+        <div class="read" id="marR"></div></div>
+    </div>
+  </section>
+
+  <!-- 4 ORIENTACIÓ -->
+  <section class="scr" id="s4" hidden>
+    <div class="fig" id="f4"></div>
+    <div class="side">
+      <h2><small>Factor 4</small>Orientació</h2>
+      <p>Al nostre hemisferi, els <b>vessants nord</b> són <b>més freds i humits</b>.</p>
+      <p>La <b>solana</b> (vessant sud) rep més sol. L'<b>obaga</b> (vessant nord) en rep menys: s'escalfa menys i conserva més la humitat. A l'hemisferi sud passa al revés.</p>
+      <p class="nota">El relleu també pot reforçar el vent: la tramuntana a l'Empordà i el mestral a la vall de l'Ebre (apunts, p. 33).</p>
+      <div class="try"><span class="lab">Prova-ho</span>
+        <div class="row" style="gap:16px"><div class="seg" id="sea"><button data-v="w" class="on">Hivern</button><button data-v="s">Estiu</button></div>
+        <div class="seg" id="hem"><button data-v="N" class="on">H. nord</button><button data-v="S">H. sud</button></div></div>
+        <div class="row"><button id="play" class="playb" aria-label="Mou el Sol">▶</button><input type="range" id="hora" min="0" max="1000" step="1" value="500" aria-label="Hora del dia"><output id="horaO"></output></div>
+        <div class="read" id="oriR"></div></div>
+    </div>
+  </section>
+
+  <!-- 5 HUMANITZACIÓ -->
+  <section class="scr" id="s5" hidden>
+    <div class="fig" id="f5"></div>
+    <div class="side">
+      <h2><small>Factor 5</small>Humanització</h2>
+      <p>Les ciutats i les zones industrials alteren el clima local: hi ha moltes <b>fonts de calor</b> (fàbriques, calefaccions, motors) i materials que absorbeixen molta radiació (<b>formigó, asfalt</b>).</p>
+      <p>Es comporten com <b>illes de calor</b>: més calor sobretot de nit, aire més sec, menys radiació solar, més precipitació i vents més variables.</p>
+      <div class="try"><span class="lab">Prova-ho</span>
+        <div class="seg" id="urb"><button data-v="d">Dia</button><button data-v="n" class="on">Nit</button></div>
+        <div class="read" id="urbR"></div></div>
+    </div>
+  </section>
+
+  <!-- RECORDA -->
+  <section class="scr" id="s6" hidden>
+    <div class="col l">
+      <h2>Recorda</h2>
+      <div class="rlist">
+        <div><b class="k">1</b><span><b>Latitud</b>: angle dels raigs i hores de sol → la temperatura baixa de l'equador als pols.</span></div>
+        <div><b class="k">2</b><span><b>Altitud</b>: gradient tèrmic vertical mitjà de −0,65 °C cada 100 m, més vent, més radiació i més pluja.</span></div>
+        <div><b class="k">3</b><span><b>Distància al mar</b>: el mar modera; l'interior té més amplitud tèrmica (continentalitat).</span></div>
+        <div><b class="k">4</b><span><b>Orientació</b>: solana i obaga; els vessants nord són més freds i humits.</span></div>
+        <div><b class="k">5</b><span><b>Humanització</b>: illa de calor, aire més sec, vents variables.</span></div>
+      </div>
+    </div>
+    <div class="col r">
+      <h2>Quin <span>factor</span> és?</h2>
+      <div class="quiz" id="quiz"></div>
+      <p class="qhint">Toca cada targeta per veure la resposta.</p>
+    </div>
+  </section>
+</div></div>
+
+<script>
+const PAGE_URL="https://claude.ai/artifact/DLJ3h87PYXESvcXJuqV6XW";
+const $=s=>document.querySelector(s);
+const fmt=(v,d=0)=>(+v).toLocaleString("ca-ES",{minimumFractionDigits:d,maximumFractionDigits:d});
+const SVG=(w,h,inner,label)=>`<svg viewBox="0 0 ${w} ${h}" font-family="Atkinson Hyperlegible, Verdana, sans-serif" role="img" aria-label="${label}">${inner}</svg>`;
+const txt=(x,y,t,o={})=>`<text x="${x}" y="${y}" text-anchor="${o.a||"start"}" font-size="${o.s||22}" font-weight="${o.b?700:400}" fill="${o.c||"#111"}"${o.halo?` stroke="#fff" stroke-width="6" paint-order="stroke"`:""}>${t}</text>`;
+
+/* ---------- 1 · Latitud ---------- */
+function d1(){const lat=+$("#lat").value;$("#latO").textContent=lat+"°";
+  const W=960,H=700,cx=600,cy=360,r=280,hb=26,rad=Math.PI/180;
+  let s=`<rect width="${W}" height="${H}" fill="#fff"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#DCEFF8" stroke="#1F5F96" stroke-width="2"/>`;
+  [[0,"Equador"],[23.44,"Tròpic"],[41,"Badalona (41°)"],[66.56,"Cercle polar"]].forEach(([l,n])=>{const y=cy-r*Math.sin(l*rad),hw=r*Math.cos(l*rad);s+=`<line x1="${cx-hw}" x2="${cx+hw}" y1="${y}" y2="${y}" stroke="#1F5F96" stroke-width="${l?1.2:2.5}" stroke-dasharray="${l?"6 6":""}" opacity=".7"/>`+txt(cx+hw+10,y+7,n,{s:18,c:"#1F5F96"});});
+  const beam=(l,col,op,mark)=>{const yc=cy-r*Math.sin(l*rad),y0=yc-hb,y1=yc+hb,hx=y=>cx-Math.sqrt(Math.max(0,r*r-(y-cy)**2));
+    let b=`<path d="M0 ${y0} L${hx(y0)} ${y0} L${hx(y1)} ${y1} L0 ${y1} Z" fill="${col}" opacity="${op}"/>`;
+    const a0=Math.atan2(y0-cy,hx(y0)-cx),a1=Math.atan2(y1-cy,hx(y1)-cx),R=r+8;
+    if(mark)b+=`<path d="M${cx+R*Math.cos(a0)} ${cy+R*Math.sin(a0)} A${R} ${R} 0 0 1 ${cx+R*Math.cos(a1)} ${cy+R*Math.sin(a1)}" fill="none" stroke="${mark}" stroke-width="12" stroke-linecap="round"/>`;
+    for(let k=-1;k<=1;k++){const y=yc+k*hb*.7;b+=`<line x1="20" y1="${y}" x2="${hx(y)-14}" y2="${y}" stroke="#C88A00" stroke-width="2.5" marker-end="url(#ar)"/>`;}
+    return b;};
+  s+=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#C88A00"/></marker></defs>`;
+  if(lat>2)s+=beam(0,"#FFC83D",.35,"#D62828");
+  s+=beam(lat,"#FFC83D",.8,"#FF6A13");
+  s+=txt(20,48,"Raigs del Sol (equinocci, migdia)",{s:22,b:1,c:"#8a5a00"});
+  const yl=cy-r*Math.sin(lat*rad);
+  s+=txt(cx-r-30,Math.max(90,yl-hb-14),`${lat}°`,{s:26,b:1,c:"#C24A00",a:"end",halo:1});
+  s+=txt(20,H-60,"Mateix feix de llum:",{s:22,b:1});
+  s+=txt(20,H-28,"a l'equador es concentra en poca superfície; cap als pols s'escampa.",{s:22});
+  $("#f1").innerHTML=SVG(W,H,s,"Incidència dels raigs solars segons la latitud");
+  const e=Math.cos(lat*rad);
+  $("#latR").innerHTML=lat===0?`A l'equador el feix cau <b>vertical</b>: tota l'energia en la mínima superfície.`:`El mateix feix escalfa una superfície <b>${fmt(1/e,1)} vegades</b> més gran que a l'equador. Cada m² rep un <b>${fmt(e*100)} %</b> de l'energia.`;}
+$("#lat").addEventListener("input",d1);
+
+/* ---------- 2 · Altitud ---------- */
+let T0=18;
+function d2(){const h=+$("#alt").value;$("#altO").textContent=fmt(h)+" m";
+  const W=960,H=700,base=640,top=110,yA=a=>base-(a/3200)*(base-top),T=a=>T0-0.65*a/100;
+  let s=`<rect width="${W}" height="${H}" fill="#fff"/><rect x="0" y="${base}" width="${W}" height="${H-base}" fill="#DCEFF8"/>`;
+  [0,1000,2000,3000].forEach(a=>{const y=yA(a);s+=`<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="#e4dfda" stroke-width="1.5"/>`;});
+  const px=520,py=yA(3143);
+  s+=`<path d="M170 ${base} L${px} ${py} L860 ${base} Z" fill="#EADBC8" stroke="#9C8063" stroke-width="2"/>`;
+  s+=`<path d="M${px} ${py} L${px-60} ${yA(2600)} L${px-30} ${yA(2700)} L${px} ${yA(2550)} L${px+40} ${yA(2650)} L${px+70} ${yA(2600)} Z" fill="#fff" stroke="#9C8063"/>`;
+  [0,1000,2000,3000].forEach(a=>{const y=yA(a);s+=txt(W-10,a?y-8:y-12,`${fmt(a)} m · ${fmt(T(a),1)} °C`,{s:20,a:"end",b:1,c:T(a)<0?"#1F5F96":"#C24A00",halo:1});});
+  s+=txt(px+20,py-14,"Pica d'Estats · 3.143 m",{s:19,b:1,halo:1});
+  // marcador
+  const t=h/3143,mx=170+(px-170)*t,my=base+(py-base)*t;
+  const bx=Math.max(10,mx-250),by=Math.min(base-60,my-26);
+  s+=`<line x1="${mx}" y1="${my}" x2="${bx+160}" y2="${by+26}" stroke="#111" stroke-width="2"/><circle cx="${mx}" cy="${my}" r="12" fill="#FF6A13" stroke="#111" stroke-width="2"/>`;
+  s+=`<rect x="${bx}" y="${by}" width="160" height="52" rx="10" fill="#111"/>`+txt(bx+80,by+36,`${fmt(T(h),1)} °C`,{s:26,b:1,c:"#fff",a:"middle"});
+  s+=txt(30,40,"Costa (0 m)",{s:20,b:1,c:"#1F5F96"});
+  $("#f2").innerHTML=SVG(W,H,s,"Temperatura segons l'altitud");
+  $("#altR").innerHTML=`A ${fmt(h)} m fa <b>${fmt(T(h),1)} °C</b>: ${fmt(T0-T(h),1)} °C menys que a la costa (gradient tèrmic vertical mitjà: ${fmt(h)} m × 0,65 °C ÷ 100 m).`;}
+$("#alt").addEventListener("input",d2);
+$("#t0").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;T0=+b.dataset.v;$("#t0").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));d2();});
+
+/* ---------- 3 · Distància al mar ---------- */
+const BCN=[9.8,10.4,12.6,14.8,18.1,22.1,24.9,25.3,22.4,18.6,13.9,10.8],LLE=[5.8,7.9,11.5,14.1,18.4,22.9,25.8,25.3,21,15.8,9.6,5.8];
+const MES=["G","F","M","A","M","J","J","A","S","O","N","D"];let marV="bl";
+function d3m(){const W=960,H=700,x0=110,x1=740,y0=70,y1=560,y=t=>y1-(t/30)*(y1-y0),x=i=>x0+(i+.5)*(x1-x0)/12;
+  let s=`<rect width="${W}" height="${H}" fill="#fff"/>`;
+  for(let t=0;t<=30;t+=5){s+=`<line x1="${x0}" x2="${x1}" y1="${y(t)}" y2="${y(t)}" stroke="#e4dfda"/>`+txt(x0-12,y(t)+7,`${t}`,{s:20,a:"end",c:"#D62828"});}
+  s+=txt(x0,y0-22,"T (°C)",{s:22,b:1,c:"#D62828",a:"middle"});
+  MES.forEach((m,i)=>s+=txt(x(i),y1+34,m,{s:22,b:1,a:"middle"}));
+  s+=`<line x1="${x0}" x2="${x0}" y1="${y0}" y2="${y1}" stroke="#111" stroke-width="2"/><line x1="${x0}" x2="${x1}" y1="${y1}" y2="${y1}" stroke="#111" stroke-width="2"/>`;
+  const serie=(T,col,lab,xi)=>{const mx=Math.max(...T),mn=Math.min(...T),im=T.indexOf(mx),iN=T.indexOf(mn);
+    let g=`<polyline points="${T.map((t,i)=>x(i)+","+y(t)).join(" ")}" fill="none" stroke="${col}" stroke-width="6" stroke-linejoin="round"/>`;
+    T.forEach((t,i)=>g+=`<circle cx="${x(i)}" cy="${y(t)}" r="7" fill="${col}" stroke="#fff" stroke-width="2"/>`);
+    g+=`<line x1="${x(im)}" x2="${xi}" y1="${y(mx)}" y2="${y(mx)}" stroke="${col}" stroke-width="1.5" stroke-dasharray="4 5"/><line x1="${x(iN)}" x2="${xi}" y1="${y(mn)}" y2="${y(mn)}" stroke="${col}" stroke-width="1.5" stroke-dasharray="4 5"/>`;
+    g+=txt(xi,y(mn)+34,`${fmt(mx-mn,1)} °C`,{s:24,b:1,c:col,a:"middle",halo:1});
+    g+=`<line x1="${xi}" x2="${xi}" y1="${y(mx)}" y2="${y(mn)}" stroke="${col}" stroke-width="7"/><line x1="${xi-10}" x2="${xi+10}" y1="${y(mx)}" y2="${y(mx)}" stroke="${col}" stroke-width="5"/><line x1="${xi-10}" x2="${xi+10}" y1="${y(mn)}" y2="${y(mn)}" stroke="${col}" stroke-width="5"/>`;
+    return g;};
+  s+=`<rect x="${x0+20}" y="${y0+6}" width="26" height="8" fill="#1F5F96" opacity="${marV.includes("b")?1:.25}"/>`+txt(x0+56,y0+18,"Barcelona (costa)",{s:22,b:1,c:"#1F5F96"});
+  s+=`<rect x="${x0+20}" y="${y0+40}" width="26" height="8" fill="#D62828" opacity="${marV.includes("l")?1:.25}"/>`+txt(x0+56,y0+52,"Lleida (interior)",{s:22,b:1,c:"#D62828"});
+  s+=txt(850,y0+18,"Amplitud",{s:24,b:1,a:"middle"})+txt(850,y0+44,"tèrmica",{s:24,b:1,a:"middle"});
+  if(marV.includes("l"))s+=serie(LLE,"#D62828","Lleida (interior)",900);
+  if(marV.includes("b"))s+=serie(BCN,"#1F5F96","Barcelona (costa)",800);
+  s+=txt(x0,H-40,"Temperatura mitjana mensual (aproximada). Amplitud = mes més càlid − mes més fred.",{s:19,c:"#5b5652"});
+  $("#f3").innerHTML=SVG(W,H,s,"Temperatura mensual a Barcelona i a Lleida");
+  const ab=Math.max(...BCN)-Math.min(...BCN),al=Math.max(...LLE)-Math.min(...LLE);
+  $("#marR").innerHTML=marV==="b"?`Barcelona: amplitud de <b>${fmt(ab,1)} °C</b>. Hiverns suaus gràcies al mar.`:marV==="l"?`Lleida: amplitud de <b>${fmt(al,1)} °C</b>. Hiverns més freds i estius més calorosos.`:`Amplitud tèrmica: Barcelona <b>${fmt(ab,1)} °C</b>, Lleida <b>${fmt(al,1)} °C</b>. L'interior té <b>${fmt(al-ab,1)} °C</b> més.`;}
+$("#mar").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;marV=b.dataset.v;$("#mar").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));d3m();});
+
+/* ---------- 4 · Orientació ---------- */
+let hem="N",sea="w",frac=.5,playing=false,raf=0;
+const D2R=Math.PI/180,LAT=41.5;
+/* --- geometria 3D: x = est, y = nord, z = amunt --- */
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const norm=a=>{const l=Math.hypot(...a);return mul(a,1/l);};
+// càmera ortogràfica des de l'est-nord-est, 32° d'elevació: es veuen els dos vessants i el camí del Sol obert
+const CA=72*D2R,CE=30*D2R,CAM=[Math.sin(CA)*Math.cos(CE),Math.cos(CA)*Math.cos(CE),Math.sin(CE)];
+const RIGHT=norm(cross([0,0,1],CAM)),UPS=cross(CAM,RIGHT),SC=80,OX=480,OY=465;
+const P=p=>[OX+SC*dot(p,RIGHT),OY-SC*dot(p,UPS)];
+const pts=a=>a.map(p=>P(p).map(v=>v.toFixed(1)).join(",")).join(" ");
+// serralada est-oest: secció en V invertida, carena una mica irregular (pendents de 29° a 35°)
+const W2=2,XS=[-3,-2.1,-1.2,-.3,.6,1.5,2.4,3.1],HC=[1.12,1.3,1.18,1.4,1.22,1.36,1.15,1.1];
+const FACES=(()=>{const F=[];
+  for(let i=0;i<XS.length-1;i++){const a=XS[i],b=XS[i+1],ha=HC[i],hb=HC[i+1];
+    F.push({k:"S",v:[[a,-W2,0],[b,-W2,0],[b,0,hb],[a,0,ha]]});
+    F.push({k:"N",v:[[a,W2,0],[a,0,ha],[b,0,hb],[b,W2,0]]});}
+  const e=XS.length-1;
+  F.push({k:"E",v:[[XS[e],-W2,0],[XS[e]+1.1,0,0],[XS[e],0,HC[e]]]},{k:"E",v:[[XS[e],W2,0],[XS[e],0,HC[e]],[XS[e]+1.1,0,0]]});
+  F.push({k:"W",v:[[XS[0],-W2,0],[XS[0],0,HC[0]],[XS[0]-1.1,0,0]]},{k:"W",v:[[XS[0],W2,0],[XS[0]-1.1,0,0],[XS[0],0,HC[0]]]});
+  F.forEach(f=>{let n=norm(cross(sub(f.v[1],f.v[0]),sub(f.v[2],f.v[0])));if(n[2]<0)n=mul(n,-1);f.n=n;f.c=mul(f.v.reduce(add,[0,0,0]),1/f.v.length);});
+  return F;})();
+function sunDir(H,dec,lat){const d=dec*D2R,f=lat*D2R;return [-Math.cos(d)*Math.sin(H),Math.sin(d)*Math.cos(f)-Math.cos(d)*Math.cos(H)*Math.sin(f),Math.sin(d)*Math.sin(f)+Math.cos(d)*Math.cos(H)*Math.cos(f)];}
+// vessants «tipus» per comptar hores (pendent mitjà 32°)
+const BM=32*D2R,NS=[0,-Math.sin(BM),Math.cos(BM)],NN=[0,Math.sin(BM),Math.cos(BM)];
+function dayInfo(dec,lat){const H0=Math.acos(Math.max(-1,Math.min(1,-Math.tan(lat*D2R)*Math.tan(dec*D2R))));let s=0,n=0,hs=0,hn=0;const N=400;
+  for(let i=0;i<=N;i++){const v=sunDir(-H0+2*H0*i/N,dec,lat),a=Math.max(0,dot(v,NS)),b=Math.max(0,dot(v,NN));s+=a;n+=b;if(a>0)hs++;if(b>0)hn++;}
+  const hrs=2*H0*12/Math.PI;return {H0,s,n,hs:hs/(N+1)*hrs,hn:hn/(N+1)*hrs};}
+const hhmm=h=>{const m=Math.round(h*60);return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
+function d4(){const Wd=960,Hd=700,lat=hem==="N"?LAT:-LAT,winter=sea==="w",dec=(hem==="N")===winter?-23.44:23.44;
+  const Di=dayInfo(dec,lat),Hh=-Di.H0+2*Di.H0*frac,sun=sunDir(Hh,dec,lat),up=sun[2]>0.001,RD=4.4;
+  let s=`<rect width="${Wd}" height="${Hd}" fill="#fff"/>`;
+  // terra i rosa dels vents
+  const ring=[];for(let i=0;i<=72;i++){const t=i/72*2*Math.PI;ring.push([RD*Math.cos(t),RD*Math.sin(t),0]);}
+  s+=`<defs><clipPath id="gclip"><polygon points="${pts(ring)}"/></clipPath></defs><polygon points="${pts(ring)}" fill="#F3EDE4" stroke="#C9BBA6" stroke-width="2"/>`;
+  [["N",[0,1,0]],["S",[0,-1,0]],["E",[1,0,0]],["O",[-1,0,0]]].forEach(([l,d])=>{const [x,y]=P(mul(d,RD*1.1)),[x0,y0]=P(mul(d,RD*.15));
+    s+=`<line x1="${x0}" y1="${y0}" x2="${P(mul(d,RD))[0]}" y2="${P(mul(d,RD))[1]}" stroke="#C9BBA6" stroke-width="2" stroke-dasharray="6 6"/><circle cx="${x}" cy="${y}" r="20" fill="#111"/>`+txt(x,y+8,l,{s:22,b:1,c:"#fff",a:"middle"});});
+  // camí del Sol del dia (només la part sobre l'horitzó)
+  const path=[];for(let i=0;i<=80;i++){const v=sunDir(-Di.H0+2*Di.H0*i/80,dec,lat);path.push(mul(v,RD));}
+  s+=`<polyline points="${pts(path)}" fill="none" stroke="#C88A00" stroke-width="3" stroke-dasharray="5 8"/>`;
+  // ombra de la serralada a terra
+  if(up){const proj=[];FACES.forEach(f=>f.v.forEach(p=>proj.push(P(sub(p,mul(sun,p[2]/sun[2]))))));
+    const h=hull(proj);s+=`<polygon points="${h.map(p=>p.map(v=>v.toFixed(1)).join(",")).join(" ")}" fill="#111" opacity=".22" clip-path="url(#gclip)"/>`;}
+  const sunPt=up?P(mul(sun,RD)):null,sunSvg=up?`<circle cx="${sunPt[0]}" cy="${sunPt[1]}" r="26" fill="#FFC83D" stroke="#C88A00" stroke-width="3"/>`:"",behind=up&&dot(sun,CAM)<0;
+  if(behind)s+=sunSvg;
+  // cares de la muntanya, de la més llunyana a la més propera
+  const F=FACES.filter(f=>dot(f.n,CAM)>0).sort((a,b)=>dot(a.c,CAM)-dot(b.c,CAM));
+  F.forEach(f=>{const lam=up?Math.max(0,dot(f.n,sun)):0,k=.38+.62*lam;
+    const col=`rgb(${Math.round(234*k)},${Math.round(219*k)},${Math.round(200*k)})`;
+    s+=`<polygon points="${pts(f.v)}" fill="${col}" stroke="#9C8063" stroke-width="1.2" stroke-linejoin="round"/>`;});
+  // vegetació i neu (icones): bosc dens i neu a l'obaga, matolls clars a la solana
+  const pole=hem==="N"?1:-1;
+  for(let i=0;i<14;i++){const x=-2.6+i*.42,t=.35+.3*((i*7)%5)/5,y=pole*W2*t,z=1.25*(1-t);const [px,py]=P([x,y,z]);
+    if(dot([0,pole*.5,.87],CAM)>0)s+=`<path d="M${px} ${py-16} L${px-7} ${py+3} L${px+7} ${py+3} Z" fill="#2F6B3A"/>`;}
+  for(let i=0;i<5;i++){const x=-2.2+i*1.1,y=pole*.25,[px,py]=P([x,y,1.15]);if(dot([0,pole*.5,.87],CAM)>0)s+=`<ellipse cx="${px}" cy="${py}" rx="16" ry="6" fill="#fff" stroke="#9C8063"/>`;}
+  for(let i=0;i<9;i++){const x=-2.5+i*.6,t=.3+.4*((i*3)%4)/4,y=-pole*W2*t,z=1.25*(1-t);const [px,py]=P([x,y,z]);s+=`<circle cx="${px}" cy="${py}" r="4.5" fill="#8DA05A"/>`;}
+  // Sol
+  if(up&&!behind)s+=sunSvg;
+  // etiquetes de vessants
+  const lab=(y,t,c)=>{const [x,yy]=P([0,y,.2]);return txt(x,yy,t,{s:22,b:1,c,a:"middle",halo:1});};
+  s+=lab(-W2*.9,hem==="N"?"SOLANA":"OBAGA",hem==="N"?"#C24A00":"#1F5F96");
+  s+=lab(W2*.9,hem==="N"?"OBAGA":"SOLANA",hem==="N"?"#1F5F96":"#C24A00");
+  const mes=(hem==="N")===winter?"desembre":"juny";
+  s+=txt(Wd/2,40,`${hem==="N"?"Hemisferi nord":"Hemisferi sud"} (41°) · ${winter?"hivern":"estiu"} (${mes})`,{s:24,b:1,a:"middle"});
+  const alt=Math.asin(Math.max(-1,Math.min(1,sun[2])))/D2R;
+  s+=txt(Wd/2,72,up?`Hora solar ${hhmm(12+Hh*12/Math.PI)} · altura del Sol ${fmt(alt)}°`:"",{s:21,c:"#5b5652",a:"middle"});
+  $("#f4").innerHTML=SVG(Wd,Hd,s,"Serralada est-oest: trajectòria del Sol, solana i obaga");
+  $("#horaO").textContent=hhmm(12+Hh*12/Math.PI);
+  const eq=hem==="N"?{h:Di.hs,e:Di.s}:{h:Di.hn,e:Di.n},po=hem==="N"?{h:Di.hn,e:Di.n}:{h:Di.hs,e:Di.s},tot=Math.max(eq.e,po.e);
+  const pe=Math.round(100*eq.e/tot),pp=Math.round(100*po.e/tot);
+  $("#oriR").innerHTML=`Sol directe en tot el dia:<div class="bars"><span>Solana</span><i style="width:${pe}%;background:#FF6A13"></i><b>${fmt(eq.h,1)} h</b><span>Obaga</span><i style="width:${Math.max(1,pp)}%;background:#1F5F96"></i><b>${fmt(po.h,1)} h</b></div>`+
+   `<div style="font-size:18px;margin-top:6px">${winter?"A l'hivern el Sol surt pel sud-est, va baix i es pon pel sud-oest: l'<b>obaga no rep sol directe</b> en tot el dia.":"A l'estiu el Sol surt pel nord-est i es pon pel nord-oest, i al migdia va molt alt: l'obaga també rep sol, però més de biaix. La gran diferència és a l'<b>hivern</b>."}</div>`.replace(/sud-est|sud-oest|nord-est|nord-oest/g,m=>hem==="N"?m:({"sud-est":"nord-est","sud-oest":"nord-oest","nord-est":"sud-est","nord-oest":"sud-oest"})[m]);}
+function hull(P0){const p=P0.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+  const lo=[],hi=[];for(const q of p){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q);}
+  for(const q of p.reverse()){while(hi.length>1&&cr(hi[hi.length-2],hi[hi.length-1],q)<=0)hi.pop();hi.push(q);}
+  return lo.slice(0,-1).concat(hi.slice(0,-1));}
+function tick(){frac+=.004;if(frac>1){frac=0;}$("#hora").value=Math.round(frac*1000);d4();if(playing)raf=requestAnimationFrame(tick);}
+function setPlay(p){playing=p;$("#play").textContent=p?"❚❚":"▶";cancelAnimationFrame(raf);if(p&&!matchMedia("(prefers-reduced-motion: reduce)").matches)raf=requestAnimationFrame(tick);else if(p){frac=.5;d4();setPlay(false);}}
+$("#play").onclick=()=>setPlay(!playing);
+$("#hora").addEventListener("input",()=>{setPlay(false);frac=+$("#hora").value/1000;d4();});
+$("#hem").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;hem=b.dataset.v;$("#hem").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));d4();});
+$("#sea").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sea=b.dataset.v;$("#sea").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));d4();});
+
+/* ---------- 5 · Humanització ---------- */
+let urbV="n";
+function d5(){const W=960,H=700,x0=90,x1=920,gy=600,yT=t=>480-(t-14)*28,xs=u=>x0+u*(x1-x0)/10;
+  const night=urbV==="n",b0=night?16:24,amp=night?6:2;
+  const prof=[[0,0],[2,.1],[3,.4],[4,.85],[5,1],[5.6,.55],[6.2,.95],[7.3,.45],[8.5,.1],[10,0]].map(([u,f])=>[u,b0+amp*f]);
+  let s=`<rect width="${W}" height="${H}" fill="${night?"#EEF1F6":"#fff"}"/>`;
+  for(let t=14;t<=30;t+=2){if(t<b0-2||t>b0+amp+4)continue;s+=`<line x1="${x0}" x2="${x1}" y1="${yT(t)}" y2="${yT(t)}" stroke="#e4dfda"/>`+txt(x0-12,yT(t)+7,`${t}`,{s:20,a:"end",c:"#D62828"});}
+  s+=txt(x0,90,"T (°C)",{s:22,b:1,c:"#D62828",a:"middle"});
+  // edificis
+  [[3.2,60],[3.6,110],[4.0,160],[4.4,210],[4.8,150],[6.3,170],[6.7,110],[7.1,70]].forEach(([u,h])=>s+=`<rect x="${xs(u)}" y="${gy-h}" width="34" height="${h}" fill="#7a746e"/>`);
+  [[1,0],[1.6,0],[5.45,0],[5.75,0],[8.9,0],[9.4,0]].forEach(([u])=>s+=`<circle cx="${xs(u)+10}" cy="${gy-22}" r="22" fill="#5c9a4a"/><rect x="${xs(u)+7}" y="${gy-6}" width="6" height="6" fill="#4a3a26"/>`);
+  s+=`<line x1="${x0}" x2="${x1}" y1="${gy}" y2="${gy}" stroke="#111" stroke-width="3"/>`;
+  const pts=[];for(let j=0;j<=200;j++){const u=j/20;let i=prof.findIndex(p=>p[0]>=u);if(i<=0)i=1;const [ua,ta]=prof[i-1],[ub,tb]=prof[i],r=(u-ua)/(ub-ua||1);pts.push(xs(u)+","+yT(ta+(tb-ta)*(1-Math.cos(Math.PI*r))/2));}
+  s+=`<polyline points="${pts.join(" ")}" fill="none" stroke="#D62828" stroke-width="6" stroke-linejoin="round"/>`;
+  s+=txt(xs(.6),gy+40,"camp",{s:22,b:1,a:"middle"})+txt(xs(4.4),gy+40,"centre",{s:22,b:1,a:"middle"})+txt(xs(5.6),gy+40,"parc",{s:22,b:1,a:"middle",c:"#3d7a30"})+txt(xs(9.4),gy+40,"camp",{s:22,b:1,a:"middle"});
+  s+=`<line x1="${xs(9.6)}" x2="${xs(9.6)}" y1="${yT(b0)}" y2="${yT(b0+amp)}" stroke="#FF6A13" stroke-width="5"/>`+txt(xs(9.5),yT(b0+amp)-10,`+${amp} °C`,{s:26,b:1,c:"#C24A00",a:"end"});
+  s+=`<line x1="${xs(5)}" x2="${xs(9.6)}" y1="${yT(b0+amp)}" y2="${yT(b0+amp)}" stroke="#FF6A13" stroke-width="2" stroke-dasharray="8 6"/>`;
+  s+=txt(30,50,night?"De nit: l'asfalt i el formigó tornen la calor acumulada":"De dia: la diferència és més petita",{s:24,b:1});
+  $("#f5").innerHTML=SVG(W,H,s,"Illa de calor urbana");
+  $("#urbR").innerHTML=night?`De nit, el centre pot estar fins a <b>6 °C</b> més calent que el camp. Els parcs fan baixar la temperatura.`:`De dia la ciutat també és més calenta, però la diferència és més petita (valors orientatius).`;}
+$("#urb").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;urbV=b.dataset.v;$("#urb").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));d5();});
+
+/* ---------- Recorda: quin factor és? ---------- */
+const Q=[["Vielha (975 m) és més freda que Barcelona, encara que són a una latitud semblant.","Altitud"],
+ ["Lleida té estius més calorosos i hiverns més freds que Barcelona.","Distància al mar (continentalitat)"],
+ ["En un mateix poble del Pirineu, la neu dura més en un costat de la vall que a l'altre.","Orientació (obaga)"],
+ ["Les nits d'estiu, al centre de Barcelona fa més calor que als camps del Baix Llobregat.","Humanització (illa de calor)"],
+ ["A Oslo fa més fred que a Màlaga.","Latitud"]];
+$("#quiz").innerHTML=Q.map(q=>`<button>${q[0]}<span class="ans">→ ${q[1]}</span></button>`).join("");
+$("#quiz").addEventListener("click",e=>{const b=e.target.closest("button");if(b)b.classList.toggle("open");});
+
+/* ---------- navegació ---------- */
+let cur=1;const N=6,draws={1:d1,2:d2,3:d3m,4:d4,5:d5};
+function show(n){if(typeof setPlay==="function"&&playing)setPlay(false);cur=Math.max(1,Math.min(N,n));for(let i=1;i<=N;i++)$("#s"+i).hidden=i!==cur;
+  document.querySelectorAll(".pill").forEach(p=>p.classList.toggle("on",+p.dataset.s===cur));
+  $("#prev").disabled=cur===1;$("#next").disabled=cur===N;if(draws[cur])draws[cur]();}
+document.querySelectorAll(".pill").forEach(p=>p.onclick=()=>show(+p.dataset.s));
+$("#prev").onclick=()=>show(cur-1);$("#next").onclick=()=>show(cur+1);
+document.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==="ArrowRight"){e.preventDefault();show(cur+1);}else if(e.key==="ArrowLeft"){e.preventDefault();show(cur-1);}
+  else if(e.key==="f"||e.key==="F")fullscreen();});
+
+/* ---------- pantalla completa: si la pàgina incrustada no pot, s'obre en una pestanya nova ---------- */
+function openTab(){if(!/^https?:/.test(PAGE_URL))return;const a=document.createElement("a");a.href=PAGE_URL;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();}
+function fullscreen(){if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});return;}
+  const el=document.documentElement;if(document.fullscreenEnabled&&el.requestFullscreen)el.requestFullscreen().catch(openTab);else openTab();}
+$("#fsBtn").onclick=fullscreen;
+document.addEventListener("fullscreenchange",()=>{$("#fsBtn").textContent=document.fullscreenElement?"✕ Surt de la pantalla completa":"⛶ Pantalla completa";});
+function fit(){const w=$("#wrap"),k=Math.min(w.clientWidth/1600,w.clientHeight/900)||1;$("#stage").style.transform=`translate(-50%,-50%) scale(${k})`;}
+addEventListener("resize",fit);try{new ResizeObserver(fit).observe($("#wrap"));}catch(e){}
+show(1);fit();
+</script>
+
+</body></html>

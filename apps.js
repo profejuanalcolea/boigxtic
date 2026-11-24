@@ -27,6 +27,10 @@ const APPS = [
   { titol: "Fases de la Lluna",      materia: "gica2",    nivell: "", desc: "El cel de l'observador, l'òrbita des de l'espai i reptes.", url: "geologia-ccaa/fases-lluna/" },
   { titol: "Translació",             materia: "gica2",    nivell: "", desc: "La translació de la Terra: equinoccis, solsticis i estacions.", url: "geologia-ccaa/translacio/" },
   { titol: "Atmosfera en moviment",  materia: "gica2",    nivell: "", desc: "La circulació de l'atmosfera.", url: "geologia-ccaa/atmosfera/" },
+  { titol: "Laboratori de núvols",   materia: "gica2",    nivell: "", desc: "Humitat, refredament adiabàtic, efecte foehn, núvols i precipitació.", url: "geologia-ccaa/nuvols/" },
+  { titol: "Factors del clima",      materia: "gica2",    nivell: "", desc: "Què fa que cada lloc tingui el seu clima.", url: "geologia-ccaa/factors-clima/" },
+  { titol: "Com es fa un climograma",materia: "gica2",    nivell: "", desc: "Construir i llegir un climograma pas a pas.", url: "geologia-ccaa/climograma/" },
+  { titol: "Mosaic de climes",       materia: "gica2",    nivell: "", desc: "Els climes del món comparats.", url: "geologia-ccaa/mosaic-climes/" },
   { titol: "La Terra",               materia: "gica2",    nivell: "", desc: "Animació de la Terra girant en 3D.", url: "geologia-ccaa/la-terra/" },
 
   { titol: "El cicle de les roques", materia: "bigica1",  nivell: "", desc: "Processos que transformen unes roques en altres.", url: "biogeo/cicle-roques/" },
