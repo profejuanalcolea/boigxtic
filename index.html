@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>boigxtic · Apps de classe</title>
+<link rel="icon" href="img/ammo.png">
+<style>
+  :root { --taronja:#f26b1d; --negre:#111; --gris:#666; --linia:#e5e5e5; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--negre); background:#fff; font-size:20px; }
+  header { display:flex; align-items:center; gap:20px; padding:20px 40px; border-bottom:4px solid var(--taronja); flex-wrap:wrap; }
+  header img { width:72px; height:72px; object-fit:cover; border-radius:50%; border:3px solid var(--taronja); }
+  header h1 { margin:0; font-size:2.2rem; letter-spacing:-.5px; }
+  header p { margin:2px 0 0; color:var(--gris); font-size:1rem; }
+  .eines { margin-left:auto; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  #cerca { font-size:1.1rem; padding:10px 16px; border:2px solid var(--negre); border-radius:10px; width:280px; }
+  #cerca:focus { outline:none; border-color:var(--taronja); }
+  nav { display:flex; gap:8px; padding:16px 40px 0; flex-wrap:wrap; }
+  nav a { text-decoration:none; color:var(--negre); border:2px solid var(--negre); border-radius:999px; padding:6px 16px; font-size:1rem; font-weight:600; }
+  nav a.actiu, nav a:hover { background:var(--negre); color:#fff; }
+  main { padding:10px 40px 60px; }
+  section h2 { font-size:1.6rem; margin:30px 0 14px; display:flex; align-items:center; gap:12px; }
+  section h2::before { content:""; width:14px; height:28px; background:var(--taronja); border-radius:3px; }
+  section h2 .n { color:var(--gris); font-weight:400; font-size:1rem; }
+  .graella { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+  .targeta { border:2px solid var(--linia); border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:8px; transition:border-color .15s; }
+  .targeta:hover { border-color:var(--taronja); }
+  .targeta h3 { margin:0; font-size:1.3rem; }
+  .targeta h3 a { color:var(--negre); text-decoration:none; }
+  .targeta h3 a:hover { color:var(--taronja); }
+  .targeta .desc { margin:0; color:var(--gris); font-size:1rem; flex:1; }
+  .etiquetes { display:flex; gap:6px; flex-wrap:wrap; }
+  .etiqueta { font-size:.8rem; font-weight:700; padding:2px 10px; border-radius:999px; background:#f3f3f3; }
+  .etiqueta.ext { background:#fff1e8; color:var(--taronja); }
+  .botons { display:flex; gap:8px; margin-top:4px; }
+  .botons a, .botons button { font:inherit; font-size:.95rem; font-weight:600; padding:8px 14px; border-radius:10px; cursor:pointer; text-decoration:none; }
+  .obrir { background:var(--taronja); color:#fff; border:2px solid var(--taronja); }
+  .copiar { background:#fff; color:var(--negre); border:2px solid var(--negre); }
+  .copiar.fet { background:var(--negre); color:#fff; }
+  .pendent { opacity:.45; }
+  .pendent .botons { display:none; }
+  .buit { color:var(--gris); font-style:italic; }
+  footer { text-align:center; color:var(--gris); font-size:.9rem; padding:20px; border-top:1px solid var(--linia); }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="img/ammo.png" alt="Ammo" onerror="this.style.display='none'">
+  <div>
+    <h1>boigxtic</h1>
+    <p>Apps de classe · J Alcolea · Ins Júlia Minguell</p>
+  </div>
+  <div class="eines">
+    <input id="cerca" type="search" placeholder="🔍 Cerca una app…" autocomplete="off">
+  </div>
+</header>
+
+<nav id="menu"></nav>
+<main id="contingut"></main>
+<footer>J Alcolea · Ins Júlia Minguell</footer>
+
+<script src="apps.js"></script>
+<script>
+  const menu = document.getElementById("menu");
+  const contingut = document.getElementById("contingut");
+  const cerca = document.getElementById("cerca");
+
+  const urlAbsoluta = u => new URL(u, location.href).href;
+  const esExterna = u => /^https?:\/\//.test(u) && new URL(u).host !== location.host;
+  const net = s => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+  function pinta() {
+    const filtre = location.hash.slice(1);
+    const q = net(cerca.value);
+
+    menu.innerHTML = `<a href="#" class="${filtre ? "" : "actiu"}">Totes</a>` +
+      MATERIES.map(m => `<a href="#${m.id}" class="${filtre === m.id ? "actiu" : ""}">${m.nom}</a>`).join("");
+
+    contingut.innerHTML = "";
+    MATERIES.filter(m => !filtre || m.id === filtre).forEach(m => {
+      const apps = APPS.filter(a => a.materia === m.id &&
+        (!q || net(a.titol + " " + a.desc + " " + a.nivell).includes(q)));
+      if (q && !apps.length) return;
+
+      const s = document.createElement("section");
+      s.innerHTML = `<h2>${m.nom} <span class="n">${apps.length}</span></h2><div class="graella"></div>`;
+      const g = s.querySelector(".graella");
+      if (!apps.length) g.innerHTML = `<p class="buit">Encara no hi ha apps.</p>`;
+
+      apps.forEach(a => {
+        const t = document.createElement("div");
+        t.className = "targeta" + (a.url ? "" : " pendent");
+        const ext = a.url && esExterna(a.url);
+        t.innerHTML = `
+          <h3>${a.url ? `<a href="${a.url}">${a.titol}</a>` : a.titol}</h3>
+          <div class="etiquetes">
+            ${a.nivell ? `<span class="etiqueta">${a.nivell}</span>` : ""}
+            ${ext ? `<span class="etiqueta ext">🔗 externa</span>` : ""}
+            ${a.url ? "" : `<span class="etiqueta">pendent</span>`}
+          </div>
+          <p class="desc">${a.desc || ""}</p>
+          <div class="botons">
+            <a class="obrir" href="${a.url}">Obrir</a>
+            <button class="copiar">📋 Copiar enllaç</button>
+          </div>`;
+        const b = t.querySelector(".copiar");
+        b.onclick = () => {
+          navigator.clipboard.writeText(urlAbsoluta(a.url)).then(() => {
+            b.textContent = "✓ Copiat"; b.classList.add("fet");
+            setTimeout(() => { b.textContent = "📋 Copiar enllaç"; b.classList.remove("fet"); }, 1500);
+          });
+        };
+        g.appendChild(t);
+      });
+      contingut.appendChild(s);
+    });
+
+    if (!contingut.children.length) contingut.innerHTML = `<p class="buit" style="margin-top:30px">Cap app coincideix amb «${cerca.value}».</p>`;
+  }
+
+  cerca.addEventListener("input", pinta);
+  window.addEventListener("hashchange", pinta);
+  pinta();
+</script>
+</body>
+</html>
