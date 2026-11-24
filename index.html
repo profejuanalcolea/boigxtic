@@ -64,6 +64,10 @@
   .targeta .desc { margin:0; color:var(--gris); font-size:1rem; flex:1; }
   .etiquetes { display:flex; gap:6px; flex-wrap:wrap; }
   .etiqueta { font-size:.8rem; font-weight:700; padding:2px 10px; border-radius:999px; background:var(--suau); }
+  .etiqueta.proves { background:transparent; border:1.5px dashed var(--taronja); color:var(--taronja); }
+  .versions { font-size:.9rem; color:var(--gris); }
+  .versions a { color:var(--negre); font-weight:600; }
+  .versions a:hover { color:var(--taronja); }
   .etiqueta.ext { background:#fff1e8; color:var(--taronja); }
   .botons { display:flex; gap:8px; margin-top:4px; }
   .botons a, .botons button { font:inherit; font-size:.95rem; font-weight:600; padding:8px 14px; border-radius:10px; cursor:pointer; text-decoration:none; }
@@ -212,12 +216,14 @@
             ${a.nivell ? `<span class="etiqueta">${a.nivell}</span>` : ""}
             ${ext ? `<span class="etiqueta ext">🔗 externa</span>` : ""}
             ${a.url ? "" : `<span class="etiqueta">pendent</span>`}
+            ${a.estat === "proves" ? `<span class="etiqueta proves" title="Encara s'hi està treballant: pot tenir errors o canviar">🧪 en proves</span>` : ""}
           </div>
           <p class="desc">${a.desc || ""}</p>
           <div class="botons">
             <a class="obrir" href="${a.url}">Obrir</a>
             <button class="copiar">📋 Copiar enllaç</button>
-          </div>`;
+          </div>
+          ${(a.versions||[]).length ? `<div class="versions">Altres versions: ${a.versions.map(v => `<a href="${v.url}">${v.nom}</a>`).join(" · ")}</div>` : ""}`;
         const b = t.querySelector(".copiar");
         b.onclick = () => {
           navigator.clipboard.writeText(urlAbsoluta(a.url)).then(() => {

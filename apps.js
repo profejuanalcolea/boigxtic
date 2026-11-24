@@ -9,6 +9,8 @@
 //    url     → adreça completa (https://...) o carpeta del repositori
 //              (p. ex. "mates/pizzeria/"). Si està buida "", la targeta
 //              surt com a "pendent".
+//    estat   → opcional: "proves" posa l'etiqueta «🧪 en proves»
+//    versions→ opcional: altres versions, p. ex. [ { nom: "Versió 1", url: "..." } ]
 //  Compte amb les comes entre línies!
 // ============================================================
 
@@ -46,14 +48,14 @@ const APPS = [
   { titol: "Prediu l'Ou",            materia: "bigica1",  nivell: "", desc: "Prediccions abans de la pràctica de l'ou a la salmorra.", url: "biogeo/prediu-ou/" },
   { titol: "L'Ou a la Salmorra",     materia: "bigica1",  nivell: "", desc: "La pràctica de densitat: l'ou a l'aigua salada.", url: "biogeo/ou-salmorra/" },
 
-  { titol: "L'hora i el Sol",        materia: "biogeo4",  nivell: "", desc: "Fusos horaris, terminador i canvi d'hora.", url: "" },
   { titol: "Els orgànuls cel·lulars",materia: "biogeo4",  nivell: "", desc: "Presentació interactiva amb l'Ammo: dibuixos animats i sons.", url: "biogeo4/organuls/" },
   { titol: "Detectius del microscopi", materia: "biogeo4", nivell: "", desc: "Activitat 1.3: nucli, mitocondri i bacteri al microscopi electrònic.", url: "biogeo4/organuls-detectius/" },
-  { titol: "Mitosi amb Tradescantia",materia: "biogeo4",  nivell: "", desc: "Pràctica de laboratori.", url: "" },
+  { titol: "L'hora i el Sol",        materia: "biogeo4",  nivell: "", desc: "Fusos, terminador sobre la península, models horaris i repte final.", url: "biogeo4/hora-sol/" },
 
   { titol: "Missió Mart",            materia: "steam",    nivell: "4t ESO", desc: "Exercicis de la missió amb la Laika: mode alumne i mode professorat.", url: "steam/missio-mart/" },
   { titol: "Terraformació",          materia: "steam",    nivell: "4t ESO", desc: "Canviem Mart o ens adaptem? (V2)", url: "steam/terraformacio/" },
-  { titol: "On aterrem? (Mart)",     materia: "steam",    nivell: "4t ESO", desc: "Missió a Mart: on aterrar segons la geomorfologia.", url: "" },
+  { titol: "On aterrem? (Mart)",     materia: "steam",    nivell: "4t ESO", estat: "proves", desc: "Missió a Mart: on aterrar segons la geomorfologia.", url: "steam/on-aterrem/",
+    versions: [ { nom: "Versió 1", url: "steam/on-aterrem-v1/" } ] },
 
   { titol: "Pizzeria Tres Quarts",   materia: "mates",    nivell: "", desc: "Com s'escriuen les fraccions en català, amb en FR-4C.", url: "mates/pizzeria/" },
   { titol: "Operació Fracció",       materia: "mates",    nivell: "", desc: "Escape room de fraccions: el laboratori precintat.", url: "mates/operacio-fraccio/" },

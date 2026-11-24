@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>On aterrem? Selecció del lloc d'aterratge a Mart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #E9EDF0; --panel: #F7F8F9; --ink: #16212C; --muted: #53616E; --line: #C3CCD3;
+  --rust: #A33F1C; --rust-soft: #F1DCD2; --ice: #2F7FB3; --signal: #C98F0E; --ok: #2E7D4F; --bad: #B3261E;
+  --map-bg: #1C1A1A;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Barlow", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #151B21; --panel: #1E262E; --ink: #E7ECEF; --muted: #9DAAB5; --line: #34414C;
+    --rust: #E0714A; --rust-soft: #3A2419; --ice: #6CB4E4; --signal: #E6B43C; --ok: #5DBB83; --bad: #F07167;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #151B21; --panel: #1E262E; --ink: #E7ECEF; --muted: #9DAAB5; --line: #34414C;
+  --rust: #E0714A; --rust-soft: #3A2419; --ice: #6CB4E4; --signal: #E6B43C; --ok: #5DBB83; --bad: #F07167;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.5; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0 0 .4em; }
+h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
+h3 { font-size: 1.35rem; font-weight: 600; }
+p { margin: 0 0 .8em; max-width: 68ch; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+
+/* capçalera */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--ink); color: var(--paper); }
+.top .wrap { display: flex; align-items: center; gap: 18px; padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap; }
+.brand { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: .01em; }
+.brand small { font-family: var(--body); font-weight: 400; font-size: .85rem; opacity: .7; margin-left: 8px; }
+.steps { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.steps button { background: transparent; border: 0; color: inherit; opacity: .6; padding: 6px 10px; border-radius: 4px; font-family: var(--display); font-size: 1.05rem; font-weight: 600; white-space: nowrap; }
+.steps button b { display: inline-grid; place-items: center; width: 1.45em; height: 1.45em; border-radius: 50%; border: 1.5px solid currentColor; margin-right: 6px; font-size: .85em; }
+.steps button[aria-current="step"] { opacity: 1; background: rgba(255,255,255,.1); }
+.steps button[aria-current="step"] b { background: var(--rust); border-color: var(--rust); color: #fff; }
+.steps button.done b { background: currentColor; }
+.steps button.done b span { color: var(--ink); }
+
+section.step { display: none; padding: 28px 0 60px; }
+section.step.active { display: block; }
+#s-mission { padding-top: 0; }
+.report svg { max-width: 760px; }
+
+/* inici */
+.hero { position: relative; background: var(--map-bg); color: #fff; overflow: hidden; }
+.hero canvas { display: block; width: 100%; height: clamp(290px, 38vw, 440px); object-fit: cover; opacity: .9; }
+.hero .title { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 20px 22px; background: linear-gradient(transparent, rgba(12,10,10,.78)); }
+.hero h1 { font-size: clamp(3.6rem, 13vw, 9.5rem); margin: 0; letter-spacing: -.01em; }
+.hero p { font-size: 1.1rem; margin: 0; max-width: 52ch; color: #F2E6DF; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+label.field { display: block; margin-bottom: 12px; }
+label.field span { display: block; font-weight: 600; font-size: .95rem; margin-bottom: 3px; }
+input[type=text], textarea, input[type=number] { width: 100%; background: var(--panel); border: 1.5px solid var(--line); border-radius: 6px; padding: 9px 11px; }
+textarea { min-height: 96px; resize: vertical; line-height: 1.45; }
+input:focus, textarea:focus { border-color: var(--rust); outline: none; }
+.roles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+@media (max-width: 520px) { .roles { grid-template-columns: 1fr; } }
+.role-hint { font-size: .85rem; color: var(--muted); margin-top: 2px; }
+
+.missions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+@media (max-width: 520px) { .missions { grid-template-columns: 1fr; } }
+.mcard { text-align: left; background: var(--panel); border: 1.5px solid var(--line); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+.mcard .ic { font-size: 1.6rem; }
+.mcard strong { font-family: var(--display); font-size: 1.35rem; }
+.mcard span { font-size: .92rem; color: var(--muted); }
+.mcard[aria-pressed="true"] { border-color: var(--rust); background: var(--rust-soft); box-shadow: inset 0 0 0 1.5px var(--rust); }
+.brief { border-left: 5px solid var(--rust); background: var(--panel); padding: 16px 18px; margin-top: 16px; border-radius: 0 8px 8px 0; }
+.brief dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 8px 0 0; }
+.brief dt { font-weight: 600; }
+.brief dd { margin: 0; }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--ink); background: transparent; padding: 9px 16px; border-radius: 6px; font-weight: 600; }
+.btn.primary { background: var(--rust); border-color: var(--rust); color: #fff; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.small { padding: 5px 10px; font-size: .9rem; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* mapa */
+.maplayout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; align-items: start; }
+@media (max-width: 1020px) { .maplayout { grid-template-columns: 1fr; } }
+.toolbar { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin-bottom: 10px; font-size: .95rem; }
+.seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 5px 12px; font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.chk { display: inline-flex; gap: 5px; align-items: center; }
+.mapframe { position: relative; background: var(--map-bg); border-radius: 6px; overflow: hidden; cursor: crosshair; touch-action: manipulation; }
+.mapframe canvas { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-size: 11.5px; color: #fff; text-shadow: 0 0 3px #000, 0 0 2px #000; white-space: nowrap; pointer-events: none; font-weight: 500; }
+.lbl.l2, .lbl.l3 { display: none; }
+.mapframe.w2 .lbl.l2, .mapframe.w3 .lbl.l2, .mapframe.w3 .lbl.l3 { display: block; }
+.lander { position: absolute; width: 0; height: 0; pointer-events: none; }
+.lander::before { content: ""; position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; background: #fff; border: 2px solid #111; transform: rotate(45deg); }
+.lander span { position: absolute; left: 9px; top: -8px; font-size: 11px; color: #fff; text-shadow: 0 0 3px #000; white-space: nowrap; }
+.mapframe:not(.w2) .lander span { display: none; }
+.pin { position: absolute; width: 0; height: 0; pointer-events: none; }
+.pin::before, .pin::after { content: ""; position: absolute; background: var(--signal); }
+.pin::before { left: -12px; top: -1.5px; width: 24px; height: 3px; }
+.pin::after { left: -1.5px; top: -12px; width: 3px; height: 24px; }
+.pin.final::before, .pin.final::after { background: #FF5A36; }
+.cand { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: #fff; color: #111; font: 700 12px/20px var(--body); text-align: center; border: 2px solid #111; pointer-events: none; }
+.axis { display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); padding: 3px 2px 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .85rem; margin-top: 10px; color: var(--muted); align-items: center; }
+.legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; border: 1px solid rgba(0,0,0,.25); }
+.ramp { height: 12px; width: 220px; border-radius: 3px; border: 1px solid rgba(0,0,0,.25); }
+
+.panel { background: var(--panel); border: 1.5px solid var(--line); border-radius: 8px; padding: 16px; }
+.panel h3 { margin-bottom: 6px; }
+.empty { color: var(--muted); padding: 10px 0; }
+.detail { position: relative; width: 100%; aspect-ratio: 1; background: var(--map-bg); border-radius: 6px; overflow: hidden; cursor: crosshair; }
+.detail canvas { display: block; width: 100%; height: 100%; }
+.detail .note { position: absolute; left: 8px; top: 6px; right: 8px; font-size: 11.5px; color: #fff; text-shadow: 0 0 3px #000; }
+.detail .scale { position: absolute; right: 10px; bottom: 8px; color: #fff; font-size: 11.5px; text-align: center; text-shadow: 0 0 3px #000; }
+.detail .scale div { height: 5px; border: 2px solid #fff; border-top: 0; box-shadow: 0 1px 2px #000; }
+.readout { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: .93rem; margin: 12px 0; }
+.readout dt { color: var(--muted); }
+.readout dd { margin: 0; font-weight: 500; font-variant-numeric: tabular-nums; }
+.meter { margin: 7px 0; }
+.meter .mh { display: flex; justify-content: space-between; font-size: .9rem; }
+.meter .mh em { font-style: normal; color: var(--muted); font-size: .82rem; }
+.meter .bar { height: 9px; background: var(--line); border-radius: 5px; overflow: hidden; }
+.meter .bar div { height: 100%; background: var(--ink); border-radius: 5px; transition: width .3s; }
+.total { display: flex; align-items: baseline; justify-content: space-between; border-top: 1.5px solid var(--line); margin-top: 10px; padding-top: 10px; }
+.total b { font-family: var(--display); font-size: 2.4rem; color: var(--rust); line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); }
+.tablewrap { overflow-x: auto; }
+tr.chosen td { background: var(--rust-soft); }
+
+/* perfil */
+.proflayout { display: grid; grid-template-columns: 420px minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 960px) { .proflayout { grid-template-columns: 1fr; } }
+.profile svg { width: 100%; height: auto; display: block; background: var(--panel); border: 1.5px solid var(--line); border-radius: 8px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 12px; }
+.stat { background: var(--panel); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.stat b { display: block; font-family: var(--display); font-size: 1.7rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat span { font-size: .85rem; color: var(--muted); }
+.tip { font-size: .92rem; color: var(--muted); }
+
+/* bitàcola */
+.logrole { border-top: 3px solid var(--ink); padding-top: 14px; margin-top: 28px; }
+.logrole header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.logrole header h3 { margin: 0; }
+.logrole header span { color: var(--muted); }
+.databox { background: var(--panel); border: 1.5px dashed var(--line); border-radius: 8px; padding: 10px 14px; font-size: .92rem; margin-bottom: 12px; }
+.databox b { font-weight: 600; }
+.q { margin-bottom: 14px; }
+.q label { display: block; font-weight: 600; margin-bottom: 4px; max-width: 75ch; }
+.saved { font-size: .85rem; color: var(--ok); min-height: 1.3em; }
+
+/* descens */
+.descent { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 26px; align-items: start; }
+@media (max-width: 800px) { .descent { grid-template-columns: 1fr; } }
+.sky { position: relative; height: 460px; border-radius: 8px; overflow: hidden; background: linear-gradient(#0a0b12 0%, #3b1f1a 55%, #b0643c 88%, #6b3a24 100%); }
+.sky .ground { position: absolute; left: 0; right: 0; bottom: 0; height: 36px; background: #5a321f; }
+.craft { position: absolute; left: 50%; top: 0; width: 60px; transform: translate(-50%, 0); }
+.tele { position: absolute; left: 10px; top: 10px; color: #fff; font-size: .9rem; font-variant-numeric: tabular-nums; text-shadow: 0 0 3px #000; }
+.tele b { font-family: var(--display); font-size: 1.6rem; display: block; line-height: 1; }
+.phases { list-style: none; margin: 0; padding: 0; counter-reset: ph; }
+.phases li { position: relative; padding: 10px 0 10px 44px; border-bottom: 1px solid var(--line); color: var(--muted); }
+.phases li::before { counter-increment: ph; content: counter(ph); position: absolute; left: 0; top: 10px; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-weight: 600; }
+.phases li strong { display: block; color: var(--ink); font-family: var(--display); font-size: 1.2rem; font-weight: 600; }
+.phases li.now { color: var(--ink); }
+.phases li.now::before { border-color: var(--signal); background: var(--signal); color: #111; }
+.phases li.ok::before { border-color: var(--ok); background: var(--ok); color: #fff; content: "✓"; }
+.phases li.fail::before { border-color: var(--bad); background: var(--bad); color: #fff; content: "✕"; }
+.verdict { margin-top: 18px; padding: 16px 18px; border-radius: 8px; border: 2px solid; }
+.verdict.ok { border-color: var(--ok); }
+.verdict.fail { border-color: var(--bad); }
+.verdict h3 { font-size: 1.8rem; }
+
+/* informe */
+.report { background: var(--panel); border: 1.5px solid var(--line); border-radius: 8px; padding: 22px; }
+.report .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 14px 0; }
+.report img { width: 100%; border-radius: 6px; display: block; }
+.committee td input { width: 64px; }
+.status { font-size: .92rem; color: var(--muted); margin-top: 6px; min-height: 1.4em; }
+@media (prefers-reduced-motion: reduce) { .meter .bar div { transition: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">On aterrem?<small id="agencyTag">Equip de selecció d'aterratge</small></div>
+    <nav class="steps" id="steps" aria-label="Etapes de la missió"></nav>
+  </div>
+</header>
+
+<main>
+<!-- 1. MISSIÓ -->
+<section class="step" id="s-mission">
+  <div class="hero">
+    <canvas id="heroMap" width="720" height="360" aria-hidden="true"></canvas>
+    <div class="title"><div class="wrap" style="padding:0">
+      <h1>On aterrem?</h1>
+      <p>La nau ja és en òrbita al voltant de Mart. Teniu el mapa, les dades i una missió. Heu de triar on toquem terra.</p>
+    </div></div>
+  </div>
+  <div class="wrap" style="padding-top:28px">
+    <div class="grid2">
+      <div>
+        <h2>L'equip</h2>
+        <p>A la NASA, triar el lloc d'aterratge de Perseverance va durar cinc anys i hi van participar centenars de científics. Vosaltres ho fareu en unes quantes sessions. Cada membre té un rol i en respon a la bitàcola.</p>
+        <label class="field"><span>Nom de l'agència espacial</span><input type="text" id="agency" maxlength="40" placeholder="Per exemple: Agència Espacial Minguell"></label>
+        <div class="roles" id="roles"></div>
+      </div>
+      <div>
+        <h2>La missió</h2>
+        <p>Cada missió necessita un lloc diferent. Trieu-ne una o deixeu que la sort decideixi.</p>
+        <div class="missions" id="missions"></div>
+        <div class="row" style="margin-top:12px"><button class="btn" id="drawMission">🎲 Sorteja una missió</button></div>
+        <div id="brief"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. MAPA -->
+<section class="step" id="s-map">
+  <div class="wrap">
+    <h2>Explorem el planeta</h2>
+    <p>Toqueu el mapa per analitzar un punt. Afineu la posició a la vista de detall i deseu fins a tres candidats. Després, compareu-los i trieu el definitiu.</p>
+    <div class="maplayout">
+      <div>
+        <div class="toolbar">
+          <div class="seg" role="group" aria-label="Capa de base">
+            <button id="mAlt" aria-pressed="true">Altitud</button><button id="mGeo" aria-pressed="false">Geologia</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="oIce"> Gel</label>
+          <label class="chk"><input type="checkbox" id="oDust"> Pols</label>
+          <label class="chk"><input type="checkbox" id="oNames" checked> Noms</label>
+          <label class="chk"><input type="checkbox" id="oLanders"> Missions anteriors</label>
+        </div>
+        <div class="mapframe" id="mapframe">
+          <canvas id="map" width="720" height="360" aria-label="Mapa de Mart. Toqueu per triar un punt."></canvas>
+          <div id="mapOverlay"></div>
+        </div>
+        <div class="axis"><span>180° O</span><span>90° O</span><span>0°</span><span>90° E</span><span>180° E</span></div>
+        <div class="legend" id="legend"></div>
+        <p class="tip" style="margin-top:10px">El mapa és un model simplificat fet a partir de dades reals (altituds de l'altímetre MOLA, unitats geològiques i gel detectat per sonda). Per al detall fi, feu servir també <a href="https://trek.nasa.gov/mars/" target="_blank" rel="noopener">NASA Mars Trek</a>.</p>
+        <h3 style="margin-top:22px">Candidats</h3>
+        <div id="candidates"></div>
+      </div>
+      <aside class="panel" id="sitePanel"></aside>
+    </div>
+  </div>
+</section>
+
+<!-- 3. PERFIL -->
+<section class="step" id="s-profile">
+  <div class="wrap">
+    <h2>Perfil topogràfic</h2>
+    <div id="profileBody"></div>
+  </div>
+</section>
+
+<!-- 4. BITÀCOLA -->
+<section class="step" id="s-log">
+  <div class="wrap">
+    <h2>Quadern de bitàcola</h2>
+    <p>Cada rol respon les seves preguntes amb les dades del lloc triat. Les respostes es desen automàticament en aquest dispositiu.</p>
+    <div id="logBody"></div>
+  </div>
+</section>
+
+<!-- 5. DESCENS -->
+<section class="step" id="s-descent">
+  <div class="wrap">
+    <h2>Set minuts de terror</h2>
+    <div id="descentBody"></div>
+  </div>
+</section>
+
+<!-- 6. INFORME -->
+<section class="step" id="s-report">
+  <div class="wrap">
+    <h2>Informe i defensa</h2>
+    <div id="reportBody"></div>
+    <h2 style="margin-top:44px">Comitè de selecció</h2>
+    <p>Per a la defensa final a classe. Cada equip presenta el seu lloc i la resta vota de l'1 al 5 en cada criteri. Feu-ho en un sol dispositiu, per exemple el del projector.</p>
+    <div id="committee"></div>
+  </div>
+</section>
+</main>
+<script>
+// ===== MODEL SIMPLIFICAT DE MART =====
+const R_MARS = 3389.5; // km
+const KM_PER_DEG = Math.PI * R_MARS / 180; // ~59.2
+const rad = d => d * Math.PI / 180;
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const wrapLon = l => ((l + 540) % 360) - 180;
+
+function degDist(p1, l1, p2, l2) {
+  const dl = wrapLon(l1 - l2) * Math.cos(rad((p1 + p2) / 2));
+  const dp = p1 - p2;
+  return Math.sqrt(dl * dl + dp * dp);
+}
+function kmDist(p1, l1, p2, l2) {
+  const a = Math.sin(rad(p2 - p1) / 2) ** 2 + Math.cos(rad(p1)) * Math.cos(rad(p2)) * Math.sin(rad(l2 - l1) / 2) ** 2;
+  return 2 * R_MARS * Math.asin(Math.min(1, Math.sqrt(a)));
+}
+
+// Dicotomia nord-sud: latitud de la frontera segons la longitud
+function boundary(lon) {
+  const e = (lon + 360) % 360;
+  return 14 + 12 * Math.cos(rad(e - 20)) + 6 * Math.cos(rad(2 * (e - 40)));
+}
+
+// --- soroll 3D sobre l'esfera (sense costures) ---
+function hash3(x, y, z) {
+  let h = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ Math.imul(z, 1274126177);
+  h = Math.imul(h ^ (h >>> 13), 1103515245);
+  h ^= h >>> 16;
+  return ((h >>> 0) / 4294967295) * 2 - 1;
+}
+function vnoise(x, y, z) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+  const xf = x - xi, yf = y - yi, zf = z - zi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+  const L = (a, b, t) => a + (b - a) * t;
+  return L(
+    L(L(hash3(xi, yi, zi), hash3(xi + 1, yi, zi), u), L(hash3(xi, yi + 1, zi), hash3(xi + 1, yi + 1, zi), u), v),
+    L(L(hash3(xi, yi, zi + 1), hash3(xi + 1, yi, zi + 1), u), L(hash3(xi, yi + 1, zi + 1), hash3(xi + 1, yi + 1, zi + 1), u), v),
+    w);
+}
+
+// --- grans estructures (coordenades reals, lon est -180..180) ---
+const DOMES = [ // volcans en escut: [lat, lon, radi°, alçada m, radi caldera°]
+  [18.65, -133.8, 5.0, 22000, 0.6],   // Olympus Mons
+  [-8.26, -120.5, 3.5, 11000, 0.9],   // Arsia Mons
+  [1.48, -112.96, 3.0, 9500, 0.5],    // Pavonis Mons
+  [11.92, -104.08, 3.2, 11500, 0.5],  // Ascraeus Mons
+  [24.8, 146.9, 3.0, 9000, 0.25],     // Elysium Mons
+  [32.1, 150.2, 1.5, 4000, 0.15],     // Hecates Tholus
+  [18.8, 150.4, 1.3, 3000, 0.15],     // Albor Tholus
+];
+const GAUSS = [ // [lat, lon, sigma°, amplitud m]
+  [5, -110, 22, 6500],   // bombament de Tharsis
+  [40.5, -109.9, 8, 3500], // Alba Mons
+  [24, 147, 8, 2500],    // bombament d'Elysium
+  [5, 0, 12, -2500],     // Arabia/Meridiani (terres altes més baixes)
+  [46.7, 117.5, 18, -800], // conca d'Utopia
+  [8.4, 69.5, 6, 900],   // Syrtis Major
+];
+const BASINS = [ // [lat, lon, radi fons°, profunditat, radi vora°, alçada vora, amplada vora]
+  [-42.4, 70.5, 12, 8500, 20, 1800, 5],  // Hellas
+  [-49.7, -43.4, 7, 4500, 11, 1500, 3],  // Argyre
+  [12.9, 87.0, 10, 4500, 14, 1000, 2.5], // Isidis
+];
+const NAMED_CRATERS = [ // [lat, lon, radi°, profunditat, pic central]
+  [-5.4, 137.8, 1.3, 5500, 5000],  // Gale + Aeolis Mons
+  [18.4, 77.6, 0.4, 600, 0],       // Jezero
+  [-14.6, 175.4, 0.8, 1500, 0],    // Gusev
+  [-13.9, 55.6, 2.2, 2500, 0],     // Huygens
+  [-2.7, 16.7, 2.3, 2000, 0],      // Schiaparelli
+  [-26.4, -34.0, 0.75, 1500, 0],   // Holden
+  [73.0, 164.5, 0.7, 1800, 0],     // Korolev
+];
+const CANYON = [[-6.5, -101], [-8, -90], [-9.5, -80], [-10.5, -72], [-12, -64], [-13, -56], [-11, -47], [-6, -41], [0, -38]];
+const KASEI = [[-1, -80], [8, -76], [18, -72], [24, -62], [27, -52]];
+
+function segDist(p, l, a, b) {
+  const c = Math.cos(rad(p));
+  const ax = a[1] * c, ay = a[0], bx = b[1] * c, by = b[0], px = l * c, py = p;
+  const dx = bx - ax, dy = by - ay;
+  const t = clamp(((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy), 0, 1);
+  const qx = ax + t * dx - px, qy = ay + t * dy - py;
+  return { d: Math.sqrt(qx * qx + qy * qy), t };
+}
+function lineDist(p, l, line) {
+  let best = { d: 1e9, s: 0 };
+  for (let i = 0; i < line.length - 1; i++) {
+    const r = segDist(p, l, line[i], line[i + 1]);
+    if (r.d < best.d) best = { d: r.d, s: (i + r.t) / (line.length - 1) };
+  }
+  return best;
+}
+function canyonDist(p, l) {
+  if (p < -22 || p > 10 || l < -112 || l > -28) return 99;
+  return lineDist(p, l, CANYON).d;
+}
+
+// --- cràters aleatoris (llavor fixa: el mapa és sempre el mateix) ---
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const CRATERS = [];
+const BUCKET = new Map();
+(function genCraters() {
+  const rnd = mulberry32(1976);
+  for (let i = 0; i < 2600 && CRATERS.length < 1100; i++) {
+    const lat = Math.asin(2 * rnd() - 1) * 180 / Math.PI;
+    const lon = rnd() * 360 - 180;
+    if (Math.abs(lat) > 76) continue;
+    let keep = 1;
+    if (lat > boundary(lon) + 3) keep = 0.18;
+    if (degDist(lat, lon, 5, -110) < 28 || degDist(lat, lon, 24, 147) < 9 || degDist(lat, lon, 18.65, -133.8) < 7) keep = 0.08;
+    if (degDist(lat, lon, 4.5, 136) < 7 || degDist(lat, lon, -2, -5.5) < 5) keep = 0.15;
+    if (rnd() > keep) continue;
+    const r = 0.1 + 1.25 * Math.pow(rnd(), 3);
+    const depth = Math.min(2400, 350 + r * 1300);
+    const c = [lat, lon, r, depth];
+    CRATERS.push(c);
+    const ext = r * 1.8;
+    const lonExt = ext / Math.max(0.2, Math.cos(rad(Math.abs(lat) + ext)));
+    for (let bl = Math.floor((lat - ext + 90) / 5); bl <= Math.floor((lat + ext + 90) / 5); bl++) {
+      for (let bo = Math.floor((lon - lonExt + 180) / 5); bo <= Math.floor((lon + lonExt + 180) / 5); bo++) {
+        const key = bl * 100 + ((bo % 72) + 72) % 72;
+        if (!BUCKET.has(key)) BUCKET.set(key, []);
+        BUCKET.get(key).push(c);
+      }
+    }
+  }
+})();
+
+function craterProfile(d, R, depth, peak) {
+  if (d > R * 1.8) return 0;
+  const x = d / R;
+  let h = 0;
+  const big = R > 0.6;
+  if (x < 1) h = -depth * (big ? 1 - smooth(0.8, 1, x) : 1 - x * x);
+  h += depth * (big ? 0.18 : 0.28) * Math.exp(-(((x - 1) / (big ? 0.15 : 0.28)) ** 2));
+  if (peak) h += peak * Math.exp(-((x / 0.26) ** 2));
+  return h;
+}
+
+// --- unitats geològiques ---
+const UNITS = {
+  polar:  { name: 'Casquets i dipòsits polars', era: 'Amazonià (recent)', rough: 0.35, color: [235, 240, 248], text: 'Capes de gel d\'aigua i pols que registren els canvis climàtics recents de Mart.' },
+  volca:  { name: 'Planes i edificis volcànics', era: 'Amazonià–Hesperià', rough: 0.75, color: [150, 70, 60], text: 'Colades de lava basàltica relativament joves. Terreny aspre i elevat.' },
+  canyo:  { name: 'Sistema de canyons', era: 'Hesperià', rough: 1.0, color: [120, 90, 150], text: 'Grans fosses tectòniques amb parets de milers de metres que exposen capes de roca.' },
+  conca:  { name: 'Fons de conca d\'impacte', era: 'Noaquià reomplert', rough: 0.45, color: [200, 160, 90], text: 'Grans cràters d\'impacte antics, reomplerts de sediments, lava i pols.' },
+  planes: { name: 'Planes del nord', era: 'Hesperià–Amazonià', rough: 0.2, color: [120, 160, 190], text: 'Terres baixes molt planes. Possible fons d\'un antic oceà i amb gel sota la superfície.' },
+  altes:  { name: 'Terres altes cratericades', era: 'Noaquià (molt antic, >3.700 Ma)', rough: 0.6, color: [190, 120, 80], text: 'La superfície més antiga de Mart: plena de cràters, amb valls fluvials i argiles.' },
+};
+function unitAt(p, l) {
+  if (p > 80 || p < -81) return 'polar';
+  if (canyonDist(p, l) < 1.6) return 'canyo';
+  if (degDist(p, l, 18.65, -133.8) < 6.5 || (degDist(p, l, 5, -110) < 24 && p > -28) || degDist(p, l, 40.5, -109.9) < 12 ||
+      degDist(p, l, 26, 148) < 8 || degDist(p, l, 8.4, 69.5) < 6 || degDist(p, l, -21, 110) < 7) return 'volca';
+  if (degDist(p, l, -42.4, 70.5) < 13 || degDist(p, l, -49.7, -43.4) < 7.5 || degDist(p, l, 12.9, 87) < 9.5) return 'conca';
+  if (p > boundary(l) + 1.5) return 'planes';
+  return 'altes';
+}
+function roughAt(p, l, unit) {
+  let r = UNITS[unit || unitAt(p, l)].rough;
+  const smoothZones = [[4.5, 136, 7, 0.1], [-2, -5.5, 6, 0.14], [12.9, 87, 7, 0.22], [22.3, -48, 6, 0.18]];
+  for (const z of smoothZones) { const d = degDist(p, l, z[0], z[1]); if (d < z[2]) r = Math.min(r, z[3] + (r - z[3]) * smooth(z[2] * 0.6, z[2], d)); }
+  return r;
+}
+
+// --- elevació (m respecte del nivell de referència) ---
+// lod 0: mapa global; lod 1: vista de detall (inclou rugositat fina)
+function elev(p, l, lod = 0) {
+  const t = 1 / (1 + Math.exp(-(p - boundary(l)) / 5));
+  let h = 1200 * (1 - t) - 4100 * t;
+  h += 800 * clamp(-p / 60, 0, 1);
+  h += 2500 * Math.exp(-(((90 - p) / 6) ** 2));   // casquet nord
+  h += 2600 * Math.exp(-(((90 + p) / 6) ** 2));   // casquet sud
+  for (const g of GAUSS) { const d = degDist(p, l, g[0], g[1]); if (d < g[2] * 3) h += g[3] * Math.exp(-((d / g[2]) ** 2)); }
+  for (const b of BASINS) {
+    const d = degDist(p, l, b[0], b[1]);
+    if (d < b[4] + b[6] * 3) h += -b[3] * Math.exp(-((d / b[2]) ** 2)) + b[5] * Math.exp(-(((d - b[4]) / b[6]) ** 2));
+  }
+  for (const v of DOMES) {
+    const d = degDist(p, l, v[0], v[1]);
+    if (d < v[2]) h += v[3] * Math.pow(1 - (d / v[2]) ** 2, 0.55) - (v[3] * 0.12) * Math.exp(-((d / v[4]) ** 4));
+  }
+  // canyons
+  if (p > -22 && p < 32 && l > -112 && l < -28) {
+    const c = lineDist(p, l, CANYON);
+    if (c.d < 4) { const depth = 2500 + 4500 * Math.sin(Math.PI * clamp(c.s * 1.1, 0, 1)); h -= depth * Math.exp(-((c.d / 1.3) ** 4)); }
+    const k = lineDist(p, l, KASEI);
+    if (k.d < 3) h -= 1500 * Math.exp(-((k.d / 1.2) ** 4));
+  }
+  for (const c of NAMED_CRATERS) { const d = degDist(p, l, c[0], c[1]); if (d < c[2] * 1.8) h += craterProfile(d, c[2], c[3], c[4]); }
+  // delta de Jezero (ventall de sediments a l'interior oest del cràter)
+  { const d = degDist(p, l, 18.5, 77.42); if (d < 0.2) h += 180 * Math.exp(-((d / 0.09) ** 2)); }
+  const key = Math.floor((p + 90) / 5) * 100 + ((Math.floor((l + 180) / 5) % 72) + 72) % 72;
+  const bucket = BUCKET.get(key);
+  if (bucket) for (const c of bucket) { const d = degDist(p, l, c[0], c[1]); if (d < c[2] * 1.8) h += craterProfile(d, c[2], c[3], 0); }
+  // textura
+  const cp = Math.cos(rad(p)), x = cp * Math.cos(rad(l)), y = cp * Math.sin(rad(l)), z = Math.sin(rad(p));
+  h += 420 * vnoise(x * 6 + 11, y * 6, z * 6) + 160 * vnoise(x * 30, y * 30 + 7, z * 30);
+  if (lod >= 1) {
+    const r = roughAt(p, l);
+    h += 40 * vnoise(x * 220, y * 220, z * 220 + 3);
+    h += 230 * r * vnoise(x * 1500 + 5, y * 1500, z * 1500) + 70 * r * vnoise(x * 5000, y * 5000 + 9, z * 5000);
+  }
+  return h;
+}
+
+// --- gel subsuperficial (0-1) ---
+function iceAt(p, l) {
+  if (Math.abs(p) >= 78) return 1;
+  let n = smooth(36, 58, p);
+  const boost = Math.max(
+    Math.exp(-((degDist(p, l, 44, -170) / 14) ** 2)), // Arcadia
+    Math.exp(-((degDist(p, l, 44, 115) / 16) ** 2)),  // Utopia
+    Math.exp(-((degDist(p, l, 44, 25) / 9) ** 2)));   // Deuteronilus
+  if (p > 28) n = Math.max(n, smooth(28, 42, p) * 0.9 * boost + n);
+  const s = smooth(40, 62, -p) * 0.85;
+  return clamp(Math.max(n, s), 0, 1);
+}
+function dustAt(p, l) {
+  const t = Math.max(
+    0.9 * Math.exp(-((degDist(p, l, 5, -115) / 26) ** 2)),
+    0.8 * Math.exp(-((degDist(p, l, 20, 5) / 18) ** 2)),
+    0.7 * Math.exp(-((degDist(p, l, 15, -160) / 18) ** 2)));
+  return clamp(0.25 + t * 0.75, 0, 1);
+}
+
+// --- punts d'interès científic ---
+const POIS = [
+  { n: 'Delta del cràter Jezero', lat: 18.5, lon: 77.4, t: 'vida', v: 1 },
+  { n: 'Cràter Gale i Aeolis Mons', lat: -5.4, lon: 137.8, t: 'vida', v: 0.9 },
+  { n: 'Mawrth Vallis (argiles)', lat: 24, lon: -19, t: 'vida', v: 0.9 },
+  { n: 'Nili Fossae (argiles i carbonats)', lat: 22, lon: 76, t: 'vida', v: 0.85 },
+  { n: 'Delta d\'Eberswalde', lat: -23.9, lon: -33.5, t: 'vida', v: 0.85 },
+  { n: 'Cràter Holden', lat: -26.4, lon: -34, t: 'vida', v: 0.75 },
+  { n: 'Meridiani Planum (hematites)', lat: -2, lon: -5.5, t: 'vida', v: 0.65 },
+  { n: 'Cràter Gusev', lat: -14.6, lon: 175.4, t: 'vida', v: 0.6 },
+  { n: 'Capes de Valles Marineris', lat: -8, lon: -75, t: 'vida', v: 0.75 },
+  { n: 'Capes de Valles Marineris', lat: -12, lon: -60, t: 'vida', v: 0.75 },
+  { n: 'Olympus Mons', lat: 18.65, lon: -133.8, t: 'volca', v: 1 },
+  { n: 'Arsia Mons', lat: -8.26, lon: -120.5, t: 'volca', v: 0.85 },
+  { n: 'Pavonis Mons', lat: 1.48, lon: -112.96, t: 'volca', v: 0.85 },
+  { n: 'Ascraeus Mons', lat: 11.92, lon: -104.08, t: 'volca', v: 0.85 },
+  { n: 'Alba Mons', lat: 40.5, lon: -109.9, t: 'volca', v: 0.7 },
+  { n: 'Elysium Mons', lat: 24.8, lon: 146.9, t: 'volca', v: 0.85 },
+  { n: 'Hecates Tholus', lat: 32.1, lon: 150.2, t: 'volca', v: 0.7 },
+  { n: 'Syrtis Major (volcà en escut)', lat: 8.4, lon: 69.5, t: 'volca', v: 0.65 },
+  { n: 'Cràter Korolev (ple de gel)', lat: 73, lon: 164.5, t: 'gel', v: 0.9 },
+  { n: 'Casquet polar nord', lat: 85, lon: 0, t: 'gel', v: 0.8 },
+  { n: 'Gel exposat d\'Arcadia Planitia', lat: 46, lon: -168, t: 'gel', v: 0.75 },
+];
+
+const LABELS = [
+  ['Olympus Mons', 18.65, -133.8, 1], ['Tharsis', 2, -100, 1], ['Valles Marineris', -12, -65, 1], ['Hellas Planitia', -42.4, 70.5, 1],
+  ['Argyre Planitia', -49.7, -43.4, 1], ['Elysium Mons', 24.8, 146.9, 1], ['Utopia Planitia', 46.7, 117.5, 1], ['Arcadia Planitia', 47.2, -176.5, 1],
+  ['Chryse Planitia', 28.4, -40, 1], ['Acidalia Planitia', 46.7, -22, 2], ['Amazonis Planitia', 24.8, -164, 2], ['Arabia Terra', 22.8, 5, 2],
+  ['Isidis Planitia', 12.9, 87, 2], ['Syrtis Major', 8.4, 69.5, 2], ['Terra Cimmeria', -32, 145, 2], ['Noachis Terra', -45, -5, 2],
+  ['Alba Mons', 40.5, -109.9, 2], ['Arsia Mons', -8.26, -120.5, 3], ['Pavonis Mons', 1.48, -112.96, 3], ['Ascraeus Mons', 11.92, -104.08, 3],
+  ['Cràter Gale', -5.4, 137.8, 2], ['Cràter Jezero', 18.4, 77.6, 2], ['Cràter Gusev', -14.6, 175.4, 3], ['Meridiani Planum', -2, -5.5, 2],
+  ['Mawrth Vallis', 24, -19, 3], ['Nili Fossae', 22, 76, 3], ['Kasei Valles', 20, -70, 3], ['Noctis Labyrinthus', -7, -102, 3],
+  ['Cràter Huygens', -13.9, 55.6, 3], ['Cràter Korolev', 73, 164.5, 3], ['Planum Boreum', 86, 0, 2], ['Planum Australe', -84, 0, 2],
+  ['Elysium Planitia', 4, 150, 2], ['Hesperia Planum', -21, 110, 3], ['Medusae Fossae', -3, -163, 3],
+];
+const LANDERS = [
+  ['Viking 1', 1976, 22.27, -47.95], ['Viking 2', 1976, 47.97, 134.26], ['Mars Pathfinder', 1997, 19.13, -33.22],
+  ['Spirit', 2004, -14.57, 175.47], ['Opportunity', 2004, -1.95, -5.53], ['Phoenix', 2008, 68.22, -125.75],
+  ['Curiosity', 2012, -4.59, 137.44], ['InSight', 2018, 4.5, 135.62], ['Perseverance', 2021, 18.44, 77.45], ['Zhurong', 2021, 25.07, 109.93],
+];
+
+// --- missions ---
+const MISSIONS = {
+  colonia: { name: 'Colònia Ares', icon: '🏠', goal: 'Instal·lar la primera base permanent per a 50 persones durant 10 anys.',
+    need: 'Terreny molt pla i segur, aigua a l\'abast per beure i cultivar, i prou energia tot l\'any.', dilema: 'L\'aigua abunda cap als pols, però allà fa més fred i arriba menys llum solar.',
+    w: { seg: 0.3, aigua: 0.3, energia: 0.25, ciencia: 0.15 }, tag: 'tot', reach: 300, ell: [20, 10] },
+  vida: { name: 'Rastre de vida', icon: '🔬', goal: 'Buscar rastres de vida microbiana antiga en roques que es van formar amb aigua.',
+    need: 'Aterrar a prop de deltes, antics llacs o argiles. El rover només pot recórrer uns 25 km.', dilema: 'Els llocs més interessants solen ser dins de cràters, amb parets i roques perilloses.',
+    w: { seg: 0.3, aigua: 0.05, energia: 0.2, ciencia: 0.45 }, tag: 'vida', reach: 25, ell: [8, 7] },
+  gel: { name: 'Fàbrica de combustible', icon: '⛽', goal: 'Extreure gel per fabricar metà i oxigen, el combustible del viatge de tornada.',
+    need: 'Molt de gel a pocs centímetres de profunditat i un terreny pla per a la maquinària.', dilema: 'On hi ha més gel, les plaques solars rendeixen menys i els hiverns són extrems.',
+    w: { seg: 0.3, aigua: 0.45, energia: 0.15, ciencia: 0.1 }, tag: 'gel', reach: 50, ell: [15, 8] },
+  volca: { name: 'Gegants de foc', icon: '🌋', goal: 'Estudiar els volcans més grans del Sistema Solar amb un rover de llarg abast i un dron.',
+    need: 'Aterrar a menys de 400 km d\'un gran volcà.', dilema: 'Els volcans són molt alts: allà l\'aire és tan prim que el paracaigudes gairebé no frena.',
+    w: { seg: 0.35, aigua: 0.1, energia: 0.15, ciencia: 0.4 }, tag: 'volca', reach: 400, ell: [12, 8] },
+};
+
+// --- anàlisi d'un lloc ---
+function localSlope(p, l, step = 0.01) {
+  const dx = step * KM_PER_DEG * 1000 * Math.cos(rad(p)), dy = step * KM_PER_DEG * 1000;
+  const gx = (elev(p, l + step, 1) - elev(p, l - step, 1)) / (2 * dx);
+  const gy = (elev(p + step, l, 1) - elev(p - step, l, 1)) / (2 * dy);
+  return Math.atan(Math.hypot(gx, gy)) * 180 / Math.PI;
+}
+function analyse(p, l, missionId) {
+  const m = MISSIONS[missionId] || MISSIONS.colonia;
+  const unit = unitAt(p, l);
+  const alt = elev(p, l, 1);
+  const regSlope = localSlope(p, l, 0.085);
+  // mostreig dins l'el·lipse
+  const [a, b] = m.ell; let n = 0, haz = 0, maxS = 0;
+  for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) {
+    const u = i / 3, v = j / 3; if (u * u + v * v > 1) continue;
+    const pp = p + (v * b / 2) / KM_PER_DEG, ll = l + (u * a / 2) / (KM_PER_DEG * Math.cos(rad(p)));
+    const s = localSlope(pp, ll); n++; haz += smooth(4, 12, s); maxS = Math.max(maxS, s);
+  }
+  const hazard = haz / n;
+  const fA = alt <= -2000 ? 1 : alt <= 0 ? 1 - 0.07 * (alt + 2000) / 2000 : alt <= 2000 ? 0.93 - 0.33 * alt / 2000 : alt <= 5000 ? 0.6 - 0.5 * (alt - 2000) / 3000 : 0.05;
+  const fS = regSlope < 2 ? 1 : regSlope < 8 ? 1 - 0.5 * (regSlope - 2) / 6 : 0.3;
+  const fH = 1 - 0.8 * hazard;
+  const pSuccess = fA * fS * fH * 0.97;
+  const ice = iceAt(p, l), dust = dustAt(p, l);
+  const energy = clamp(Math.pow(Math.cos(rad(p)), 1.3) * (1 - 0.35 * dust), 0, 1);
+  // ciència
+  let sci = 0, best = null;
+  const near = [];
+  for (const q of POIS) {
+    const d = kmDist(p, l, q.lat, q.lon);
+    near.push({ n: q.n, d, t: q.t });
+    const relevant = m.tag === 'tot' || q.t === m.tag;
+    const f = d <= m.reach ? 1 : Math.max(0, 1 - (d - m.reach) / (2 * m.reach));
+    const val = q.v * f * (relevant ? 1 : 0) * (m.tag === 'tot' ? 0.85 : 1);
+    if (val > sci) { sci = val; best = { n: q.n, d }; }
+  }
+  if (m.tag === 'tot' || m.tag === 'vida') { const base = unit === 'altes' ? 0.3 : unit === 'canyo' ? 0.5 : 0.15; if (base > sci) { sci = base; best = null; } }
+  near.sort((x, y) => x.d - y.d);
+  const scores = { seg: 10 * pSuccess, aigua: 10 * ice, energia: 10 * energy, ciencia: 10 * sci };
+  const total = Object.keys(m.w).reduce((s, k) => s + m.w[k] * scores[k], 0);
+  // regió més propera
+  let region = null;
+  for (const L of LABELS) { const d = kmDist(p, l, L[1], L[2]); if (!region || d < region.d) region = { n: L[0], d }; }
+  let lander = null;
+  for (const L of LANDERS) { const d = kmDist(p, l, L[2], L[3]); if (!lander || d < lander.d) lander = { n: L[0], y: L[1], d }; }
+  const pressure = 610 * Math.exp(-alt / 11100);
+  const temp = -45 - 75 * Math.sin(rad(Math.abs(p))) ** 2 - alt * 0.0025;
+  const chute = 100 + (-alt - 2000) / 60;
+  return { lat: p, lon: l, unit, alt, regSlope, hazard, maxS, fA, fS, fH, pSuccess, ice, dust, energy, sci, best, near: near.slice(0, 4),
+    scores, total, region, lander, pressure, temp, chute, rough: roughAt(p, l, unit) };
+}
+
+// ===== APLICACIÓ =====
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, html = '') => { const e = document.createElement(tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (html) e.innerHTML = html; return e; };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nf = (x, d = 0) => Number(x).toLocaleString('ca-ES', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtLat = p => `${nf(Math.abs(p), 2)}° ${p >= 0 ? 'N' : 'S'}`;
+const fmtLon = l => `${nf(Math.abs(l), 2)}° ${l >= 0 ? 'E' : 'O'}`;
+const fmtCoord = (p, l) => `${fmtLat(p)}, ${fmtLon(l)}`;
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const ROLES = [
+  { id: 'geo', name: 'Geòleg/a', hint: 'Roques, edat del terreny i rastres d\'aigua.' },
+  { id: 'eng', name: 'Enginyer/a d\'aterratge', hint: 'Altitud, pendents i perill de l\'el·lipse.' },
+  { id: 'sup', name: 'Responsable de supervivència', hint: 'Aigua, energia, temperatura i radiació.' },
+  { id: 'car', name: 'Cartògraf/a', hint: 'Coordenades, regions i perfil a mà.' },
+];
+const STEPS = [
+  ['s-mission', 'Missió'], ['s-map', 'Mapa'], ['s-profile', 'Perfil'], ['s-log', 'Bitàcola'], ['s-descent', 'Descens'], ['s-report', 'Informe'],
+];
+
+// ---------- estat ----------
+const KEY = 'on-aterrem-v1';
+let S = { agency: '', members: {}, mission: null, candidates: [], site: null, profile: null, notes: {}, descent: null, attempts: 0, committee: [], step: 's-mission' };
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) { }
+let saveTimer = null;
+function save() { clearTimeout(saveTimer); saveTimer = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }, 250); }
+const mission = () => MISSIONS[S.mission] || null;
+
+// ---------- navegació ----------
+function renderSteps() {
+  const nav = $('#steps'); nav.innerHTML = '';
+  STEPS.forEach(([id, name], i) => {
+    const b = el('button', {}, `<b><span>${i + 1}</span></b>${name}`);
+    if (S.step === id) b.setAttribute('aria-current', 'step');
+    const done = (id === 's-mission' && S.mission) || (id === 's-map' && S.site) || (id === 's-profile' && S.profile) || (id === 's-descent' && S.descent);
+    if (done && S.step !== id) b.classList.add('done');
+    b.onclick = () => go(id);
+    nav.appendChild(b);
+  });
+  $('#agencyTag').textContent = S.agency || 'Equip de selecció d\'aterratge';
+}
+function go(id) {
+  S.step = id; save();
+  document.querySelectorAll('section.step').forEach(s => s.classList.toggle('active', s.id === id));
+  renderSteps();
+  if (id === 's-map') { drawMap(); renderPanel(); renderCandidates(); }
+  if (id === 's-profile') renderProfile();
+  if (id === 's-log') renderLog();
+  if (id === 's-descent') renderDescent();
+  if (id === 's-report') { renderReport(); renderCommittee(); }
+  window.scrollTo({ top: 0 });
+}
+
+// ---------- colors ----------
+const HYPSO = [[-8000, 29, 43, 107], [-6000, 42, 79, 160], [-4000, 58, 143, 201], [-3000, 95, 191, 185], [-2000, 124, 207, 138], [-1000, 183, 220, 108],
+  [0, 233, 226, 122], [1000, 240, 192, 96], [2000, 227, 154, 74], [3500, 200, 101, 58], [6000, 158, 74, 58], [10000, 185, 143, 134], [16000, 255, 255, 255]];
+function hypso(h) {
+  if (h <= HYPSO[0][0]) return HYPSO[0].slice(1);
+  for (let i = 1; i < HYPSO.length; i++) if (h <= HYPSO[i][0]) {
+    const a = HYPSO[i - 1], b = HYPSO[i], t = (h - a[0]) / (b[0] - a[0]);
+    return [a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, a[3] + (b[3] - a[3]) * t];
+  }
+  return HYPSO[HYPSO.length - 1].slice(1);
+}
+const UNIT_KEYS = ['polar', 'volca', 'canyo', 'conca', 'planes', 'altes'];
+
+// ---------- mapa global ----------
+const W = 720, H = 360;
+const GRID = { E: new Float32Array(W * H), U: new Uint8Array(W * H), I: new Float32Array(W * H), D: new Float32Array(W * H), shade: new Float32Array(W * H), ready: false };
+const view = { mode: 'alt', ice: false, dust: false, names: true, landers: false };
+let pending = null; // punt que s'està analitzant
+
+function buildGrid(done) {
+  let y = 0;
+  function chunk() {
+    const end = Math.min(H, y + 30);
+    for (; y < end; y++) {
+      const p = 90 - (y + 0.5) * 180 / H;
+      for (let x = 0; x < W; x++) {
+        const l = (x + 0.5) * 360 / W - 180, i = y * W + x;
+        GRID.E[i] = elev(p, l, 0);
+        GRID.U[i] = UNIT_KEYS.indexOf(unitAt(p, l));
+        GRID.I[i] = iceAt(p, l);
+        GRID.D[i] = dustAt(p, l);
+      }
+    }
+    if (y < H) requestAnimationFrame(chunk);
+    else {
+      for (let yy = 0; yy < H; yy++) for (let x = 0; x < W; x++) {
+        const i = yy * W + x;
+        const xl = yy * W + ((x - 1 + W) % W), xr = yy * W + ((x + 1) % W);
+        const yu = Math.max(0, yy - 1) * W + x, yd = Math.min(H - 1, yy + 1) * W + x;
+        const dx = (GRID.E[xr] - GRID.E[xl]) / 60000, dy = (GRID.E[yd] - GRID.E[yu]) / 60000;
+        const k = 9;
+        const nx = -dx * k, ny = -dy * k, nz = 1, n = Math.hypot(nx, ny, nz);
+        GRID.shade[i] = clamp(0.35 + 0.75 * ((nx * -0.6 + ny * -0.6 + nz * 0.55) / n), 0.25, 1.25);
+      }
+      GRID.ready = true; done();
+    }
+  }
+  chunk();
+}
+
+function paintGlobal(ctx, opts = view) {
+  const img = ctx.createImageData(W, H), d = img.data;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, s = GRID.shade[i];
+    let c = opts.mode === 'geo' ? UNITS[UNIT_KEYS[GRID.U[i]]].color : hypso(GRID.E[i]);
+    let r = c[0] * s, g = c[1] * s, b = c[2] * s;
+    if (opts.ice && GRID.I[i] > 0.12) {
+      const a = GRID.I[i] * 0.62; r = r * (1 - a) + 200 * a; g = g * (1 - a) + 230 * a; b = b * (1 - a) + 255 * a;
+      if (GRID.I[i] > 0.5 && x % 4 === 0 && y % 4 === 0) { r = 30; g = 90; b = 170; }
+    }
+    if (opts.dust && GRID.D[i] > 0.4) {
+      const a = (GRID.D[i] - 0.4) * 0.9; r = r * (1 - a) + 150 * a; g = g * (1 - a) + 105 * a; b = b * (1 - a) + 70 * a;
+      if ((x + y) % 7 === 0 && GRID.D[i] > 0.6) { r *= 0.55; g *= 0.55; b *= 0.55; }
+    }
+    const k = i * 4; d[k] = r; d[k + 1] = g; d[k + 2] = b; d[k + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 1;
+  for (let lo = -150; lo <= 150; lo += 30) { const x = (lo + 180) * 2 + .5; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let la = -60; la <= 60; la += 30) { const y = (90 - la) * 2 + .5; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.moveTo(0, 180.5); ctx.lineTo(W, 180.5); ctx.stroke();
+}
+
+const pct = (p, l) => [((l + 180) / 360) * 100, ((90 - p) / 180) * 100];
+function drawMap() {
+  if (!GRID.ready) return;
+  paintGlobal($('#map').getContext('2d'));
+  const ov = $('#mapOverlay'); ov.innerHTML = '';
+  if (view.names) for (const L of LABELS) { const [x, y] = pct(L[1], L[2]); const s = el('div', { class: `lbl l${L[3]}`, style: `left:${x}%;top:${y}%` }); s.textContent = L[0]; ov.appendChild(s); }
+  if (view.landers) for (const L of LANDERS) { const [x, y] = pct(L[2], L[3]); const s = el('div', { class: 'lander', style: `left:${x}%;top:${y}%` }, `<span>${L[0]} (${L[1]})</span>`); ov.appendChild(s); }
+  S.candidates.forEach((c, i) => { const [x, y] = pct(c.lat, c.lon); ov.appendChild(el('div', { class: 'cand', style: `left:${x}%;top:${y}%` }, String(i + 1))); });
+  if (S.site) { const [x, y] = pct(S.site.lat, S.site.lon); ov.appendChild(el('div', { class: 'pin final', style: `left:${x}%;top:${y}%` })); }
+  if (pending) { const [x, y] = pct(pending.lat, pending.lon); ov.appendChild(el('div', { class: 'pin', style: `left:${x}%;top:${y}%` })); }
+  renderLegend();
+}
+function renderLegend() {
+  const lg = $('#legend');
+  let h = '';
+  if (view.mode === 'alt') {
+    const stops = HYPSO.map(s => `rgb(${s[1]},${s[2]},${s[3]}) ${((s[0] + 8000) / 24000 * 100).toFixed(1)}%`).join(',');
+    h += `<span>−8 km</span><span class="ramp" style="background:linear-gradient(90deg,${stops})"></span><span>+16 km</span><span>(altitud respecte del nivell de referència)</span>`;
+  } else {
+    for (const k of UNIT_KEYS) { const u = UNITS[k]; h += `<span><i style="background:rgb(${u.color})"></i>${u.name}</span>`; }
+  }
+  if (view.ice) h += `<span><i style="background:#c8e6ff"></i>Gel sota la superfície (punts blaus: molt probable)</span>`;
+  if (view.dust) h += `<span><i style="background:#96694a"></i>Pols acumulada (ratllat: molta)</span>`;
+  if (view.landers) h += `<span>◆ Llocs d'aterratge reals</span>`;
+  lg.innerHTML = h;
+}
+function mapSizeClass() {
+  const f = $('#mapframe'); const w = f.clientWidth;
+  f.classList.toggle('w2', w > 560); f.classList.toggle('w3', w > 860);
+}
+
+// ---------- vista de detall ----------
+function renderDetail(canvas, lat, lon, spanKm, marks = {}) {
+  const N = canvas.width, ctx = canvas.getContext('2d');
+  const dLat = spanKm / KM_PER_DEG, dLon = dLat / Math.max(0.15, Math.cos(rad(lat)));
+  const E = new Float32Array(N * N);
+  let mn = 1e9, mx = -1e9;
+  for (let y = 0; y < N; y++) {
+    const p = clamp(lat + dLat / 2 - (y + 0.5) * dLat / N, -89.9, 89.9);
+    for (let x = 0; x < N; x++) {
+      const l = wrapLon(lon - dLon / 2 + (x + 0.5) * dLon / N);
+      const h = elev(p, l, 1); E[y * N + x] = h; if (h < mn) mn = h; if (h > mx) mx = h;
+    }
+  }
+  const pxM = spanKm * 1000 / N;
+  const range = mx - mn;
+  const steps = [10, 20, 50, 100, 200, 250, 500, 1000, 2000];
+  const eq = steps.find(s => range / s <= 12) || 2000;
+  const Sm = blur(blur(E, N, 3), N, 3);
+  const img = ctx.createImageData(N, N), d = img.data;
+  const stretch = h => -5000 + 9000 * (h - mn) / Math.max(1, range);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const i = y * N + x, h = E[i];
+    const xl = E[y * N + Math.max(0, x - 1)], xr = E[y * N + Math.min(N - 1, x + 1)];
+    const yu = E[Math.max(0, y - 1) * N + x], yd = E[Math.min(N - 1, y + 1) * N + x];
+    const dx = (xr - xl) / (2 * pxM), dy = (yd - yu) / (2 * pxM);
+    const n = Math.hypot(dx * 2.5, dy * 2.5, 1);
+    const s = clamp(0.4 + 0.75 * ((-dx * 2.5 * -0.6 + -dy * 2.5 * -0.6 + 0.55) / n), 0.2, 1.3);
+    const c = hypso(stretch(h));
+    let r = c[0] * s, g = c[1] * s, b = c[2] * s;
+    const hs = Sm[i], ci = Math.floor(hs / eq);
+    if (x < N - 1 && y < N - 1 && (ci !== Math.floor(Sm[i + 1] / eq) || ci !== Math.floor(Sm[i + N] / eq))) {
+      const major = Math.floor(hs / (eq * 5)) !== Math.floor(Sm[i + 1] / (eq * 5)) || Math.floor(hs / (eq * 5)) !== Math.floor(Sm[i + N] / (eq * 5));
+      const k = major ? 0.35 : 0.62; r *= k; g *= k; b *= k;
+    }
+    const k = i * 4; d[k] = r; d[k + 1] = g; d[k + 2] = b; d[k + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  const toXY = (p, l) => [((wrapLon(l - lon) + dLon / 2) / dLon) * N, ((lat + dLat / 2 - p) / dLat) * N];
+  const kmPx = N / spanKm;
+  const m = mission();
+  if (marks.ellipse !== false && m) {
+    const [cx, cy] = toXY(marks.lat ?? lat, marks.lon ?? lon);
+    ctx.save(); ctx.strokeStyle = '#FFD23F'; ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.ellipse(cx, cy, m.ell[0] / 2 * kmPx, m.ell[1] / 2 * kmPx, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#FFD23F'; ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
+  }
+  if (marks.a) {
+    const [ax, ay] = toXY(marks.a.lat, marks.a.lon);
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+    if (marks.b) { const [bx, by] = toXY(marks.b.lat, marks.b.lon); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke(); ctx.strokeStyle = '#111'; ctx.lineWidth = 1; ctx.stroke(); dot(bx, by, 'B'); }
+    dot(ax, ay, 'A');
+  }
+  function dot(x, y, t) { ctx.fillStyle = '#fff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#111'; ctx.font = '700 12px Barlow, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y + 1); }
+  return { eq, mn, mx, dLat, dLon, N, lat, lon, spanKm };
+}
+function blur(A, N, r) {
+  const T = new Float32Array(N * N), O = new Float32Array(N * N);
+  for (let y = 0; y < N; y++) { let acc = 0, c = 0; for (let x = -r; x < N; x++) { if (x + r < N) { acc += A[y * N + x + r]; c++; } if (x - r - 1 >= 0) { acc -= A[y * N + x - r - 1]; c--; } if (x >= 0) T[y * N + x] = acc / c; } }
+  for (let x = 0; x < N; x++) { let acc = 0, c = 0; for (let y = -r; y < N; y++) { if (y + r < N) { acc += T[(y + r) * N + x]; c++; } if (y - r - 1 >= 0) { acc -= T[(y - r - 1) * N + x]; c--; } if (y >= 0) O[y * N + x] = acc / c; } }
+  return O;
+}
+function detailToLatLon(info, ev, canvas) {
+  const r = canvas.getBoundingClientRect();
+  const fx = (ev.clientX - r.left) / r.width, fy = (ev.clientY - r.top) / r.height;
+  return { lat: clamp(info.lat + info.dLat / 2 - fy * info.dLat, -89.9, 89.9), lon: wrapLon(info.lon - info.dLon / 2 + fx * info.dLon) };
+}
+function scaleBar(spanKm, widthPx) {
+  const kmPerCss = spanKm / widthPx;
+  const nice = [5, 10, 20, 25, 50, 100, 200].find(k => k / kmPerCss > widthPx * 0.18) || 200;
+  return `<div class="scale"><div style="width:${nice / kmPerCss}px"></div>${nice} km</div>`;
+}
+
+// ---------- panell del lloc ----------
+let panelInfo = null;
+function renderPanel() {
+  const P = $('#sitePanel');
+  if (!mission()) { P.innerHTML = `<h3>Falta la missió</h3><p class="empty">Abans d'explorar, trieu la missió a l'etapa 1: cada missió valora els llocs de manera diferent.</p><button class="btn primary" onclick="go('s-mission')">Tria la missió</button>`; return; }
+  if (!pending) { P.innerHTML = `<h3>${mission().icon} ${esc(mission().name)}</h3><p class="empty">Toqueu qualsevol punt del mapa per veure'n l'altitud, la geologia, el gel i la puntuació per a la vostra missió.</p><p class="tip">${esc(mission().dilema)}</p>`; return; }
+  const a = analyse(pending.lat, pending.lon, S.mission), m = mission(), u = UNITS[a.unit];
+  const iceTxt = a.ice > 0.8 ? 'a pocs centímetres' : a.ice > 0.5 ? 'probable a menys d\'1 m' : a.ice > 0.2 ? 'possible a diversos metres' : 'no n\'hi ha d\'accessible';
+  const dustTxt = a.dust > 0.65 ? 'molta' : a.dust > 0.4 ? 'moderada' : 'poca';
+  P.innerHTML = `
+    <div class="detail" id="detailBox"><canvas id="detail" width="320" height="320"></canvas><div class="note" id="detailNote"></div><div id="detailScale"></div></div>
+    <div class="row" style="justify-content:space-between;margin-top:6px"><span class="tip">Toqueu la vista per afinar el punt.</span>
+      <div class="seg" role="group" aria-label="Amplada de la vista"><button data-span="300">300 km</button><button data-span="120">120 km</button><button data-span="50">50 km</button></div></div>
+    <dl class="readout">
+      <dt>Coordenades</dt><dd>${fmtCoord(a.lat, a.lon)}</dd>
+      <dt>Regió</dt><dd>a prop de ${esc(a.region.n)} (${nf(a.region.d)} km)</dd>
+      <dt>Terreny</dt><dd>${esc(u.name)}, ${esc(u.era)}</dd>
+      <dt>Altitud</dt><dd>${nf(a.alt)} m</dd>
+      <dt>Pressió de l'aire</dt><dd>${nf(a.pressure)} Pa (la Terra: 101.325 Pa)</dd>
+      <dt>Pendent regional</dt><dd>${nf(a.regSlope, 1)}°</dd>
+      <dt>Terreny perillós</dt><dd>${nf(a.hazard * 100)} % de l'el·lipse</dd>
+      <dt>Gel</dt><dd>${iceTxt}</dd>
+      <dt>Pols</dt><dd>${dustTxt}</dd>
+      <dt>Temperatura mitjana</dt><dd>uns ${nf(a.temp)} °C</dd>
+      <dt>Objectiu proper</dt><dd>${a.best ? `${esc(a.best.n)} (${nf(a.best.d)} km)` : 'cap de rellevant'}</dd>
+    </dl>
+    ${meter('Seguretat d\'aterratge', a.scores.seg, m.w.seg)}${meter('Aigua', a.scores.aigua, m.w.aigua)}${meter('Energia i clima', a.scores.energia, m.w.energia)}${meter('Interès científic', a.scores.ciencia, m.w.ciencia)}
+    <div class="total"><span>Puntuació per a <strong>${esc(m.name)}</strong></span><b>${nf(a.total, 1)}</b></div>
+    <div class="row" style="margin-top:12px"><button class="btn primary" id="addCand" ${S.candidates.length >= 3 ? 'disabled' : ''}>Desa com a candidat</button></div>
+    <p class="status" id="candStatus">${S.candidates.length >= 3 ? 'Ja teniu tres candidats. Elimineu-ne un per desar-ne un altre.' : ''}</p>`;
+  const span = S._span || 120;
+  P.querySelectorAll('[data-span]').forEach(b => { b.setAttribute('aria-pressed', String(+b.dataset.span === span)); b.onclick = () => { S._span = +b.dataset.span; renderPanel(); }; });
+  const cv = $('#detail');
+  panelInfo = renderDetail(cv, pending.lat, pending.lon, span, { lat: pending.lat, lon: pending.lon });
+  $('#detailNote').textContent = `Corbes cada ${nf(panelInfo.eq)} m. Colors relatius a la vista. El·lipse: ${m.ell[0]} × ${m.ell[1]} km`;
+  requestAnimationFrame(() => { $('#detailScale').innerHTML = scaleBar(span, cv.clientWidth); });
+  cv.onclick = ev => { pending = detailToLatLon(panelInfo, ev, cv); drawMap(); renderPanel(); };
+  $('#addCand').onclick = () => {
+    if (S.candidates.length >= 3) return;
+    S.candidates.push({ lat: +pending.lat.toFixed(3), lon: +pending.lon.toFixed(3) }); save(); drawMap(); renderPanel(); renderCandidates();
+    $('#candStatus').textContent = `Desat com a candidat ${S.candidates.length}.`;
+  };
+}
+function meter(name, v, w) {
+  return `<div class="meter"><div class="mh"><span>${name}</span><span>${nf(v, 1)} <em>pes ${Math.round(w * 100)} %</em></span></div><div class="bar"><div style="width:${v * 10}%"></div></div></div>`;
+}
+function renderCandidates() {
+  const C = $('#candidates');
+  if (!mission() || !S.candidates.length) { C.innerHTML = `<p class="empty">Encara no heu desat cap candidat. Proveu llocs ben diferents: una plana, un cràter, la base d'un volcà…</p>`; return; }
+  let h = `<div class="tablewrap"><table><thead><tr><th>#</th><th>Coordenades</th><th>Altitud</th><th>Seguretat</th><th>Aigua</th><th>Energia</th><th>Ciència</th><th>Total</th><th></th></tr></thead><tbody>`;
+  S.candidates.forEach((c, i) => {
+    const a = analyse(c.lat, c.lon, S.mission);
+    const chosen = S.site && S.site.lat === c.lat && S.site.lon === c.lon;
+    h += `<tr class="${chosen ? 'chosen' : ''}"><td>${i + 1}</td><td>${fmtCoord(c.lat, c.lon)}<br><span class="tip">${esc(a.region.n)}</span></td><td>${nf(a.alt)} m</td><td>${nf(a.scores.seg, 1)}</td><td>${nf(a.scores.aigua, 1)}</td><td>${nf(a.scores.energia, 1)}</td><td>${nf(a.scores.ciencia, 1)}</td><td><b>${nf(a.total, 1)}</b></td>
+      <td><div class="row" style="flex-wrap:nowrap"><button class="btn small ${chosen ? '' : 'primary'}" data-pick="${i}">${chosen ? 'Triat' : 'Tria'}</button><button class="btn small" data-show="${i}" aria-label="Mostra el candidat ${i + 1}">Mostra</button><button class="btn small" data-del="${i}" aria-label="Elimina el candidat ${i + 1}">✕</button></div></td></tr>`;
+  });
+  h += `</tbody></table></div>`;
+  if (S.site) h += `<div class="row" style="margin-top:12px"><span>Lloc definitiu triat. Següent pas:</span><button class="btn primary" onclick="go('s-profile')">Fes el perfil topogràfic</button></div>`;
+  C.innerHTML = h;
+  C.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => { const c = S.candidates[+b.dataset.pick]; S.site = { lat: c.lat, lon: c.lon }; S.profile = null; S.descent = null; S.attempts = 0; save(); drawMap(); renderCandidates(); renderSteps(); });
+  C.querySelectorAll('[data-show]').forEach(b => b.onclick = () => { const c = S.candidates[+b.dataset.show]; pending = { lat: c.lat, lon: c.lon }; drawMap(); renderPanel(); $('#sitePanel').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); });
+  C.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { const c = S.candidates.splice(+b.dataset.del, 1)[0]; if (S.site && S.site.lat === c.lat && S.site.lon === c.lon) S.site = null; save(); drawMap(); renderPanel(); renderCandidates(); renderSteps(); });
+}
+
+// ---------- missió i equip ----------
+function renderMission() {
+  const R = $('#roles'); R.innerHTML = '';
+  for (const r of ROLES) {
+    const lab = el('label', { class: 'field' }, `<span>${r.name}</span><input type="text" maxlength="40" placeholder="Nom"><div class="role-hint">${r.hint}</div>`);
+    const inp = lab.querySelector('input'); inp.value = S.members[r.id] || ''; inp.oninput = () => { S.members[r.id] = inp.value; save(); };
+    R.appendChild(lab);
+  }
+  const ag = $('#agency'); ag.value = S.agency; ag.oninput = () => { S.agency = ag.value; save(); renderSteps(); };
+  const M = $('#missions'); M.innerHTML = '';
+  for (const id in MISSIONS) {
+    const m = MISSIONS[id];
+    const b = el('button', { class: 'mcard', 'aria-pressed': String(S.mission === id) }, `<span class="ic">${m.icon}</span><strong>${m.name}</strong><span>${m.goal}</span>`);
+    b.onclick = () => setMission(id);
+    M.appendChild(b);
+  }
+  $('#drawMission').onclick = () => {
+    const ids = Object.keys(MISSIONS).filter(k => k !== S.mission);
+    setMission(ids[Math.floor(Math.random() * ids.length)]);
+  };
+  renderBrief();
+}
+function setMission(id) {
+  if (S.mission !== id) { S.mission = id; S.site = null; S.profile = null; S.descent = null; S.attempts = 0; }
+  save(); renderMission(); renderSteps();
+}
+function renderBrief() {
+  const m = mission(), B = $('#brief');
+  if (!m) { B.innerHTML = ''; return; }
+  B.innerHTML = `<div class="brief"><h3>${m.icon} ${m.name}</h3><dl>
+    <dt>Objectiu</dt><dd>${m.goal}</dd><dt>Necessitats</dt><dd>${m.need}</dd><dt>El dilema</dt><dd>${m.dilema}</dd>
+    <dt>El·lipse</dt><dd>${m.ell[0]} × ${m.ell[1]} km. La nau pot tocar terra en qualsevol punt de dins.</dd>
+    <dt>Criteris</dt><dd>Seguretat ${Math.round(m.w.seg * 100)} %, aigua ${Math.round(m.w.aigua * 100)} %, energia ${Math.round(m.w.energia * 100)} %, ciència ${Math.round(m.w.ciencia * 100)} %</dd></dl>
+    <div class="row" style="margin-top:14px"><button class="btn primary" onclick="go('s-map')">Obre el mapa de Mart</button></div></div>`;
+}
+
+// ---------- perfil ----------
+let profInfo = null, profClicks = [];
+function needSite(box, what) {
+  box.innerHTML = `<div class="panel"><h3>Encara no hi ha lloc d'aterratge</h3><p class="empty">Per ${what}, primer cal triar el lloc definitiu entre els candidats del mapa.</p><button class="btn primary" onclick="go('s-map')">Vés al mapa</button></div>`;
+}
+function renderProfile() {
+  const B = $('#profileBody');
+  if (!S.site || !mission()) return needSite(B, 'fer el perfil');
+  const span = S._pspan || 120;
+  B.innerHTML = `<p>Un perfil topogràfic és un tall vertical del terreny. L'enginyer/a l'usa per comprovar pendents que el mapa no mostra. Toqueu el punt <b>A</b> i després el <b>B</b> a la vista de detall. Feu que el tall travessi l'el·lipse.</p>
+  <div class="proflayout">
+    <div>
+      <div class="detail"><canvas id="pcanvas" width="420" height="420"></canvas><div class="note" id="pnote"></div><div id="pscale"></div></div>
+      <div class="row" style="margin-top:8px;justify-content:space-between">
+        <div class="seg" role="group" aria-label="Amplada de la vista"><button data-span="300">300 km</button><button data-span="120">120 km</button><button data-span="50">50 km</button></div>
+        <button class="btn small" id="pclear">Esborra el tall</button>
+      </div>
+      <p class="tip" style="margin-top:10px">Repte per al cartògraf/a: feu el mateix perfil a mà amb les corbes de nivell (o amb NASA Mars Trek) i compareu-lo amb el de l'aplicació.</p>
+    </div>
+    <div class="profile" id="pout"></div>
+  </div>`;
+  B.querySelectorAll('[data-span]').forEach(b => { b.setAttribute('aria-pressed', String(+b.dataset.span === span)); b.onclick = () => { S._pspan = +b.dataset.span; profClicks = []; renderProfile(); }; });
+  const cv = $('#pcanvas');
+  const marks = { lat: S.site.lat, lon: S.site.lon };
+  if (S.profile) { marks.a = S.profile.a; marks.b = S.profile.b; }
+  profInfo = renderDetail(cv, S.site.lat, S.site.lon, span, marks);
+  $('#pnote').textContent = `Corbes de nivell cada ${nf(profInfo.eq)} m (més fosques cada ${nf(profInfo.eq * 5)} m). Colors relatius a la vista.`;
+  requestAnimationFrame(() => { $('#pscale').innerHTML = scaleBar(span, cv.clientWidth); });
+  cv.onclick = ev => {
+    const pt = detailToLatLon(profInfo, ev, cv);
+    if (profClicks.length >= 2 || (S.profile && profClicks.length === 0)) { profClicks = []; S.profile = null; }
+    profClicks.push(pt);
+    const mk = { lat: S.site.lat, lon: S.site.lon, a: profClicks[0], b: profClicks[1] };
+    renderDetail(cv, S.site.lat, S.site.lon, span, mk);
+    if (profClicks.length === 2) { S.profile = computeProfile(profClicks[0], profClicks[1]); save(); renderSteps(); }
+    drawProfile();
+  };
+  $('#pclear').onclick = () => { profClicks = []; S.profile = null; save(); renderProfile(); };
+  drawProfile();
+}
+function computeProfile(a, b) {
+  const N = 160, pts = [];
+  let dist = 0, prev = null;
+  for (let i = 0; i <= N; i++) {
+    const t = i / N, p = a.lat + (b.lat - a.lat) * t, l = wrapLon(a.lon + wrapLon(b.lon - a.lon) * t);
+    if (prev) dist += kmDist(prev[0], prev[1], p, l);
+    pts.push([dist, elev(p, l, 1)]); prev = [p, l];
+  }
+  let maxSlope = 0;
+  for (let i = 1; i < pts.length; i++) { const dx = (pts[i][0] - pts[i - 1][0]) * 1000; if (dx > 0) maxSlope = Math.max(maxSlope, Math.atan(Math.abs(pts[i][1] - pts[i - 1][1]) / dx) * 180 / Math.PI); }
+  const hs = pts.map(q => q[1]);
+  const drop = pts[pts.length - 1][1] - pts[0][1];
+  return { a, b, pts: pts.map(q => [+q[0].toFixed(2), Math.round(q[1])]), dist, drop, min: Math.min(...hs), max: Math.max(...hs), meanSlope: Math.atan(Math.abs(drop) / (dist * 1000)) * 180 / Math.PI, maxSlope };
+}
+function profileSVG(P, colors = {}) {
+  const ink = colors.ink || 'currentColor', rust = colors.rust || 'var(--rust)', line = colors.line || 'var(--line)', muted = colors.muted || 'var(--muted)';
+  const Wd = 640, Hd = 260, L = 62, Rm = 16, T = 16, Bm = 40;
+  const pad = Math.max(50, (P.max - P.min) * 0.12);
+  const y0 = P.min - pad, y1 = P.max + pad;
+  const X = d => L + (d / P.dist) * (Wd - L - Rm), Y = h => T + (1 - (h - y0) / (y1 - y0)) * (Hd - T - Bm);
+  const path = P.pts.map((q, i) => `${i ? 'L' : 'M'}${X(q[0]).toFixed(1)},${Y(q[1]).toFixed(1)}`).join('');
+  const area = `${path}L${X(P.dist)},${Hd - Bm}L${L},${Hd - Bm}Z`;
+  const yt = niceTicks(y0, y1, 5), xt = niceTicks(0, P.dist, 6);
+  const ve = ((Hd - T - Bm) / (y1 - y0)) / ((Wd - L - Rm) / (P.dist * 1000));
+  let g = '';
+  for (const t of yt) g += `<line x1="${L}" x2="${Wd - Rm}" y1="${Y(t)}" y2="${Y(t)}" stroke="${line}"/><text x="${L - 6}" y="${Y(t) + 4}" text-anchor="end" font-size="11" fill="${muted}">${nf(t)}</text>`;
+  for (const t of xt) if (t <= P.dist) g += `<text x="${X(t)}" y="${Hd - Bm + 16}" text-anchor="middle" font-size="11" fill="${muted}">${nf(t)}</text>`;
+  return `<svg viewBox="0 0 ${Wd} ${Hd}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Perfil topogràfic de A a B" font-family="Barlow, Arial, sans-serif">
+    ${g}<path d="${area}" fill="${rust}" fill-opacity=".18"/><path d="${path}" fill="none" stroke="${rust}" stroke-width="2"/>
+    <text x="${L}" y="${T - 3}" font-size="12" font-weight="700" fill="${ink}">A</text><text x="${Wd - Rm}" y="${T - 3}" font-size="12" font-weight="700" text-anchor="end" fill="${ink}">B</text>
+    <text x="${(L + Wd - Rm) / 2}" y="${Hd - 6}" text-anchor="middle" font-size="11.5" fill="${muted}">Distància (km). Exageració vertical ×${nf(ve)}</text>
+    <text transform="translate(13 ${(T + Hd - Bm) / 2}) rotate(-90)" text-anchor="middle" font-size="11.5" fill="${muted}">Altitud (m)</text></svg>`;
+}
+function niceTicks(a, b, n) {
+  const raw = (b - a) / n, mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+  const step = (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * mag;
+  const out = []; for (let t = Math.ceil(a / step) * step; t <= b + 1e-9; t += step) out.push(+t.toFixed(6)); return out;
+}
+function drawProfile() {
+  const O = $('#pout'); if (!O) return;
+  const P = S.profile;
+  if (!P) { O.innerHTML = `<div class="panel"><p class="empty">${profClicks.length === 1 ? 'Ara toqueu el punt B.' : 'Toqueu el punt A a la vista de detall.'}</p></div>`; return; }
+  O.innerHTML = profileSVG(P) + `<div class="stats">
+    <div class="stat"><b>${nf(P.dist, 1)} km</b><span>Distància A–B</span></div>
+    <div class="stat"><b>${P.drop >= 0 ? '+' : '−'}${nf(Math.abs(P.drop))} m</b><span>Desnivell de A a B</span></div>
+    <div class="stat"><b>${nf(P.max - P.min)} m</b><span>Diferència entre el punt més alt i el més baix</span></div>
+    <div class="stat"><b>${nf(P.meanSlope, 2)}°</b><span>Pendent mitjà (A–B)</span></div>
+    <div class="stat"><b>${nf(P.maxSlope, 1)}°</b><span>Pendent màxim en un tram</span></div></div>
+    <p class="tip" style="margin-top:12px">Comproveu el pendent mitjà a mà: pendent = desnivell ÷ distància (en les mateixes unitats), i l'angle és l'arctangent d'aquest valor. Les naus reals no poden aterrar en pendents de més de 15° aproximadament.</p>
+    <div class="row"><button class="btn primary" onclick="go('s-log')">Registra-ho a la bitàcola</button></div>`;
+}
+
+// ---------- bitàcola ----------
+const QUESTIONS = {
+  geo: [
+    ['g1', 'Quin tipus de terreny hi ha al lloc d\'aterratge? De quina era geològica és i què ens diu de la seva edat?'],
+    ['g2', 'Quins elements geomorfològics hi ha a menys de 300 km (cràters, volcans, canals, deltes, canyons…)? Descriviu-ne un i expliqueu com es va formar.'],
+    ['g3', 'Hipòtesi: hi va haver aigua líquida en aquesta zona en el passat? Quines proves del relleu o de les roques ho suggereixen?'],
+  ],
+  eng: [
+    ['e1', 'Quina altitud té el lloc? Per què és tan important l\'altitud per frenar amb el paracaigudes a Mart?'],
+    ['e2', 'Resultats del perfil topogràfic: distància, desnivell i pendent. Escriviu el càlcul del pendent mitjà pas a pas.'],
+    ['e3', 'Quins perills hi ha dins l\'el·lipse d\'aterratge (pendents, roques, cràters) i com els evitaria la nau?'],
+  ],
+  sup: [
+    ['s1', 'D\'on traurem l\'aigua? Quina probabilitat de gel hi ha i com l\'extrauríeu?'],
+    ['s2', 'Energia: com afecten la latitud i la pols a les plaques solars? Quina alternativa proposeu?'],
+    ['s3', 'Temperatura, pressió i radiació: quins riscos hi ha per a la tripulació i com la protegiríeu?'],
+  ],
+  car: [
+    ['c1', 'Coordenades exactes del lloc i nom de la regió. Com es mesuren la latitud i la longitud a Mart?'],
+    ['c2', 'Quina missió real va aterrar més a prop del vostre lloc? Per què creieu que la van enviar allà?'],
+    ['c3', 'Perfil fet a mà: compareu-lo amb el de l\'aplicació. S\'assemblen? Què ha estat més difícil?'],
+  ],
+  team: [
+    ['f1', 'Quin criteri heu hagut de sacrificar per triar aquest lloc? Per què ha valgut la pena?'],
+    ['f2', 'Pla B: si la nau no pogués aterrar aquí, quin dels altres candidats triaríeu i per què?'],
+    ['f3', 'Què heu après sobre Mart que no sabíeu abans d\'aquesta activitat?'],
+  ],
+};
+function siteData() { return S.site && mission() ? analyse(S.site.lat, S.site.lon, S.mission) : null; }
+function renderLog() {
+  const B = $('#logBody');
+  if (!S.site || !mission()) return needSite(B, 'omplir la bitàcola');
+  const a = siteData(), u = UNITS[a.unit], P = S.profile;
+  const boxes = {
+    geo: `<b>Terreny:</b> ${esc(u.name)} (${esc(u.era)}). ${esc(u.text)}<br><b>Elements propers:</b> ${a.near.map(n => `${esc(n.n)} (${nf(n.d)} km)`).join('; ')}`,
+    eng: `<b>Altitud:</b> ${nf(a.alt)} m. <b>Pressió:</b> ${nf(a.pressure)} Pa. <b>Temps estimat amb paracaigudes:</b> ${a.chute > 20 ? `${nf(a.chute)} s` : 'gairebé no n\'hi ha'}<br><b>Pendent regional:</b> ${nf(a.regSlope, 1)}°. <b>Terreny perillós dins l'el·lipse:</b> ${nf(a.hazard * 100)} %. <b>Pendent local màxim:</b> ${nf(a.maxS, 1)}°<br>${P ? `<b>Perfil:</b> ${nf(P.dist, 1)} km, desnivell ${nf(P.drop)} m, pendent mitjà ${nf(P.meanSlope, 2)}°, màxim ${nf(P.maxSlope, 1)}°` : '<b>Perfil:</b> encara no l\'heu fet.'}`,
+    sup: `<b>Gel:</b> ${nf(a.ice * 100)} % de probabilitat. <b>Pols:</b> ${nf(a.dust * 100)} %. <b>Energia solar relativa:</b> ${nf(a.energy * 100)} %. <b>Temperatura mitjana:</b> uns ${nf(a.temp)} °C`,
+    car: `<b>Coordenades:</b> ${fmtCoord(a.lat, a.lon)}. <b>Regió:</b> ${esc(a.region.n)} (${nf(a.region.d)} km)<br><b>Missió real més propera:</b> ${esc(a.lander.n)} (${a.lander.y}), a ${nf(a.lander.d)} km`,
+    team: `<b>Puntuació:</b> seguretat ${nf(a.scores.seg, 1)}, aigua ${nf(a.scores.aigua, 1)}, energia ${nf(a.scores.energia, 1)}, ciència ${nf(a.scores.ciencia, 1)}. <b>Total:</b> ${nf(a.total, 1)}`,
+  };
+  const blocks = [...ROLES.map(r => [r.id, r.name, S.members[r.id]]), ['team', 'Tot l\'equip', S.agency]];
+  B.innerHTML = blocks.map(([id, name, who]) => `<div class="logrole"><header><h3>${name}</h3><span>${esc(who || '')}</span></header>
+    <div class="databox">${boxes[id]}</div>
+    ${QUESTIONS[id].map(([k, q]) => `<div class="q"><label for="q-${k}">${q}</label><textarea id="q-${k}" data-k="${k}"></textarea></div>`).join('')}</div>`).join('')
+    + `<p class="saved" id="logSaved"></p><div class="row"><button class="btn primary" onclick="go('s-descent')">Comença el descens</button></div>`;
+  B.querySelectorAll('textarea').forEach(t => { t.value = S.notes[t.dataset.k] || ''; t.oninput = () => { S.notes[t.dataset.k] = t.value; save(); $('#logSaved').textContent = 'Desat en aquest dispositiu.'; }; });
+}
+
+// ---------- descens ----------
+let anim = null;
+function renderDescent() {
+  const B = $('#descentBody');
+  if (!S.site || !mission()) return needSite(B, 'simular el descens');
+  const a = siteData();
+  B.innerHTML = `<p>Des que la nau toca l'atmosfera fins que arriba a terra passen uns set minuts. El senyal tarda més de set minuts a arribar a la Terra, així que la nau ho fa tot sola. Quan sabem que ha començat a baixar, en realitat ja ha tocat terra… o s'ha estavellat.</p>
+  <div class="descent">
+    <div class="sky" id="sky"><div class="tele" id="tele"></div>
+      <svg class="craft" id="craft" viewBox="0 0 60 80" aria-hidden="true"><g id="chute" opacity="0"><path d="M6 22 Q30 -8 54 22 Z" fill="#f4f1ec" stroke="#b33" stroke-width="2"/><line x1="8" y1="22" x2="26" y2="52" stroke="#ddd"/><line x1="52" y1="22" x2="34" y2="52" stroke="#ddd"/></g>
+      <g id="flame" opacity="0"><path d="M22 70 L26 80 L30 70 M30 70 L34 80 L38 70" stroke="#ffb347" stroke-width="3" fill="none"/></g>
+      <circle id="glow" cx="30" cy="64" r="16" fill="#ff7a2f" opacity="0"/><path id="shield" d="M14 56 Q30 72 46 56 Z" fill="#8a5a3c"/><rect x="20" y="46" width="20" height="14" rx="3" fill="#d8dde2" stroke="#333"/></svg>
+      <div class="ground"></div></div>
+    <div>
+      <ol class="phases" id="phases">
+        <li data-p="0"><strong>Entrada a l'atmosfera</strong>A 125 km d'altura i a 19.500 km/h. L'escut tèrmic arriba a uns 1.300 °C.</li>
+        <li data-p="1"><strong>Obertura del paracaigudes</strong>A ${nf(a.alt)} m d'altitud l'aire té ${nf(a.pressure)} Pa. Temps de frenada amb paracaigudes: ${a.chute > 20 ? `uns ${nf(a.chute)} s` : 'gairebé cap'}.</li>
+        <li data-p="2"><strong>Separació de l'escut i radar</strong>El radar mesura l'altura i la càmera fotografia el terreny.</li>
+        <li data-p="3"><strong>Navegació pel terreny</strong>La nau compara les fotos amb el mapa i busca un punt segur dins l'el·lipse (${nf(a.hazard * 100)} % de terreny perillós).</li>
+        <li data-p="4"><strong>Retrocoets</strong>Els motors frenen fins a menys de 3 km/h.</li>
+        <li data-p="5"><strong>Contacte amb el terra</strong>Pendent regional: ${nf(a.regSlope, 1)}°. Les potes han de quedar ben recolzades.</li>
+      </ol>
+      <p class="tip" style="margin-top:12px">Probabilitat d'èxit calculada per a aquest lloc: <b>${nf(a.pSuccess * 100)} %</b>. Les missions reals només tenen un intent.</p>
+      <div class="row"><button class="btn primary" id="launch">${S.attempts ? 'Torna a simular' : 'Inicia el descens'}</button><span class="tip" id="attempts">Intents: ${S.attempts}</span></div>
+      <div id="verdict">${S.descent ? verdictHTML(S.descent, a) : ''}</div>
+    </div>
+  </div>`;
+  setCraft(0, a);
+  if (S.descent) markPhases(S.descent.failAt ?? 6, S.descent.failAt);
+  $('#launch').onclick = () => runDescent(a);
+}
+const PH_T = [0, 240, 260, 330, 380, 415, 420];
+const PH_ALT = [125, 11, 9, 4.2, 2.1, 0.02, 0];
+const PH_V = [19500, 1500, 600, 320, 290, 2.7, 0];
+function setCraft(frac, a) {
+  const sky = $('#sky'), craft = $('#craft'); if (!sky) return;
+  const t = frac * 420;
+  let i = 0; while (i < PH_T.length - 2 && t > PH_T[i + 1]) i++;
+  const f = (t - PH_T[i]) / (PH_T[i + 1] - PH_T[i]);
+  const alt = PH_ALT[i] + (PH_ALT[i + 1] - PH_ALT[i]) * f, v = PH_V[i] + (PH_V[i + 1] - PH_V[i]) * f;
+  const hpx = sky.clientHeight - 36 - 80;
+  const y = hpx * (1 - Math.log10(1 + alt * 8) / Math.log10(1 + 125 * 8));
+  craft.style.top = `${y}px`;
+  $('#glow').setAttribute('opacity', t > 30 && t < 230 ? String(0.25 + 0.55 * Math.sin(Math.PI * (t - 30) / 200)) : '0');
+  $('#chute').setAttribute('opacity', t >= 240 && t < 375 ? '1' : '0');
+  $('#shield').setAttribute('opacity', t < 260 ? '1' : '0');
+  $('#flame').setAttribute('opacity', t >= 375 && t < 419 ? '1' : '0');
+  const mm = Math.floor(t / 60), ss = Math.floor(t % 60);
+  $('#tele').innerHTML = `<b>T+${mm}:${String(ss).padStart(2, '0')}</b>Altura: ${alt >= 1 ? `${nf(alt, 1)} km` : `${nf(alt * 1000)} m`}<br>Velocitat: ${nf(v)} km/h`;
+  return i;
+}
+function markPhases(upTo, failAt) {
+  document.querySelectorAll('#phases li').forEach((li, k) => {
+    li.classList.remove('now', 'ok', 'fail');
+    if (failAt != null && k === failAt) li.classList.add('fail');
+    else if (k < upTo) li.classList.add('ok');
+    else if (k === upTo) li.classList.add('now');
+  });
+}
+function runDescent(a) {
+  if (anim) cancelAnimationFrame(anim);
+  const risks = [0.995, a.fA, 1, a.fH, 1, a.fS * 0.97];
+  let failAt = null;
+  for (let k = 0; k < risks.length; k++) if (Math.random() > risks[k]) { failAt = k; break; }
+  S.attempts++; S.descent = null; save();
+  $('#verdict').innerHTML = ''; $('#launch').disabled = true; $('#attempts').textContent = `Intents: ${S.attempts}`;
+  const dur = REDUCED ? 2500 : 21000, t0 = performance.now();
+  const stopFrac = failAt == null ? 1 : (PH_T[failAt] + (PH_T[failAt + 1] - PH_T[failAt]) * 0.6) / 420;
+  const step = now => {
+    if (!$('#sky')) { S.descent = { ok: failAt == null, failAt, p: a.pSuccess, attempt: S.attempts }; save(); anim = null; return; }
+    const frac = Math.min(stopFrac, (now - t0) / dur);
+    const i = setCraft(frac, a); markPhases(i, null);
+    if (frac < stopFrac) anim = requestAnimationFrame(step);
+    else {
+      S.descent = { ok: failAt == null, failAt, p: a.pSuccess, attempt: S.attempts };
+      save(); markPhases(failAt ?? 6, failAt); renderSteps();
+      $('#verdict').innerHTML = verdictHTML(S.descent, a);
+      $('#launch').disabled = false; $('#launch').textContent = 'Torna a simular';
+    }
+  };
+  anim = requestAnimationFrame(step);
+}
+function verdictHTML(r, a) {
+  if (r.ok) return `<div class="verdict ok"><h3>Aterratge confirmat</h3><p>La nau ha tocat terra a ${fmtCoord(S.site.lat, S.site.lon)}. Intent número ${r.attempt}.</p><div class="row"><button class="btn primary" onclick="go('s-report')">Prepara l'informe</button></div></div>`;
+  const why = [
+    'L\'escut tèrmic ha fallat durant l\'entrada. És un risc petit que existeix a qualsevol lloc.',
+    `El paracaigudes no ha tingut prou temps per frenar: a ${nf(a.alt)} m d'altitud l'aire és massa prim (${nf(a.pressure)} Pa).`, '',
+    `El sistema de navegació no ha trobat cap punt prou segur: el ${nf(a.hazard * 100)} % de l'el·lipse té pendents o roques perilloses.`, '',
+    `La nau ha tocat terra en un pendent massa fort (pendent regional ${nf(a.regSlope, 1)}°, local fins a ${nf(a.maxS, 1)}°) i ha bolcat.`][r.failAt];
+  return `<div class="verdict fail"><h3>Senyal perdut</h3><p>${why}</p><p class="tip">Anoteu a la bitàcola què ha fallat. Si voleu, torneu al mapa i busqueu un lloc més segur, però recordeu que una missió real no té segona oportunitat.</p><div class="row"><button class="btn" onclick="go('s-map')">Torna al mapa</button></div></div>`;
+}
+
+// ---------- informe ----------
+let downloads = {save: async ({filename, data}) => { const u = URL.createObjectURL(new Blob([data], {type: 'text/html'})); const a = document.createElement('a'); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); return {status: 'delivered'}; }}; // boigxtic: descàrrega directa des del navegador
+if (window.claude && typeof window.claude.use === 'function') {
+  window.claude.use('downloads').then(d => { downloads = d; if (S.step === 's-report') renderReport(); }).catch(() => { });
+}
+function snapshotMap() {
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const ctx = c.getContext('2d'); paintGlobal(ctx, { mode: 'alt', ice: false, dust: false });
+  const [x, y] = [(S.site.lon + 180) * 2, (90 - S.site.lat) * 2];
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.stroke();
+  ctx.strokeStyle = '#FF5A36'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x - 16, y); ctx.lineTo(x + 16, y); ctx.moveTo(x, y - 16); ctx.lineTo(x, y + 16); ctx.stroke();
+  return c.toDataURL('image/png');
+}
+function renderReport() {
+  const B = $('#reportBody');
+  if (!S.site || !mission() || !GRID.ready) return needSite(B, 'preparar l\'informe');
+  const a = siteData(), m = mission(), u = UNITS[a.unit];
+  const members = ROLES.map(r => S.members[r.id] ? `${esc(S.members[r.id])} (${r.name.toLowerCase()})` : '').filter(Boolean).join(', ');
+  const d = S.descent;
+  B.innerHTML = `<div class="report">
+    <h3 style="font-size:1.9rem">${esc(S.agency || 'La nostra agència')}: ${m.icon} ${m.name}</h3>
+    <p>${members || 'Afegiu els noms de l\'equip a l\'etapa 1.'}</p>
+    <img src="${snapshotMap()}" alt="Mapa de Mart amb el lloc d'aterratge marcat">
+    <div class="kpis">
+      <div class="stat"><b>${fmtLat(a.lat)}</b><span>Latitud</span></div><div class="stat"><b>${fmtLon(a.lon)}</b><span>Longitud</span></div>
+      <div class="stat"><b>${nf(a.alt)} m</b><span>Altitud</span></div><div class="stat"><b>${nf(a.total, 1)}</b><span>Puntuació de la missió</span></div>
+      <div class="stat"><b>${d ? (d.ok ? 'Èxit' : 'Fallada') : 'Pendent'}</b><span>Descens (${S.attempts} intent${S.attempts === 1 ? '' : 's'})</span></div>
+    </div>
+    <p><b>Regió:</b> a prop de ${esc(a.region.n)}. <b>Terreny:</b> ${esc(u.name)}, ${esc(u.era)}.</p>
+    <p><b>Per què aquí:</b> ${esc(S.notes.f1 || 'Responeu la pregunta de l\'equip a la bitàcola.')}</p>
+    ${S.profile ? profileSVG(S.profile) : '<p class="tip">Falta el perfil topogràfic.</p>'}
+    <div class="row" style="margin-top:16px"><button class="btn primary" id="dl" ${downloads ? '' : 'disabled'}>Descarrega l'informe complet (HTML)</button><button class="btn" id="reset">Comença una missió nova</button></div>
+    <p class="status" id="dlStatus">${downloads ? 'Inclou el mapa, les dades, el perfil i totes les respostes de la bitàcola. Es pot imprimir o lliurar al professorat.' : 'La descàrrega no està disponible en aquesta vista.'}</p>
+  </div>`;
+  if (downloads) $('#dl').onclick = async () => {
+    const st = $('#dlStatus');
+    try {
+      const r = await downloads.save({ filename: `on-aterrem-${(S.agency || 'equip').toLowerCase().replace(/[^a-z0-9àèéíòóúç]+/gi, '-')}.html`, data: exportHTML() });
+      st.textContent = r.status === 'delivered' ? 'Informe enviat.' : 'Informe descarregat.';
+    } catch (e) { st.textContent = e && e.code === 'declined' ? 'Descàrrega cancel·lada.' : 'No s\'ha pogut descarregar l\'informe.'; }
+  };
+  let armed = false;
+  $('#reset').onclick = ev => {
+    if (!armed) { armed = true; ev.target.textContent = 'Segur? Es perdran les dades. Toca de nou'; return; }
+    const committee = S.committee;
+    S = { agency: '', members: {}, mission: null, candidates: [], site: null, profile: null, notes: {}, descent: null, attempts: 0, committee, step: 's-mission' };
+    pending = null; save(); renderMission(); go('s-mission');
+  };
+}
+function exportHTML() {
+  const a = siteData(), m = mission(), u = UNITS[a.unit], d = S.descent;
+  const qa = [...ROLES.map(r => [r.id, r.name, S.members[r.id]]), ['team', 'Tot l\'equip', '']].map(([id, name, who]) =>
+    `<h3>${name}${who ? `: ${esc(who)}` : ''}</h3>` + QUESTIONS[id].map(([k, q]) => `<p class="q">${q}</p><p class="a">${esc(S.notes[k] || '(sense resposta)').replace(/\n/g, '<br>')}</p>`).join('')).join('');
+  const cands = S.candidates.map((c, i) => { const x = analyse(c.lat, c.lon, S.mission); return `<tr><td>${i + 1}</td><td>${fmtCoord(c.lat, c.lon)}</td><td>${esc(x.region.n)}</td><td>${nf(x.alt)} m</td><td>${nf(x.scores.seg, 1)}</td><td>${nf(x.scores.aigua, 1)}</td><td>${nf(x.scores.energia, 1)}</td><td>${nf(x.scores.ciencia, 1)}</td><td><b>${nf(x.total, 1)}</b></td></tr>`; }).join('');
+  const P = S.profile;
+  return `<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>On aterrem? Informe de ${esc(S.agency || 'l\'equip')}</title>
+<style>body{font-family:Barlow,Arial,sans-serif;color:#16212C;max-width:820px;margin:30px auto;padding:0 20px;line-height:1.5}h1{font-size:2.4rem;margin:0}h2{border-bottom:3px solid #16212C;padding-bottom:4px;margin-top:34px}h3{margin:22px 0 6px;color:#A33F1C}img{width:100%;border-radius:6px}table{border-collapse:collapse;width:100%;font-size:.92rem}td,th{border-bottom:1px solid #ccc;padding:6px;text-align:left}.q{font-weight:600;margin:12px 0 2px}.a{margin:0 0 8px;padding:8px 12px;background:#f3f4f5;border-left:3px solid #A33F1C}dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px}dt{font-weight:600}dd{margin:0}svg{width:100%;height:auto}@media print{h2{break-after:avoid}.a{break-inside:avoid}}</style></head><body>
+<h1>On aterrem?</h1><p><b>${esc(S.agency || 'Equip')}</b>. Missió ${esc(m.name)}. ${new Date().toLocaleDateString('ca-ES')}</p>
+<p>${ROLES.map(r => S.members[r.id] ? `${r.name}: ${esc(S.members[r.id])}` : '').filter(Boolean).join('<br>')}</p>
+<h2>Lloc d'aterratge</h2><img src="${snapshotMap()}" alt="Mapa de Mart amb el lloc d'aterratge">
+<dl><dt>Coordenades</dt><dd>${fmtCoord(a.lat, a.lon)}</dd><dt>Regió</dt><dd>a prop de ${esc(a.region.n)} (${nf(a.region.d)} km)</dd><dt>Terreny</dt><dd>${esc(u.name)}, ${esc(u.era)}</dd>
+<dt>Altitud</dt><dd>${nf(a.alt)} m</dd><dt>Pressió</dt><dd>${nf(a.pressure)} Pa</dd><dt>Pendent regional</dt><dd>${nf(a.regSlope, 1)}°</dd><dt>Terreny perillós</dt><dd>${nf(a.hazard * 100)} % de l'el·lipse (${m.ell[0]} × ${m.ell[1]} km)</dd>
+<dt>Gel</dt><dd>${nf(a.ice * 100)} % de probabilitat</dd><dt>Energia solar</dt><dd>${nf(a.energy * 100)} %</dd><dt>Temperatura mitjana</dt><dd>uns ${nf(a.temp)} °C</dd>
+<dt>Puntuació</dt><dd>seguretat ${nf(a.scores.seg, 1)}, aigua ${nf(a.scores.aigua, 1)}, energia ${nf(a.scores.energia, 1)}, ciència ${nf(a.scores.ciencia, 1)}. Total ${nf(a.total, 1)}</dd>
+<dt>Descens</dt><dd>${d ? (d.ok ? 'Aterratge amb èxit' : 'Fallada') : 'No simulat'} (${S.attempts} intents, probabilitat d'èxit ${nf(a.pSuccess * 100)} %)</dd></dl>
+<h2>Candidats estudiats</h2><table><tr><th>#</th><th>Coordenades</th><th>Regió</th><th>Altitud</th><th>Seg.</th><th>Aigua</th><th>Energia</th><th>Ciència</th><th>Total</th></tr>${cands}</table>
+<h2>Perfil topogràfic</h2>${P ? profileSVG(P, { ink: '#16212C', rust: '#A33F1C', line: '#dddddd', muted: '#53616E' }) + `<p>Distància ${nf(P.dist, 1)} km, desnivell ${nf(P.drop)} m, pendent mitjà ${nf(P.meanSlope, 2)}°, pendent màxim ${nf(P.maxSlope, 1)}°.</p>` : '<p>No s\'ha fet.</p>'}
+<h2>Quadern de bitàcola</h2>${qa}</body></html>`;
+}
+
+// ---------- comitè ----------
+const CRIT = ['Seguretat ben justificada', 'Arguments geològics', 'Compleix la missió', 'Claredat de la defensa'];
+function renderCommittee() {
+  const C = $('#committee');
+  const rows = S.committee.map((t, i) => ({ t, i, tot: t.s.reduce((x, y) => x + (+y || 0), 0) }));
+  const ranked = [...rows].sort((x, y) => y.tot - x.tot);
+  let h = `<div class="tablewrap"><table class="committee"><thead><tr><th>Equip</th>${CRIT.map(c => `<th>${c}</th>`).join('')}<th>Total</th><th></th></tr></thead><tbody>`;
+  for (const r of rows) h += `<tr><td><input type="text" value="${esc(r.t.n)}" data-n="${r.i}" aria-label="Nom de l'equip" style="min-width:140px"></td>${r.t.s.map((v, k) => `<td><input type="number" min="1" max="5" value="${v ?? ''}" data-i="${r.i}" data-k="${k}" aria-label="${CRIT[k]}"></td>`).join('')}<td><b>${r.tot}</b></td><td><button class="btn small" data-rm="${r.i}" aria-label="Elimina l'equip">✕</button></td></tr>`;
+  h += `</tbody></table></div><div class="row" style="margin-top:10px"><button class="btn" id="addTeam">Afegeix un equip</button></div>`;
+  if (ranked.length > 1 && ranked[0].tot > 0) h += `<p style="margin-top:14px"><b>El comitè recomana:</b> ${esc(ranked[0].t.n || 'Equip sense nom')} amb ${ranked[0].tot} punts sobre ${CRIT.length * 5}.</p>`;
+  C.innerHTML = h;
+  $('#addTeam').onclick = () => { S.committee.push({ n: '', s: [null, null, null, null] }); save(); renderCommittee(); };
+  C.querySelectorAll('[data-n]').forEach(inp => inp.onchange = () => { S.committee[+inp.dataset.n].n = inp.value; save(); renderCommittee(); });
+  C.querySelectorAll('[data-i]').forEach(inp => inp.onchange = () => { const v = clamp(Math.round(+inp.value), 1, 5); S.committee[+inp.dataset.i].s[+inp.dataset.k] = inp.value === '' ? null : v; save(); renderCommittee(); });
+  C.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { S.committee.splice(+b.dataset.rm, 1); save(); renderCommittee(); });
+}
+
+// ---------- inici ----------
+function wireMap() {
+  const setMode = mode => { view.mode = mode; $('#mAlt').setAttribute('aria-pressed', String(mode === 'alt')); $('#mGeo').setAttribute('aria-pressed', String(mode === 'geo')); drawMap(); };
+  $('#mAlt').onclick = () => setMode('alt'); $('#mGeo').onclick = () => setMode('geo');
+  [['#oIce', 'ice'], ['#oDust', 'dust'], ['#oNames', 'names'], ['#oLanders', 'landers']].forEach(([s, k]) => { const c = $(s); c.checked = view[k]; c.onchange = () => { view[k] = c.checked; drawMap(); }; });
+  $('#map').addEventListener('click', ev => {
+    const r = ev.currentTarget.getBoundingClientRect();
+    const lon = ((ev.clientX - r.left) / r.width) * 360 - 180, lat = 90 - ((ev.clientY - r.top) / r.height) * 180;
+    pending = { lat: clamp(lat, -89.5, 89.5), lon: clamp(lon, -179.99, 179.99) };
+    drawMap(); renderPanel();
+    if (window.innerWidth <= 1020) $('#sitePanel').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+  });
+  new ResizeObserver(mapSizeClass).observe($('#mapframe'));
+}
+renderMission(); wireMap();
+if (S.site) pending = { lat: S.site.lat, lon: S.site.lon };
+buildGrid(() => {
+  paintGlobal($('#heroMap').getContext('2d'), { mode: 'alt' });
+  go(S.step || 's-mission');
+});
+go(S.step || 's-mission');
+</script></body></html>
