@@ -13,6 +13,11 @@
   body.fosc .etiqueta.ext { background:#3a2414; }
   * { box-sizing:border-box; }
   body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--negre); background:var(--fons); font-size:20px; transition:background .2s,color .2s; }
+  #banner { position:relative; height:clamp(140px,16vw,240px); background:#0D4E73; }
+  #banner iframe { display:block; width:100%; height:100%; border:0; }
+  #bannerX { position:absolute; left:10px; top:10px; width:30px; height:30px; border-radius:50%; border:2px solid #141414; background:rgba(255,255,255,.85); color:#141414; font-size:14px; cursor:pointer; opacity:.7; }
+  #bannerX:hover { opacity:1; }
+  body.sensebanner #banner { display:none; }
   header { display:flex; align-items:center; gap:20px; padding:20px 40px; border-bottom:4px solid var(--taronja); flex-wrap:wrap; }
   #ammo { width:80px; height:80px; border-radius:50%; background:#FFE8D8; display:flex; align-items:center; justify-content:center; flex:0 0 auto; position:relative; cursor:pointer; }
   #ammo svg { margin-left:5px; overflow:visible; transform-origin:50% 55%; }
@@ -140,6 +145,7 @@
 </head>
 <body>
 
+<div id="banner"><iframe src="img/ammo-banner.html" title="L'Ammo al mar juràssic" loading="lazy"></iframe><button id="bannerX" title="Amaga el bàner" aria-label="Amaga el bàner">✕</button></div>
 <header>
   <div id="ammo" class="amb" title="Clica l'Ammo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 6 96 92" width="64" height="61" aria-label="Ammo"><g class="jump"><g class="bob">
  <g class="body">
@@ -265,6 +271,11 @@
   function posaFosc(f){document.body.classList.toggle('fosc',f);$('#bFosc').classList.toggle('on',f)}
   posaFosc(llegeix('boigxtic-fosc')===null?matchMedia('(prefers-color-scheme: dark)').matches:llegeix('boigxtic-fosc')==='1');
   $('#bFosc').onclick=()=>{const f=!document.body.classList.contains('fosc');posaFosc(f);desa('boigxtic-fosc',f?'1':'0')};
+
+  /* ---- Bàner de l'Ammo (es pot amagar; es recorda) ---- */
+  if (llegeix('boigxtic-banner') === '0') document.body.classList.add('sensebanner');
+  $('#bannerX').onclick = () => { document.body.classList.add('sensebanner'); desa('boigxtic-banner', '0'); };
+  $('#ammo').addEventListener('dblclick', () => { document.body.classList.remove('sensebanner'); desa('boigxtic-banner', '1'); });
 
   /* ---- Pantalla completa ---- */
   $('#bPC').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.()};
