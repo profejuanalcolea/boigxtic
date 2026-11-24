@@ -25,10 +25,14 @@ const APPS = [
   { titol: "Laboratori de marees",   materia: "gica2",    nivell: "", desc: "Simulador de marees: Lluna, Sol, marees vives i mortes.", url: "geologia-ccaa/marees/" },
   { titol: "Simulador d'eclipsis",   materia: "gica2",    nivell: "", desc: "Sol, Terra i Lluna: fases, eclipsis reals 2026–2028.", url: "geologia-ccaa/eclipsis/" },
   { titol: "Fases de la Lluna",      materia: "gica2",    nivell: "", desc: "El cel de l'observador, l'òrbita des de l'espai i reptes.", url: "geologia-ccaa/fases-lluna/" },
+  { titol: "Translació",             materia: "gica2",    nivell: "", desc: "La translació de la Terra: equinoccis, solsticis i estacions.", url: "geologia-ccaa/translacio/" },
+  { titol: "Atmosfera en moviment",  materia: "gica2",    nivell: "", desc: "La circulació de l'atmosfera.", url: "geologia-ccaa/atmosfera/" },
+  { titol: "La Terra",               materia: "gica2",    nivell: "", desc: "Animació de la Terra girant en 3D.", url: "geologia-ccaa/la-terra/" },
 
   { titol: "El cicle de les roques", materia: "bigica1",  nivell: "", desc: "Processos que transformen unes roques en altres.", url: "biogeo/cicle-roques/" },
   { titol: "Tectònica de plaques",   materia: "bigica1",  nivell: "", desc: "Mapa de plaques, límits i contextos tectònics.", url: "https://profejuanalcolea.github.io/TECTONICPLATE/" },
   { titol: "Els terratrèmols",       materia: "bigica1",  nivell: "", desc: "Magnitud i intensitat.", url: "biogeo/terratremols/" },
+  { titol: "Viatge a l'interior de la Terra", materia: "bigica1", nivell: "", desc: "Explorador: mètodes d'estudi, ones sísmiques i capes de la Terra.", url: "biogeo/interior-terra/" },
 
   { titol: "L'hora i el Sol",        materia: "biogeo4",  nivell: "", desc: "Fusos horaris, terminador i canvi d'hora.", url: "" },
   { titol: "Mitosi amb Tradescantia",materia: "biogeo4",  nivell: "", desc: "Pràctica de laboratori.", url: "" },
