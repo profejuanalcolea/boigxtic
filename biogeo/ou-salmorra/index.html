@@ -1,0 +1,583 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>L'Ou a la Salmorra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#eef5f6;
+    --surface:#ffffff;
+    --surface-2:#e2eef0;
+    --ink:#15303a;
+    --ink-muted:#4c6b73;
+    --line:rgba(21,48,58,.14);
+    --line-strong:rgba(21,48,58,.28);
+    --water:#1f7a8c;
+    --water-soft:rgba(31,122,140,.14);
+    --accent:#c97a2b;
+    --accent-soft:rgba(201,122,43,.16);
+    --status-float:#2f8f5b;
+    --status-float-soft:rgba(47,143,91,.14);
+    --status-sink:#b23a2e;
+    --status-sink-soft:rgba(178,58,46,.14);
+    --status-mid:#5c7a83;
+    --status-mid-soft:rgba(92,122,131,.14);
+    --shadow: 0 1px 2px rgba(21,48,58,.06), 0 8px 24px rgba(21,48,58,.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0c2028;
+      --surface:#123138;
+      --surface-2:#163943;
+      --ink:#e9f3f4;
+      --ink-muted:#a6c2c8;
+      --line:rgba(233,243,244,.14);
+      --line-strong:rgba(233,243,244,.28);
+      --water:#5fc3d6;
+      --water-soft:rgba(95,195,214,.16);
+      --accent:#eba85a;
+      --accent-soft:rgba(235,168,90,.18);
+      --status-float:#5bd398;
+      --status-float-soft:rgba(91,211,152,.16);
+      --status-sink:#e6786b;
+      --status-sink-soft:rgba(230,120,107,.16);
+      --status-mid:#9db6bc;
+      --status-mid-soft:rgba(157,182,188,.16);
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c2028;
+    --surface:#123138;
+    --surface-2:#163943;
+    --ink:#e9f3f4;
+    --ink-muted:#a6c2c8;
+    --line:rgba(233,243,244,.14);
+    --line-strong:rgba(233,243,244,.28);
+    --water:#5fc3d6;
+    --water-soft:rgba(95,195,214,.16);
+    --accent:#eba85a;
+    --accent-soft:rgba(235,168,90,.18);
+    --status-float:#5bd398;
+    --status-float-soft:rgba(91,211,152,.16);
+    --status-sink:#e6786b;
+    --status-sink-soft:rgba(230,120,107,.16);
+    --status-mid:#9db6bc;
+    --status-mid-soft:rgba(157,182,188,.16);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Work Sans", ui-sans-serif, system-ui, sans-serif;
+    padding:28px 16px 56px;
+  }
+  .wrap{max-width:1080px; margin:0 auto; display:flex; flex-direction:column; gap:28px;}
+
+  header.page{display:flex; flex-direction:column; gap:8px; max-width:760px;}
+  .eyebrow{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:12.5px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--water); font-weight:600;
+  }
+  h1{
+    font-family:"Fraunces", Georgia, serif;
+    font-weight:600; font-size:clamp(28px,4vw,40px);
+    margin:0; line-height:1.08; text-wrap:balance;
+  }
+  .lede{margin:0; color:var(--ink-muted); font-size:16px; line-height:1.55; max-width:62ch;}
+
+  .bench{
+    display:grid; grid-template-columns: minmax(260px,340px) 1fr;
+    gap:24px;
+  }
+  @media (max-width:760px){ .bench{grid-template-columns:1fr;} }
+  @media (max-width:480px){ .readout-grid{grid-template-columns:1fr 1fr;} .readout-grid .stat:last-child{grid-column:1 / -1;} }
+
+  .panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    box-shadow:var(--shadow); padding:20px;
+  }
+
+  /* --- apparatus --- */
+  .apparatus{display:flex; flex-direction:column; align-items:center; gap:18px;}
+  .apparatus svg{width:100%; max-width:220px; height:auto;}
+  .controls{width:100%; display:flex; flex-direction:column; gap:16px;}
+  .control-row{display:flex; flex-direction:column; gap:6px;}
+  .control-label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:13.5px; font-weight:600;
+  }
+  .control-value{
+    font-family:"IBM Plex Mono", ui-monospace, monospace; font-weight:600;
+    color:var(--accent); font-variant-numeric:tabular-nums; font-size:13.5px;
+  }
+  input[type="range"]{
+    -webkit-appearance:none; appearance:none; width:100%; height:6px;
+    border-radius:999px; background:linear-gradient(90deg,var(--water-soft),var(--accent-soft));
+    outline:none; border:1px solid var(--line);
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+    background:var(--accent); border:3px solid var(--surface); box-shadow:0 0 0 1px var(--line-strong);
+    cursor:pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:20px; height:20px; border-radius:50%;
+    background:var(--accent); border:3px solid var(--surface); box-shadow:0 0 0 1px var(--line-strong);
+    cursor:pointer;
+  }
+  .hint{font-size:12px; color:var(--ink-muted);}
+
+  .segmented{
+    display:flex; border:1px solid var(--line); border-radius:10px; overflow:hidden;
+  }
+  .segmented button{
+    flex:1; border:none; background:var(--surface); color:var(--ink-muted);
+    font-family:inherit; font-size:12.5px; font-weight:600; padding:9px 6px;
+    cursor:pointer; border-left:1px solid var(--line);
+  }
+  .segmented button:first-child{border-left:none;}
+  .segmented button[aria-pressed="true"]{background:var(--accent-soft); color:var(--ink);}
+  .segmented button:focus-visible{outline:2px solid var(--water); outline-offset:-2px;}
+
+  .explore-note{
+    font-size:12.5px; color:var(--ink-muted); line-height:1.5;
+    border-top:1px dashed var(--line-strong); padding-top:12px;
+  }
+  .explore-note strong{color:var(--ink);}
+
+  /* --- readouts --- */
+  .readout-col{display:flex; flex-direction:column; gap:20px;}
+  .status-row{display:flex; flex-wrap:wrap; align-items:center; gap:12px;}
+  .status-pill{
+    display:inline-flex; align-items:center; gap:8px; padding:7px 14px 7px 10px;
+    border-radius:999px; font-weight:600; font-size:14px;
+  }
+  .status-pill .dot{width:9px; height:9px; border-radius:50%;}
+  .status-sink{background:var(--status-sink-soft); color:var(--status-sink);}
+  .status-sink .dot{background:var(--status-sink);}
+  .status-mid{background:var(--status-mid-soft); color:var(--status-mid);}
+  .status-mid .dot{background:var(--status-mid);}
+  .status-float{background:var(--status-float-soft); color:var(--status-float);}
+  .status-float .dot{background:var(--status-float);}
+  .status-detail{font-size:13.5px; color:var(--ink-muted);}
+
+  .readout-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px;
+    background:var(--line); border:1px solid var(--line); border-radius:12px; overflow:hidden;
+  }
+  .stat{background:var(--surface); padding:14px 16px; display:flex; flex-direction:column; gap:4px;}
+  .stat .k{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-muted); font-weight:600;}
+  .stat .v{
+    font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:22px; font-weight:600;
+    font-variant-numeric:tabular-nums;
+  }
+  .stat .v.water{color:var(--water);}
+  .stat .v.egg{color:var(--accent);}
+
+  .chart-head{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  .chart-head h2{font-family:"Fraunces",serif; font-size:17px; font-weight:600; margin:0;}
+  .legend{display:flex; gap:14px; font-size:12px; color:var(--ink-muted);}
+  .legend span{display:inline-flex; align-items:center; gap:5px;}
+  .legend i{width:14px; height:3px; border-radius:2px; display:inline-block;}
+  .chart-wrap{overflow-x:auto;}
+  svg.chart{width:100%; min-width:340px; height:auto; display:block;}
+  .chart text{font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:9.5px; fill:var(--ink-muted);}
+  .axis-line{stroke:var(--line-strong); stroke-width:1;}
+  .grid-line{stroke:var(--line); stroke-width:1;}
+
+  .table-toggle{
+    background:none; border:none; padding:0; font:inherit; color:var(--water);
+    font-size:12.5px; font-weight:600; cursor:pointer; text-decoration:underline;
+    text-underline-offset:2px; align-self:flex-start;
+  }
+  table.data{border-collapse:collapse; font-size:12.5px; width:100%; margin-top:8px;}
+  table.data caption{text-align:left; color:var(--ink-muted); font-size:11.5px; margin-bottom:6px;}
+  table.data th, table.data td{
+    border:1px solid var(--line); padding:6px 10px; text-align:right;
+    font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums;
+  }
+  table.data th{background:var(--surface-2); text-align:right; font-weight:600;}
+  table.data td:first-child, table.data th:first-child{text-align:left; font-family:inherit;}
+
+  footer.note{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    box-shadow:var(--shadow); padding:22px 24px; display:flex; flex-direction:column; gap:10px;
+  }
+  footer.note h2{font-family:"Fraunces",serif; font-size:18px; font-weight:600; margin:0;}
+  footer.note p{margin:0; color:var(--ink-muted); font-size:14.5px; line-height:1.6; max-width:74ch;}
+  footer.note .tag-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:2px;}
+  .tag{
+    font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11.5px;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:999px;
+    padding:4px 10px; color:var(--ink-muted);
+  }
+  .tag b{color:var(--ink); font-weight:600;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="page">
+    <span class="eyebrow">Simulador · Mètode científic, Bloc 1</span>
+    <h1>L'ou a la salmorra</h1>
+    <p class="lede">Abans de muntar l'experiment real, exploreu com la quantitat de sal dissolta canvia la densitat de l'aigua i decideix si l'ou s'enfonsa, sura o queda suspès enmig del recipient.</p>
+  </header>
+
+  <div class="bench">
+    <!-- APPARATUS -->
+    <div class="panel apparatus">
+      <svg id="beaker" viewBox="0 0 200 320" role="img" aria-labelledby="beakerTitle beakerDesc">
+        <title id="beakerTitle">Recipient amb aigua i un ou</title>
+        <desc id="beakerDesc">Representació de l'ou dins l'aigua segons la sal afegida</desc>
+        <!-- glass -->
+        <path d="M40 18 L40 288 Q40 300 52 300 L148 300 Q160 300 160 288 L160 18"
+              fill="none" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="30" y1="18" x2="170" y2="18" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round"/>
+        <!-- graduation ticks -->
+        <g stroke="var(--line-strong)" stroke-width="1.5">
+          <line x1="40" y1="80" x2="48" y2="80"/>
+          <line x1="40" y1="150" x2="48" y2="150"/>
+          <line x1="40" y1="220" x2="48" y2="220"/>
+        </g>
+        <!-- water -->
+        <clipPath id="glassClip">
+          <path d="M41 19 L41 287 Q41 298.5 52 298.5 L148 298.5 Q159 298.5 159 287 L159 19 Z"/>
+        </clipPath>
+        <g clip-path="url(#glassClip)">
+          <rect id="water" x="41" y="58" width="118" height="241" fill="var(--water)" fill-opacity="0.32"/>
+          <rect id="waterLine" x="41" y="56" width="118" height="4" fill="var(--water)" fill-opacity="0.55"/>
+          <g id="salt-bed" opacity="0">
+            <rect x="41" y="290" width="118" height="9" fill="var(--accent)" fill-opacity=".55"/>
+            <circle cx="60" cy="292" r="2.4" fill="var(--accent)"/>
+            <circle cx="80" cy="294" r="2" fill="var(--accent)"/>
+            <circle cx="102" cy="291" r="2.6" fill="var(--accent)"/>
+            <circle cx="124" cy="294" r="2" fill="var(--accent)"/>
+            <circle cx="142" cy="292" r="2.3" fill="var(--accent)"/>
+          </g>
+        </g>
+        <!-- egg -->
+        <g id="egg-group">
+          <ellipse id="egg" cx="100" cy="253" rx="19" ry="25" fill="#f4ead6" stroke="var(--line-strong)" stroke-width="1.5"/>
+          <ellipse cx="94" cy="243" rx="6" ry="8" fill="#ffffff" fill-opacity=".55"/>
+        </g>
+      </svg>
+
+      <div class="controls">
+        <div class="control-row">
+          <div class="control-label">
+            <span>Sal afegida (per litre d'aigua)</span>
+            <span class="control-value"><span id="saltVal">0</span> g/L</span>
+          </div>
+          <input type="range" id="saltSlider" min="0" max="380" step="2" value="0" aria-describedby="saltHint">
+          <span class="hint" id="saltHint">Solubilitat màxima del clorur de sodi ≈ 360 g/L a temperatura ambient.</span>
+        </div>
+
+        <div class="explore-note">
+          <div class="control-row" style="margin-bottom:10px;">
+            <div class="control-label"><span>Explora: estat de l'ou</span></div>
+            <div class="segmented" id="eggSelector" role="group" aria-label="Estat de l'ou">
+              <button type="button" data-egg="fresc" aria-pressed="true">Fresc</button>
+              <button type="button" data-egg="mitja" aria-pressed="false">Unes setmanes</button>
+              <button type="button" data-egg="vell" aria-pressed="false">Vell</button>
+            </div>
+          </div>
+          Canviar l'estat de l'ou modifica la <strong>seva</strong> densitat — és una segona variable. En l'experiment real d'avaluar l'efecte de la sal, l'estat de l'ou s'ha de mantenir <strong>constant</strong> (variable controlada).
+        </div>
+      </div>
+    </div>
+
+    <!-- READOUTS -->
+    <div class="panel readout-col">
+      <div>
+        <div class="status-row">
+          <span class="status-pill" id="statusPill"><span class="dot"></span><span id="statusLabel">—</span></span>
+          <span class="status-detail" id="statusDetail"></span>
+        </div>
+      </div>
+
+      <div class="readout-grid">
+        <div class="stat">
+          <span class="k">Densitat de l'aigua</span>
+          <span class="v water"><span id="waterDensityVal">1.000</span> g/mL</span>
+        </div>
+        <div class="stat">
+          <span class="k">Densitat de l'ou (<span id="eggLabelInline">fresc</span>)</span>
+          <span class="v egg"><span id="eggDensityVal">1.080</span> g/mL</span>
+        </div>
+        <div class="stat">
+          <span class="k">Llindar de flotació</span>
+          <span class="v"><span id="thresholdVal">140</span> g/L</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="chart-head">
+          <h2>Densitat de l'aigua segons la sal afegida</h2>
+          <div class="legend">
+            <span><i style="background:var(--water)"></i>Aigua salada</span>
+            <span><i style="background:var(--accent); height:0; border-top:2px dashed var(--accent);"></i>Densitat de l'ou</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <svg class="chart" id="densityChart" viewBox="0 0 480 220" role="img" aria-label="Gràfic de densitat de l'aigua en funció de la sal afegida, amb la densitat de l'ou com a referència"></svg>
+        </div>
+        <button class="table-toggle" id="tableToggle" aria-expanded="false">Mostra les dades en taula</button>
+        <table class="data" id="dataTable" hidden>
+          <caption>Densitat de l'aigua per a diferents concentracions de sal</caption>
+          <thead><tr><th>Sal (g/L)</th><th>Densitat aigua (g/mL)</th></tr></thead>
+          <tbody id="dataTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer class="note">
+    <h2>Com llegir-ho amb el mètode científic</h2>
+    <p>Un objecte flota quan la densitat del fluid és <strong>més gran</strong> que la seva pròpia densitat: el líquid l'empeny cap amunt (principi d'Arquimedes) amb més força que el seu propi pes cap avall. En aigua dolça (≈1,000 g/mL) un ou fresc (≈1,08 g/mL) s'enfonsa; en dissoldre sal, l'aigua es fa més densa fins que supera la densitat de l'ou, i aleshores sura.</p>
+    <div class="tag-row">
+      <span class="tag"><b>VI</b> — sal afegida (g/L)</span>
+      <span class="tag"><b>VD</b> — profunditat / flotabilitat de l'ou</span>
+      <span class="tag"><b>Controlades</b> — volum d'aigua, tipus i estat de l'ou, temperatura</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const K = 0.00057;
+  const SALT_MAX = 360;
+  const BAND = 0.006;
+
+  const EGGS = {
+    fresc: { label: "fresc", density: 1.080 },
+    mitja: { label: "d'unes setmanes", density: 1.020 },
+    vell:  { label: "vell", density: 0.970 }
+  };
+  let eggKey = "fresc";
+
+  const saltSlider = document.getElementById('saltSlider');
+  const saltVal = document.getElementById('saltVal');
+  const waterDensityVal = document.getElementById('waterDensityVal');
+  const eggDensityVal = document.getElementById('eggDensityVal');
+  const eggLabelInline = document.getElementById('eggLabelInline');
+  const thresholdVal = document.getElementById('thresholdVal');
+  const statusPill = document.getElementById('statusPill');
+  const statusLabel = document.getElementById('statusLabel');
+  const statusDetail = document.getElementById('statusDetail');
+  const eggEl = document.getElementById('egg');
+  const eggGroup = document.getElementById('egg-group');
+  const waterRect = document.getElementById('water');
+  const waterLine = document.getElementById('waterLine');
+  const saltBed = document.getElementById('salt-bed');
+  const eggSelector = document.getElementById('eggSelector');
+
+  function waterDensity(saltGL){
+    const s = Math.min(Math.max(saltGL,0), SALT_MAX);
+    return 1.000 + K * s;
+  }
+
+  function thresholdFor(eggDensity){
+    if (eggDensity <= 1.000) return 0;
+    return (eggDensity - 1.000) / K;
+  }
+
+  const SURFACE_Y = 58;
+  const BOTTOM_Y = 289;
+  const EGG_HALF = 25;
+
+  // The egg's vertical position is animated by hand, frame by frame,
+  // instead of relying on a CSS transition on the SVG "cy" attribute —
+  // that CSS trick isn't reliably supported across browsers (notably
+  // Safari/iOS just snaps), so a JS easing loop is used instead to
+  // guarantee the same smooth, gradual rise for every viewer.
+  let currentCy = null;
+  let targetCy = null;
+  let rafId = null;
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function paintEgg(cy){
+    eggEl.setAttribute('cy', cy);
+    eggGroup.querySelectorAll('ellipse')[1].setAttribute('cy', cy - 10);
+  }
+
+  function stepEgg(){
+    if (reduceMotion || Math.abs(targetCy - currentCy) < 0.05){
+      currentCy = targetCy;
+      paintEgg(currentCy);
+      rafId = null;
+      return;
+    }
+    currentCy += (targetCy - currentCy) * 0.18;
+    paintEgg(currentCy);
+    rafId = requestAnimationFrame(stepEgg);
+  }
+
+  function render(){
+    const saltGL = Number(saltSlider.value);
+    const wd = waterDensity(saltGL);
+    const egg = EGGS[eggKey];
+    const diff = wd - egg.density;
+
+    saltVal.textContent = saltGL;
+    waterDensityVal.textContent = wd.toFixed(3);
+    eggDensityVal.textContent = egg.density.toFixed(3);
+    eggLabelInline.textContent = egg.label;
+    const th = thresholdFor(egg.density);
+    thresholdVal.textContent = th <= 0 ? '0 (ja sura)' : Math.round(th);
+
+    // saturation bed
+    saltBed.setAttribute('opacity', saltGL >= SALT_MAX ? '1' : '0');
+    waterRect.setAttribute('fill-opacity', (0.28 + Math.min(saltGL,SALT_MAX)/360*0.22).toFixed(3));
+
+    // Continuous vertical position: a smooth function of the density
+    // difference, so the egg drifts upward gradually as salt is added
+    // instead of jumping between fixed spots. The categorical labels
+    // below (s'enfonsa / suspès / sura) still switch at the same
+    // physical thresholds as before — only the motion is continuous.
+    const REST_Y = BOTTOM_Y - EGG_HALF + 3;         // resting on the floor
+    const FLOAT_Y = SURFACE_Y - EGG_HALF + 0.82*EGG_HALF*2; // riding near the surface
+    const SPREAD = 0.055; // g/mL — how gradual the rise feels
+    const v = 0.5 * (1 + Math.tanh(diff / SPREAD));
+    targetCy = REST_Y + v * (FLOAT_Y - REST_Y);
+    if (currentCy === null) currentCy = targetCy; // no animated entrance on first paint
+    if (rafId === null) rafId = requestAnimationFrame(stepEgg);
+
+    let statusClass, label, detail;
+    if (diff < -BAND){
+      statusClass = 'status-sink';
+      label = "S'enfonsa";
+      detail = 'La densitat de l’ou és més gran que la de l’aigua: el pes guanya al principi d’Arquimedes.';
+    } else if (diff > BAND){
+      const f = Math.min(egg.density / wd, 1);
+      statusClass = 'status-float';
+      label = 'Sura';
+      detail = 'Aproximadament el ' + Math.round(f*100) + '% del volum de l’ou queda submergit.';
+    } else {
+      statusClass = 'status-mid';
+      label = 'Queda suspès enmig';
+      detail = 'Les densitats són pràcticament iguals: no hi ha força neta ni cap amunt ni cap avall.';
+    }
+
+    statusPill.className = 'status-pill ' + statusClass;
+    statusLabel.textContent = label;
+    statusDetail.textContent = detail;
+
+    drawChart(saltGL, wd, egg.density, th);
+  }
+
+  // --- chart ---
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const chart = document.getElementById('densityChart');
+  const M = {l:44, r:14, t:12, b:38};
+  const W = 480, H = 220;
+  const plotW = W - M.l - M.r, plotH = H - M.t - M.b;
+  const xDomain = [0, 380];
+  const yDomain = [0.95, 1.22];
+
+  function xS(v){ return M.l + (v-xDomain[0])/(xDomain[1]-xDomain[0])*plotW; }
+  function yS(v){ return M.t + plotH - (v-yDomain[0])/(yDomain[1]-yDomain[0])*plotH; }
+
+  function el(tag, attrs){
+    const e = document.createElementNS(svgNS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function drawChart(saltGL, wd, eggDensity, threshold){
+    chart.innerHTML = '';
+    chart.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    // gridlines + y labels
+    [0.95,1.00,1.05,1.10,1.15,1.20].forEach(v=>{
+      chart.appendChild(el('line', {class:'grid-line', x1:M.l, x2:W-M.r, y1:yS(v), y2:yS(v)}));
+      const t = el('text', {x:M.l-6, y:yS(v)+3, 'text-anchor':'end'});
+      t.textContent = v.toFixed(2);
+      chart.appendChild(t);
+    });
+    // x labels
+    [0,90,180,270,360].forEach(v=>{
+      const t = el('text', {x:xS(v), y:H-M.b+14, 'text-anchor':'middle'});
+      t.textContent = v;
+      chart.appendChild(t);
+    });
+    chart.appendChild(el('line', {class:'axis-line', x1:M.l, x2:W-M.r, y1:H-M.b, y2:H-M.b}));
+    chart.appendChild(el('line', {class:'axis-line', x1:M.l, x2:M.l, y1:M.t, y2:H-M.b}));
+
+    // saturation line
+    chart.appendChild(el('line', {x1:xS(SALT_MAX), x2:xS(SALT_MAX), y1:M.t, y2:H-M.b, stroke:'var(--line-strong)', 'stroke-width':1, 'stroke-dasharray':'2,3'}));
+    const satLabel = el('text', {x:xS(SALT_MAX), y:M.t+9, 'text-anchor':'end'});
+    satLabel.textContent = 'saturació';
+    chart.appendChild(satLabel);
+
+    // water density curve (area + line)
+    const pts = [];
+    for (let s=0; s<=xDomain[1]; s+=10) pts.push([s, waterDensity(s)]);
+    const linePath = 'M ' + pts.map(p=>xS(p[0])+','+yS(p[1])).join(' L ');
+    const areaPath = linePath + ' L ' + xS(xDomain[1]) + ',' + yS(yDomain[0]) + ' L ' + xS(0) + ',' + yS(yDomain[0]) + ' Z';
+    chart.appendChild(el('path', {d:areaPath, fill:'var(--water-soft)', stroke:'none'}));
+    chart.appendChild(el('path', {d:linePath, fill:'none', stroke:'var(--water)', 'stroke-width':2.5}));
+
+    // egg density reference (dashed)
+    if (eggDensity >= yDomain[0] && eggDensity <= yDomain[1]){
+      chart.appendChild(el('line', {x1:M.l, x2:W-M.r, y1:yS(eggDensity), y2:yS(eggDensity), stroke:'var(--accent)', 'stroke-width':2, 'stroke-dasharray':'6,4'}));
+    }
+
+    // threshold marker
+    if (threshold > 0 && threshold <= xDomain[1]){
+      chart.appendChild(el('circle', {cx:xS(threshold), cy:yS(eggDensity), r:3, fill:'var(--accent)'}));
+    }
+
+    // current point + guide
+    chart.appendChild(el('line', {x1:xS(saltGL), x2:xS(saltGL), y1:yS(wd), y2:H-M.b, stroke:'var(--ink-muted)', 'stroke-width':1, 'stroke-dasharray':'2,3', opacity:.6}));
+    chart.appendChild(el('circle', {cx:xS(saltGL), cy:yS(wd), r:5, fill:'var(--surface)', stroke:'var(--water)', 'stroke-width':2.5}));
+
+    // axis titles
+    const xt = el('text', {x:M.l+plotW/2, y:H-3, 'text-anchor':'middle'});
+    xt.textContent = 'Sal afegida (g/L)';
+    xt.style.fontWeight = '600';
+    chart.appendChild(xt);
+  }
+
+  function buildTable(){
+    const body = document.getElementById('dataTableBody');
+    body.innerHTML = '';
+    [0,60,120,180,240,300,360].forEach(s=>{
+      const tr = document.createElement('tr');
+      const td1 = document.createElement('td'); td1.textContent = s;
+      const td2 = document.createElement('td'); td2.textContent = waterDensity(s).toFixed(3);
+      tr.appendChild(td1); tr.appendChild(td2);
+      body.appendChild(tr);
+    });
+  }
+
+  document.getElementById('tableToggle').addEventListener('click', function(){
+    const table = document.getElementById('dataTable');
+    const expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', String(!expanded));
+    table.hidden = expanded;
+    this.textContent = expanded ? 'Mostra les dades en taula' : 'Amaga la taula de dades';
+  });
+
+  eggSelector.addEventListener('click', function(e){
+    const btn = e.target.closest('button[data-egg]');
+    if (!btn) return;
+    eggKey = btn.dataset.egg;
+    eggSelector.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', String(b===btn)));
+    render();
+  });
+
+  saltSlider.addEventListener('input', render);
+
+  buildTable();
+  render();
+})();
+</script>
+
+</body></html>

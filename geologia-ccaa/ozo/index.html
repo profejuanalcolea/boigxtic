@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulador de l'ozó estratosfèric</title>
+<style>
+:root{--bk:#111;--or:#F26B1D;--gr:#5A5A5A;--lt:#F4F4F4;--ol:#FDEBDD;--rd:#C62828}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;font-family:Arial,Helvetica,sans-serif;color:var(--bk)}
+#app{container-type:inline-size;width:100%;max-width:1500px;margin:0 auto;aspect-ratio:16/9;display:flex;flex-direction:column;padding:1.1cqw 1.5cqw;gap:.8cqw}
+header{display:flex;align-items:center;gap:1.2cqw}
+h1{font-size:2.3cqw;margin:0;flex:0 0 auto}
+.tabs,.ctl{display:flex;gap:.5cqw}
+.ctl{margin-left:auto}
+button{font:inherit;font-size:1.4cqw;font-weight:700;padding:.45cqw 1cqw;border:.2cqw solid var(--bk);background:#fff;color:var(--bk);border-radius:.6cqw;cursor:pointer}
+button:hover{background:var(--lt)}
+button.on{background:var(--or);border-color:var(--or);color:#fff}
+button.add{background:var(--bk);color:#fff}
+button.add:hover{background:#333}
+main{display:grid;grid-template-columns:1.55fr 1fr;gap:1.1cqw;flex:1;min-height:0}
+.left{display:flex;flex-direction:column;gap:.6cqw;min-height:0}
+canvas{width:100%;display:block;border-radius:.5cqw}
+#sim{aspect-ratio:800/420;background:#111}
+#chart{aspect-ratio:800/150;background:#fff;border:.15cqw solid #ccc}
+.right{display:flex;flex-direction:column;gap:.7cqw;min-height:0}
+.box{border:.15cqw solid #ccc;border-radius:.5cqw;padding:.6cqw .9cqw}
+.gt{font-size:1.1cqw;font-weight:700;color:var(--or);letter-spacing:.05cqw;text-transform:uppercase;margin:.3cqw 0 .15cqw}
+.gt:first-child{margin-top:0}
+.eq{font-size:1.5cqw;padding:.12cqw .5cqw;border-radius:.4cqw;transition:background .25s,color .25s;white-space:nowrap}
+.eq.on{background:var(--or);color:#fff}
+.bars{display:grid;grid-template-columns:auto 1fr auto;gap:.3cqw .6cqw;align-items:center;font-size:1.35cqw}
+.bar{height:1.5cqw;background:var(--lt);border-radius:.3cqw;overflow:hidden}
+.bar i{display:block;height:100%;width:0;transition:width .3s}
+.val{font-weight:700;min-width:5.5cqw;text-align:right}
+.hint{font-size:1.15cqw;color:var(--gr);margin-top:.3cqw}
+#cfcbox{display:none}
+#cfcbox label{font-size:1.35cqw;font-weight:700;display:block;margin-bottom:.3cqw}
+#cfcbox .row{display:flex;gap:.8cqw;align-items:center}
+#cfcbox input[type=range]{flex:1;accent-color:var(--or)}
+#marked{font-size:1.3cqw;margin-top:.4cqw;min-height:1.6cqw}
+.leg{display:flex;flex-wrap:wrap;gap:.3cqw 1.2cqw;font-size:1.25cqw;align-items:center}
+.leg span{display:flex;align-items:center;gap:.4cqw}
+.leg canvas{width:3.4cqw;height:2.2cqw;background:#111;border-radius:.3cqw}
+.note{font-size:1.05cqw;color:var(--gr)}
+</style>
+</head>
+<body>
+<div id="app">
+ <header>
+  <h1>L'ozó estratosfèric</h1>
+  <div class="tabs">
+   <button id="t1" class="on">1 · Equilibri natural</button>
+   <button id="t2">2 · Amb CFC</button>
+  </div>
+  <div class="ctl">
+   <button id="bPause">Pausa</button>
+   <button id="bReset">Reinicia</button>
+   <button id="bStep">Pas a pas</button>
+  </div>
+ </header>
+ <main>
+  <div class="left">
+   <canvas id="sim"></canvas>
+   <canvas id="chart"></canvas>
+   <div class="note">Simulació qualitativa: les velocitats de reacció són il·lustratives, no dades reals.</div>
+  </div>
+  <div class="right">
+   <div class="box" id="eqs"></div>
+   <div class="box">
+    <div class="gt">Balanç (reaccions per segon)</div>
+    <div class="bars">
+     <span>Formació</span><div class="bar"><i id="bF" style="background:#111"></i></div><span class="val" id="vF">–</span>
+     <span>Destrucció</span><div class="bar"><i id="bD" style="background:#F26B1D"></i></div><span class="val" id="vD">–</span>
+    </div>
+    <div class="hint" id="o3txt"></div>
+   </div>
+   <div class="box" id="cfcbox">
+    <label>Quantitat de CFC a afegir: <span id="nv">15</span></label>
+    <div class="row"><input type="range" id="nrng" min="5" max="30" step="5" value="15"><button class="add" id="bAdd">Afegeix CFC</button></div>
+    <div id="marked"></div>
+   </div>
+   <div class="box"><div class="leg" id="leg"></div></div>
+  </div>
+ </main>
+</div>
+<script>
+(function(){
+const W=800,H=420,TOP=26;
+const sim=document.getElementById('sim'),sc=sim.getContext('2d');
+const ch=document.getElementById('chart'),cc=ch.getContext('2d');
+sim.width=W*2;sim.height=H*2;sc.scale(2,2);
+ch.width=W*2;ch.height=150*2;cc.scale(2,2);
+
+const NAMES={O2:'O₂',O:'O',O3:'O₃',CFC:'CFC',Cl:'Cl·',ClO:'ClO·'};
+const COL={O2:'#B5B5B5',O:'#F26B1D',O3:'#FFFFFF',Cl:'#E53935',CFCb:'#7A7A7A'};
+// parameters (qualitative)
+const P_={uvC:7,uvB:7,R:20,RC:30,RCO:70,kForm:30,kOO3:4,kOO:0.1,kCl:6,kClO:30,hit:11};
+
+let mode=1,stepMode=false,stepIdx=0,paused=false;
+let P=[],PH=[],FX=[],t=0,evF=[],evD=[],hist=[],ref=null,lastFlash={},markedCount=0,markedExists=false,sampleAcc=0;
+
+function rnd(a,b){return a+Math.random()*(b-a)}
+function mk(type,x,y){const sp=(type==='O'||type==='Cl'||type==='ClO')?(type==='O'?120:100):42;const a=Math.random()*6.283;
+ return{t:type,x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,sp,ang:rnd(0,6.283),w:rnd(-1.2,1.2),dead:false,mk:false}}
+function flash(id,x,y){FX.push({x,y,age:0});lastFlash[id]=t}
+
+function init(m){
+ mode=m;P=[];PH=[];FX=[];t=0;evF=[];evD=[];hist=[];ref=null;lastFlash={};markedCount=0;markedExists=false;sampleAcc=0;
+ for(let i=0;i<140;i++)P.push(mk("O2",rnd(20,W-20),rnd(TOP+10,H-10)));
+ if(m===2){ff(120);t=0;hist=[];evF=[];evD=[];lastFlash={};FX=[];PH=[]}
+}
+function ff(sec){const dt=1/20;for(let s=0;s<sec;s+=dt)step(dt)}
+
+function step(dt){
+ t+=dt;
+ if(Math.random()<P_.uvC*dt)PH.push({x:rnd(10,W-10),y:0,k:'C'});
+ if(Math.random()<P_.uvB*dt)PH.push({x:rnd(10,W-10),y:0,k:'B'});
+ for(const p of P){
+  p.vx+=(Math.random()-.5)*p.sp*9*dt;p.vy+=(Math.random()-.5)*p.sp*9*dt;
+  const s=Math.hypot(p.vx,p.vy)||1;p.vx*=p.sp/s;p.vy*=p.sp/s;
+  p.x+=p.vx*dt;p.y+=p.vy*dt;p.ang+=p.w*dt;
+  if(p.x<10){p.x=10;p.vx=Math.abs(p.vx)}if(p.x>W-10){p.x=W-10;p.vx=-Math.abs(p.vx)}
+  if(p.y<TOP){p.y=TOP;p.vy=Math.abs(p.vy)}if(p.y>H-10){p.y=H-10;p.vy=-Math.abs(p.vy)}
+ }
+ const add=[];
+ // photons
+ for(const ph of PH){
+  ph.y+=150*dt;
+  if(ph.y<TOP)continue;
+  for(const m of P){
+   if(m.dead)continue;
+   const dx=m.x-ph.x,dy=m.y-ph.y;if(dx*dx+dy*dy>P_.hit*P_.hit)continue;
+   if(ph.k==='C'&&m.t==='O2'){m.dead=true;ph.dead=true;const a=mk('O',m.x-6,m.y),b=mk('O',m.x+6,m.y);add.push(a,b);flash('f1',m.x,m.y);break}
+   if(ph.k==='B'&&m.t==='O3'){m.dead=true;ph.dead=true;add.push(mk('O2',m.x-5,m.y),mk('O',m.x+8,m.y));evD.push(t);flash('d1',m.x,m.y);break}
+   if(ph.k==='C'&&m.t==='CFC'){m.dead=true;ph.dead=true;const c=mk('Cl',m.x,m.y);if(!markedExists){c.mk=true;markedExists=true;markedCount=0}add.push(c);flash('c1',m.x,m.y);break}
+  }
+ }
+ PH=PH.filter(p=>!p.dead&&p.y<H+10);
+ // reactions
+ const near=(a,b,r)=>{r=r||P_.R;const dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy<r*r};
+ const by={O:[],O2:[],O3:[],Cl:[],ClO:[]};
+ for(const p of P)if(by[p.t])by[p.t].push(p);
+ const pr=k=>Math.random()<1-Math.exp(-k*dt);
+ for(const o of by.O){
+  if(o.dead)continue;
+  for(const m of by.O2){if(!m.dead&&near(o,m)&&pr(P_.kForm)){o.dead=m.dead=true;add.push(mk('O3',(o.x+m.x)/2,(o.y+m.y)/2));evF.push(t);flash('f2',o.x,o.y);break}}
+  if(o.dead)continue;
+  for(const m of by.O3){if(!m.dead&&near(o,m)&&pr(P_.kOO3)){o.dead=m.dead=true;add.push(mk('O2',m.x-5,m.y),mk('O2',m.x+5,m.y));evD.push(t);flash('d2',o.x,o.y);break}}
+  if(o.dead)continue;
+  for(const m of by.ClO){if(!m.dead&&near(o,m,P_.RCO)&&pr(P_.kClO)){o.dead=m.dead=true;const c=mk('Cl',m.x,m.y);c.mk=m.mk;add.push(c,mk('O2',m.x+8,m.y));flash('c3',m.x,m.y);break}}
+  if(o.dead)continue;
+  for(const m of by.O){if(m!==o&&!m.dead&&near(o,m)&&pr(P_.kOO)){o.dead=m.dead=true;add.push(mk('O2',o.x,o.y));break}}
+ }
+ for(const c of by.Cl){
+  if(c.dead)continue;
+  for(const m of by.O3){if(!m.dead&&near(c,m,P_.RC)&&pr(P_.kCl)){c.dead=m.dead=true;const q=mk('ClO',m.x,m.y);q.mk=c.mk;if(c.mk)markedCount++;add.push(q,mk('O2',m.x+8,m.y));evD.push(t);flash('c2',m.x,m.y);break}}
+ }
+ P=P.filter(p=>!p.dead).concat(add);
+ for(const f of FX)f.age+=dt;FX=FX.filter(f=>f.age<.5);
+ while(evF.length&&evF[0]<t-8)evF.shift();while(evD.length&&evD[0]<t-8)evD.shift();
+ sampleAcc+=dt;if(sampleAcc>=.25){sampleAcc=0;hist.push({t,n:count('O3')});if(hist.length>800)hist.shift()}
+}
+function count(k){let n=0;for(const p of P)if(p.t===k)n++;return n}
+function rates(){const w=Math.min(8,Math.max(t,1));return{f:evF.length/w,d:evD.length/w}}
+
+// ---------- drawing molecules
+function circ(c,x,y,r,col){c.beginPath();c.arc(x,y,r,0,6.283);c.fillStyle=col;c.fill()}
+function drawMol(c,type,x,y,s,ang,mkd){
+ c.save();c.translate(x,y);c.rotate(ang||0);c.scale(s,s);
+ const r=7;
+ if(type==='O2'){circ(c,-5.5,0,r,COL.O2);circ(c,5.5,0,r,COL.O2)}
+ else if(type==='O')circ(c,0,0,r,COL.O);
+ else if(type==='O3'){circ(c,-9,4,r,COL.O3);circ(c,9,4,r,COL.O3);circ(c,0,-5,r,COL.O3)}
+ else if(type==='Cl')circ(c,0,0,8.5,COL.Cl);
+ else if(type==='ClO'){circ(c,-6,0,8.5,COL.Cl);circ(c,8,0,r,COL.O)}
+ else if(type==='CFC'){circ(c,0,0,10,COL.CFCb);circ(c,7,-5,5.5,COL.Cl)}
+ if(mkd){c.beginPath();c.arc(0,0,16,0,6.283);c.lineWidth=1.6/s;c.strokeStyle='#fff';c.setLineDash([3,3]);c.stroke();c.setLineDash([])}
+ c.restore();
+}
+function draw(){
+ const c=sc;c.fillStyle='#111';c.fillRect(0,0,W,H);
+ c.fillStyle='#F26B1D';c.font='bold 14px Arial';c.textBaseline='middle';c.fillText('↓ radiació UV del Sol',10,12);
+ c.fillStyle='#fff';c.fillText('— UV-C',200,12);
+ c.fillStyle='#FFB680';c.fillText('— UV-B',280,12);
+ for(const ph of PH){c.strokeStyle=ph.k==='C'?'#F26B1D':'#FFB680';c.lineWidth=ph.k==='C'?2.4:1.8;c.beginPath();c.moveTo(ph.x,ph.y-14);c.lineTo(ph.x,ph.y);c.stroke()}
+ for(const p of P)drawMol(c,p.t,p.x,p.y,1,p.ang,p.mk);
+ for(const f of FX){c.beginPath();c.arc(f.x,f.y,10+f.age*60,0,6.283);c.strokeStyle='rgba(242,107,29,'+(1-f.age/.5)+')';c.lineWidth=2.5;c.stroke()}
+}
+function drawChart(){
+ const c=cc,w=W,h=150;c.fillStyle='#fff';c.fillRect(0,0,w,h);
+ const L=48,R=10,T=18,B=22,pw=w-L-R,ph=h-T-B;
+ c.fillStyle='#111';c.font='bold 13px Arial';c.textBaseline='middle';c.fillText("Molècules d'O₃ en el temps",L,8);
+ const span=60,t1=Math.max(t,span),t0=t1-span;
+ let ymax=40;for(const q of hist)if(q.n>ymax)ymax=Math.ceil(q.n/10)*10;
+ c.strokeStyle='#ddd';c.lineWidth=1;c.fillStyle='#5A5A5A';c.font='12px Arial';c.textAlign='right';
+ for(let v=0;v<=ymax;v+=ymax/4){const y=T+ph-(v/ymax)*ph;c.beginPath();c.moveTo(L,y);c.lineTo(L+pw,y);c.stroke();c.fillText(String(Math.round(v)),L-6,y)}
+ c.textAlign='left';
+ if(ref!==null){const y=T+ph-(ref/ymax)*ph;c.setLineDash([6,4]);c.strokeStyle='#111';c.lineWidth=1.8;c.beginPath();c.moveTo(L,y);c.lineTo(L+pw,y);c.stroke();c.setLineDash([]);c.fillStyle='#111';c.font='bold 12px Arial';c.fillText('equilibri natural',L+pw-112,y-8)}
+ c.beginPath();let first=true;
+ for(const q of hist){if(q.t<t0)continue;const x=L+((q.t-t0)/span)*pw,y=T+ph-(q.n/ymax)*ph;if(first){c.moveTo(x,y);first=false}else c.lineTo(x,y)}
+ c.strokeStyle='#F26B1D';c.lineWidth=3;c.stroke();
+ c.fillStyle='#5A5A5A';c.font='12px Arial';c.textAlign='right';c.fillText('últims 60 s',L+pw,h-8);c.textAlign='left';
+}
+// ---------- step cards
+const STEPS={1:[
+ {id:'f1',title:'Formació natural · pas 1',re:['O2'],pr:['O','O'],ph:'UV-C',txt:"L'oxigen (O₂) absorbeix radiació UV-C i es dissocia en dos àtoms d'oxigen."},
+ {id:'f2',title:'Formació natural · pas 2',re:['O','O2'],pr:['O3'],ph:null,txt:"Cada àtom d'O s'uneix a una molècula d'O₂ i forma ozó (O₃)."},
+ {id:'d1',title:'Destrucció natural · pas 1',re:['O3'],pr:['O2','O'],ph:'UV-B',txt:"L'ozó absorbeix radiació UV-B i es trenca: per això és un escut contra aquesta radiació."},
+ {id:'d2',title:'Destrucció natural · pas 2',re:['O','O3'],pr:['O2','O2'],ph:null,txt:"L'àtom d'O pot reaccionar amb una altra molècula d'ozó: en surten dues molècules d'O₂."},
+ {id:null,title:'Equilibri',big:'Formació = Destrucció',txt:"Les reaccions es compensen: la quantitat d'ozó es manté constant, encara que les molècules es transformin sense parar."}],
+2:[
+ {id:'c1',title:'Destrucció per CFC · pas 1',re:['CFC'],pr:['Cl'],ph:'UV',txt:"La radiació UV trenca el CFC i allibera un radical clor (Cl·)."},
+ {id:'c2',title:'Destrucció per CFC · pas 2',re:['Cl','O3'],pr:['ClO','O2'],ph:null,txt:"El clor reacciona amb l'ozó i el destrueix."},
+ {id:'c3',title:'Destrucció per CFC · pas 3',re:['ClO','O'],pr:['Cl','O2'],ph:null,txt:"El ClO· pren un àtom d'O i regenera el clor, que ja pot destruir un altre ozó."},
+ {id:null,title:'El clor és un catalitzador',big:'Cl· no es consumeix',txt:"Repeteix el cicle moltes vegades. Resultat net: O₃ + O → 2 O₂, com a la natura, però molt més ràpid. Una mica de CFC destrueix molt d'ozó."}]};
+function wrap(c,text,x,y,mw,lh){const words=text.split(' ');let line='';for(const w of words){const t=line?line+' '+w:w;if(c.measureText(t).width>mw&&line){c.fillText(line,x,y);y+=lh;line=w}else line=t}c.fillText(line,x,y)}
+function drawStep(){
+ const c=sc,s=STEPS[mode][stepIdx];c.fillStyle='#111';c.fillRect(0,0,W,H);c.textBaseline='middle';
+ c.fillStyle='#F26B1D';c.font='bold 22px Arial';c.fillText(s.title,24,30);
+ c.fillStyle='#777';c.font='16px Arial';c.textAlign='right';c.fillText((stepIdx+1)+' / '+STEPS[mode].length,W-24,30);c.textAlign='left';
+ if(s.re){
+  const items=[];s.re.forEach((m,i)=>{if(i)items.push({k:'+'});items.push({k:'m',m})});items.push({k:'->'});
+  s.pr.forEach((m,i)=>{if(i)items.push({k:'+'});items.push({k:'m',m})});
+  const wd=it=>it.k==='m'?110:it.k==='+'?44:130;let tot=0;items.forEach(i=>tot+=wd(i));
+  let x=(W-tot)/2;const y=170;
+  for(const it of items){const cx=x+wd(it)/2;
+   if(it.k==='m'){drawMol(c,it.m,cx,y,3.2,0);c.fillStyle='#fff';c.font='bold 22px Arial';c.textAlign='center';c.fillText(NAMES[it.m],cx,y+62);c.textAlign='left'}
+   else if(it.k==='+'){c.fillStyle='#fff';c.font='bold 36px Arial';c.textAlign='center';c.fillText('+',cx,y);c.textAlign='left'}
+   else{c.strokeStyle='#fff';c.lineWidth=4;c.beginPath();c.moveTo(cx-46,y);c.lineTo(cx+40,y);c.stroke();c.beginPath();c.moveTo(cx+52,y);c.lineTo(cx+36,y-11);c.lineTo(cx+36,y+11);c.closePath();c.fillStyle='#fff';c.fill();
+    if(s.ph){c.fillStyle='#F26B1D';c.font='bold 24px Arial';c.textAlign='center';c.fillText(s.ph,cx,y-30);c.textAlign='left'}}
+   x+=wd(it)}
+ }else{c.fillStyle='#fff';c.font='bold 44px Arial';c.textAlign='center';c.fillText(s.big,W/2,150);c.textAlign='left'}
+ if(s.re&&0){}
+ c.fillStyle='#fff';c.font='22px Arial';wrap(c,s.txt,40,300,W-80,32);
+ if(s.big&&s.re==null){/* summary */}
+}
+// ---------- DOM
+const EQ={1:[['Formació',[['f1','O₂ + UV-C → O + O'],['f2','O + O₂ → O₃']]],['Destrucció natural',[['d1','O₃ + UV-B → O₂ + O'],['d2','O + O₃ → 2 O₂']]]],
+ 2:[['Formació',[['f1','O₂ + UV-C → O + O'],['f2','O + O₂ → O₃']]],['Destrucció natural',[['d1','O₃ + UV-B → O₂ + O'],['d2','O + O₃ → 2 O₂']]],['Destrucció per CFC',[['c1','CFC + UV → Cl·'],['c2','Cl· + O₃ → ClO· + O₂'],['c3','ClO· + O → Cl· + O₂']]]]};
+const eqBox=document.getElementById('eqs');
+function buildEq(){eqBox.innerHTML='';for(const [g,rows] of EQ[mode]){const d=document.createElement('div');d.className='gt';d.textContent=g;eqBox.appendChild(d);for(const [id,tx] of rows){const e=document.createElement('div');e.className='eq';e.dataset.id=id;e.textContent=tx;eqBox.appendChild(e)}}}
+const legBox=document.getElementById('leg');
+[['O2','O₂'],['O','O'],['O3','O₃'],['CFC','CFC'],['Cl','Cl·'],['ClO','ClO·']].forEach(([k,n])=>{
+ const s=document.createElement('span'),cv=document.createElement('canvas');cv.width=68;cv.height=44;s.appendChild(cv);s.appendChild(document.createTextNode(n));legBox.appendChild(s);
+ const g=cv.getContext('2d');drawMol(g,k,34,22,1.1,0)});
+function updateDom(){
+ const id=stepMode?STEPS[mode][stepIdx].id:null;
+ for(const e of eqBox.querySelectorAll('.eq')){const on=stepMode?e.dataset.id===id:(lastFlash[e.dataset.id]!==undefined&&t-lastFlash[e.dataset.id]<.15);e.classList.toggle('on',on)}
+ const r=rates(),sc_=Math.max(3,r.f,r.d)*1.15;
+ document.getElementById('bF').style.width=(r.f/sc_*100)+'%';document.getElementById('bD').style.width=(r.d/sc_*100)+'%';
+ const fm=v=>v.toFixed(1).replace('.',',');
+ document.getElementById('vF').textContent=fm(r.f)+' /s';document.getElementById('vD').textContent=fm(r.d)+' /s';
+ document.getElementById('o3txt').textContent="Ozó ara: "+count('O3')+" molècules"+(ref!==null?" · equilibri natural: "+Math.round(ref):"")+(mode===1&&t<40?" · espera l'equilibri…":"")+(mode===2&&ref!==null?". Mentre cau, la destrucció supera la formació; després s'estabilitza en un equilibri molt més baix.":"");
+ const m=document.getElementById('marked');
+ m.textContent=markedExists?"Cl· marcat (cercle blanc): ha destruït "+markedCount+" molècules d'O₃":(mode===2?"Afegeix CFC i segueix un àtom de clor.":"");
+}
+// ---------- controls
+const $=id=>document.getElementById(id);
+function setMode(m){$('t1').classList.toggle('on',m===1);$('t2').classList.toggle('on',m===2);$('cfcbox').style.display=m===2?'block':'none';stepIdx=0;init(m);buildEq();ch.style.display=stepMode?'none':'block'}
+$('t1').onclick=()=>setMode(1);$('t2').onclick=()=>setMode(2);
+$('bPause').onclick=()=>{paused=!paused;$('bPause').textContent=paused?'Reprèn':'Pausa';$('bPause').classList.toggle('on',paused)};
+$('bReset').onclick=()=>setMode(mode);
+$('bStep').onclick=()=>{stepMode=!stepMode;$('bStep').classList.toggle('on',stepMode);ch.style.display=stepMode?'none':'block';stepIdx=0};
+document.addEventListener('keydown',e=>{if(!stepMode)return;const n=STEPS[mode].length;if(e.key==='ArrowRight')stepIdx=Math.min(n-1,stepIdx+1);if(e.key==='ArrowLeft')stepIdx=Math.max(0,stepIdx-1)});
+sim.addEventListener('click',e=>{if(!stepMode)return;const n=STEPS[mode].length;const r=sim.getBoundingClientRect();if(e.clientX-r.left>r.width/2)stepIdx=Math.min(n-1,stepIdx+1);else stepIdx=Math.max(0,stepIdx-1)});
+$('nrng').oninput=()=>$('nv').textContent=$('nrng').value;
+$('bAdd').onclick=()=>{if(mode!==2)return;if(ref===null){const last=hist.filter(q=>q.t>t-20);ref=last.reduce((a,q)=>a+q.n,0)/Math.max(1,last.length)}
+ const n=+$('nrng').value;for(let i=0;i<n;i++)P.push(mk('CFC',rnd(20,W-20),rnd(TOP+6,120)))};
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ if(!paused&&!stepMode)step(dt);
+ if(stepMode)drawStep();else{draw();drawChart()}
+ updateDom();requestAnimationFrame(loop)}
+setMode(1);buildEq();requestAnimationFrame(loop);
+window.__sim={init,ff,count,rates,get t(){return t},P:()=>P,params:P_,add:n=>{for(let i=0;i<n;i++)P.push(mk('CFC',rnd(20,W-20),rnd(TOP+6,120)))},setRef:()=>{ref=hist.slice(-80).reduce((a,q)=>a+q.n,0)/80}};
+})();
+</script>
+</body>
+</html>

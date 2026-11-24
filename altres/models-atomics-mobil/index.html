@@ -1,0 +1,960 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Models atòmics mòbil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: escenari fix 16:9 (1600×900) escalat a la pantalla; una diapo cada cop, sense scroll. Tema clar únic, pensat per projectar. */
+:root{
+  --bg:#FFFFFF; --ink:#141414; --or:#FF6A13; --ord:#C24A00; --tint:#FFE8D8; --line:#E4E1DD; --mid:#6E6862;
+  --fd:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink)}
+body{margin:0}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  font-family:var(--fb);font-size:36px;line-height:1.28;background:var(--bg);overflow:hidden}
+button{font-family:var(--fb);cursor:pointer;color:var(--ink)}
+button:focus-visible{outline:4px solid var(--or);outline-offset:3px}
+
+.slide{position:absolute;inset:0;padding:54px 96px 128px;display:flex;flex-direction:column;gap:24px;
+  opacity:0;visibility:hidden;transform:translateX(70px);
+  transition:opacity .45s ease, transform .6s cubic-bezier(.2,.8,.2,1), visibility 0s linear .6s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease, transform .6s cubic-bezier(.2,.8,.2,1)}
+.slide:not(.active) *{animation-play-state:paused!important}
+.kick{font:700 24px/1 var(--fb);letter-spacing:.16em;text-transform:uppercase;color:var(--ord);display:flex;align-items:center;gap:14px}
+.kick::before{content:"";width:18px;height:18px;background:var(--or);border-radius:50%}
+h1,h2,h3{margin:0}
+h2{font:800 76px/1 var(--fd);letter-spacing:-.025em;text-wrap:balance}
+.lead{font-size:38px;max-width:34ch;margin:0}
+.cols{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;flex:1;min-height:0}
+.art{min-height:0;height:100%;display:flex;align-items:center;justify-content:center}
+.art svg{width:100%;height:100%;max-height:620px;overflow:visible}
+.txt{display:flex;flex-direction:column;gap:22px;min-width:0;padding-right:40px;font-size:33px}
+.blk h3{font:700 24px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ord);margin-bottom:10px}
+.blk p{margin:0}
+.blk p+p{margin-top:8px}
+.blk ul{margin:0;padding-left:1.1em}
+.blk li{margin:4px 0}
+.blk li::marker{color:var(--or)}
+b,strong{font-weight:700}
+.or{color:var(--ord)}
+.like{border:3px solid var(--ink);border-radius:18px;padding:14px 22px;font-size:30px;display:flex;gap:18px;align-items:baseline}
+.like span{font:700 22px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--mid);white-space:nowrap}
+.like.warn{border-style:dashed}
+.like.warn span{color:var(--ord)}
+
+.f{opacity:0;transform:translateY(18px);transition:opacity .45s ease, transform .45s ease}
+.f.on{opacity:1;transform:none}
+g.f{transform:none}
+svg text{font-family:var(--fb);fill:var(--ink)}
+.lab{font-size:24px;font-weight:700}
+.sub{font-size:19px;fill:var(--mid)}
+
+/* portada */
+.cover{justify-content:center;gap:22px}
+.cover h1{font:800 132px/.9 var(--fd);letter-spacing:-.04em;max-width:9ch}
+.cover h1 em{font-style:normal;color:var(--or)}
+.cover .lead{font-size:42px;color:var(--mid)}
+.keys{display:flex;gap:28px;flex-wrap:wrap;font-size:24px;color:var(--mid);margin-top:4px}
+.keys kbd{font:700 22px var(--fb);border:2px solid var(--ink);border-bottom-width:5px;border-radius:8px;padding:2px 10px;color:var(--ink);margin-right:6px}
+.bigfs{align-self:flex-start;display:flex;align-items:center;gap:16px;border:4px solid var(--ink);background:var(--or);border-radius:18px;padding:16px 30px;font:800 36px var(--fd);box-shadow:8px 8px 0 var(--ink);transition:transform .15s, box-shadow .15s}
+.bigfs:hover{transform:translate(-2px,-2px);box-shadow:10px 10px 0 var(--ink)}
+.bigfs:active{transform:translate(4px,4px);box-shadow:4px 4px 0 var(--ink)}
+.bigfs svg{width:40px;height:40px}
+
+/* targetes */
+.row{display:grid;gap:30px;flex:1;min-height:0}
+.r2{grid-template-columns:1fr 1fr}.r3{grid-template-columns:repeat(3,1fr)}.r4{grid-template-columns:repeat(4,1fr)}
+.card{border:3px solid var(--ink);border-radius:24px;padding:24px 26px;display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}
+.card h3{font:800 42px/1 var(--fd);letter-spacing:-.02em}
+.card p{margin:0}
+.card .pic{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.card .pic svg{width:100%;height:100%;max-height:280px}
+.r4 .card{padding:20px}.r4 .card h3{font-size:36px}.r4 .small{font-size:25px}
+.tag{align-self:flex-start;font:700 20px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:8px}
+.tag.o{background:var(--or);color:var(--ink)}
+.ex{font-size:27px;color:var(--mid)}
+.small{font-size:28px}
+.big-num{font:800 64px/1 var(--fd);color:var(--ord)}
+
+/* línia del temps */
+.tl{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:22px;flex:1;align-items:start;padding-top:20px}
+.tl::before{content:"";position:absolute;left:4%;right:4%;top:206px;height:6px;background:var(--ink);border-radius:3px}
+.tl .ev{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;position:relative}
+.tl .ev svg{width:170px;height:170px}
+.tl .dot{width:30px;height:30px;border-radius:50%;background:var(--or);border:5px solid var(--ink);margin-top:4px;position:relative;z-index:1}
+.tl .yr{font:800 46px/1 var(--fd)}
+.tl .nm{font-size:28px;font-weight:700}
+.tl .ds{font-size:23px;color:var(--mid);max-width:13ch}
+
+/* taula de partícules */
+.ptab{width:100%;border-collapse:collapse;font-size:31px}
+.ptab th{font:700 21px var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--mid);text-align:left;padding:8px 14px;border-bottom:4px solid var(--ink)}
+.ptab td{padding:16px 14px;border-bottom:3px solid var(--line);vertical-align:middle}
+.ptab td:first-child{font-weight:700;white-space:nowrap}
+.ptab .chg{font:800 40px var(--fd)}
+.pball{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;border:3px solid var(--ink);font:800 28px/1 var(--fd);margin-right:14px;vertical-align:middle}
+.zbox{display:flex;gap:30px}
+.zbox .like{flex:1}
+
+/* botons d'acció de les simulacions */
+.ctrls{display:flex;flex-wrap:wrap;gap:14px}
+.act{border:3px solid var(--ink);background:var(--bg);border-radius:14px;padding:10px 20px;font-size:26px;font-weight:700;box-shadow:4px 4px 0 var(--ink);transition:transform .1s, box-shadow .1s}
+.act:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.act.main{background:var(--or)}
+.act.sel{background:var(--ink);color:var(--bg)}
+.counts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.counts div{border:3px solid var(--ink);border-radius:16px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.counts b{font:800 50px/1 var(--fd);font-variant-numeric:tabular-nums}
+.counts span{font-size:21px;color:var(--mid);font-weight:700}
+.counts .bo b{color:var(--ord)}
+canvas.sim{width:100%;height:auto;max-height:620px;display:block}
+
+/* elements Bohr */
+.elems{display:flex;flex-wrap:wrap;gap:10px}
+.elems button{width:72px;height:72px;border:3px solid var(--ink);border-radius:12px;background:var(--bg);font:800 30px/1 var(--fd);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.elems button small{font:700 15px var(--fb);color:var(--mid)}
+.elems button.sel{background:var(--or)}
+.elems button.sel small{color:var(--ink)}
+.conf{font:800 44px var(--fd)}
+
+/* espectre */
+.spec{position:relative;height:74px;background:#0d0d0d;border:3px solid var(--ink);border-radius:10px;overflow:hidden}
+.spec i{position:absolute;top:0;bottom:0;width:7px;margin-left:-3px;opacity:0;transition:opacity .4s;box-shadow:0 0 14px currentColor}
+.spec i.on{opacity:1}
+.specax{display:flex;justify-content:space-between;font-size:19px;color:var(--mid);margin-top:4px}
+.uvir{display:flex;gap:14px;font-size:22px;color:var(--mid)}
+.uvir span{border:2px dashed var(--mid);border-radius:10px;padding:4px 10px;transition:background .3s,color .3s}
+.uvir span.on{background:var(--ink);color:#fff;border-style:solid}
+.photon{animation:photon 1.6s ease-out forwards}
+@keyframes photon{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(var(--dx),var(--dy))}}
+
+/* quiz */
+.qz{flex:1;display:flex;flex-direction:column;gap:22px;min-height:0}
+.qprog{display:flex;gap:10px}
+.qprog i{width:30px;height:12px;border-radius:6px;background:var(--line)}
+.qprog i.ok{background:var(--or)}.qprog i.ko{background:var(--ink)}.qprog i.now{outline:3px solid var(--ink);outline-offset:2px}
+.qq{font:800 50px/1.1 var(--fd);letter-spacing:-.01em;max-width:30ch;text-wrap:balance}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:1240px}
+.qopts button{display:flex;align-items:center;gap:18px;text-align:left;border:3px solid var(--ink);background:var(--bg);border-radius:18px;padding:16px 22px;font-size:31px;font-weight:700;min-height:86px}
+.qopts button kbd{flex:none;width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:800 24px var(--fd)}
+.qopts button.good{background:var(--or)}
+.qopts button.bad{opacity:.4;text-decoration:line-through;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.qfoot{display:flex;align-items:center;gap:24px;min-height:70px}
+.qexp{font-size:29px;flex:1}
+.qexp b{color:var(--ord)}
+.qres{display:flex;flex-direction:column;gap:20px;align-items:flex-start}
+.qres .big-num{font-size:150px}
+
+/* qui sóc */
+.riddles{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:26px;flex:1;min-height:0}
+.rc{perspective:1200px;border:0;background:none;padding:0;text-align:left;display:block;width:100%;height:100%;font:inherit}
+.rc .in{display:block;position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.rc.flip .in{transform:rotateY(180deg)}
+.rc .fa,.rc .ba{position:absolute;inset:0;backface-visibility:hidden;border:3px solid var(--ink);border-radius:22px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:var(--ink)}
+.rc .fa{background:var(--bg);font-size:30px}
+.rc .fa small{font:700 20px var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--mid)}
+.rc .ba{background:var(--or);transform:rotateY(180deg);justify-content:center;align-items:center;font:800 50px/1 var(--fd);text-align:center}
+
+/* final */
+.end h2{font-size:96px}
+.end ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:18px;max-width:880px}
+.end li{display:grid;grid-template-columns:40px 1fr;gap:14px;font-size:35px}
+.end li::before{content:"";width:22px;height:22px;background:var(--or);border-radius:50%;margin-top:11px}
+
+/* animacions SVG */
+.spin{animation:spin linear infinite;transform-box:view-box}
+@keyframes spin{to{transform:rotate(360deg)}}
+.jig{animation:jig 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes jig{0%,100%{transform:translate(0,0)}25%{transform:translate(2px,-2px)}75%{transform:translate(-2px,2px)}}
+.tw{animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.15}50%{opacity:.9}}
+.beam{stroke-dasharray:6 14;animation:dash .5s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+.h2o-h1{animation:h1m 5s ease-in-out infinite}
+.h2o-h2{animation:h2m 5s ease-in-out infinite}
+@keyframes h1m{0%,15%{transform:translate(0,0)}45%,85%{transform:translate(152px,58px)}100%{transform:translate(0,0)}}
+@keyframes h2m{0%,15%{transform:translate(0,0)}45%,85%{transform:translate(-152px,58px)}100%{transform:translate(0,0)}}
+.h2o-lab{animation:h2ol 5s ease-in-out infinite}
+@keyframes h2ol{0%,40%{opacity:0}50%,85%{opacity:1}95%,100%{opacity:0}}
+.tube .on-only{opacity:0;transition:opacity .4s}
+.tube.on .on-only{opacity:1}
+.tube .off-only{transition:opacity .4s}
+.tube.on .off-only{opacity:0}
+
+/* barra */
+#bar{position:absolute;left:0;right:0;bottom:0;height:76px;display:flex;align-items:center;gap:14px;padding:0 40px;z-index:5}
+.nb{width:54px;height:54px;border:3px solid var(--ink);border-radius:14px;background:var(--bg);display:grid;place-items:center;padding:0}
+.nb svg{width:26px;height:26px}
+.nb.off{opacity:.45}
+.nb.wide{width:auto;display:flex;gap:10px;padding:0 16px;font:700 20px var(--fb)}
+#count{font:800 26px var(--fd);min-width:90px;text-align:center;font-variant-numeric:tabular-nums}
+#prog{position:absolute;left:0;bottom:0;height:8px;background:var(--or);transition:width .5s ease;z-index:6}
+
+/* mascota */
+#masc{position:absolute;right:30px;bottom:6px;width:132px;z-index:7;cursor:pointer;
+  transition:width .9s cubic-bezier(.3,1.3,.5,1), right .9s cubic-bezier(.3,1.3,.5,1), bottom .9s cubic-bezier(.3,1.3,.5,1)}
+#masc svg{width:100%;display:block;overflow:visible}
+#masc .jump,#masc .hair,#masc .armR,#masc .eye,#masc .bolts,#masc .tongue,#masc .spark{transform-box:fill-box}
+#masc .bob{animation:bob 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(2deg)}}
+#masc .eye{animation:blink 4.2s infinite;transform-origin:center}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+#masc .hair{transform-origin:center bottom;animation:hairb 3s ease-in-out infinite}
+@keyframes hairb{0%,100%{transform:scale(1)}50%{transform:scale(1.03,1.05)}}
+#masc .bolts,#masc .tongue,#masc .spark{opacity:0}
+#masc.hop .jump{animation:hop .7s cubic-bezier(.3,1.6,.5,1);transform-origin:center bottom}
+@keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-26px) rotate(-8deg)}100%{transform:translateY(0)}}
+#masc.jumps .jump{animation:jumps 1.5s ease-in-out;transform-origin:center bottom}
+@keyframes jumps{0%,33%,66%,100%{transform:translateY(0) scale(1.08,.92)}16%{transform:translateY(-28px) scale(.95,1.06) rotate(-8deg)}50%{transform:translateY(-36px) scale(.95,1.06) rotate(8deg)}83%{transform:translateY(-20px) scale(.95,1.06)}}
+#masc.wink .eyeR{animation:none;transform:scaleY(.1)}
+#masc.wink .spark{animation:spark 1.2s ease-out;transform-origin:center}
+@keyframes spark{0%{opacity:0;transform:scale(0) rotate(0)}30%{opacity:1;transform:scale(1.3) rotate(45deg)}100%{opacity:0;transform:scale(.6) rotate(90deg)}}
+#masc.zap .hair{animation:zaphair 1.4s steps(2,end)}
+@keyframes zaphair{0%,100%{transform:scale(1)}10%,90%{transform:scale(1.35,1.5)}}
+#masc.zap .bolts{animation:zapb 1.4s steps(2,end)}
+@keyframes zapb{0%,100%{opacity:0}10%,90%{opacity:1}}
+#masc.zap .jump{animation:zapj 1.4s linear}
+@keyframes zapj{0%,100%{transform:none}10%,30%,50%,70%{transform:translateX(-3px)}20%,40%,60%,80%{transform:translateX(3px)}}
+#masc.tongue .tongue{opacity:1}
+#masc.tongue .jump{animation:tilt 1.4s ease-in-out;transform-origin:center bottom}
+@keyframes tilt{30%,70%{transform:rotate(-8deg)}}
+#masc.spin .jump{animation:spinm 1.3s cubic-bezier(.5,0,.3,1);transform-origin:center}
+@keyframes spinm{0%{transform:none}30%{transform:translateY(-16px)}100%{transform:rotate(360deg)}}
+#masc.wave .armR{animation:wave 1.4s ease-in-out;transform-origin:0% 100%}
+@keyframes wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-40deg)}40%,80%{transform:rotate(-15deg)}}
+#stage.big #masc{width:380px;right:170px;bottom:150px}
+
+#bubble{position:absolute;right:180px;bottom:12px;max-width:700px;z-index:8;background:var(--bg);border:3px solid var(--ink);
+  border-radius:22px;padding:14px 22px;font-size:27px;line-height:1.3;box-shadow:8px 8px 0 var(--or);
+  opacity:0;transform:scale(.7);transform-origin:100% 100%;pointer-events:none;transition:opacity .3s, transform .4s cubic-bezier(.3,1.5,.5,1)}
+#bubble.show{opacity:1;transform:none}
+#bubble::after{content:"";position:absolute;right:-16px;bottom:30px;width:24px;height:24px;background:var(--bg);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(-45deg)}
+#bubble .who{display:inline-block;font:700 18px var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ord);margin-right:12px}
+#stage.big #bubble{right:110px;bottom:640px;max-width:420px;transform-origin:50% 100%}
+#stage.big #bubble .who{display:block;margin-bottom:4px}
+#stage.big #bubble::after{right:auto;left:60%;bottom:-16px;transform:rotate(45deg)}
+
+
+/* ======== VERSIÓ MÒBIL: escenari vertical de 720 px d'amplada ======== */
+#stage{width:720px;height:1280px;font-size:30px}
+.slide{padding:36px 34px 200px;gap:20px}
+.kick{font-size:19px;gap:10px}
+.kick::before{width:14px;height:14px}
+h2{font-size:58px}
+.lead{font-size:31px}
+.cols{grid-template-columns:1fr!important;grid-template-rows:minmax(0,auto) auto;gap:20px!important;align-items:start;align-content:start}
+.art{height:auto;max-height:470px}
+.art svg{max-height:450px}
+.txt{padding-right:0;font-size:28px!important;gap:16px!important}
+.blk h3{font-size:19px;margin-bottom:6px}
+.like{font-size:25px;padding:12px 16px;gap:12px;flex-wrap:wrap}
+.like span{font-size:17px}
+.lab{font-size:26px}
+.cover{justify-content:flex-start;padding-top:70px}
+.cover h1{font-size:104px}
+.cover .lead{font-size:34px}
+.keys{font-size:24px}
+.bigfs{font-size:30px;padding:14px 24px}
+.r2,.r3{grid-template-columns:1fr}
+.r4{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.row{gap:18px}
+.card{padding:18px 20px;gap:8px;border-radius:20px}
+.card h3{font-size:34px}
+.card .pic svg{max-height:170px}
+.r4 .card{padding:14px}.r4 .card h3{font-size:30px}.r4 .small{font-size:21px}.r4 .card .pic svg{max-height:200px}
+.small{font-size:24px}.ex{font-size:22px}
+/* línia del temps vertical */
+.tl{grid-template-columns:1fr;gap:6px;padding-top:0}
+.tl::before{left:131px;right:auto;top:20px;bottom:20px;width:6px;height:auto}
+.tl .ev{display:grid;grid-template-columns:110px 44px 1fr;grid-template-rows:auto auto;column-gap:14px;align-items:center;text-align:left}
+.tl .ev>div{grid-row:1/3;grid-column:1}
+.tl .ev svg{width:110px;height:110px}
+.tl .dot{grid-row:1/3;grid-column:2;margin:0;justify-self:center}
+.tl .yr{grid-column:3;font-size:40px}
+.tl .nm{grid-column:3;grid-row:2;font-size:24px}
+.tl .ds{display:none}
+/* taula */
+.ptab{font-size:22px}
+.ptab th{font-size:14px;padding:6px 6px;letter-spacing:.06em}
+.ptab td{padding:12px 6px}
+.ptab .chg{font-size:30px}
+.pball{width:34px;height:34px;font-size:22px;margin-right:8px}
+.zbox{flex-direction:column;gap:12px}
+.zbox .like{flex-wrap:nowrap}
+/* simulacions */
+.ctrls{gap:10px}
+.act{font-size:23px;padding:10px 16px}
+.counts b{font-size:40px}.counts span{font-size:17px}
+.elems button{width:58px;height:58px;font-size:24px}
+.conf{font-size:36px}
+.spec{height:60px}
+.uvir{font-size:19px;flex-wrap:wrap}
+/* qüestionaris */
+.qq{font-size:40px}
+.qopts{grid-template-columns:1fr;gap:12px}
+.qopts button{font-size:26px;min-height:72px;padding:12px 16px}
+.qopts button kbd{width:36px;height:36px;font-size:20px}
+.qfoot{flex-direction:column;align-items:flex-start;gap:12px}
+.qexp{font-size:25px}
+.qres .big-num{font-size:120px}
+/* qui sóc */
+.riddles{grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:16px}
+.rc .fa{font-size:24px;padding:16px}
+.rc .fa small{font-size:15px}
+.rc .ba{font-size:38px}
+.end h2{font-size:78px}
+.end li{font-size:29px;grid-template-columns:30px 1fr}
+/* barra, mascota i bafarada */
+#bar{height:96px;gap:12px;padding:0 20px;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nb{width:70px;height:70px;border-radius:18px}
+.nb svg{width:32px;height:32px}
+.nb.wide{width:70px;padding:0}
+.nb.wide .fslab{display:none}
+#count{font-size:26px;min-width:84px}
+#masc{width:120px;right:16px;bottom:10px}
+#bubble{left:24px;right:24px;bottom:150px;max-width:none;font-size:25px;transform-origin:85% 100%}
+#bubble::after{right:60px;bottom:-16px;transform:rotate(45deg)}
+#stage.big #masc{width:300px;right:50%;margin-right:-150px;bottom:150px}
+#stage.big #bubble{left:40px;right:40px;bottom:520px;max-width:none}
+#stage.big #bubble::after{left:50%;right:auto}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important}}
+</style>
+
+<div id="stage">
+
+<!-- 1 PORTADA -->
+<section class="slide cover" data-big data-tip="Hola! Sóc l'Einsteinet. Avui viatjarem a dins de l'àtom!">
+  <div class="kick">Física i Química · 4t d'ESO</div>
+  <h1>Els models <em>atòmics</em></h1>
+  <p class="lead">De Dalton a Bohr: com hem imaginat l'àtom</p>
+  <button class="bigfs" id="fs2" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="fslab">Pantalla completa</span></button>
+  <div class="keys"><span>👆 Llisca el dit cap a l'esquerra o toca <b>›</b> per avançar</span></div>
+</section>
+
+<!-- 2 QUÈ ÉS UN ÀTOM -->
+<section class="slide" data-tip="Un model és com un mapa: no és la realitat, però ens ajuda a entendre-la.">
+  <div class="kick">Recorda</div>
+  <h2>Què és un àtom?</h2>
+  <p class="lead">Tota la matèria està formada per àtoms.</p>
+  <div class="row r2">
+    <div class="card f" data-s="1">
+      <h3>Són petitíssims</h3>
+      <p>Mesuren uns 0,1 nanòmetres. En una fila d'<b>1 mm</b> en cabrien uns <b>10 milions</b>.</p>
+      <div class="pic" data-draw="row"></div>
+    </div>
+    <div class="card f" data-s="2">
+      <h3>Ningú n'ha vist mai l'interior</h3>
+      <p>Per això fem servir <b>models</b>: representacions simplificades que expliquen el que observem als experiments.</p>
+      <p class="ex">Quan un experiment no encaixa, el model canvia.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 DEMÒCRIT -->
+<section class="slide" data-tip="«Àtom» ve del grec àtomos: que no es pot dividir. Ja veurem que sí que es pot!">
+  <div class="kick">Una idea molt antiga</div>
+  <h2>Grècia, segle V aC</h2>
+  <div class="row r2">
+    <div class="card f" data-s="1">
+      <span class="tag o">Demòcrit</span>
+      <div class="pic" data-draw="cut"></div>
+      <p>Si talles la matèria moltes vegades, arribes a un tros que ja no es pot tallar: l'<b>àtom</b>.</p>
+    </div>
+    <div class="card f" data-s="2">
+      <span class="tag">Aristòtil</span>
+      <div class="pic" data-draw="four"></div>
+      <p>La matèria és contínua i està feta de 4 elements: <b>terra, aigua, aire i foc</b>.</p>
+    </div>
+  </div>
+  <div class="like f" data-s="3"><span>Sabies que…</span><div>La idea d'Aristòtil va guanyar durant uns <b>2.000 anys</b>. Les proves dels àtoms no van arribar fins al segle XIX.</div></div>
+</section>
+
+<!-- 4 LÍNIA DEL TEMPS -->
+<section class="slide" data-tip="Cada model nou va aparèixer perquè un experiment no encaixava amb l'anterior.">
+  <div class="kick">El viatge</div>
+  <h2>Els models al llarg del temps</h2>
+  <div class="tl">
+    <div class="ev f" data-s="1"><div data-draw="mDalton"></div><span class="dot"></span><span class="yr">1808</span><span class="nm">Dalton</span><span class="ds">Esfera massissa</span></div>
+    <div class="ev f" data-s="2"><div data-draw="mThomson"></div><span class="dot"></span><span class="yr">1904</span><span class="nm">Thomson</span><span class="ds">Pastís de panses</span></div>
+    <div class="ev f" data-s="3"><div data-draw="mRuth"></div><span class="dot"></span><span class="yr">1911</span><span class="nm">Rutherford</span><span class="ds">Nucli i escorça</span></div>
+    <div class="ev f" data-s="4"><div data-draw="mBohr"></div><span class="dot"></span><span class="yr">1913</span><span class="nm">Bohr</span><span class="ds">Nivells d'energia</span></div>
+    <div class="ev f" data-s="5"><div data-draw="mQuant"></div><span class="dot"></span><span class="yr">1926</span><span class="nm">Model actual</span><span class="ds">Núvol d'electrons</span></div>
+  </div>
+</section>
+
+<!-- 5 DALTON -->
+<section class="slide" data-tip="Dalton no distingia bé els colors. Per això en diem daltonisme!">
+  <div class="kick">Model 1 · John Dalton · 1808</div>
+  <h2>El model de Dalton</h2>
+  <div class="cols">
+    <div class="art" data-draw="dalton"></div>
+    <div class="txt" style="font-size:30px;gap:18px">
+      <div class="blk f" data-s="1"><h3>Com és l'àtom</h3><p>Una <b>esfera massissa i indivisible</b>, com una bola de billar.</p></div>
+      <div class="blk f" data-s="2"><h3>Idees clau</h3><ul>
+        <li>Els àtoms d'un mateix element són <b>iguals</b>.</li>
+        <li>Els d'elements diferents tenen massa diferent.</li>
+        <li>Els compostos són àtoms units en proporcions senzilles.</li></ul></div>
+      <div class="like warn f" data-s="3"><span>Problema</span><div>No explica l'electricitat. L'àtom <b>sí que es pot dividir!</b></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 THOMSON: EXPERIMENT -->
+<section class="slide" data-hook="tube" data-tip="Thomson va guanyar el Premi Nobel de Física el 1906.">
+  <div class="kick">L'experiment · J. J. Thomson · 1897</div>
+  <h2>Els rajos catòdics</h2>
+  <div class="cols" style="grid-template-columns:1.25fr 1fr;gap:44px">
+    <div class="art" data-draw="tube"></div>
+    <div class="txt">
+      <div class="blk f" data-s="1"><h3>Què va fer</h3><p>Dins un tub buit, del pol negatiu (<b>càtode</b>) surt un raig.</p></div>
+      <div class="blk f" data-s="2"><h3>Prova-ho</h3><div class="ctrls"><button class="act main" type="button" id="tubeBtn">Activa les plaques</button></div></div>
+      <div class="blk f" data-s="3"><h3>Conclusió</h3><p>El raig es desvia cap a la placa <b>positiva</b>: està fet de partícules negatives, els <b class="or">electrons</b>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 THOMSON: MODEL -->
+<section class="slide" data-tip="En anglès en diuen «plum pudding», un pastís anglès amb panses.">
+  <div class="kick">Model 2 · J. J. Thomson · 1904</div>
+  <h2>El model de Thomson</h2>
+  <div class="cols">
+    <div class="art" data-draw="thomson"></div>
+    <div class="txt">
+      <div class="blk f" data-s="1"><h3>Com és l'àtom</h3><p>Una <b>esfera de càrrega positiva</b> amb els <b>electrons</b> incrustats, com les panses d'un pastís.</p></div>
+      <div class="blk f" data-s="2"><h3>Càrrega total</h3><p>Hi ha tanta càrrega positiva com negativa: l'àtom és <b>neutre</b>.</p></div>
+      <div class="like warn f" data-s="3"><span>Problema</span><div>No pot explicar l'experiment de Rutherford.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 RUTHERFORD: EXPERIMENT -->
+<section class="slide" data-hook="ruth" data-tip="Rutherford ho va comparar amb disparar un obús contra un paper de seda i que rebotés!">
+  <div class="kick">L'experiment · Ernest Rutherford · 1911</div>
+  <h2>La làmina d'or</h2>
+  <div class="cols" style="grid-template-columns:1.2fr 1fr;gap:44px">
+    <div class="art"><canvas class="sim" id="ruthCv" width="1520" height="960" aria-label="Simulació de l'experiment de la làmina d'or"></canvas></div>
+    <div class="txt" style="gap:18px">
+      <div class="blk"><p>Va disparar <b>partícules alfa</b> (positives) contra una làmina d'<b>or</b> finíssima.</p></div>
+      <div class="ctrls"><button class="act main" type="button" id="rFire">Dispara 1</button><button class="act main" type="button" id="rBurst">Ràfega de 60</button><button class="act" type="button" id="rReset">Reinicia</button></div>
+      <div class="counts"><div><b id="cS">0</b><span>passen recte</span></div><div><b id="cD">0</b><span>es desvien</span></div><div class="bo"><b id="cB">0</b><span>reboten</span></div></div>
+      <p class="ex" style="margin:0;font-size:23px">A l'experiment real, els rebots eren encara molt més rars.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 RUTHERFORD: CONCLUSIONS -->
+<section class="slide" data-tip="Si l'àtom fos com el Camp Nou, el nucli seria com un pèsol al mig del camp.">
+  <div class="kick">Què va deduir Rutherford?</div>
+  <h2>Tres observacions, tres conclusions</h2>
+  <div class="cols" style="grid-template-columns:1fr 1.1fr">
+    <div class="art" data-draw="close"></div>
+    <div class="txt" style="gap:20px;font-size:30px">
+      <div class="blk f" data-s="1"><h3>1 · La majoria passen recte</h3><p>→ L'àtom és gairebé tot <b>espai buit</b>.</p></div>
+      <div class="blk f" data-s="2"><h3>2 · Algunes es desvien</h3><p>→ Al centre hi ha una zona amb <b>càrrega positiva</b>.</p></div>
+      <div class="blk f" data-s="3"><h3>3 · Molt poques reboten</h3><p>→ Aquesta zona, el <b class="or">nucli</b>, és petitíssima i hi ha gairebé tota la massa.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 RUTHERFORD: MODEL -->
+<section class="slide" data-tip="Rutherford va guanyar el Nobel… de Química! Ell es considerava físic.">
+  <div class="kick">Model 3 · Ernest Rutherford · 1911</div>
+  <h2>El model de Rutherford</h2>
+  <div class="cols">
+    <div class="art" data-draw="ruthModel"></div>
+    <div class="txt">
+      <div class="blk f" data-s="1"><h3>Nucli</h3><p>Petit, amb càrrega <b>positiva</b> i gairebé tota la massa.</p></div>
+      <div class="blk f" data-s="2"><h3>Escorça</h3><p>Els <b>electrons</b> giren al voltant del nucli, com planetes al voltant del Sol. La resta és gairebé tot <b>espai buit</b>.</p></div>
+      <div class="like warn f" data-s="3"><span>Problema</span><div>Un electró girant perdria energia i acabaria caient al nucli. I no explica la llum que fan els elements.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 PARTÍCULES -->
+<section class="slide" data-tip="Un protó té una massa unes 1.836 vegades més gran que la d'un electró.">
+  <div class="kick">Dins de l'àtom</div>
+  <h2>Les partícules subatòmiques</h2>
+  <table class="ptab">
+    <thead><tr><th>Partícula</th><th>Càrrega</th><th>Massa</th><th>On és?</th><th>Descoberta</th></tr></thead>
+    <tbody>
+      <tr class="f" data-s="1"><td><span class="pball" style="background:var(--or)">+</span>Protó</td><td class="chg">+1</td><td>1 u</td><td>nucli</td><td>Rutherford, 1919</td></tr>
+      <tr class="f" data-s="2"><td><span class="pball" style="background:#fff">0</span>Neutró</td><td class="chg">0</td><td>1 u</td><td>nucli</td><td>Chadwick, 1932</td></tr>
+      <tr class="f" data-s="3"><td><span class="pball" style="background:var(--ink);color:#fff">−</span>Electró</td><td class="chg">−1</td><td>gairebé 0 <span class="ex">(1/1836 u)</span></td><td>escorça</td><td>Thomson, 1897</td></tr>
+    </tbody>
+  </table>
+  <div class="zbox f" data-s="4">
+    <div class="like"><span>Z</span><div><b>Nombre atòmic</b> = nombre de protons. En un àtom neutre, també d'electrons.</div></div>
+    <div class="like"><span>A</span><div><b>Nombre màssic</b> = protons + neutrons.</div></div>
+  </div>
+</section>
+
+<!-- 12 BOHR: MODEL -->
+<section class="slide" data-hook="bohrEl" data-tip="Bohr era danès i de jove jugava a futbol… de porter!">
+  <div class="kick">Model 4 · Niels Bohr · 1913</div>
+  <h2>El model de Bohr</h2>
+  <div class="cols" style="grid-template-columns:1fr 1.05fr">
+    <div class="art" data-draw="bohrEl"></div>
+    <div class="txt" style="gap:18px;font-size:31px">
+      <div class="blk f" data-s="1"><h3>Com és l'àtom</h3><p>Els electrons giren en <b>òrbites circulars fixes</b>: els <b class="or">nivells d'energia</b> (n = 1, 2, 3…). Dins d'una òrbita no perden energia.</p></div>
+      <div class="blk f" data-s="2"><h3>Quants electrons hi caben?</h3><p>Com a màxim <b>2n²</b>: 2, 8, 18…</p></div>
+      <div class="blk f" data-s="3"><h3>Tria un element</h3><div class="elems" id="elems"></div><p style="margin-top:10px">Electrons per nivell: <span class="conf" id="conf">2, 8, 1</span></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 BOHR: SALTS I LLUM -->
+<section class="slide" data-hook="jump" data-tip="El 1905 vaig proposar que la llum viatja en paquets d'energia. Avui en diem fotons!">
+  <div class="kick">El gran encert de Bohr</div>
+  <h2>Salts d'electrons i llum</h2>
+  <div class="cols" style="grid-template-columns:1.15fr 1fr;gap:40px">
+    <div class="art" data-draw="jump"></div>
+    <div class="txt" style="gap:16px;font-size:29px">
+      <p style="margin:0">Per <b>pujar</b> de nivell, l'electró absorbeix energia. Quan <b>baixa</b>, l'emet com a <b class="or">llum</b>: un fotó.</p>
+      <div class="ctrls"><button class="act main" type="button" id="jUp">⬆ Dona energia</button><button class="act main" type="button" id="jDown">⬇ Deixa caure</button><button class="act" type="button" id="jReset">Esborra</button></div>
+      <div><div class="spec" id="spec"></div><div class="specax"><span>400 nm</span><span>espectre de l'hidrogen</span><span>700 nm</span></div></div>
+      <div class="uvir"><span id="uv">ultraviolat (no es veu)</span><span id="ir">infraroig (no es veu)</span></div>
+      <p class="ex" style="margin:0;font-size:24px">Cada element té el seu espectre, com una empremta dactilar.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 14 MODEL ACTUAL -->
+<section class="slide" data-tip="Un orbital no és un camí: és la zona on és més probable trobar l'electró.">
+  <div class="kick">Model 5 · Schrödinger i Heisenberg · 1926</div>
+  <h2>El model actual</h2>
+  <div class="cols">
+    <div class="art" data-draw="cloud"></div>
+    <div class="txt">
+      <div class="blk f" data-s="1"><h3>Adeu a les òrbites</h3><p>No podem saber el camí exacte d'un electró. Només <b>on és més probable</b> trobar-lo.</p></div>
+      <div class="blk f" data-s="2"><h3>Orbitals</h3><p>Zones al voltant del nucli on és molt probable trobar els electrons. Formen un <b class="or">núvol electrònic</b>.</p></div>
+      <div class="blk f" data-s="3"><h3>Però…</h3><p>El nucli i els nivells d'energia de Bohr <b>continuen sent vàlids</b>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 COMPARATIVA -->
+<section class="slide" data-tip="Fixa't: cada model millora l'anterior.">
+  <div class="kick">Resum</div>
+  <h2>Quatre models, cara a cara</h2>
+  <div class="row r4">
+    <div class="card f" data-s="1"><span class="tag o">1808</span><h3>Dalton</h3><div class="pic" data-draw="mDalton"></div><p class="small">Esfera massissa i indivisible.</p></div>
+    <div class="card f" data-s="2"><span class="tag o">1904</span><h3>Thomson</h3><div class="pic" data-draw="mThomson"></div><p class="small">Esfera positiva amb electrons incrustats.</p></div>
+    <div class="card f" data-s="3"><span class="tag o">1911</span><h3>Rutherford</h3><div class="pic" data-draw="mRuth"></div><p class="small">Nucli positiu i electrons girant al voltant.</p></div>
+    <div class="card f" data-s="4"><span class="tag o">1913</span><h3>Bohr</h3><div class="pic" data-draw="mBohr"></div><p class="small">Electrons en nivells d'energia fixos.</p></div>
+  </div>
+</section>
+
+<!-- 16 REPTE: QUIN MODEL -->
+<section class="slide" data-quiz="models" data-tip="Pensa-hi bé abans de clicar! També pots respondre amb les tecles 1, 2, 3 i 4.">
+  <div class="kick">Repte 1</div>
+  <h2>Quin model és?</h2>
+  <div class="qz"></div>
+</section>
+
+<!-- 17 TEST -->
+<section class="slide" data-quiz="test" data-tip="Llegeix totes les opcions abans de respondre.">
+  <div class="kick">Repte 2</div>
+  <h2>Posa't a prova</h2>
+  <div class="qz"></div>
+</section>
+
+<!-- 18 QUI SÓC -->
+<section class="slide" data-tip="Endevina-ho abans de girar la targeta!">
+  <div class="kick">Repte 3</div>
+  <h2>Qui sóc?</h2>
+  <div class="riddles" id="riddles"></div>
+</section>
+
+<!-- 19 FINAL -->
+<section class="slide end" data-big data-tip="El 1905 vaig estudiar el moviment brownià, que va ajudar a demostrar que els àtoms existeixen. Fins aviat!">
+  <div class="kick">Per acabar</div>
+  <h2>Ara ja ho saps!</h2>
+  <ul>
+    <li class="f" data-s="1">Els models canvien quan els experiments no hi encaixen.</li>
+    <li class="f" data-s="2">Thomson va descobrir l'electró. Rutherford, el nucli.</li>
+    <li class="f" data-s="3">Bohr: els electrons són en nivells d'energia i, quan baixen, fan llum.</li>
+    <li class="f" data-s="4">Avui parlem d'orbitals: zones on és probable trobar l'electró.</li>
+  </ul>
+</section>
+
+<div id="bar">
+  <button class="nb" id="prev" type="button" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <span id="count">1 / 19</span>
+  <button class="nb" id="next" type="button" aria-label="Diapositiva següent"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button class="nb" id="snd" type="button" aria-label="So activat"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="sndw" d="M16 8.5c1.5 1 1.5 6 0 7M18.5 6c3 2.5 3 9.5 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path id="sndx" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="display:none"/></svg></button>
+  <button class="nb wide" id="fs" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="fslab">Pantalla completa</span></button>
+</div>
+<div id="prog"></div>
+<div id="bubble" role="status"><span class="who">Einsteinet</span><span id="btxt"></span></div>
+<div id="masc" title="Einsteinet"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const C={ink:'#141414',or:'#FF6A13',ord:'#C24A00',tint:'#FFE8D8',mid:'#8A847E',w:'#FFFFFF',line:'#E4E1DD'};
+const R=n=>Math.round(n*10)/10;
+const pt=(cx,cy,r,deg)=>{const a=deg*Math.PI/180;return[R(cx+r*Math.cos(a)),R(cy+r*Math.sin(a))]};
+let UID=0;
+function seeded(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
+
+/* ---------- peces de dibuix ---------- */
+function ball(cx,cy,r,col,dark){const id='gr'+(UID++);return `<defs><radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff"/><stop offset=".28" stop-color="${col}"/><stop offset="1" stop-color="${dark}"/></radialGradient></defs><circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id})" stroke="${C.ink}" stroke-width="${Math.max(2.5,r/18)}"/>`}
+const elec=(x,y,r=9)=>`<g><circle cx="${x}" cy="${y}" r="${r}" fill="${C.ink}"/><line x1="${x-r*.5}" y1="${y}" x2="${x+r*.5}" y2="${y}" stroke="#fff" stroke-width="${r*.28}" stroke-linecap="round"/></g>`;
+const plus=(x,y,s=8,col=C.ord)=>`<path d="M${x-s} ${y}h${2*s}M${x} ${y-s}v${2*s}" stroke="${col}" stroke-width="${s*.5}" stroke-linecap="round"/>`;
+const nucleus=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${C.or}" stroke="${C.ink}" stroke-width="${Math.max(2,r/5)}"/>${plus(x,y,r*.5,C.ink)}`;
+function spinEl(cx,cy,r,dur,start=0,size=8){return `<g class="spin" style="transform-origin:${cx}px ${cy}px;animation-duration:${dur}s;animation-delay:-${start*dur}s">${elec(cx+r,cy,size)}</g>`}
+function ellOrbit(cx,cy,rx,ry,rot,dur,beg,size=8){return `<g transform="rotate(${rot} ${cx} ${cy})"><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${C.ink}" stroke-width="2"/><g><circle r="${size}" fill="${C.ink}"/><line x1="${-size*.5}" y1="0" x2="${size*.5}" y2="0" stroke="#fff" stroke-width="${size*.28}" stroke-linecap="round"/><animateMotion dur="${dur}s" begin="-${beg}s" repeatCount="indefinite" path="M${cx-rx} ${cy} a${rx} ${ry} 0 1 0 ${2*rx} 0 a${rx} ${ry} 0 1 0 ${-2*rx} 0"/></g></g>`}
+
+/* minis (200×200) */
+const mini={
+  dalton:()=>`<svg viewBox="0 0 200 200">${ball(100,100,72,C.or,C.ord)}</svg>`,
+  thomson:()=>{let s=`<circle cx="100" cy="100" r="80" fill="${C.tint}" stroke="${C.ink}" stroke-width="4"/>`;[[70,60],[130,70],[60,120],[110,105],[140,140],[90,150]].forEach(([x,y])=>s+=plus(x,y,8));
+    [[100,60],[65,90],[140,105],[80,135],[120,140],[150,75]].forEach(([x,y],i)=>s+=`<g class="jig" style="animation-delay:-${i*.3}s">${elec(x,y,10)}</g>`);return `<svg viewBox="0 0 200 200">${s}</svg>`},
+  ruth:()=>`<svg viewBox="0 0 200 200">${ellOrbit(100,100,85,30,0,3,0)}${ellOrbit(100,100,85,30,60,3.6,1)}${ellOrbit(100,100,85,30,120,4.2,2)}${nucleus(100,100,10)}</svg>`,
+  bohr:()=>`<svg viewBox="0 0 200 200">${[35,60,85].map(r=>`<circle cx="100" cy="100" r="${r}" fill="none" stroke="${C.ink}" stroke-width="2.5"/>`).join('')}${nucleus(100,100,12)}${spinEl(100,100,35,2.5,0)}${spinEl(100,100,60,4,.3)}${spinEl(100,100,60,4,.8)}${spinEl(100,100,85,6,.1)}</svg>`,
+  quant:()=>{const r=seeded(11);let s='';for(let i=0;i<320;i++){const g=(r()+r()+r()-1.5)*1.5;const a=r()*Math.PI*2,d=Math.abs(g)*48+14;s+=`<circle cx="${R(100+Math.cos(a)*d)}" cy="${R(100+Math.sin(a)*d)}" r="2.1" fill="${C.ink}" ${i%4===0?`class="tw" style="animation-delay:-${R(r()*2.4)}s"`:'opacity=".55"'}/>`}
+    return `<svg viewBox="0 0 200 200">${s}${nucleus(100,100,9)}</svg>`}
+};
+
+const D={};
+D.mDalton=mini.dalton;D.mThomson=mini.thomson;D.mRuth=mini.ruth;D.mBohr=mini.bohr;D.mQuant=mini.quant;
+
+D.row=()=>{let s='';for(let i=0;i<9;i++)s+=ball(30+i*44,60,20,i%2?C.tint:C.or,i%2?'#E9B48F':C.ord);
+  return `<svg viewBox="0 0 420 130">${s}<path d="M10 104h400" stroke="${C.ink}" stroke-width="3"/><path d="M10 96v16M410 96v16" stroke="${C.ink}" stroke-width="3"/><text x="210" y="128" text-anchor="middle" class="sub" style="font-size:18px">… i així fins a 10 milions per mil·límetre</text></svg>`};
+D.cut=()=>`<svg viewBox="0 0 420 200"><rect x="10" y="70" width="160" height="70" rx="8" fill="${C.or}" stroke="${C.ink}" stroke-width="4"/><rect x="200" y="80" width="80" height="50" rx="6" fill="${C.or}" stroke="${C.ink}" stroke-width="4"/><rect x="305" y="90" width="40" height="30" rx="5" fill="${C.or}" stroke="${C.ink}" stroke-width="3.5"/>${ball(385,105,12,C.or,C.ord)}<path d="M180 105h12M290 105h10M352 105h16" stroke="${C.ink}" stroke-width="3" stroke-dasharray="3 4"/><g class="jig"><path d="M240 30 l-12 40 M252 30 l12 40" stroke="${C.ink}" stroke-width="5" stroke-linecap="round"/><circle cx="232" cy="22" r="10" fill="none" stroke="${C.ink}" stroke-width="4"/><circle cx="260" cy="22" r="10" fill="none" stroke="${C.ink}" stroke-width="4"/></g><text x="385" y="160" text-anchor="middle" class="lab" style="fill:${C.ord}">àtom</text></svg>`;
+D.four=()=>{const el=[['terra','M-26 18 L0 -24 L26 18Z'],['aigua','M0 -26 C16 -4 22 6 22 12 A22 22 0 0 1 -22 12 C-22 6 -16 -4 0 -26Z'],['aire','M-26 -6 h34 a8 8 0 1 0 -8 -8 M-26 6 h44 a9 9 0 1 1 -9 9'],['foc','M0 -26 C14 -10 20 0 16 12 C12 24 -12 24 -16 12 C-20 0 -8 -4 -4 -16 C2 -6 6 -6 0 -26Z']];
+  return `<svg viewBox="0 0 420 180">${el.map(([n,d],i)=>`<g transform="translate(${60+i*100} 70)"><circle r="40" fill="${i%2?C.tint:'#fff'}" stroke="${C.ink}" stroke-width="3"/><path d="${d}" fill="${i===2?'none':(i===3?C.or:C.ink)}" stroke="${C.ink}" stroke-width="${i===2?4:2}" stroke-linecap="round"/><text y="72" text-anchor="middle" class="lab">${n}</text></g>`).join('')}</svg>`};
+
+D.dalton=()=>`<svg viewBox="0 0 600 440">
+  <g class="h2o-h1">${ball(110,120,40,C.tint,'#E9B48F')}<text x="110" y="128" text-anchor="middle" class="lab">H</text></g>
+  <g class="h2o-h2">${ball(490,120,40,C.tint,'#E9B48F')}<text x="490" y="128" text-anchor="middle" class="lab">H</text></g>
+  ${ball(300,240,70,C.or,C.ord)}<text x="300" y="250" text-anchor="middle" class="lab" style="font-size:34px">O</text>
+  <g class="h2o-lab"><text x="300" y="400" text-anchor="middle" class="lab" style="font-size:30px;fill:${C.ord}">aigua: 2 àtoms de H + 1 d'O</text></g>
+  <text x="110" y="200" text-anchor="middle" class="sub">hidrogen</text><text x="490" y="200" text-anchor="middle" class="sub">hidrogen</text></svg>`;
+
+D.tube=()=>`<svg viewBox="0 0 700 420" class="tube" id="tubeSvg">
+  <path d="M60 150 Q60 110 110 110 L560 110 Q640 110 660 210 Q640 310 560 310 L110 310 Q60 310 60 270Z" fill="#F4F3F1" stroke="${C.ink}" stroke-width="5"/>
+  <rect x="80" y="170" width="20" height="80" rx="4" fill="${C.ink}"/><text x="90" y="350" text-anchor="middle" class="lab">càtode (−)</text><path d="M90 250 V325" stroke="${C.ink}" stroke-width="2"/>
+  <rect x="175" y="150" width="14" height="50" fill="${C.ink}"/><rect x="175" y="220" width="14" height="50" fill="${C.ink}"/><text x="182" y="100" text-anchor="middle" class="sub">ànode</text>
+  <rect x="300" y="140" width="170" height="14" rx="3" fill="${C.or}" stroke="${C.ink}" stroke-width="3"/><rect x="300" y="266" width="170" height="14" rx="3" fill="${C.ink}"/>
+  <g class="on-only">${plus(385,120,10,C.ord)}<path d="M375 300 h20" stroke="${C.ink}" stroke-width="5" stroke-linecap="round"/></g>
+  <text x="385" y="90" text-anchor="middle" class="lab">placa +</text><text x="385" y="345" text-anchor="middle" class="lab">placa −</text>
+  <rect x="640" y="140" width="14" height="140" rx="4" fill="#FFF4C7" stroke="${C.ink}" stroke-width="3"/><text x="650" y="395" text-anchor="middle" class="sub">pantalla</text>
+  <g class="off-only"><path d="M100 210 L645 210" stroke="${C.or}" stroke-width="7" stroke-linecap="round" opacity=".35"/><path class="beam" d="M100 210 L645 210" stroke="${C.ink}" stroke-width="6" stroke-linecap="round"/><circle cx="647" cy="210" r="12" fill="${C.or}" opacity=".9"/></g>
+  <g class="on-only"><path d="M100 210 L300 210 Q420 210 645 168" fill="none" stroke="${C.or}" stroke-width="7" stroke-linecap="round" opacity=".35"/><path class="beam" d="M100 210 L300 210 Q420 210 645 168" fill="none" stroke="${C.ink}" stroke-width="6" stroke-linecap="round"/><circle cx="647" cy="168" r="12" fill="${C.or}" opacity=".9"/></g>
+  </svg>`;
+
+D.thomson=()=>{let s=`<circle cx="270" cy="220" r="185" fill="${C.tint}" stroke="${C.ink}" stroke-width="6"/>`;const r=seeded(5);
+  for(let i=0;i<16;i++){const a=r()*Math.PI*2,d=Math.sqrt(r())*150;s+=plus(R(270+Math.cos(a)*d),R(220+Math.sin(a)*d),11)}
+  [[200,140],[320,110],[150,230],[270,215],[380,200],[220,320],[340,300],[260,150]].forEach(([x,y],i)=>s+=`<g class="jig" style="animation-delay:-${i*.25}s">${elec(x,y,17)}</g>`);
+  return `<svg viewBox="0 0 600 440">${s}<path d="M440 110 L520 70" stroke="${C.ink}" stroke-width="2.5"/><text x="525" y="60" class="lab">esfera +</text><path d="M398 205 L520 230" stroke="${C.ink}" stroke-width="2.5"/><text x="525" y="238" class="lab">electró</text></svg>`};
+
+D.close=()=>{let s='';for(let i=0;i<3;i++){const y=90+i*130;s+=`<circle cx="300" cy="${y}" r="62" fill="none" stroke="${C.mid}" stroke-width="2.5" stroke-dasharray="6 6"/>${nucleus(300,y,7)}`}
+  const paths=['M20 25 L580 25','M20 155 L580 155','M20 285 L580 285','M20 415 L580 415','M20 100 L270 100 Q298 96 330 70 L580 -40','M20 220 L288 220 L20 236'];
+  paths.forEach((p,i)=>{s+=`<path d="${p}" fill="none" stroke="${i>3?C.or:C.mid}" stroke-width="${i>3?3:2}" stroke-dasharray="${i>3?'0':'4 8'}" opacity="${i>3?.8:.6}"/><g><circle r="10" fill="${C.or}" stroke="${C.ink}" stroke-width="2.5"/>${plus(0,0,4,C.ink)}<animateMotion dur="${i>3?2.6:2}s" begin="${i*.35}s" repeatCount="indefinite" path="${p}"/></g>`});
+  return `<svg viewBox="0 0 600 440"><rect x="270" y="0" width="60" height="440" fill="${C.tint}" opacity=".45"/>${s}<text x="300" y="438" text-anchor="middle" class="sub">àtoms d'or (de molt a prop)</text></svg>`};
+
+D.ruthModel=()=>{let n='';const r=seeded(3);for(let i=0;i<14;i++){const a=r()*6.28,d=Math.sqrt(r())*17;n+=`<circle cx="${R(300+Math.cos(a)*d)}" cy="${R(220+Math.sin(a)*d)}" r="8" fill="${i%2?C.or:'#fff'}" stroke="${C.ink}" stroke-width="2"/>`}
+  return `<svg viewBox="0 0 600 440">${ellOrbit(300,220,250,80,0,4,0,13)}${ellOrbit(300,220,250,80,60,5,1.5,13)}${ellOrbit(300,220,250,80,120,6,3,13)}<g class="jig">${n}</g>
+  <path d="M325 210 L470 30" stroke="${C.ink}" stroke-width="2.5"/><text x="475" y="28" class="lab">nucli</text></svg>`};
+
+D.bohrEl=()=>`<svg viewBox="0 0 520 520" id="bohrSvg"></svg>`;
+D.jump=()=>{const lv=[1,2,3,4,5];const rad=n=>28+n*36;const E=n=>-13.6/(n*n);const ey=n=>R(60+(E(n)+13.6)/13.6*0.0+ (1-(-E(n)/13.6))*330);
+  let s='';lv.forEach(n=>{s+=`<circle cx="210" cy="220" r="${rad(n)}" fill="none" stroke="${C.ink}" stroke-width="2" stroke-dasharray="${n===1?'0':'5 5'}"/><text x="${210+rad(n)*.71+6}" y="${220-rad(n)*.71-4}" class="sub" style="font-size:17px;font-weight:700">n=${n}</text>`});
+  let lev='';lv.forEach(n=>{const y=R(410-(1-1/n)*330);lev+=`<line x1="470" y1="${y}" x2="600" y2="${y}" stroke="${C.ink}" stroke-width="3"/><text x="610" y="${y+6}" class="sub" style="font-size:15px;font-weight:700">n=${n}</text>`});
+  return `<svg viewBox="0 0 660 440" id="jumpSvg">${s}${nucleus(210,220,14)}<g id="jPh"></g><g id="jEl">${elec(0,0,11)}</g>
+  ${lev}<text x="535" y="30" text-anchor="middle" class="sub" style="font-size:18px">energia ↑</text><circle id="jMark" cx="535" cy="0" r="9" fill="${C.or}" stroke="${C.ink}" stroke-width="2.5"/></svg>`};
+D.cloud=()=>{const r=seeded(23);let s='';for(let i=0;i<900;i++){const g=(r()+r()+r()+r()-2)*1.2;const a=r()*Math.PI*2,d=Math.abs(g)*110+18;s+=`<circle cx="${R(300+Math.cos(a)*d)}" cy="${R(220+Math.sin(a)*d*.95)}" r="2.6" fill="${C.ink}" ${i%5===0?`class="tw" style="animation-delay:-${R(r()*2.4)}s"`:'opacity=".5"'}/>`}
+  return `<svg viewBox="0 0 600 440"><circle cx="300" cy="220" r="200" fill="${C.tint}" opacity=".5"/>${s}${nucleus(300,220,13)}</svg>`};
+
+document.querySelectorAll('[data-draw]').forEach(el=>{const f=D[el.dataset.draw];if(f)el.innerHTML=f(el)});
+
+/* ---------- mascota: Einsteinet ---------- */
+(function(){
+  const r=seeded(9);let hp='';const pts=[];
+  for(let a=-35;a<=215;a+=12){const rr=(pts.length%2?27:37)+r()*5;const t=a*Math.PI/180;pts.push([R(50+rr*Math.cos(t)),R(48-rr*Math.sin(t)*1.0)])}
+  hp='M50 60 L'+pts.map(p=>p.join(' ')).join(' L')+'Z';
+  const svg=`<svg viewBox="0 0 100 124" aria-hidden="true"><g class="jump"><g class="bob">
+   <g class="bolts"><path d="M10 14 l8 10 h-6 l7 10" fill="none" stroke="${C.or}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M90 12 l-8 10 h6 l-7 10" fill="none" stroke="${C.or}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 -6 l-4 8 h6 l-4 8" fill="none" stroke="${C.or}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+   <ellipse cx="40" cy="119" rx="9" ry="4" fill="${C.ink}"/><ellipse cx="60" cy="119" rx="9" ry="4" fill="${C.ink}"/>
+   <path d="M30 116 Q28 88 40 82 L60 82 Q72 88 70 116Z" fill="${C.ink}"/>
+   <g transform="translate(50 100)"><ellipse rx="7" ry="2.8" fill="none" stroke="${C.or}" stroke-width="1.6"/><ellipse rx="7" ry="2.8" fill="none" stroke="${C.or}" stroke-width="1.6" transform="rotate(60)"/><ellipse rx="7" ry="2.8" fill="none" stroke="${C.or}" stroke-width="1.6" transform="rotate(-60)"/><circle r="1.8" fill="${C.or}"/></g>
+   <path d="M33 90 Q24 98 26 108" fill="none" stroke="${C.ink}" stroke-width="6" stroke-linecap="round"/><circle cx="26" cy="109" r="4" fill="${C.tint}" stroke="${C.ink}" stroke-width="1.5"/>
+   <g class="armR"><path d="M67 90 Q76 98 74 108" fill="none" stroke="${C.ink}" stroke-width="6" stroke-linecap="round"/><circle cx="74" cy="109" r="4" fill="${C.tint}" stroke="${C.ink}" stroke-width="1.5"/></g>
+   <g class="hair"><path d="${hp}" fill="#fff" stroke="${C.ink}" stroke-width="2" stroke-linejoin="round"/></g>
+   <circle cx="27" cy="55" r="5" fill="${C.tint}" stroke="${C.ink}" stroke-width="2"/><circle cx="73" cy="55" r="5" fill="${C.tint}" stroke="${C.ink}" stroke-width="2"/>
+   <circle cx="50" cy="55" r="23" fill="${C.tint}" stroke="${C.ink}" stroke-width="2.5"/>
+   <path d="M33 38 q8 -6 16 0 q6 -6 16 0" fill="#fff" stroke="${C.ink}" stroke-width="1.6"/>
+   <path d="M37 45 q5 -4 10 -1 M53 44 q5 -3 10 1" fill="none" stroke="${C.ink}" stroke-width="2.4" stroke-linecap="round"/>
+   <g class="eye eyeL"><circle cx="42" cy="52" r="3" fill="${C.ink}"/></g><g class="eye eyeR"><circle cx="58" cy="52" r="3" fill="${C.ink}"/></g>
+   <path d="M50 54 Q46 61 49 63 Q51 64 53 62" fill="none" stroke="${C.ink}" stroke-width="1.8" stroke-linecap="round"/>
+   <path class="tongue" d="M46 70 Q50 80 54 70Z" fill="${C.or}" stroke="${C.ink}" stroke-width="1.5"/>
+   <path d="M50 70 Q46 74 43 71" fill="none" stroke="${C.ink}" stroke-width="1.6" stroke-linecap="round"/>
+   <path d="M36 67 Q41 60 50 64 Q59 60 64 67 Q59 71 50 68 Q41 71 36 67Z" fill="#fff" stroke="${C.ink}" stroke-width="1.8" stroke-linejoin="round"/>
+   <path class="spark" d="M72 36 l1.8 3.6 3.6 1.8 -3.6 1.8 -1.8 3.6 -1.8 -3.6 -3.6 -1.8 3.6 -1.8z" fill="${C.or}" stroke="${C.ink}" stroke-width="1"/>
+  </g></g></svg>`;
+  document.getElementById('masc').innerHTML=svg;
+})();
+
+/* ---------- so ---------- */
+let AC=null,muted=false;
+function ac(){if(muted)return null;try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){AC=null}return AC}
+function tone(f,dur,type='sine',vol=.12,when=0,f2,vib){const c=ac();if(!c)return;const t=c.currentTime+when;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  if(vib){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=vib[0];lg.gain.value=vib[1];l.connect(lg).connect(o.frequency);l.start(t);l.stop(t+dur+.05)}
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.05)}
+function noise(dur,f1,f2,vol=.12,when=0){const c=ac();if(!c)return;const t=c.currentTime+when;const b=c.createBuffer(1,Math.ceil(c.sampleRate*dur),c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const s=c.createBufferSource();s.buffer=b;const bp=c.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.2;bp.frequency.setValueAtTime(f1,t);bp.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  const g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(bp).connect(g).connect(c.destination);s.start(t);s.stop(t+dur)}
+const sfx={
+  pop(){tone(520,.09,'sine',.14,0,860)},
+  ok(){[523,659,784,1047].forEach((f,i)=>tone(f,.16,'triangle',.13,i*.08))},
+  ko(){tone(180,.22,'square',.06,0,110)},
+  chirp(){tone(880,.08,'sine',.12,0,1500);tone(1250,.09,'sine',.1,.09,1800)},
+  flip(){tone(330,.12,'triangle',.12,0,660)},
+  blip(){tone(700,.07,'sine',.07,0,950)},
+  whoosh(d){noise(.35,d>0?400:2400,d>0?2400:400,.14)},
+  zap(){tone(90,.6,'sawtooth',.06,0,70,[60,40]);noise(.5,3000,1200,.08)},
+  boing(w=0){tone(180,.28,'triangle',.09,w,520,[22,30])},
+  tick(){tone(1600,.03,'square',.03)},
+  ding(){tone(1320,.25,'triangle',.1);tone(1760,.3,'triangle',.07,.08)},
+  up(){tone(300,.3,'sine',.1,0,900)},
+  photon(f){tone(f,.35,'sine',.1,0,f*1.5)}
+};
+
+/* ---------- motor ---------- */
+const stage=document.getElementById('stage');
+const slides=[...document.querySelectorAll('.slide')];const N=slides.length;
+let cur=0,step=0;
+const maxStep=s=>Math.max(0,...[...s.querySelectorAll('.f')].map(e=>+e.dataset.s||0));
+function fit(){const w=window.innerWidth,h=window.innerHeight;const H=Math.max(1150,Math.min(1700,Math.round(720*h/w)));stage.style.height=H+'px';const s=Math.min(w/720,h/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+window.addEventListener('resize',fit);fit();
+const hooks={};
+function applyStep(sl,st){sl.querySelectorAll('.f').forEach(e=>e.classList.toggle('on',(+e.dataset.s||0)<=st));const h=hooks[sl.dataset.hook];if(h&&h.step)h.step(sl,st)}
+
+const bubble=document.getElementById('bubble'),btxt=document.getElementById('btxt'),masc=document.getElementById('masc');
+let bt=null;
+function say(text,ms=8000){btxt.textContent=text;bubble.classList.add('show');clearTimeout(bt);bt=setTimeout(()=>bubble.classList.remove('show'),ms)}
+const ACTS={hop:700,jumps:1500,wink:1200,zap:1400,tongue:1400,spin:1300,wave:1400};
+let actT=null,lastAct=Date.now();
+function act(n){masc.classList.remove(...Object.keys(ACTS));void masc.offsetWidth;masc.classList.add(n);lastAct=Date.now();clearTimeout(actT);actT=setTimeout(()=>masc.classList.remove(n),ACTS[n]+50);
+  if(n==='jumps'){sfx.boing(0);sfx.boing(.5);sfx.boing(1)}else if(n==='hop')sfx.boing(0);else if(n==='wink')tone(1500,.07,'sine',.06,.05,2300);
+  else if(n==='zap')sfx.zap();else if(n==='spin')tone(260,.6,'triangle',.06,0,900);else if(n==='tongue')tone(400,.25,'triangle',.08,0,200,[12,40]);else if(n==='wave')tone(660,.1,'sine',.06,0,990)}
+const CLICK=['wave','jumps','wink','tongue','spin','zap'];let ci=0;
+masc.addEventListener('click',()=>{sfx.chirp();act(CLICK[ci++%CLICK.length]);if(bubble.classList.contains('show'))bubble.classList.remove('show');else say(slides[cur].dataset.tip||'')});
+setInterval(()=>{if(Date.now()-lastAct>12000&&!document.hidden)act(['wink','tongue','hop','spin','wave'][Math.floor(Math.random()*5)])},4000);
+
+function go(n,full){
+  if(n<0||n>=N)return;
+  const dir=n>=cur?1:-1,old=slides[cur],nw=slides[n];
+  if(n!==cur){old.style.transform=`translateX(${dir>0?-70:70}px)`;old.classList.remove('active');
+    nw.style.transition='none';nw.style.transform=`translateX(${dir>0?70:-70}px)`;void nw.offsetWidth;nw.style.transition='';nw.style.transform='';sfx.whoosh(dir)}
+  nw.classList.add('active');cur=n;step=full?maxStep(nw):0;applyStep(nw,step);
+  const h=hooks[nw.dataset.hook];if(h&&h.enter)h.enter(nw);
+  stage.classList.toggle('big',nw.hasAttribute('data-big'));
+  document.getElementById('count').textContent=`${n+1} / ${N}`;
+  document.getElementById('prog').style.width=`${(n+1)/N*100}%`;
+  bubble.classList.remove('show');clearTimeout(bt);
+  if(nw.dataset.tip)bt=setTimeout(()=>{say(nw.dataset.tip,6000);sfx.blip();act(n===0?'wave':['hop','wink','jumps','tongue'][n%4])},n===0?400:900);
+  try{history.replaceState(null,'','#s'+(n+1))}catch(e){}
+}
+function next(){const s=slides[cur];if(step<maxStep(s)){step++;applyStep(s,step);sfx.pop()}else go(cur+1)}
+function prev(){const s=slides[cur];if(step>0){step--;applyStep(s,step)}else go(cur-1,true)}
+const blurIf=e=>{if(e.detail)e.currentTarget.blur()};
+document.getElementById('next').addEventListener('click',e=>{next();blurIf(e)});
+document.getElementById('prev').addEventListener('click',e=>{prev();blurIf(e)});
+const sndBtn=document.getElementById('snd');
+function toggleSound(){muted=!muted;sndBtn.classList.toggle('off',muted);document.getElementById('sndw').style.display=muted?'none':'';document.getElementById('sndx').style.display=muted?'':'none';sndBtn.setAttribute('aria-label',muted?'So desactivat':'So activat');if(!muted)sfx.blip()}
+sndBtn.addEventListener('click',e=>{toggleSound();blurIf(e)});
+const isFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function fsFail(){say("Aquí el navegador no deixa posar la pantalla completa. Prem F11 (al Mac: Ctrl+Cmd+F) i ja ho tens!",9000);act('zap')}
+function fs(){try{if(isFS()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);return}
+  const el=document.documentElement,req=el.requestFullscreen||el.webkitRequestFullscreen;if(!req||document.fullscreenEnabled===false){fsFail();return}
+  const p=req.call(el);if(p&&p.catch)p.catch(fsFail);setTimeout(()=>{if(!isFS()&&!(p&&p.catch))fsFail()},600)}catch(e){fsFail()}}
+function fsLabel(){const on=isFS();document.querySelectorAll('.fslab').forEach(l=>l.textContent=on?'Surt de pantalla completa':'Pantalla completa');setTimeout(fit,100);if(on)act('jumps')}
+document.addEventListener('fullscreenchange',fsLabel);document.addEventListener('webkitfullscreenchange',fsLabel);
+['fs','fs2'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{fs();blurIf(e)}));
+document.addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  const onBtn=e.target&&e.target.tagName==='BUTTON',k=e.key;
+  const qz=slides[cur]._quiz;
+  if(qz&&/^[1-4]$/.test(k)){qz.key(+k-1);return}
+  if(['ArrowRight','ArrowDown','PageDown'].includes(k)||((k===' '||k==='Enter')&&!onBtn)){e.preventDefault();next()}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){e.preventDefault();prev()}
+  else if(k==='Home')go(0);else if(k==='End')go(N-1);
+  else if(k==='m'||k==='M')toggleSound();else if(k==='f'||k==='F')fs();
+});
+let tx=null;stage.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+stage.addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)(dx<0?next:prev)();tx=null});
+
+/* ---------- Thomson: tub ---------- */
+(function(){const svg=document.getElementById('tubeSvg'),b=document.getElementById('tubeBtn');
+  b.addEventListener('click',e=>{const on=svg.classList.toggle('on');b.textContent=on?'Desactiva les plaques':'Activa les plaques';b.classList.toggle('sel',on);on?sfx.up():sfx.blip();if(on)setTimeout(()=>act('wink'),500);blurIf(e)});
+  hooks.tube={enter(){svg.classList.remove('on');b.textContent='Activa les plaques';b.classList.remove('sel')}};
+})();
+
+/* ---------- Rutherford: simulació ---------- */
+(function(){
+  const cv=document.getElementById('ruthCv'),x=cv.getContext('2d');const W=760,H=480,FX=400,FY=240,RAD=210;
+  x.scale(2,2);
+  let parts=[],flashes=[],queue=0,qT=0,cnt={s:0,d:0,b:0},last=0,running=false;
+  const elS=document.getElementById('cS'),elD=document.getElementById('cD'),elB=document.getElementById('cB');
+  function fire(){parts.push({x:118,y:FY+(Math.random()*2-1)*12,vx:430,vy:0,hit:false})}
+  function draw(){
+    x.clearRect(0,0,W,H);
+    // pantalla detectora
+    x.lineWidth=14;x.strokeStyle='#F1EFEC';x.beginPath();x.arc(FX,FY,RAD,Math.PI*1.07,Math.PI*.93+Math.PI*2,false);x.stroke();
+    x.lineWidth=2.5;x.strokeStyle=C.ink;x.beginPath();x.arc(FX,FY,RAD+7,Math.PI*1.07,Math.PI*.93+Math.PI*2);x.stroke();x.beginPath();x.arc(FX,FY,RAD-7,Math.PI*1.07,Math.PI*.93+Math.PI*2);x.stroke();
+    flashes.forEach(f=>{x.globalAlpha=Math.max(0,f.l);x.fillStyle=f.b?C.ord:C.or;x.beginPath();x.arc(FX+Math.cos(f.a)*RAD,FY+Math.sin(f.a)*RAD,f.b?11:7,0,7);x.fill();x.globalAlpha=1});
+    // font
+    x.fillStyle='#5A5550';x.fillRect(40,FY-55,80,110);x.strokeStyle=C.ink;x.lineWidth=3;x.strokeRect(40,FY-55,80,110);
+    x.fillStyle=C.or;x.beginPath();x.arc(80,FY,16,0,7);x.fill();x.fillStyle=C.ink;x.beginPath();x.arc(80,FY,5,0,7);x.fill();
+    x.fillStyle=C.ink;x.font='700 18px Atkinson Hyperlegible, Verdana, sans-serif';x.textAlign='center';x.fillText('font de',80,FY+80);x.fillText('partícules alfa',80,FY+100);
+    // làmina d'or
+    const g=x.createLinearGradient(FX-6,0,FX+6,0);g.addColorStop(0,'#E9A23B');g.addColorStop(.5,'#FFE08A');g.addColorStop(1,'#C9821F');
+    x.fillStyle=g;x.fillRect(FX-5,FY-120,10,240);x.strokeStyle=C.ink;x.lineWidth=2.5;x.strokeRect(FX-5,FY-120,10,240);
+    x.fillStyle=C.ink;x.fillText("làmina d'or",FX,FY-132);x.fillText('pantalla detectora',FX+RAD-30,FY-RAD+4);
+    // partícules
+    parts.forEach(p=>{x.strokeStyle='rgba(255,106,19,.35)';x.lineWidth=4;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x-p.vx*.05,p.y-p.vy*.05);x.stroke();
+      x.fillStyle=C.or;x.strokeStyle=C.ink;x.lineWidth=2;x.beginPath();x.arc(p.x,p.y,6,0,7);x.fill();x.stroke()});
+  }
+  function step(now){
+    const dt=Math.min(.05,(now-last)/1000||0);last=now;
+    if(queue>0){qT-=dt;if(qT<=0){fire();queue--;qT=.045}}
+    parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;
+      if(!p.hit&&p.x>=FX){p.hit=true;const r=Math.random();let ang,o;
+        if(r<.9){ang=(Math.random()*2-1)*.03;o='s'}else if(r<.985){ang=(Math.random()<.5?-1:1)*(.18+Math.random()*.9);o='d'}else{ang=Math.PI+(Math.random()*2-1)*.45;o='b'}
+        const sp=430;p.vx=Math.cos(ang)*sp;p.vy=Math.sin(ang)*sp;p.o=o;if(o==='d')sfx.tick();if(o==='b'){sfx.ding();act('jumps')}}
+      const d=Math.hypot(p.x-FX,p.y-FY);
+      if(p.hit&&d>=RAD){p.done=true;flashes.push({a:Math.atan2(p.y-FY,p.x-FX),l:1,b:p.o==='b'});cnt[p.o]++;elS.textContent=cnt.s;elD.textContent=cnt.d;elB.textContent=cnt.b}});
+    parts=parts.filter(p=>!p.done);flashes.forEach(f=>f.l-=dt*.35);flashes=flashes.filter(f=>f.l>0);
+    draw();
+    if(slides[cur].dataset.hook==='ruth')requestAnimationFrame(step);else running=false;
+  }
+  function run(){if(!running){running=true;last=performance.now();requestAnimationFrame(step)}}
+  document.getElementById('rFire').addEventListener('click',e=>{fire();sfx.blip();run();blurIf(e)});
+  document.getElementById('rBurst').addEventListener('click',e=>{queue+=60;sfx.up();run();blurIf(e)});
+  document.getElementById('rReset').addEventListener('click',e=>{parts=[];flashes=[];queue=0;cnt={s:0,d:0,b:0};elS.textContent=elD.textContent=elB.textContent='0';draw();blurIf(e)});
+  hooks.ruth={enter(){run()}};
+  draw();
+})();
+
+/* ---------- Bohr: elements ---------- */
+(function(){
+  const EL=[['H','Hidrogen',1,0],['He','Heli',2,2],['Li','Liti',3,4],['C','Carboni',6,6],['N','Nitrogen',7,7],['O','Oxigen',8,8],['Ne','Neó',10,10],['Na','Sodi',11,12],['Mg','Magnesi',12,12],['Cl','Clor',17,18],['Ar','Argó',18,22]];
+  const box=document.getElementById('elems'),svg=document.getElementById('bohrSvg'),conf=document.getElementById('conf');
+  EL.forEach(([s,n,z],i)=>{const b=document.createElement('button');b.type='button';b.innerHTML=`${s}<small>Z=${z}</small>`;b.title=n;b.dataset.i=i;box.appendChild(b)});
+  function show(i,silent){const[s,n,z,nn]=EL[i];const sh=[];let left=z;[2,8,8].forEach(c=>{if(left>0){const k=Math.min(c,left);sh.push(k);left-=k}});
+    const rad=[95,160,225];let g=`<circle cx="260" cy="260" r="48" fill="${C.or}" stroke="${C.ink}" stroke-width="4"/><text x="260" y="254" text-anchor="middle" style="font:800 26px var(--fd)">${z} p⁺</text><text x="260" y="284" text-anchor="middle" style="font:700 22px var(--fb)">${nn} n⁰</text>`;
+    sh.forEach((k,j)=>{g+=`<circle cx="260" cy="260" r="${rad[j]}" fill="none" stroke="${C.ink}" stroke-width="2.5"/><text x="${260+rad[j]*.72+4}" y="${260-rad[j]*.72-4}" class="sub" style="font-size:20px;font-weight:700">n=${j+1}</text>`;
+      g+=`<g class="spin" style="transform-origin:260px 260px;animation-duration:${8+j*5}s">`;for(let e=0;e<k;e++){const[x0,y0]=pt(260,260,rad[j],e*360/k-90);g+=`<g style="opacity:0;animation:fadeIn .3s ${(e+j*3)*.08}s forwards">${elec(x0,y0,11)}</g>`}g+='</g>'});
+    g+=`<text x="260" y="512" text-anchor="middle" style="font:800 30px var(--fd)">${n}</text>`;
+    svg.innerHTML=g;conf.textContent=sh.join(', ');box.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',+b.dataset.i===i));if(!silent){sfx.pop()}}
+  box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;show(+b.dataset.i);blurIf(e)});
+  const st=document.createElement('style');st.textContent='@keyframes fadeIn{to{opacity:1}}';document.head.appendChild(st);
+  show(7,true);
+})();
+
+/* ---------- Bohr: salts i fotons ---------- */
+(function(){
+  const svg=document.getElementById('jumpSvg'),el=document.getElementById('jEl'),ph=document.getElementById('jPh'),mark=document.getElementById('jMark');
+  const spec=document.getElementById('spec'),uv=document.getElementById('uv'),ir=document.getElementById('ir');
+  const rad=n=>28+n*36,ey=n=>R(410-(1-1/(n*n))*330+60-60);
+  // línies: [nivellAlt,nivellBaix] → [nm,color]
+  const LINES={'3-2':[656,'#FF2A1A'],'4-2':[486,'#21C7D9'],'5-2':[434,'#4B4BFF']};
+  const mk={};Object.entries(LINES).forEach(([k,[nm,col]])=>{const i=document.createElement('i');i.style.left=((nm-380)/(750-380)*100)+'%';i.style.background=col;i.style.color=col;spec.appendChild(i);mk[k]=i});
+  let n=1,r=rad(1),a=0,last=0,running=false;
+  function levelY(k){return 410-(1-1/k)*330}
+  function frame(now){const dt=Math.min(.05,(now-last)/1000||0);last=now;r+=(rad(n)-r)*Math.min(1,dt*6);a+=dt*(2.6/Math.sqrt(n));
+    const x=210+Math.cos(a)*r,y=220+Math.sin(a)*r;el.setAttribute('transform',`translate(${R(x)} ${R(y)})`);
+    const my=parseFloat(mark.getAttribute('cy'));mark.setAttribute('cy',R(my+(levelY(n)-my)*Math.min(1,dt*6)));
+    if(slides[cur].dataset.hook==='jump')requestAnimationFrame(frame);else running=false}
+  function run(){if(!running){running=true;last=performance.now();requestAnimationFrame(frame)}}
+  function photon(col,dashed){const x=210+Math.cos(a)*r,y=220+Math.sin(a)*r;const ang=a;const dx=Math.cos(ang)*260,dy=Math.sin(ang)*260;
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('transform',`translate(${R(x)} ${R(y)}) rotate(${R(ang*180/Math.PI)})`);
+    g.innerHTML=`<path class="photon" style="--dx:200px;--dy:0px" d="M0 0 q8 -12 16 0 t16 0 t16 0 t16 0" fill="none" stroke="${col}" stroke-width="5" stroke-linecap="round" ${dashed?'stroke-dasharray="4 5"':''}/>`;
+    ph.appendChild(g);setTimeout(()=>g.remove(),1700)}
+  function up(){if(n>=5){say("L'electró ja és al nivell més alt d'aquesta simulació.",4000);return}n++;sfx.up();run()}
+  function down(){if(n<=1){say("L'electró ja és al nivell més baix (n = 1): no pot baixar més.",4000);act('tongue');return}
+    const from=n;n--;const key=from+'-'+n;
+    if(LINES[key]){const[nm,col]=LINES[key];mk[key].classList.add('on');photon(col);sfx.photon(nm===656?520:nm===486?700:880);act('wink')}
+    else if(n===1){uv.classList.add('on');photon('#6E6862',true);sfx.photon(1400)}
+    else{ir.classList.add('on');photon('#6E6862',true);sfx.photon(260)}
+    run()}
+  document.getElementById('jUp').addEventListener('click',e=>{up();blurIf(e)});
+  document.getElementById('jDown').addEventListener('click',e=>{down();blurIf(e)});
+  document.getElementById('jReset').addEventListener('click',e=>{Object.values(mk).forEach(i=>i.classList.remove('on'));uv.classList.remove('on');ir.classList.remove('on');n=1;sfx.blip();blurIf(e)});
+  mark.setAttribute('cy',levelY(1));
+  hooks.jump={enter(){run()}};
+})();
+
+/* ---------- qüestionaris ---------- */
+const QZ={
+  models:{opts:['Dalton','Thomson','Rutherford','Bohr'],items:[
+    ["L'àtom és una esfera massissa que no es pot dividir.",0,"Dalton imaginava l'àtom com una bola de billar."],
+    ["Els electrons són incrustats en una esfera de càrrega positiva.",1,"És el model del «pastís de panses»."],
+    ["Es basa en l'experiment dels rajos catòdics.",1,"Thomson hi va descobrir l'electró, el 1897."],
+    ["Es basa en l'experiment de la làmina d'or.",2,"Rutherford va disparar partícules alfa contra una làmina d'or."],
+    ["L'àtom té un nucli petit i dens, i la resta és gairebé buida.",2,"Ho va deduir dels rebots de les partícules alfa."],
+    ["Els electrons només poden estar en certes òrbites, amb una energia fixa.",3,"Són els nivells d'energia de Bohr."],
+    ["Explica per què cada element emet llum de colors concrets.",3,"La llum surt quan un electró baixa de nivell."],
+    ["Els àtoms d'un mateix element són tots iguals.",0,"És una de les idees clau de Dalton."]
+  ]},
+  test:{items:[
+    {q:"Quina partícula va descobrir Thomson?",o:["El protó","L'electró","El neutró","El nucli"],a:1,e:"La va descobrir el 1897 amb els <b>rajos catòdics</b>."},
+    {q:"A l'experiment de Rutherford, la majoria de partícules alfa…",o:["rebotaven","es desviaven molt","passaven recte","s'enganxaven a l'or"],a:2,e:"Per això l'àtom és gairebé tot <b>espai buit</b>."},
+    {q:"On és gairebé tota la massa de l'àtom?",o:["A l'escorça","Al nucli","Als electrons","Repartida per igual"],a:1,e:"Protons i neutrons, al <b>nucli</b>, tenen gairebé tota la massa."},
+    {q:"Quina càrrega té el neutró?",o:["Positiva","Negativa","No en té","Depèn de l'àtom"],a:2,e:"És <b>neutre</b>. El va descobrir Chadwick el 1932."},
+    {q:"Segons Bohr, què passa quan un electró baixa de nivell?",o:["Absorbeix energia","Emet llum","Desapareix","Entra al nucli"],a:1,e:"L'energia sobrant surt en forma de <b>llum</b> (un fotó)."},
+    {q:"Quants electrons hi caben com a màxim al nivell n = 2?",o:["2","8","18","32"],a:1,e:"2n² = 2 · 2² = <b>8</b>."},
+    {q:"Per què es va abandonar el model de Thomson?",o:["No tenia electrons","No explicava els rebots de Rutherford","Era massa antic","No tenia càrrega positiva"],a:1,e:"Una esfera «tova» no podia fer <b>rebotar</b> les partícules alfa."},
+    {q:"Un àtom neutre té 11 protons. Quants electrons té?",o:["10","11","12","22"],a:1,e:"Si és neutre, hi ha <b>tants electrons com protons</b>."},
+    {q:"Quin és el model atòmic actual?",o:["El de Dalton","El de Bohr","El model d'orbitals","El de Thomson"],a:2,e:"Parlem d'<b>orbitals</b>: zones on és probable trobar l'electró."}
+  ]}
+};
+document.querySelectorAll('.slide[data-quiz]').forEach(sl=>{
+  const cfg=QZ[sl.dataset.quiz],box=sl.querySelector('.qz');
+  const items=cfg.items.map(it=>Array.isArray(it)?{q:it[0],o:cfg.opts,a:it[1],e:it[2]}:it);
+  let i=0,score=0,done=false,res=[];
+  function render(){done=false;const it=items[i];
+    box.innerHTML=`<div class="qprog">${items.map((_,k)=>`<i class="${res[k]===true?'ok':res[k]===false?'ko':''}${k===i?' now':''}"></i>`).join('')}</div>
+      <div class="qq">${it.q}</div>
+      <div class="qopts">${it.o.map((o,k)=>`<button type="button" data-k="${k}"><kbd>${k+1}</kbd><span>${o}</span></button>`).join('')}</div>
+      <div class="qfoot"><div class="qexp"></div></div>`}
+  function finish(){const pct=score/items.length;
+    box.innerHTML=`<div class="qres"><span class="big-num">${score} / ${items.length}</span><p style="margin:0;font-size:38px">${pct===1?'Perfecte! Ets un geni de l\'àtom!':pct>=.7?'Molt bé! Gairebé tot correcte.':pct>=.5?'Bé! Repassa les que has fallat.':'Cal repassar una mica. Torna-ho a provar!'}</p><button class="act main" type="button" data-again>Torna a començar</button></div>`;
+    act(pct>=.7?'jumps':'tongue');if(pct>=.7)sfx.ok()}
+  function answer(k){if(done)return;done=true;const it=items[i],btns=box.querySelectorAll('.qopts button');
+    const ok=k===it.a;res[i]=ok;if(ok){score++;btns[k].classList.add('good');sfx.ok();act('jumps')}else{btns[k].classList.add('bad');btns[it.a].classList.add('good');sfx.ko();act('zap')}
+    box.querySelector('.qexp').innerHTML=(ok?'<b>Correcte!</b> ':'<b>No.</b> ')+it.e;
+    const nb=document.createElement('button');nb.type='button';nb.className='act main';nb.textContent=i<items.length-1?'Següent pregunta →':'Mira el resultat';nb.dataset.next='1';box.querySelector('.qfoot').appendChild(nb);
+    const p=box.querySelectorAll('.qprog i');p[i].classList.add(ok?'ok':'ko')}
+  box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;blurIf({detail:e.detail,currentTarget:b});
+    if(b.dataset.again!==undefined){i=0;score=0;res=[];render();sfx.blip();return}
+    if(b.dataset.next){i++;if(i<items.length){render();sfx.pop()}else finish();return}
+    if(b.dataset.k!==undefined)answer(+b.dataset.k)});
+  sl._quiz={key(k){if(!done&&box.querySelector('.qopts'))answer(k)}};
+  render();
+});
+
+/* ---------- qui sóc ---------- */
+(function(){
+  const RD=[['Tinc càrrega negativa i gairebé no tinc massa.','Electró'],['Visc al nucli i tinc càrrega positiva.','Protó'],['Visc al nucli i no tinc càrrega.','Neutró'],
+    ["Sóc petitíssim, però tinc gairebé tota la massa de l'àtom.",'Nucli'],["Vaig bombardejar una làmina d'or i vaig descobrir el nucli.",'Rutherford'],["Vaig dir que els electrons només poden estar en certs nivells d'energia.",'Bohr']];
+  const box=document.getElementById('riddles');
+  box.innerHTML=RD.map(([q,a],i)=>`<button type="button" class="rc"><span class="in"><span class="fa"><small>Endevinalla ${i+1}</small><span>${q}</span><small>Toca per girar</small></span><span class="ba">${a}</span></span></button>`).join('');
+  box.addEventListener('click',e=>{const c=e.target.closest('.rc');if(!c)return;if(e.detail)c.blur();c.classList.toggle('flip');if(c.classList.contains('flip')){sfx.ok();act('wink')}else sfx.flip()});
+})();
+
+/* inici */
+let start=0;const m=(location.hash||'').match(/^#s(\d+)$/);if(m)start=Math.min(N-1,Math.max(0,+m[1]-1));
+slides[start].classList.add('active');cur=start;go(start);
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,1535 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Terraformació V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<style>
+/* Escenari fix 16:9 (1600×900) escalat a la pantalla. Tema clar amb vermell; l'espai negre només dins de vinyetes. */
+:root{
+  --bg:#FFFFFF; --ink:#1B1B1B; --r:#D62828; --rd:#A51C1C; --tint:#FDE4E2; --soft:#F6F3F1; --line:#E6E0DB; --mid:#6B635D; --space:#0A0E1F;
+  --fd:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#EDE9E6;color:var(--ink)}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  font-family:var(--fb);font-size:24px;line-height:1.3;background:var(--bg);overflow:hidden;overflow:clip}
+button{font-family:var(--fb);cursor:pointer;color:var(--ink)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:4px solid var(--r);outline-offset:3px}
+h1,h2,h3,p{margin:0}
+sub{font-size:.62em}
+.red{color:var(--r)}
+
+/* ---------- capçalera ---------- */
+#top{position:absolute;left:0;right:0;top:0;height:104px;z-index:6;background:var(--bg);border-bottom:4px solid var(--ink)}
+#tabs{height:58px;display:flex;align-items:stretch;gap:8px;padding:8px 22px 0}
+#brand{display:flex;align-items:center;gap:10px;font:800 26px/1 var(--fd);letter-spacing:-.02em;padding:0 14px 6px 0;border:0;background:none;white-space:nowrap}
+#brand svg{width:38px;height:38px}
+.tab{border:3px solid var(--ink);border-bottom:0;border-radius:14px 14px 0 0;background:var(--bg);font:700 20px/1 var(--fb);padding:0 16px;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.tab i{font-style:normal;font:800 20px/1 var(--fd);width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center}
+.tab.on{background:var(--r);color:#fff}
+.tab.on i{background:#fff;color:var(--r)}
+.tab.lock{opacity:.38;cursor:default}
+#chips{height:42px;display:flex;align-items:center;gap:10px;padding:0 22px;background:var(--soft);border-top:3px solid var(--ink)}
+#chips .lab{font:700 15px var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-right:4px}
+.chip{border:3px solid var(--ink);background:var(--bg);border-radius:999px;padding:2px 14px;font:700 18px/1.2 var(--fb);white-space:nowrap}
+.chip.on{background:var(--ink);color:#fff}
+.chip.lock{opacity:.38;cursor:default}
+#profbadge{position:static;margin:0 0 6px 10px;align-self:center;z-index:8;display:none;align-items:center;gap:10px;background:var(--r);color:#fff;border:3px solid var(--ink);border-radius:12px;padding:6px 12px;font:800 19px/1 var(--fd);letter-spacing:.08em}
+#profbadge small{font:700 14px var(--fb);letter-spacing:0;opacity:.9}
+#stage.prof #profbadge{display:flex}
+
+/* ---------- diapositives ---------- */
+.slide{position:absolute;left:0;right:0;top:104px;bottom:78px;padding:16px 56px 18px;display:flex;flex-direction:column;gap:14px;
+  opacity:0;visibility:hidden;transform:translateX(50px);transition:opacity .35s ease,transform .5s cubic-bezier(.2,.8,.2,1),visibility 0s linear .5s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .35s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+.hd{display:flex;align-items:flex-end;gap:18px}
+.hd .tt{flex:1;min-width:0}
+.kick{font:700 17px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--rd);display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.kick::before{content:"";width:13px;height:13px;background:var(--r);border-radius:50%}
+h2{font:800 44px/1 var(--fd);letter-spacing:-.02em}
+.dtag{font:700 16px/1 var(--fb);letter-spacing:.1em;text-transform:uppercase;border:3px solid var(--r);color:var(--rd);border-radius:10px;padding:8px 12px;white-space:nowrap}
+.solbtn{display:none;font:700 18px var(--fb);border:3px solid var(--ink);background:var(--r);color:#fff;border-radius:10px;padding:6px 14px;white-space:nowrap}
+#stage.prof .solbtn{display:block}
+.profonly{display:none!important}
+#stage.prof .profonly{display:block!important}
+#stage.prof .profonly.fl{display:flex!important}
+#stage.prof .profonly.in{display:inline!important}
+#stage.prof .studonly{display:none!important}
+
+.card{background:var(--soft);border:3px solid var(--ink);border-radius:18px;padding:12px 16px}
+.card.w{background:#fff}
+.card.r{border-color:var(--r)}
+.lbl{font:700 15px/1.15 var(--fb);letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
+.val{font:800 34px/1.05 var(--fd);color:var(--rd);font-variant-numeric:tabular-nums}
+.vig{background:var(--space);border:4px solid var(--ink);border-radius:24px;overflow:hidden;position:relative}
+.vig canvas{display:block;width:100%;height:100%}
+.act{border:3px solid var(--ink);background:#fff;border-radius:12px;padding:6px 16px;font:700 20px var(--fb);box-shadow:4px 4px 0 var(--ink);transition:transform .1s,box-shadow .1s;white-space:nowrap}
+.act:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.act.main{background:var(--r);color:#fff}
+.act[aria-pressed="true"]{background:var(--ink);color:#fff}
+.act.xb{font-size:17px;padding:5px 10px}
+.seg{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.q{display:flex;gap:14px;align-items:flex-start;border:3px solid var(--ink);border-left:12px solid var(--r);border-radius:14px;padding:10px 16px;background:#fff;font-size:21px;line-height:1.3}
+.q .n{flex:none;width:40px;height:40px;border-radius:50%;background:var(--r);color:#fff;display:grid;place-items:center;font:800 22px/1 var(--fd)}
+.q ol{margin:2px 0 0;padding-left:24px}
+.q ol li{margin:1px 0}
+.note{font-size:16px;color:var(--mid);line-height:1.3}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl .lrow{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:20px}
+.ctl output{font:800 26px var(--fd);color:var(--rd);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;background:var(--line);border-radius:6px;border:2px solid var(--ink);margin:8px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:var(--r);border:3px solid var(--ink);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--r);border:3px solid var(--ink);cursor:pointer}
+svg text{font-family:var(--fb)}
+
+/* ---------- barra inferior ---------- */
+#bar{position:absolute;left:0;right:0;bottom:0;height:78px;display:flex;align-items:center;gap:12px;padding:0 22px;z-index:6;border-top:3px solid var(--ink);background:var(--bg)}
+.nb{height:54px;min-width:54px;border:3px solid var(--ink);border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;font:700 19px var(--fb)}
+.nb svg{width:26px;height:26px}
+.nb.sq{padding:0}
+.nb.go{background:var(--r);color:#fff;min-width:84px}
+.nb.on{background:var(--tint)}
+.nb.run{background:var(--tint)}
+.nb.warn{background:var(--r);color:#fff}
+#count{font:800 22px var(--fd);min-width:78px;text-align:center;font-variant-numeric:tabular-nums}
+#stp{display:flex;gap:5px;align-items:center;margin:0 6px}
+#stp i{width:11px;height:11px;border-radius:50%;border:2px solid var(--ink);display:block}
+#stp i.on{background:var(--r)}
+#prog{position:absolute;left:0;bottom:0;height:7px;background:var(--r);transition:width .5s ease;z-index:7}
+
+/* ---------- finestretes ---------- */
+.win{position:absolute;z-index:20;background:var(--bg);border:4px solid var(--ink);border-radius:22px;box-shadow:10px 10px 0 var(--ink);padding:12px;display:none;flex-direction:column;gap:10px}
+.win.open{display:flex}
+.win .bar2{display:flex;align-items:center;gap:10px;cursor:grab;font:800 22px var(--fd);user-select:none}
+.win .bar2 span{flex:1}
+.win .x{border:3px solid var(--ink);background:#fff;border-radius:10px;width:42px;height:42px;font:800 22px var(--fd);padding:0}
+#calc{right:40px;top:120px;width:420px}
+#cdisp{border:3px solid var(--ink);border-radius:12px;padding:8px 12px;background:var(--soft);min-height:96px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;gap:2px;overflow:hidden}
+#cexp{font:700 22px var(--fb);color:var(--mid);word-break:break-all;text-align:right;min-height:28px}
+#cres{font:800 40px/1.1 var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap}
+#cres.err{color:var(--rd);font-size:26px}
+#ckeys{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+#ckeys button{height:56px;border:3px solid var(--ink);border-radius:12px;background:#fff;font:800 24px var(--fd);box-shadow:3px 3px 0 var(--ink);padding:0}
+#ckeys button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+#ckeys button.op{background:var(--tint)}
+#ckeys button.eq{background:var(--r);color:#fff}
+#ckeys button.fn{background:var(--soft);font-size:20px}
+#ckeys button.cl{background:var(--ink);color:#fff}
+#timer{left:40px;top:120px;width:370px}
+#tdisp{font:800 92px/1 var(--fd);text-align:center;font-variant-numeric:tabular-nums;border:3px solid var(--ink);border-radius:14px;background:var(--soft);padding:10px 0}
+#timer.warn #tdisp{background:var(--r);color:#fff;animation:tblink .5s steps(2) infinite}
+#timer.end #tdisp{background:var(--r);color:#fff;animation:tblink .3s steps(2) 10}
+@keyframes tblink{50%{background:#fff;color:var(--ink)}}
+.trow{display:flex;gap:8px}
+.tbtn{border:3px solid var(--ink);background:#fff;border-radius:10px;height:44px;padding:0 10px;font:700 18px var(--fb);flex:1;white-space:nowrap}
+.tbtn.on{background:var(--tint)}
+.tbtn.big{background:var(--r);color:#fff}
+
+.modal{position:absolute;inset:0;z-index:30;background:rgba(27,27,27,.45);display:none;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.mbox{position:relative;background:var(--bg);border:4px solid var(--ink);border-radius:24px;box-shadow:10px 10px 0 var(--r);padding:30px 40px;min-width:560px;max-width:820px;display:flex;flex-direction:column;gap:14px}
+.mbox h3{font:800 38px/1.05 var(--fd)}
+.mbox p{font-size:24px}
+.mbox .x{position:absolute;right:16px;top:16px;border:3px solid var(--ink);background:#fff;border-radius:10px;width:46px;height:46px;font:800 24px var(--fd)}
+.mbox .tag2{align-self:flex-start;font:700 16px var(--fb);letter-spacing:.14em;text-transform:uppercase;background:var(--r);color:#fff;border:2px solid var(--ink);border-radius:8px;padding:6px 10px}
+#pwdots{display:flex;gap:14px;justify-content:center;margin:6px 0}
+#pwdots i{width:34px;height:34px;border-radius:50%;border:3px solid var(--ink);background:#fff;display:block}
+#pwdots i.on{background:var(--ink)}
+#pwin{position:absolute;opacity:0;width:1px;height:1px;left:50%;top:50%}
+#pwmsg{min-height:32px;font-size:21px;font-weight:700;color:var(--rd);text-align:center}
+.row2{display:flex;gap:14px;justify-content:center}
+
+/* solucionari */
+#solu{position:absolute;inset:0;z-index:28;background:var(--bg);display:none;flex-direction:column}
+#solu.open{display:flex}
+#solu .sh{height:78px;display:flex;align-items:center;gap:16px;padding:0 28px;border-bottom:4px solid var(--ink);background:var(--r);color:#fff}
+#solu .sh h2{font:800 36px/1 var(--fd);flex:1}
+#solu .sh small{font:700 17px var(--fb);opacity:.9}
+#solu .sh .act{box-shadow:4px 4px 0 var(--ink)}
+#solu .sb2{flex:1;display:grid;grid-template-columns:330px 1fr;min-height:0}
+#solnav{border-right:3px solid var(--ink);background:var(--soft);padding:14px 12px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+#solnav button{text-align:left;border:3px solid transparent;background:none;border-radius:12px;padding:7px 12px;font:700 19px/1.2 var(--fb)}
+#solnav button i{font-style:normal;display:block;font:700 13px var(--fb);color:var(--mid);letter-spacing:.06em;text-transform:uppercase}
+#solnav button.on{background:#fff;border-color:var(--r)}
+#solmain{padding:18px 34px 14px;display:flex;flex-direction:column;gap:10px;min-height:0}
+#solmain .top{display:flex;align-items:center;gap:14px}
+#solmain h3{font:800 34px/1.05 var(--fd);flex:1}
+#solmain .applink{font:700 16px var(--fb);border:3px solid var(--ink);border-radius:10px;padding:4px 12px;background:#fff}
+#solc{flex:1;overflow-y:auto;font-size:20px;line-height:1.38;display:grid;grid-template-columns:1fr 1fr;gap:12px 26px;align-content:start;scrollbar-width:thin;padding-right:6px}
+#solc .q{display:block;border:0;border-left:7px solid var(--r);border-radius:0;padding:2px 0 2px 14px;background:none;font-size:20px}
+#solc .q b.n2{display:block;font:800 16px var(--fb);letter-spacing:.06em;text-transform:uppercase;color:var(--rd)}
+#solc .w{grid-column:1/-1}
+#solc table{border-collapse:collapse;font-size:18px;margin-top:4px}
+#solc td,#solc th{border:2px solid var(--line);padding:4px 10px;text-align:center}
+#solc th{background:var(--soft)}
+#solc ul,#solc ol{margin:2px 0;padding-left:24px}
+#solmain .bot{display:flex;justify-content:space-between}
+.solubtn{display:none;margin-left:auto;margin-bottom:6px;align-self:center;border:3px solid var(--ink);background:var(--ink);color:#fff;border-radius:10px;padding:5px 12px;font:700 17px var(--fb);white-space:nowrap}
+#stage.prof .solubtn{display:block}
+/* esborrany */
+#draft{position:absolute;left:0;right:0;top:104px;bottom:78px;z-index:18;display:none}
+#draft.open{display:block}
+#draft canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+#draft.paper canvas{background:rgba(255,255,255,.97)}
+#draft.glass canvas{background:rgba(255,255,255,.06)}
+#dtools{position:absolute;left:50%;top:10px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;background:var(--bg);border:4px solid var(--ink);border-radius:18px;padding:8px 12px;box-shadow:7px 7px 0 var(--ink);z-index:2;font:700 18px var(--fb);white-space:nowrap}
+#dtools .tbtn{flex:none;width:auto;min-width:46px;height:46px;padding:0 12px;font:700 18px var(--fb)}
+#dtools .tbtn.on{background:var(--tint);border-color:var(--r)}
+#dtools .sw{width:40px;height:40px;border-radius:50%;border:3px solid var(--ink);padding:0}
+#dtools .sw.on{outline:4px solid var(--r);outline-offset:2px}
+#dtools .sep{width:2px;height:34px;background:var(--line)}
+/* calaix lateral (solucions i calculadora del pes) */
+.drawer{position:absolute;top:104px;bottom:78px;right:0;width:600px;z-index:15;background:#fff;border-left:4px solid var(--ink);box-shadow:-10px 0 0 rgba(214,40,40,.18);
+  transform:translateX(105%);visibility:hidden;transition:transform .4s cubic-bezier(.2,.8,.2,1),visibility 0s linear .4s;padding:20px 26px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;scrollbar-width:thin}
+.drawer.open{transform:none;visibility:visible;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.drawer h3{font:800 32px/1.05 var(--fd)}
+.drawer .x{position:absolute;right:16px;top:16px;border:3px solid var(--ink);background:#fff;border-radius:10px;width:44px;height:44px;font:800 22px var(--fd)}
+.drawer .tag2{align-self:flex-start;font:700 15px var(--fb);letter-spacing:.14em;text-transform:uppercase;background:var(--r);color:#fff;border-radius:8px;padding:5px 10px}
+#solbody{font-size:20px;line-height:1.35;display:flex;flex-direction:column;gap:10px}
+#solbody .it{border-left:6px solid var(--r);padding:2px 0 2px 12px}
+#solbody .it>b:first-child{display:block;font-size:17px;letter-spacing:.06em;text-transform:uppercase;color:var(--rd)}
+#solbody ul{margin:2px 0;padding-left:22px}
+
+/* ---------- PORTADA ---------- */
+#s-pont{flex-direction:row;gap:44px;align-items:stretch;padding-top:26px}
+.pl{flex:0 0 700px;display:flex;flex-direction:column;gap:13px;justify-content:center}
+.pl .kick{font-size:19px}
+.pl h1{font:800 124px/.86 var(--fd);letter-spacing:-.045em}
+.pl .lead{font:700 34px/1.15 var(--fb)}
+.pl .lead em{font-style:normal;color:var(--r)}
+#msg{border:3px solid var(--ink);border-left:12px solid var(--r);border-radius:16px;padding:12px 18px;background:#fff;min-height:186px;display:flex;flex-direction:column;gap:8px}
+#msg .mh{display:flex;justify-content:space-between;font:700 16px var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--rd)}
+#msg .mh i{font-style:normal;color:var(--mid);display:flex;align-items:center;gap:6px}
+#msg .mh i::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--r);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.25}}
+#say{font-size:31px;line-height:1.25;transition:opacity .7s;flex:1;display:flex;align-items:center}
+#say.out{opacity:0}
+.caret{display:inline-block;width:.45em;height:1em;background:var(--r);vertical-align:-.12em;margin-left:3px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.bigbtn{display:flex;align-items:center;gap:14px;border:4px solid var(--ink);background:var(--r);color:#fff;border-radius:18px;padding:12px 26px;font:800 30px var(--fd);box-shadow:8px 8px 0 var(--ink)}
+.bigbtn:active{transform:translate(4px,4px);box-shadow:4px 4px 0 var(--ink)}
+.bigbtn.w{background:#fff;color:var(--ink)}
+.keys{display:flex;gap:18px;flex-wrap:wrap;font-size:18px;color:var(--mid)}
+.keys kbd{font:700 17px var(--fb);border:2px solid var(--ink);border-bottom-width:4px;border-radius:7px;padding:0 8px;color:var(--ink);margin-right:4px}
+.credlink{align-self:flex-start;border:2px solid var(--ink);background:#fff;border-radius:10px;padding:3px 12px;font:700 16px var(--fb)}
+.pr{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}
+#spaceVig{flex:1;min-height:0}
+#spaceVig .vlab{position:absolute;left:18px;top:14px;font:700 15px var(--fb);letter-spacing:.12em;text-transform:uppercase;color:#fff;opacity:.85}
+.inst{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr 1.2fr;gap:10px}
+.inst .card{padding:8px 12px;display:flex;flex-direction:column;gap:4px;background:#fff}
+.inst .val{font-size:30px}
+.inst .val small{font:700 15px var(--fb);color:var(--ink);margin-left:3px}
+.inst .days .val{font-size:48px;color:var(--r)}
+.inst svg{width:100%;height:58px;display:block}
+
+/* ---------- LAB 1.1 ---------- */
+.l11{display:grid;grid-template-columns:560px 1fr;gap:34px;flex:1;min-height:0}
+.l11 .lc{display:flex;flex-direction:column;gap:12px;min-height:0}
+#pVig{flex:1;min-height:0;aspect-ratio:1}
+.l11 .rc{display:flex;flex-direction:column;gap:10px;min-height:0}
+.pname{font:800 52px/1 var(--fd)}
+.pdist{color:var(--mid);font-size:20px}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pgrid .card{padding:9px 14px;background:#fff}
+.pgrid .val{font-size:32px}
+.psub{font-size:16px;color:var(--mid)}
+.thick{height:12px;background:var(--line);border-radius:6px;margin-top:6px;overflow:hidden;border:2px solid var(--ink)}
+.thick i{display:block;height:100%;background:var(--r);transition:width .5s}
+.compbar{display:flex;height:30px;border-radius:8px;overflow:hidden;margin:6px 0;border:2px solid var(--ink)}
+.compbar span{display:block;height:100%;transition:width .5s}
+.legend{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:19px}
+.legend b{display:inline-block;width:.85em;height:.85em;border-radius:3px;margin-right:6px;vertical-align:-.08em;border:2px solid var(--ink)}
+.pfact{font-size:19px;color:var(--ink)}
+.incs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.incs div{border:3px solid var(--r);border-radius:12px;padding:4px 10px;background:var(--tint);font-size:17px}
+.incs div b{display:block;font:800 26px var(--fd);color:var(--rd)}
+
+/* ---------- LAB 1.2 ---------- */
+.l12{display:grid;grid-template-columns:930px 1fr;gap:26px;flex:1;min-height:0}
+#gh{width:930px;height:577px;display:block;border-radius:22px;border:4px solid var(--ink)}
+#gh .st{opacity:0;transition:opacity .6s}
+#gh .st.on{opacity:1}
+#gh .draw{transition:stroke-dashoffset 1.3s ease-out}
+#gh .head{opacity:0;transition:opacity .3s .9s}
+#gh .st.on .head{opacity:1}
+#gh .tag rect{fill:#fff;stroke:#1B1B1B;stroke-width:2}
+#gh .tag text{font-weight:700;font-size:21px;fill:#1B1B1B}
+#gh .tag.cur rect{fill:#D62828;stroke:#D62828}
+#gh .tag.cur text{fill:#fff}
+#gh .tag line{stroke:#fff;stroke-width:2.5}
+.ghside{display:flex;flex-direction:column;gap:12px;min-height:0}
+#ghcap{min-height:150px}
+#ghcap .s{font:700 16px var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--rd)}
+#ghcap h3{font:800 30px/1.08 var(--fd);margin:4px 0}
+#ghcap p{font-size:21px}
+#ghlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:3px;font-size:17px}
+#ghlist li{display:flex;gap:8px;align-items:center;color:#B3AAA3}
+#ghlist li i{font-style:normal;flex:none;width:24px;height:24px;border-radius:50%;border:2px solid #C9C1BA;display:grid;place-items:center;font:800 13px var(--fd)}
+#ghlist li.on{color:var(--ink)}
+#ghlist li.on i{border-color:var(--ink);background:var(--ink);color:#fff}
+#ghlist li.cur i{background:var(--r);border-color:var(--r)}
+
+/* ---------- LAB 1.3 ---------- */
+.l13{display:grid;gap:22px;flex:1;min-height:0;grid-template-rows:minmax(0,1fr);align-items:center}
+.p1{grid-template-columns:430px 1fr 300px}
+#eVig{width:430px;height:430px;align-self:center}
+.thermo{width:auto;height:330px;display:block}
+.bigT{font:800 64px/1 var(--fd);color:var(--r);font-variant-numeric:tabular-nums;text-align:center}
+.mid{display:flex;flex-direction:column;gap:12px;justify-content:center}
+.p2{grid-template-columns:1fr 410px;align-items:stretch}
+.flips{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;height:92px;flex:none}
+.flip{perspective:900px;border:0;background:none;padding:0;cursor:default;font-family:var(--fb);text-align:left}
+.flip .in{display:block;position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.flip.open .in{transform:rotateY(180deg)}
+.flip .fa,.flip .ba{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:16px;display:flex;align-items:center;gap:12px;padding:8px 14px}
+.flip .fa{border:3px dashed #C9C1BA;background:var(--soft);color:var(--mid);font:700 17px var(--fb)}
+.flip .fa svg{width:34px;height:34px;flex:none}
+.flip.unl{cursor:pointer}
+.flip.unl .fa{border:3px solid var(--r);background:var(--tint);color:var(--rd);animation:glow 1.4s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 6px rgba(214,40,40,.25)}}
+.flip .ba{transform:rotateY(180deg);border:3px solid var(--r);background:#fff;color:var(--ink);font-size:16px;line-height:1.22}
+.flip .ba svg{width:52px;height:52px;flex:none}
+.flip .ba b{display:block;font:800 19px var(--fd);color:var(--rd)}
+.act.sb{font-size:16px;padding:4px 10px}
+#co2chart{width:100%;height:100%;display:block}
+.clues{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.clue{border:3px dashed var(--line);border-radius:14px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:700 16px var(--fb);color:var(--line);transition:all .4s}
+.clue svg{width:48px;height:48px;opacity:.25;transition:opacity .4s}
+.clue.on{border:3px solid var(--r);color:var(--ink);background:var(--tint)}
+.clue.on svg{opacity:1}
+.p3{grid-template-columns:400px 1fr 470px}
+.mtable{width:100%;border-collapse:collapse;font-size:19px}
+.mtable th{font:700 14px var(--fb);letter-spacing:.08em;text-transform:uppercase;color:var(--mid);text-align:right;padding:5px 8px;border-bottom:3px solid var(--ink)}
+.mtable th:first-child,.mtable td:first-child{text-align:left}
+.mtable td{padding:5px 8px;border-bottom:2px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.mtable td.t{font:800 21px var(--fd);color:var(--rd)}
+.mtable tr.new td{animation:flash 1s}
+@keyframes flash{from{background:var(--tint)}}
+#tp3{width:100%;height:100%;display:block}
+
+/* ---------- LAB 2 ---------- */
+.l2{display:grid;grid-template-columns:minmax(0,1.05fr) 700px;gap:28px;flex:1;min-height:0}
+.chips2{display:flex;flex-wrap:wrap;gap:8px}
+.chip2{border:3px solid var(--ink);background:#fff;border-radius:999px;padding:3px 14px;font:700 19px var(--fb)}
+.chip2[aria-pressed="true"]{background:var(--r);color:#fff}
+.scheme h3{font:800 40px/1 var(--fd);color:var(--r);margin-bottom:8px}
+.scheme dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;font-size:21px}
+.scheme dt{font-weight:700}
+.scheme dd{margin:0}
+.scheme ul{margin:0;padding-left:22px}
+.scheme li{margin:2px 0}
+.prot{margin-top:12px;border:3px dashed #C9C1BA;border-radius:14px;padding:8px 12px;font-size:18px}
+.prot.on{border:3px solid var(--r);background:var(--tint)}
+.prot .ph{font:800 20px var(--fd);color:var(--mid);margin-bottom:6px}
+.prot.on .ph{color:var(--rd)}
+.spec{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px}
+.spec .band{font:700 12.5px/1.15 var(--fb);text-align:center;padding:6px 2px;border-radius:6px;background:#fff;border:2px solid var(--line);color:var(--mid)}
+.spec .band.ab{background:var(--r);border-color:var(--r);color:#fff}
+.spec .band.ab.pa{background:repeating-linear-gradient(45deg,var(--r) 0 6px,#E9908F 6px 12px);text-shadow:0 0 3px #A51C1C,0 0 3px #A51C1C}
+.prot .pt{line-height:1.3}
+#profile{width:700px;height:506px;display:block}
+.altrow{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px;align-items:center}
+.altrow .card{padding:6px 12px;background:#fff}
+.altrow .val{font-size:28px;white-space:nowrap}
+
+/* ---------- LAB 3 ---------- */
+.l3{display:grid;grid-template-columns:930px 1fr;gap:26px;flex:1;min-height:0}
+#magVig{width:930px;height:430px}
+.ro3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ro3 .card{padding:7px 12px;background:#fff}
+.ro3 .val{font-size:30px}
+.bar3{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:4px}
+.bar3 i{display:block;height:100%;background:var(--r);width:100%}
+.dyn{display:flex;flex-direction:column;gap:8px}
+.dyn h3{font:800 25px/1.1 var(--fd)}
+.dyn svg{width:196px;height:196px;display:block;margin:0 auto}
+.dyn ol{margin:0;padding-left:24px;font-size:17.5px;line-height:1.3}
+.dyn li{margin:2px 0}
+.spin{transform-origin:150px 150px;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- LAB 4 ---------- */
+.l41{display:grid;grid-template-columns:900px 1fr;gap:26px;flex:1;min-height:0}
+#phase{width:900px;height:548px;display:block;border:3px solid var(--ink);border-radius:16px;touch-action:none;cursor:crosshair;background:#fff}
+.ptab{width:100%;border-collapse:collapse;font-size:19px}
+.ptab td{padding:5px 6px;border-bottom:2px solid var(--line);vertical-align:middle}
+.ptab td.n{width:44px}
+.ptab td.mk{width:112px;text-align:right}
+.mkb{font-size:16px;padding:4px 10px;box-shadow:3px 3px 0 var(--ink)}
+.mkb.done{background:var(--tint);border-color:var(--r);color:var(--rd)}
+#phMsg{font:700 19px var(--fb);min-height:26px}
+#phMsg.okmsg{color:#1f7a3a}#phMsg.badmsg{color:var(--rd)}
+.ptab td.n b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:3px solid var(--r);color:var(--rd);font:800 18px var(--fd)}
+.ptab td.s{width:150px;text-align:right;font:800 24px var(--fd);white-space:nowrap}
+.stbtn{width:40px;height:36px;margin-left:4px;border:3px solid var(--ink);border-radius:9px;background:#fff;font:800 18px var(--fd);padding:0}
+.stbtn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.profans{margin-left:6px}
+#stage.prof .profans>span{display:inline-block;min-width:40px;text-align:center;border-radius:9px}
+.ptab td.s>span.stq{display:inline-block;min-width:44px;border:3px dashed var(--line);border-radius:10px;color:var(--mid)}
+#stage.prof .ptab td.s .profans>span{border:3px solid var(--r);background:var(--tint);color:var(--rd)}
+.vlink{display:inline-flex;align-items:center;gap:8px;border:3px solid var(--ink);border-radius:12px;padding:5px 14px;font:700 19px var(--fb);color:var(--ink);text-decoration:none;background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.vlink b{color:var(--r)}
+.l42{display:grid;grid-template-columns:600px 1fr;gap:28px;flex:1;min-height:0}
+#mol{width:600px;height:540px;display:block;border:3px solid var(--ink);border-radius:20px;background:radial-gradient(circle at 50% 40%,#fff,#F3EFEC);touch-action:none;cursor:grab}
+.props{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.props .card{background:#fff;padding:7px 12px;font-size:17px;line-height:1.28}
+.props .card b{display:block;font:800 21px var(--fd);color:var(--rd);margin-bottom:2px}
+.vf{list-style:none;margin:0;padding:0;font-size:18.5px;display:flex;flex-direction:column;gap:4px}
+.vf li{display:flex;gap:10px;align-items:center}
+.vfb{display:flex;gap:4px;flex:none}
+.vbtn{width:40px;height:32px;border:3px solid var(--ink);border-radius:9px;background:#fff;font:800 17px var(--fd);padding:0}
+.vbtn[aria-pressed="true"]{background:var(--ink);color:#fff}
+#vfMsg{font:700 19px var(--fb)}#vfMsg.okmsg{color:#1f7a3a}#vfMsg.badmsg{color:var(--rd)}
+.vf li span.k{width:34px!important;flex:none;width:58px;text-align:center;font:800 18px var(--fd);border:3px dashed var(--line);border-radius:9px;color:var(--mid)}
+#stage.prof .vf li span.k{border:3px solid var(--r);background:var(--tint);color:var(--rd)}
+
+/* ---------- LAB 5 ---------- */
+.l5{position:relative;flex:1;min-height:0}
+.l5grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;row-gap:0}
+.pcard{border:3px solid var(--ink);border-radius:16px;background:#fff;padding:10px 12px;height:150px;display:flex;flex-direction:column;gap:4px;box-shadow:5px 5px 0 var(--ink)}
+.pcard .ic{display:flex;align-items:center;gap:8px;font:800 17px var(--fd);color:var(--rd);text-transform:uppercase;letter-spacing:.04em}
+.pcard .ic svg{width:34px;height:34px;flex:none}
+.pcard p{font-size:18px;line-height:1.25}
+.pcard textarea,.scard textarea{flex:1;width:100%;border:0;resize:none;font:400 18px/1.28 var(--fb);background:transparent;color:var(--ink);padding:0;outline:none}
+.pcard.other{border-style:dashed;box-shadow:none}
+.arow{height:52px;position:relative}
+.arow svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.arow path{fill:none;stroke:var(--r);stroke-width:5;stroke-linecap:round;stroke-dasharray:60;stroke-dashoffset:60;transition:stroke-dashoffset .7s ease}
+.arow polygon{fill:var(--r);opacity:0;transition:opacity .2s .6s}
+.arow.on path{stroke-dashoffset:0}
+.arow.on polygon{opacity:1}
+.rowlab{position:absolute;left:-4px;font:800 19px var(--fd);background:var(--r);color:#fff;border-radius:10px;padding:3px 12px;transform:translateY(-50%);opacity:0;transition:opacity .4s .3s;z-index:2}
+.arow.on .rowlab{opacity:1}
+.arow.ad .rowlab{background:var(--ink)}
+.arow.ad path{stroke:var(--ink)}.arow.ad polygon{fill:var(--ink)}
+.scard{border:3px solid var(--r);border-radius:16px;background:var(--tint);padding:8px 12px;height:150px;display:flex;flex-direction:column;gap:3px;opacity:0;transform:translateY(-14px) scale(.96);transition:opacity .45s ease .35s,transform .45s ease .35s}
+.scard.ad{border-color:var(--ink);background:var(--soft)}
+.scard .h{font:800 16px var(--fd);text-transform:uppercase;letter-spacing:.05em;color:var(--rd)}
+.scard.ad .h{color:var(--ink)}
+.scard.on{opacity:1;transform:none}
+.scard .ex{font-size:14px;color:var(--mid);line-height:1.25;border-top:2px dashed var(--line);padding-top:3px}
+.hint5{position:absolute;right:0;bottom:0;font-size:17px;color:var(--mid)}
+.l52{display:grid;grid-template-columns:1fr 640px;gap:30px;flex:1;min-height:0}
+.rep{display:flex;flex-direction:column;gap:12px}
+.rep ol{margin:0;padding-left:28px;font-size:22px;line-height:1.35}
+.rep ol li{margin:4px 0}
+#endVig{height:330px}
+.tx{font-size:21px;line-height:1.35}
+#pes{width:560px}
+.pesout{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pesout .card{background:#fff;padding:8px 12px}
+.pesout .val{font-size:34px}
+.pesin{font:800 32px var(--fd);width:140px;border:3px solid var(--ink);border-radius:12px;padding:4px 10px}
+.sidebtn{position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:5;writing-mode:vertical-rl;border:3px solid var(--ink);border-right:0;border-radius:14px 0 0 14px;background:var(--r);color:#fff;font:800 20px var(--fd);padding:16px 8px}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="top">
+    <div id="tabs">
+      <button id="brand" type="button" style="cursor:default">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="#D62828" stroke="#1B1B1B" stroke-width="3"/><path d="M9 16c5 2 8-3 13-1s6 5 10 3M8 25c6-1 9 3 15 1" fill="none" stroke="#1B1B1B" stroke-width="2.4" stroke-linecap="round"/></svg>
+        Terraformació
+      </button>
+      <span id="tabbox" style="display:flex;gap:8px"></span>
+      <button class="solubtn" id="soluBtn" type="button">📋 Solucionari</button>
+      <button id="profbadge" type="button" title="Torna al mode alumne">PROFESSORAT <small>✕</small></button>
+    </div>
+    <div id="chips"></div>
+  </div>
+
+  <div id="slides">
+
+  <!-- ===================== PORTADA ===================== -->
+  <section class="slide" id="s-pont">
+    <div class="pl">
+      <div class="kick">Projecte STEAM · 4t d'ESO · Missió Mart, part 3</div>
+      <h1>Terra&shy;formació</h1>
+      <p class="lead">Ha de canviar Mart… <em>o ens hem d'adaptar nosaltres?</em></p>
+      <div id="msg"><div class="mh"><span>Missatge del Centre de Control</span><i>En directe</i></div><div id="say" aria-live="polite"></div></div>
+      <div class="seg" style="gap:18px">
+        <button class="bigbtn" type="button" data-next>Comença ▶</button>
+        <button class="bigbtn w" type="button" data-fs>Pantalla completa</button>
+      </div>
+      <div class="keys"><span><kbd>→</kbd>endavant</span><span><kbd>←</kbd>enrere</span><span><kbd>C</kbd>calculadora</span><span><kbd>T</kbd>temporitzador</span><span><kbd>E</kbd>esborrany</span><span><kbd>F</kbd>pantalla completa</span><span><kbd>M</kbd>so</span><button class="credlink" type="button" data-credits>Crèdits</button></div>
+    </div>
+    <div class="pr">
+      <div class="vig" id="spaceVig"><canvas id="space"></canvas><span class="vlab">Vista des de la nau</span></div>
+      <div class="inst">
+        <div class="card days"><span class="lbl">Dies per a l'arribada</span><span class="val" id="iDays">210</span></div>
+        <div class="card"><span class="lbl">Distància</span><span class="val"><span id="iDist">54,4</span><small>M km</small></span></div>
+        <div class="card"><span class="lbl">Velocitat</span><span class="val"><span id="iVel">3,00</span><small>km/s</small></span></div>
+        <div class="card"><span class="lbl">Dosi rebuda</span><span class="val"><span id="iDose">90</span><small>mSv</small></span></div>
+        <div class="card"><span class="lbl">Ruta</span>
+          <svg viewBox="0 0 200 60" aria-label="Ruta de la Terra a Mart"><circle cx="100" cy="56" r="3.5" fill="#D62828"/><path d="M70 56 A30 30 0 0 1 130 56" fill="none" stroke="#E6E0DB" stroke-width="1.5"/><path d="M40 56 A60 52 0 0 1 160 56" fill="none" stroke="#E6E0DB" stroke-width="1.5"/>
+          <path id="routeP" d="M70 56 A45 42 0 0 1 160 56" fill="none" stroke="#D62828" stroke-width="2" stroke-dasharray="4 4"/><circle cx="70" cy="56" r="4.5" fill="#3d7fd1"/><circle cx="160" cy="56" r="5" fill="#C1440E" stroke="#1B1B1B" stroke-width="1.2"/><circle id="ship" cx="70" cy="56" r="4" fill="#fff" stroke="#D62828" stroke-width="2.5"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 1.1 ===================== -->
+  <section class="slide" id="s-l1a">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 1 · L'atmosfera</div><h2>Tres planetes, tres atmosferes</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="l11">
+      <div class="lc">
+        <div class="seg" role="group" aria-label="Tria un planeta">
+          <button class="act pb" type="button" data-p="venus">Venus</button>
+          <button class="act pb" type="button" data-p="terra">Terra</button>
+          <button class="act pb" type="button" data-p="mart">Mart</button>
+        </div>
+        <div class="vig" id="pVig"><canvas id="pcan"></canvas></div>
+      </div>
+      <div class="rc">
+        <div><div class="pname" id="pName">Mart</div><div class="pdist" id="pDist"></div></div>
+        <div class="pgrid">
+          <div class="card"><div class="lbl">Temperatura mitjana real</div><div class="val" id="pReal"></div></div>
+          <div class="card"><div class="lbl">Temperatura teòrica sense atmosfera</div><div class="val" id="pTeo"></div></div>
+          <div class="card"><div class="lbl">Pressió a la superfície</div><div class="val" id="pPres"></div><div class="psub" id="pPresSub"></div></div>
+          <div class="card"><div class="lbl">Gruix de l'atmosfera</div><div class="val" id="pGruix"></div><div class="thick"><i id="pThick"></i></div></div>
+        </div>
+        <div class="card w"><div class="lbl">Composició de l'atmosfera</div><div class="compbar" id="pBar"></div><div class="legend" id="pLeg"></div></div>
+        <p class="pfact" id="pFact"></p>
+        <p class="note studonly">Calcula l'increment de temperatura de cada planeta al dossier: temperatura real − temperatura teòrica.</p>
+        <div class="profonly"><div class="lbl" style="color:var(--rd)">Solució · increment de temperatura</div><div class="incs"><div>Venus<b>+306 °C</b></div><div>Terra<b>+32 °C</b></div><div>Mart<b>+5 °C</b></div></div></div>
+        <p class="note">Dades de la PAU de Ciències Generals (juny 2024, exercici 4B).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 1.2 ===================== -->
+  <section class="slide" id="s-l1b">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 1 · L'atmosfera</div><h2>L'efecte hivernacle pas a pas</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="l12">
+      <svg id="gh" viewBox="0 0 1000 620" role="img" aria-label="Esquema de l'efecte hivernacle"></svg>
+      <div class="ghside">
+        <div class="card w" id="ghcap"><div class="s" id="ghS"></div><h3 id="ghT"></h3><p id="ghX"></p></div>
+        <div class="seg"><button class="act" type="button" id="ghPrev" aria-label="Pas anterior">◀</button><button class="act main" type="button" id="ghNext" style="font-size:24px;padding:6px 34px">▶</button><button class="act" type="button" id="ghReset" aria-label="Torna a començar">↺</button></div>
+        <ol id="ghlist"></ol>
+        <div class="card r studonly" style="font-size:20px;line-height:1.35"><b>Al dossier:</b> a cada pas, escriu a la casella de l'esquema el nom de l'element que apareix.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 1.3 · PAS 1 ===================== -->
+  <section class="slide" id="s-l1c">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 1 · Simulador d'atmosferes · Pas 1 de 3</div><h2>Treu els gasos</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="q"><span class="n">1</span><div>Què passaria amb la temperatura de la Terra si a l'atmosfera no hi hagués gasos d'efecte hivernacle? Per què?</div></div>
+    <div class="l13 p1">
+      <div class="vig" id="eVig"><canvas id="ecan"></canvas></div>
+      <div class="mid">
+        <div class="ctl"><div class="lrow"><span>Vapor d'aigua i núvols</span><output id="o1w">100 %</output></div><input type="range" id="s1w" min="0" max="100" value="100" aria-label="Vapor d'aigua"><span class="note">percentatge del que hi ha avui a l'atmosfera</span></div>
+        <div class="ctl"><div class="lrow"><span>CO₂, metà i altres gasos</span><output id="o1c">100 %</output></div><input type="range" id="s1c" min="0" max="100" value="100" aria-label="CO₂ i altres gasos"><span class="note">percentatge del que hi ha avui a l'atmosfera</span></div>
+        <div class="seg"><button class="act main" type="button" id="b1zero">Treu tots els gasos</button><button class="act" type="button" id="b1reset">Terra actual</button></div>
+        <div class="card w" style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Escalfament per efecte hivernacle</span><span class="val" id="o1d">+32 °C</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+        <span class="lbl">Temperatura mitjana</span>
+        <div class="bigT" id="o1t">14 °C</div>
+        <svg class="thermo" id="th1" viewBox="0 0 200 360"></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 1.3 · PAS 2 ===================== -->
+  <section class="slide" id="s-l1d">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 1 · Simulador d'atmosferes · Pas 2 de 3</div><h2>La Terra s'escalfa</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="q" style="font-size:18px;padding:6px 14px;align-items:center"><span class="n" style="width:34px;height:34px;font-size:19px">2</span><div><b>Al dossier:</b> què passa quan augmenten els gasos d'efecte hivernacle? · Dos efectes de l'escalfament global · Una mesura per reduir-lo.</div></div>
+    <div class="l13 p2">
+      <div class="card w" style="display:flex;flex-direction:column;gap:4px;height:100%;padding:8px 14px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span class="lbl">CO₂ a l'atmosfera</span><span class="val" id="o2y" style="font-size:30px">1750 · 278 ppm</span>
+          <span class="seg" style="margin-left:auto"><span class="lbl">Futur:</span><button class="act sb" type="button" data-s="low">Emissions baixes</button><button class="act sb" type="button" data-s="mid">Moderades</button><button class="act sb" type="button" data-s="high">Altes</button></span>
+        </div>
+        <input type="range" id="s2y" min="1750" max="2100" step="1" value="1750" aria-label="Any" style="margin:4px 0">
+        <svg id="co2chart" viewBox="0 0 960 372" style="flex:1;min-height:0;width:100%"></svg>
+      </div>
+      <div class="card w" style="display:flex;flex-direction:column;gap:4px;height:100%;padding:8px 14px">
+        <div class="lbl">D'on surten els gasos d'efecte hivernacle?</div>
+        <svg id="srcchart" viewBox="0 0 430 280" style="flex:1;min-height:0;width:100%"></svg>
+        <p class="note" style="font-size:13px">Emissions mundials de 2022, sobretot CO₂ (en CO₂ equivalent). Font: Climate Watch (WRI).</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:14px"><span class="lbl" style="color:var(--rd)">Efectes de l'augment del CO₂</span><span class="note" id="flipHint">Fes avançar els anys: les fitxes es desbloquegen quan el CO₂ arriba al seu llindar.</span></div>
+    <div class="flips" id="flips"></div>
+  </section>
+
+  <!-- ===================== LAB 1.3 · PAS 3 ===================== -->
+  <section class="slide" id="s-l1e">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 1 · Simulador d'atmosferes · Pas 3 de 3</div><h2>I a Mart?</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="q"><span class="n">3</span><div><ol style="padding-left:22px;margin:0"><li>Mart té una atmosfera rica en CO₂, però l'increment de temperatura és molt petit. Existeix l'efecte hivernacle a Mart? És comparable al de la Terra?</li><li>Compara la pressió i el gruix de l'atmosfera dels tres planetes. Quina relació tenen amb la retenció de la calor?</li><li>Què seria més important per augmentar l'efecte hivernacle a Mart: canviar la composició de l'atmosfera o fer-la més gruixuda?</li></ol></div></div>
+    <div class="l13 p3">
+      <div class="card w" style="display:flex;flex-direction:column;gap:6px">
+        <div class="seg"><span class="lbl">Experiment:</span><button class="act xb" type="button" data-x="A">A · P fixa</button><button class="act xb" type="button" data-x="B">B · CO₂ fix</button></div>
+        <div class="ctl"><div class="lrow"><span>CO₂</span><output id="o3c">95 %</output></div><input type="range" id="s3c" min="0" max="100" step="1" value="95" aria-label="CO₂ a Mart"></div>
+        <div class="ctl"><div class="lrow"><span>Pressió (gruix)</span><output id="o3p">8 hPa</output></div><input type="range" id="s3p" min="0" max="1000" step="1" value="0" aria-label="Pressió a Mart"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div class="lbl">Temperatura</div><div class="val" id="o3t" style="font-size:44px">−45 °C</div></div><div style="text-align:right"><div class="lbl">Escalfament</div><div class="val" id="o3d">+5 °C</div></div></div>
+        <div class="seg"><button class="act main" type="button" id="b3save">Desa la mesura</button><button class="act" type="button" id="b3clear">Esborra</button></div>
+      </div>
+      <div class="card w" style="overflow:hidden">
+        <div class="lbl" style="margin-bottom:4px">Taula de mesures · Mart</div>
+        <table class="mtable"><thead><tr><th>Exp.</th><th>Pressió</th><th>CO₂</th><th>Temperatura</th><th>Escalfament</th></tr></thead><tbody id="m3"></tbody></table>
+        <p class="note" id="m3empty" style="margin-top:10px">Prova l'experiment A i desa'n 3 mesures. Després fes el B.</p>
+      </div>
+      <div class="card w" style="display:flex;flex-direction:column;gap:4px">
+        <div class="lbl">Els tres planetes</div>
+        <svg id="tp3" viewBox="0 0 460 390"></svg>
+        <p class="note">Al model, una atmosfera més gruixuda vol dir més gas i, per tant, més pressió.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 2 ===================== -->
+  <section class="slide" id="s-l2">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 2</div><h2>Les capes de l'atmosfera</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="l2">
+      <div style="display:flex;flex-direction:column;gap:12px;min-height:0">
+        <p style="font-size:21px">La temperatura <b>baixa, puja, torna a baixar i torna a pujar</b>. Cada canvi marca el límit d'una capa. Tria una capa i <b>copia l'esquema al dossier</b>.</p>
+        <div class="chips2" id="chips2"></div>
+        <div class="card w scheme" id="layerInfo" style="flex:1" aria-live="polite"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <svg id="profile" viewBox="0 0 830 600" role="img" aria-label="Perfil de temperatura de l'atmosfera"></svg>
+        <div class="altrow">
+          <div class="ctl"><div class="lrow"><span>Altitud</span><output id="oAlt">0 km</output></div><input type="range" id="sAlt" min="0" max="120" step="0.5" value="0" aria-label="Altitud"></div>
+          <div class="card"><div class="lbl">Temperatura</div><div class="val" id="aT">–</div></div>
+          <div class="card"><div class="lbl">Pressió</div><div class="val" id="aP">–</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 3 ===================== -->
+  <section class="slide" id="s-l3">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 3</div><h2>El camp magnètic, protector de l'atmosfera</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="l3">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="seg"><span class="lbl">Planeta</span><button class="act mp" type="button" data-p="terra">Terra</button><button class="act mp" type="button" data-p="mart">Mart</button>
+          <span class="lbl" style="margin-left:14px">Camp magnètic</span><button class="act mf" type="button" data-f="1">Actiu</button><button class="act mf" type="button" data-f="0">Apagat</button>
+          <button class="act" type="button" id="magReset" style="margin-left:auto">↺ Reinicia</button></div>
+        <div class="vig" id="magVig"><canvas id="mag"></canvas></div>
+        <div class="ro3">
+          <div class="card"><div class="lbl">Atmosfera que queda</div><div class="val" id="mAtm">100 %</div><div class="bar3"><i id="mBar"></i></div></div>
+          <div class="card"><div class="lbl">Temps simulat</div><div class="val" id="mTime">0 Ma</div></div>
+          <div class="card"><div class="lbl">Aurores</div><div class="val" id="mAur">0</div></div>
+        </div>
+      </div>
+      <div class="dyn">
+        <div class="card w dyn">
+          <h3>Com es forma el camp magnètic de la Terra?</h3>
+          <svg viewBox="0 0 300 300" role="img" aria-label="Interior de la Terra">
+            <circle cx="150" cy="150" r="140" fill="#F1EDEA" stroke="#1B1B1B" stroke-width="4"/>
+            <circle cx="150" cy="150" r="95" fill="#D62828" opacity=".9"/>
+            <circle cx="150" cy="150" r="40" fill="#fff" stroke="#1B1B1B" stroke-width="2"/>
+            <g class="spin" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"><path d="M150,70 A80,80 0 0 1 225,120"/><path d="M230,180 A80,80 0 0 1 180,228"/><path d="M110,225 A80,80 0 0 1 72,170"/><path d="M75,120 A80,80 0 0 1 110,76"/></g>
+            <text x="150" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#1B1B1B">Mantell</text>
+            <text x="150" y="88" text-anchor="middle" font-size="21" font-weight="700" fill="#fff">Nucli extern</text>
+            <text x="150" y="107" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">(líquid)</text>
+            <text x="150" y="147" text-anchor="middle" font-size="16" font-weight="700" fill="#1B1B1B">Nucli</text>
+            <text x="150" y="165" text-anchor="middle" font-size="16" font-weight="700" fill="#1B1B1B">intern</text>
+          </svg>
+          <ol>
+            <li>El <b>nucli extern</b> és de ferro i níquel <b>líquids</b>, entre 2.900 i 5.100 km de profunditat.</li>
+            <li>La calor de l'interior i la <b>rotació</b> de la Terra fan moure aquest metall (corrents de convecció).</li>
+            <li>El moviment del metall genera <b>corrents elèctrics</b>.</li>
+            <li>Els corrents elèctrics generen el <b>camp magnètic</b>: és l'efecte <b>dinamo</b>.</li>
+          </ol>
+        </div>
+        <div class="card r" style="font-size:18px;line-height:1.3"><b>I Mart?</b> Va tenir camp magnètic, però el va perdre. Sense protecció, el vent solar li ha anat arrencant l'atmosfera durant milions d'anys.
+          <a class="vlink" style="margin-top:8px;font-size:16px;padding:3px 10px" href="https://www.youtube.com/watch?v=QS52g1nuVhM" target="_blank" rel="noopener"><b>▶</b> Vídeo: l'origen del camp magnètic</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 4.1 ===================== -->
+  <section class="slide" id="s-l4a">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 4 · I l'aigua? On és l'aigua a Mart?</div><h2>El diagrama de fases de l'aigua</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="l41">
+      <canvas id="phase" width="1800" height="1096"></canvas>
+      <div style="display:flex;flex-direction:column;gap:12px;min-height:0">
+        <p style="font-size:18px;line-height:1.3">Mou el cursor fins on va cada punt i prem <b>📍 Marca</b>. Després tria l'estat: <b>S</b>, <b>L</b> o <b>G</b>. Cada ratlla gruixuda de l'eix de la pressió és <b>10 vegades</b> més que l'anterior.</p>
+        <a class="vlink" href="https://www.youtube.com/watch?v=sPByvz1ZjLE" target="_blank" rel="noopener"><b>▶</b> Vídeo: Diagrama de fases de l'aigua</a>
+        <div class="card w" style="padding:8px 12px">
+          <table class="ptab" style="font-size:18px"><tbody id="ptab"></tbody></table>
+        </div>
+                <div class="card" id="phRead" style="padding:8px 14px;font-size:19px"></div>
+        <div id="phMsg" aria-live="polite"></div>
+        <div class="seg profonly fl"><button class="act main" type="button" id="ptsBtn" aria-pressed="false">Mostra tots els punts</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 4.2 ===================== -->
+  <section class="slide" id="s-l4b">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 4 · L'aigua</div><h2>La molècula de la vida</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="l42">
+      <div style="position:relative">
+        <canvas id="mol" width="1200" height="1080"></canvas>
+        <div class="note" style="position:absolute;left:18px;top:14px">Arrossega per girar-la</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;min-height:0">
+        <div class="seg" style="font-size:20px"><span style="display:flex;align-items:center;gap:8px"><b style="display:inline-block;width:26px;height:26px;border-radius:50%;background:#D62828;border:2px solid #1B1B1B"></b>Oxigen (O)</span><span style="display:flex;align-items:center;gap:8px;margin-left:18px"><b style="display:inline-block;width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid #1B1B1B"></b>Hidrogen (H)</span></div>
+        <div class="props">
+          <div class="card"><b>Molècula polar</b>L'oxigen atrau els electrons: queda un costat negatiu (δ−) i un de positiu (δ+).</div>
+          <div class="card"><b>Gran dissolvent</b>Gràcies a la polaritat, dissol moltes substàncies i transporta nutrients.</div>
+          <div class="card"><b>El gel flota</b>En glaçar-se, les molècules s'ordenen i deixen espais: el gel és menys dens.</div>
+          <div class="card"><b>Regula la temperatura</b>Absorbeix molta calor abans d'escalfar-se: suavitza el clima.</div>
+        </div>
+        <div class="card w" style="padding:10px 14px">
+          <div class="lbl" style="margin-bottom:6px">Vertader o fals?</div>
+          <ul class="vf" id="vf">
+            <li data-a="F"><span class="vfb"><button type="button" class="vbtn" data-v="V">V</button><button type="button" class="vbtn" data-v="F">F</button></span><span class="k profonly in">F</span>El gel és més dens que l'aigua líquida.</li>
+            <li data-a="V"><span class="vfb"><button type="button" class="vbtn" data-v="V">V</button><button type="button" class="vbtn" data-v="F">F</button></span><span class="k profonly in">V</span>L'aigua pot dissoldre moltes substàncies diferents.</li>
+            <li data-a="V"><span class="vfb"><button type="button" class="vbtn" data-v="V">V</button><button type="button" class="vbtn" data-v="F">F</button></span><span class="k profonly in">V</span>Sense aigua líquida no hi pot haver vida tal com la coneixem.</li>
+            <li data-a="V"><span class="vfb"><button type="button" class="vbtn" data-v="V">V</button><button type="button" class="vbtn" data-v="F">F</button></span><span class="k profonly in">V</span>A Mart hi ha aigua, però en forma de gel i de vapor.</li>
+            <li data-a="F"><span class="vfb"><button type="button" class="vbtn" data-v="V">V</button><button type="button" class="vbtn" data-v="F">F</button></span><span class="k profonly in">F</span>A Mart hi ha aigua líquida estable a la superfície.</li>
+          </ul>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:8px"><button class="act main" type="button" id="vfDone">Finalitza</button><span id="vfMsg" aria-live="polite"></span></div>
+        </div>
+        <div class="q" style="font-size:19px;padding:8px 14px"><span class="n" style="width:34px;height:34px;font-size:18px">?</span><div>Si a la superfície de Mart l'aigua no pot ser líquida, on hauríem de buscar-hi aigua líquida o vida? Justifica-ho amb el diagrama de fases.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LAB 5.1 ===================== -->
+  <section class="slide" id="s-l5a">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 5 · Consell de la missió</div><h2>Canviem Mart o ens adaptem?</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="l5" id="l5"></div>
+    <button class="sidebtn" type="button" id="pesBtn">⚖️ El meu pes a Mart</button>
+  </section>
+
+  <!-- ===================== LAB 5.2 ===================== -->
+  <section class="slide" id="s-l5b">
+    <div class="hd"><div class="tt"><div class="kick">Laboratori 5 · Final de la missió</div><h2>Informe per a la Terra</h2></div><button class="solbtn" type="button" data-sol>💡 Solucions</button><span class="dtag">Dossier de classe</span></div>
+    <div class="l52">
+      <div class="rep">
+        <p class="tx">Redacteu al dossier un informe per al Consell de la Missió amb les vostres conclusions. Ha d'incloure:</p>
+        <ol>
+          <li><b>La vostra decisió:</b> canviar Mart, adaptar-nos o una combinació de totes dues coses.</li>
+          <li><b>Dos arguments científics</b> dels laboratoris (atmosfera, efecte hivernacle, camp magnètic, aigua).</li>
+          <li><b>Quin problema resoldríeu primer</b> i per què.</li>
+          <li><b>Quant de temps</b> creieu que caldria: anys, segles o mil·lennis?</li>
+        </ol>
+        <div class="card r tx"><b>Recordeu:</b> torneu a llegir la vostra primera resposta a la pregunta «Ha de canviar Mart o ens hem d'adaptar nosaltres?». Heu canviat d'opinió?</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="vig" id="endVig"><canvas id="endcan"></canvas></div>
+        <div class="card w tx"><b class="red">Transmissió del Centre de Control.</b> Tripulació, la nau entra en òrbita de Mart. Esperem el vostre informe. La vostra decisió marcarà la propera fase de la missió: <b>triar on aterrem</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  </div><!-- /slides -->
+
+  <!-- calaix de solucions -->
+  <aside class="drawer" id="solDrawer" aria-label="Solucions"><button class="x" type="button" data-closedr>✕</button><span class="tag2">Professorat · solucions</span><h3 id="solTitle"></h3><div id="solbody"></div></aside>
+  <!-- calaix de la calculadora del pes -->
+  <aside class="drawer" id="pesDrawer" aria-label="El meu pes a Mart"><button class="x" type="button" data-closedr>✕</button><span class="tag2">Per provar</span><h3>El meu pes a Mart</h3>
+    <div style="display:flex;align-items:center;gap:12px;font-size:21px"><label for="mass"><b>La meva massa</b></label><input class="pesin" type="number" id="mass" min="10" max="200" value="60"> kg</div>
+    <div class="pesout"><div class="card"><div class="lbl">Pes a la Terra</div><div class="val" id="wE"></div></div><div class="card"><div class="lbl">Pes a Mart</div><div class="val" id="wM"></div></div></div>
+    <p class="tx" id="wTxt"></p>
+    <div class="card w"><div class="lbl">El rellotge marcià</div><p class="tx" style="margin:4px 0">Un dia a Mart dura <b>24 h 39 min 35 s</b>.</p>
+      <div class="ctl"><div class="lrow"><span>Dies vivint a Mart</span><output id="oDays">30</output></div><input type="range" id="days" min="1" max="687" value="30" aria-label="Dies vivint a Mart"></div>
+      <p class="tx" id="clockTxt"></p></div>
+  </aside>
+
+  <!-- barra inferior -->
+  <div id="bar">
+    <button class="nb sq" id="prev" type="button" aria-label="Enrere"><svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <span id="count">1 / 1</span>
+    <button class="nb go" id="next" type="button" aria-label="Endavant"><svg viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z" fill="currentColor"/></svg></button>
+    <div id="stp" aria-hidden="true"></div>
+    <span style="flex:1"></span>
+    <button class="nb sq" id="bDraft" type="button" title="Esborrany: llapis per dibuixar (E)" aria-label="Esborrany"><svg viewBox="0 0 24 24"><path d="M4 20l1-5L16 4l4 4L9 19z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 6l4 4" stroke="currentColor" stroke-width="2.4"/></svg></button>
+    <button class="nb sq" id="bCalc" type="button" title="Calculadora (C)" aria-label="Calculadora"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="7" y="5" width="10" height="4" fill="currentColor"/><circle cx="8.5" cy="13" r="1.3" fill="currentColor"/><circle cx="12" cy="13" r="1.3" fill="currentColor"/><circle cx="15.5" cy="13" r="1.3" fill="currentColor"/><circle cx="8.5" cy="17.5" r="1.3" fill="currentColor"/><circle cx="12" cy="17.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="17.5" r="1.3" fill="currentColor"/></svg></button>
+    <button class="nb" id="bTime" type="button" title="Temporitzador (T)" aria-label="Temporitzador" style="padding:0 13px"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 9v4l3 2M9 2h6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span id="bTimeL"></span></button>
+    <button class="nb sq" id="snd" type="button" aria-label="So (M)"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="sndw" d="M16 8.5c1.5 1 1.5 6 0 7M18.5 6c3 2.5 3 9.5 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path id="sndx" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="display:none"/></svg></button>
+    <button class="nb sq" id="fs" type="button" aria-label="Pantalla completa (F)"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+  <div id="prog"></div>
+
+  <!-- solucionari -->
+  <div id="solu" role="dialog" aria-label="Solucionari">
+    <div class="sh"><h2>Solucionari <small>· en l'ordre del dossier · només professorat</small></h2><button class="act" type="button" id="soluClose">✕ Tanca</button></div>
+    <div class="sb2"><nav id="solnav"></nav>
+      <div id="solmain"><div class="top"><h3 id="solh"></h3><button class="applink" type="button" id="solapp"></button></div><div id="solc"></div>
+        <div class="bot"><button class="act" type="button" id="solprev">◀ Anterior</button><button class="act main" type="button" id="solnext">Següent ▶</button></div></div></div>
+  </div>
+  <!-- esborrany -->
+  <div id="draft" class="glass">
+    <canvas id="dcv" width="1600" height="718"></canvas>
+    <div id="dtools">
+      ✏️ Esborrany<span class="sep"></span>
+      <button class="sw on" data-c="#1B1B1B" style="background:#1B1B1B" type="button" aria-label="Negre"></button>
+      <button class="sw" data-c="#D62828" style="background:#D62828" type="button" aria-label="Vermell"></button>
+      <button class="sw" data-c="#2F6FC7" style="background:#2F6FC7" type="button" aria-label="Blau"></button>
+      <button class="tbtn" id="dthin" type="button">Fi</button><button class="tbtn on" id="dthick" type="button">Gruixut</button><button class="tbtn" id="deraser" type="button">Goma</button>
+      <span class="sep"></span>
+      <button class="tbtn" id="dmode" type="button">Full blanc</button><button class="tbtn" id="dclear" type="button">Esborra-ho tot</button><button class="tbtn" id="dclose" type="button" aria-label="Tanca l'esborrany">✕</button>
+    </div>
+  </div>
+  <!-- calculadora -->
+  <div class="win" id="calc" role="dialog" aria-label="Calculadora">
+    <div class="bar2" id="cdrag"><span>🧮 Calculadora</span><button class="x" id="cclose" type="button" aria-label="Tanca">✕</button></div>
+    <div id="cdisp"><div id="cexp"></div><div id="cres">0</div></div>
+    <div id="ckeys"></div>
+  </div>
+  <!-- temporitzador -->
+  <div class="win" id="timer" role="dialog" aria-label="Temporitzador"><div class="bar2" id="tdrag"><span>⏱️ Temporitzador</span><button class="x" id="tclose" type="button" aria-label="Tanca">✕</button></div><div id="tdisp">05:00</div><div class="trow" id="tpre"><button class="tbtn" data-m="1" type="button">1 min</button><button class="tbtn" data-m="3" type="button">3 min</button><button class="tbtn on" data-m="5" type="button">5 min</button><button class="tbtn" data-m="10" type="button">10 min</button></div><div class="trow"><button class="tbtn" id="tminus" type="button">− 1 min</button><button class="tbtn" id="tplus" type="button">+ 1 min</button></div><div class="trow"><button class="tbtn big" id="tgo" type="button">▶ Comença</button><button class="tbtn" id="treset" type="button">↺ Reinicia</button></div></div>
+
+  <!-- contrasenya -->
+  <div class="modal" id="pwbox" role="dialog" aria-label="Mode professorat"><div class="mbox" style="align-items:center;text-align:center">
+    <button class="x" type="button" data-close aria-label="Tanca">✕</button>
+    <h3>🔒 Mode professorat</h3><p>Escriu la contrasenya amb el teclat.</p>
+    <div id="pwdots"><i></i><i></i><i></i><i></i></div><input id="pwin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="Contrasenya">
+    <div id="pwmsg"></div>
+    <div class="row2"><button class="act main" type="button" id="pwok">Entra</button><button class="act" type="button" data-close>Cancel·la</button></div></div></div>
+  <!-- crèdits -->
+  <div class="modal" id="credbox" role="dialog" aria-label="Crèdits"><div class="mbox">
+    <button class="x" type="button" data-close aria-label="Tanca">✕</button>
+    <span class="tag2">Crèdits</span>
+    <h3>Terraformació</h3>
+    <p>STEAM 4t d'ESO · Institut Júlia Minguell · Versió 2</p>
+    <p style="font-size:20px;color:var(--mid)">Té una versió per al professorat.</p>
+    <p style="font-size:17px;color:var(--mid)">Dades: PAU de Ciències Generals, juny 2024 (taula de planetes); NASA Planetary Fact Sheet; IPCC (sensibilitat climàtica); U.S. Standard Atmosphere (1976); NASA MAVEN. Els models i les simulacions són simplificats amb finalitat didàctica.</p>
+  </div></div>
+</div>
+
+<script>
+(()=>{"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const stage=$('#stage');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const fmt=(x,d=0)=>x.toLocaleString('ca-ES',{minimumFractionDigits:d,maximumFractionDigits:d}).replace('-','−');
+const sgn=(x,d=0)=>(x>=0?'+':'')+fmt(x,d);
+const NS='http://www.w3.org/2000/svg';
+function hidpi(c,w,h){const d=2;c.width=w*d;c.height=h*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return x}
+
+/* =================== so (només avisos) =================== */
+let AC=null,MUTED=false,NBUF=null;
+function actx(){if(MUTED)return null;try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){AC=null}return AC}
+function tone(f,dur,type='sine',vol=.1,when=0,f2){const c=actx();if(!c)return;try{const t=c.currentTime+when,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.05)}catch(e){}}
+function noise(dur,vol=.1,when=0,freq=1800,q=1.2){const c=actx();if(!c)return;try{if(!NBUF){NBUF=c.createBuffer(1,c.sampleRate*2,c.sampleRate);const d=NBUF.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  const t=c.currentTime+when,src=c.createBufferSource();src.buffer=NBUF;const fl=c.createBiquadFilter();fl.type='bandpass';fl.frequency.value=freq;fl.Q.value=q;const g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+dur);src.connect(fl).connect(g).connect(c.destination);src.start(t);src.stop(t+dur+.05)}catch(e){}}
+const sfx={
+  tick(){tone(620,.05,'triangle',.04)},
+  blip(){tone(880,.08,'sine',.06);tone(1320,.06,'sine',.03,.05)},
+  ok(){tone(784,.12,'triangle',.09);tone(1175,.22,'triangle',.09,.1)},
+  bad(){tone(330,.22,'square',.05);tone(247,.35,'square',.05,.2)},
+  flip(){noise(.35,.08,0,900,0.8);tone(500,.25,'sine',.04,0,900)},
+  unlock(){[660,880,1320].forEach((f,i)=>tone(f,.18,'triangle',.07,i*.09))},
+  alarm(){for(let i=0;i<4;i++){tone(880,.15,'square',.05,i*.32);tone(620,.15,'square',.05,i*.32+.16)}},
+  sonar(){noise(.6,.05,0,2200,0.7);[0,1.1].forEach(w=>{tone(1150,1.3,'sine',.13,w+.15,1080);tone(1150,1.0,'sine',.04,w+.6,1100)});noise(.5,.04,2.2,2000,0.7)}
+};
+function sndShow(){$('#sndw').style.display=MUTED?'none':'';$('#sndx').style.display=MUTED?'':'none'}
+function sndToggle(){MUTED=!MUTED;sndShow();if(!MUTED)sfx.tick()}
+
+/* =================== textures de planetes =================== */
+function hash3(i,j,k){const h=Math.sin(i*127.1+j*311.7+k*74.7)*43758.5453;return h-Math.floor(h)}
+function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+  const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf),L=(a,b,t)=>a+(b-a)*t;
+  return L(L(L(hash3(xi,yi,zi),hash3(xi+1,yi,zi),u),L(hash3(xi,yi+1,zi),hash3(xi+1,yi+1,zi),u),v),L(L(hash3(xi,yi,zi+1),hash3(xi+1,yi,zi+1),u),L(hash3(xi,yi+1,zi+1),hash3(xi+1,yi+1,zi+1),u),v),w)}
+function fbm(x,y,z,o=5){let a=.5,f=1,s=0,n=0;for(let i=0;i<o;i++){s+=a*vnoise(x*f,y*f,z*f);n+=a;a*=.5;f*=2}return s/n}
+const TW=384,TH=192,TEX={};
+let ICE_THR=null;
+function makeTex(kind){
+  if(TEX[kind])return TEX[kind];
+  const T=new Uint8ClampedArray(TW*TH*3),mix=(a,b,t)=>a+(b-a)*t;
+  if(kind==='terra')ICE_THR=new Float32Array(TW*TH);
+  for(let v=0;v<TH;v++){const lat=(0.5-(v+.5)/TH)*Math.PI,latd=Math.abs(lat*180/Math.PI);
+    for(let u=0;u<TW;u++){const lon=(u/TW)*Math.PI*2,x=Math.cos(lat)*Math.cos(lon),y=Math.cos(lat)*Math.sin(lon),z=Math.sin(lat);let r,g,b;
+      if(kind==='mart'){const n1=fbm(x*2.2+10,y*2.2+10,z*2.2+10),n2=fbm(x*4.2+30,y*4.2+30,z*4.2+30,4),n3=fbm(x*10+50,y*10+50,z*10+50,3);
+        let t=clamp((n1-.33)*2.4,0,1);r=mix(122,222,t);g=mix(46,126,t);b=mix(20,70,t);const m=clamp((0.5-n2)/0.09,0,1)*0.75;r=mix(r,70,m);g=mix(g,32,m);b=mix(b,18,m);
+        const d=0.82+0.36*n3;r*=d;g*=d;b*=d;const cap=clamp((latd-(72+(n3-.5)*16))/4,0,1);r=mix(r,242,cap);g=mix(g,236,cap);b=mix(b,228,cap)}
+      else if(kind==='venus'){const n=fbm(x*2+5,y*2+5,z*2+5,4),band=0.5+0.5*Math.sin(lat*9+n*7);r=mix(196,242,band);g=mix(150,214,band);b=mix(84,150,band);const d=0.88+0.2*fbm(x*6+9,y*6+9,z*6+9,3);r*=d;g*=d;b*=d}
+      else{const n=fbm(x*1.7+20,y*1.7+20,z*1.7+20,5);
+        if(n>0.53){const dd=fbm(x*5+40,y*5+40,z*5+40,3),dry=clamp((dd-0.45)*3,0,1)*clamp((40-Math.abs(latd-25))/25,0,1);r=mix(62,176,dry);g=mix(108,146,dry);b=mix(48,92,dry)}
+        else{const deep=clamp((0.53-n)*4,0,1);r=mix(34,14,deep);g=mix(92,48,deep);b=mix(150,110,deep)}
+        const c=fbm(x*3.5+70,y*3.5+70,z*3.5+70,4),cl=clamp((c-0.54)*4,0,0.8);r=mix(r,250,cl);g=mix(g,250,cl);b=mix(b,252,cl);
+        ICE_THR[v*TW+u]=(90-latd)+(fbm(x*3+90,y*3+90,z*3+90,3)-.5)*22}
+      const i=(v*TW+u)*3;T[i]=r;T[i+1]=g;T[i+2]=b}}
+  TEX[kind]=T;return T;
+}
+const S=300,sph=document.createElement('canvas');sph.width=S;sph.height=S;
+const sctx=sph.getContext('2d'),simg=sctx.createImageData(S,S),PRE=[];
+(function(){const c=S/2,r=S/2-1,L=[-0.55,-0.3,0.78],ln=Math.hypot(...L);L[0]/=ln;L[1]/=ln;L[2]/=ln;
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){const nx=(x+.5-c)/r,ny=(y+.5-c)/r,q=nx*nx+ny*ny;if(q>1)continue;const nz=Math.sqrt(1-q);
+    const lat=Math.asin(-ny),lon=Math.atan2(nx,nz),diff=Math.max(0,nx*L[0]+ny*L[1]+nz*L[2]);
+    PRE.push(y*S+x,lon/(2*Math.PI),Math.min(TH-1,Math.floor((0.5-lat/Math.PI)*TH)),0.07+Math.pow(diff,.9),clamp((1-q)*60,0,1))}})();
+function renderSphere(rot,T,iceLevel){const d=simg.data;
+  for(let k=0;k<PRE.length;k+=5){const p=PRE[k];let uu=(PRE[k+1]+rot)%1;if(uu<0)uu+=1;const ix=PRE[k+2]*TW+Math.floor(uu*TW),ti=ix*3,sh=PRE[k+3],o=p*4;
+    let r=T[ti],g=T[ti+1],b=T[ti+2];
+    if(iceLevel!=null&&ICE_THR[ix]<iceLevel){r=236;g=242;b=248}
+    d[o]=r*sh;d[o+1]=g*sh;d[o+2]=b*sh;d[o+3]=255*PRE[k+4]}
+  sctx.putImageData(simg,0,0)}
+function stars(n,seed){const a=[];let s=seed||1;const R=()=>{s=(s*16807)%2147483647;return s/2147483647};for(let i=0;i<n;i++)a.push([R(),R(),R()]);return a}
+function drawStars(ctx,w,h,st,t){for(const [x,y,b] of st){const a=0.3+0.6*b*(0.7+0.3*Math.sin(t/900+b*20));ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fillRect(x*w,y*h,b>0.85?2:1.3,b>0.85?2:1.3)}}
+
+/* =================== definició de pantalles =================== */
+const SECS=[{id:'pont',t:'Portada'},{id:'l1',n:1,t:'Atmosfera'},{id:'l2',n:2,t:'Capes'},{id:'l3',n:3,t:'Camp magnètic'},{id:'l4',n:4,t:'Aigua'},{id:'l5',n:5,t:'Decisió'}];
+const SL=[
+  {id:'pont',sec:'pont',chip:'Portada'},
+  {id:'l1a',sec:'l1',chip:'1.1 Tres planetes'},
+  {id:'l1b',sec:'l1',chip:'1.2 Efecte hivernacle',steps:11},
+  {id:'l1c',sec:'l1',chip:'1.3 Pas 1 · Treu els gasos'},
+  {id:'l1d',sec:'l1',chip:'Pas 2 · La Terra s\'escalfa'},
+  {id:'l1e',sec:'l1',chip:'Pas 3 · I a Mart?'},
+  {id:'l2',sec:'l2',chip:'Capes de l\'atmosfera'},
+  {id:'l3',sec:'l3',chip:'Camp magnètic'},
+  {id:'l4a',sec:'l4',chip:'4.1 Diagrama de fases'},
+  {id:'l4b',sec:'l4',chip:'4.2 La molècula'},
+  {id:'l5a',sec:'l5',chip:'5.1 Problemes i solucions',steps:2},
+  {id:'l5b',sec:'l5',chip:'5.2 Informe per a la Terra'}
+];
+const H={}; // hooks: enter, leave, step
+let cur=0,k=0,maxR=0,PROF=false;
+try{maxR=+localStorage.getItem('tf2-max')||0}catch(e){}
+const el=id=>document.getElementById('s-'+id);
+
+function canGo(i){return PROF||i<=maxR}
+function go(i,kk=0){
+  i=clamp(i,0,SL.length-1);
+  const old=SL[cur];if(H[old.id]&&H[old.id].leave)H[old.id].leave();
+  $$('.slide').forEach(s=>s.classList.remove('active'));
+  if(typeof saveDraft==='function'&&draft.classList.contains('open'))saveDraft();
+  cur=i;k=kk;if(i>maxR){maxR=i;try{localStorage.setItem('tf2-max',maxR)}catch(e){}}
+  el(SL[i].id).classList.add('active');
+  closeDrawers();
+  const h=H[SL[i].id];if(h&&h.enter)h.enter();
+  applyStep();buildNav();
+  if(typeof loadDraft==='function'&&draft.classList.contains('open'))loadDraft();
+}
+function applyStep(){const s=SL[cur],h=H[s.id];if(h&&h.step)h.step(k);updBar()}
+function next(){const s=SL[cur];if(k<(s.steps||0)){k++;applyStep()}else if(cur<SL.length-1)go(cur+1,0)}
+function prev(){if(k>0){k--;applyStep()}else if(cur>0)go(cur-1,SL[cur-1].steps||0)}
+function updBar(){const s=SL[cur];$('#count').textContent=(cur+1)+' / '+SL.length;$('#prog').style.width=(cur/(SL.length-1)*100)+'%';
+  $('#stp').innerHTML=s.steps?Array.from({length:s.steps},(_,i)=>`<i class="${i<k?'on':''}"></i>`).join(''):'';
+  $('#prev').style.visibility=cur===0&&k===0?'hidden':'visible';$('#next').style.visibility=cur===SL.length-1&&k>=(s.steps||0)?'hidden':'visible'}
+function buildNav(){
+  const s=SL[cur];
+  $('#tabbox').innerHTML=SECS.map(sec=>{const first=SL.findIndex(x=>x.sec===sec.id),ok=canGo(first);
+    return `<button class="tab${sec.id===s.sec?' on':''}${ok?'':' lock'}" type="button" data-tab="${first}" ${ok?'':'aria-disabled="true"'}>${sec.n?`<i>${sec.n}</i>`:''}${sec.t}</button>`}).join('');
+  const subs=SL.map((x,i)=>[x,i]).filter(([x])=>x.sec===s.sec);
+  $('#chips').innerHTML=subs.length>1?'<span class="lab">Pantalles</span>'+subs.map(([x,i])=>`<button class="chip${i===cur?' on':''}${canGo(i)?'':' lock'}" type="button" data-goi="${i}">${x.chip}</button>`).join(''):`<span class="lab">${s.sec==='pont'?'Missió Mart · part 3 · Terraformació':SECS.find(x=>x.id===s.sec).t}</span>`;
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab],[data-goi]');if(t){const i=+(t.dataset.tab??t.dataset.goi);if(canGo(i)){sfx.tick();go(i)}return}
+  if(e.target.closest('[data-next]'))next();
+  if(e.target.closest('[data-fs]'))fsToggle();
+  if(e.target.closest('[data-credits]'))$('#credbox').classList.add('open');
+  if(e.target.closest('[data-sol]'))openSol();
+  if(e.target.closest('[data-closedr]'))closeDrawers();
+});
+$('#next').onclick=()=>{sfx.tick();next()};$('#prev').onclick=()=>{sfx.tick();prev()};$('#fs').onclick=fsToggle;$('#snd').onclick=()=>{sndToggle();$('#snd').blur()};
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+stage.addEventListener('scroll',()=>{stage.scrollLeft=0;stage.scrollTop=0});$('#slides').addEventListener('scroll',e=>{e.currentTarget.scrollLeft=0;e.currentTarget.scrollTop=0});
+function fsToggle(){const d=document;try{if(!d.fullscreenElement)(d.documentElement.requestFullscreen||d.documentElement.webkitRequestFullscreen).call(d.documentElement);else (d.exitFullscreen||d.webkitExitFullscreen).call(d)}catch(e){}}
+
+/* =================== PORTADA =================== */
+{
+  const cv=$('#space');let ctx=null,W=0,Hh=0,raf=null,t0=performance.now();const st=stars(260,7);
+  const START=210,FLOOR=20,TAU=900,TOTAL=260;let routeLen=0;
+  function frame(now){
+    if(!ctx){const r=$('#spaceVig');W=r.clientWidth;Hh=r.clientHeight;ctx=hidpi(cv,W,Hh);cv.style.width=W+'px';cv.style.height=Hh+'px'}
+    const el=(now-t0)/1000,days=FLOOR+(START-FLOOR)*Math.exp(-el/TAU),p=(START-days)/(START-FLOOR);
+    ctx.fillStyle='#0A0E1F';ctx.fillRect(0,0,W,Hh);drawStars(ctx,W,Hh,st,now);
+    const D=Hh*(0.42+0.4*p),mx=W*0.58,my=Hh*0.52;
+    renderSphere(now/90000,makeTex('mart'));
+    const g=ctx.createRadialGradient(mx,my,D*0.48,mx,my,D*0.62);g.addColorStop(0,'rgba(255,140,70,.35)');g.addColorStop(1,'rgba(255,140,70,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(mx,my,D*0.62,0,Math.PI*2);ctx.fill();ctx.drawImage(sph,mx-D/2,my-D/2,D,D);
+    $('#iDays').textContent=Math.ceil(days);$('#iDist').textContent=fmt(days*86400*3.0/1e6,1);
+    $('#iVel').textContent=fmt(3+0.015*Math.sin(el/3),2);$('#iDose').textContent=fmt((TOTAL-days)*1.8,0);
+    const rp=$('#routeP');if(!routeLen)routeLen=rp.getTotalLength();const pt=rp.getPointAtLength(routeLen*(0.12+0.8*p));$('#ship').setAttribute('cx',pt.x);$('#ship').setAttribute('cy',pt.y);
+    raf=requestAnimationFrame(frame)}
+  const SAY=["Tripulació: les dades són clares.","Dins del sistema solar, Mart és un dels millors candidats per establir una colònia humana.","Però avui Mart no és habitable.","Hi fa un fred extrem, l'aire és irrespirable i la radiació és perillosa.","Per viure-hi caldria terraformar-lo.","És a dir, transformar-lo perquè tingui una atmosfera, una temperatura i una protecció adequades per a la vida humana.","La pregunta clau és: ha de canviar Mart… o ens hem d'adaptar nosaltres?","Activeu els laboratoris de bord."];
+  let sayT=null,si=0;
+  function typeS(){const box=$('#say');box.classList.remove('out');const txt=SAY[si];let ci=0;const span=document.createElement('span'),car=document.createElement('span');car.className='caret';box.innerHTML='';box.append(span,car);
+    if(reduce){span.textContent=txt;sayT=setTimeout(()=>{si=(si+1)%SAY.length;typeS()},5000);return}
+    (function tick(){span.textContent=txt.slice(0,++ci);if(ci<txt.length){sayT=setTimeout(tick,50);return}
+      sayT=setTimeout(()=>{box.classList.add('out');sayT=setTimeout(()=>{si=(si+1)%SAY.length;typeS()},800)},2400+txt.length*45)})()}
+  let sonarDone=false;const sonarOnce=()=>{if(!sonarDone&&cur===0){sonarDone=true;sfx.sonar()}};
+  ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,sonarOnce,{once:false,capture:true}));
+  H.pont={enter(){ctx=null;if(!raf)raf=requestAnimationFrame(frame);if(!sayT)typeS();if(AC&&AC.state==='running'){sonarDone=true;sfx.sonar()}},leave(){cancelAnimationFrame(raf);raf=null;clearTimeout(sayT);sayT=null}};
+}
+
+/* =================== LAB 1.1 =================== */
+{
+  const P={
+    venus:{n:'Venus',d:'A 108 milions de km del Sol',real:461,teo:155,P:'93.000 hPa',Ps:'92 vegades la pressió de la Terra',g:'Molt gruixuda',gw:100,halo:[0.16,'255,225,160',.55],comp:[['CO₂',96.5,'#D62828'],['N₂',3.5,'#ffffff']],f:"Uns núvols espessos d'àcid sulfúric reflecteixen el 76 % de la llum del Sol."},
+    terra:{n:'Terra',d:'A 150 milions de km del Sol',real:14,teo:-18,P:'1.013 hPa',Ps:'La pressió a nivell del mar',g:'Gruix mitjà',gw:28,halo:[0.06,'170,210,255',.6],comp:[['N₂',78,'#ffffff'],['O₂',21,'#9a9a9a'],['H₂O',1,'#3d7fd1'],['Ar',0.93,'#555555'],['CO₂',0.042,'#D62828']],f:"És l'únic planeta conegut amb aigua líquida estable a la superfície."},
+    mart:{n:'Mart',d:'A 228 milions de km del Sol',real:-46,teo:-51,P:'8 hPa',Ps:"Menys de l'1 % de la pressió de la Terra",g:'Molt prima',gw:4,halo:[0.025,'255,150,90',.5],comp:[['CO₂',95.7,'#D62828'],['N₂',2.7,'#ffffff'],['Ar',1.6,'#555555']],f:"Les tempestes de pols poden cobrir tot el planeta durant setmanes."}
+  };
+  let curP='mart',ctx=null,W=0,raf=null;const st=stars(140,3);
+  function sel(kk){curP=kk;const p=P[kk];makeTex(kk);
+    $$('.pb').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===kk));
+    $('#pName').textContent=p.n;$('#pDist').textContent=p.d;$('#pReal').textContent=fmt(p.real)+' °C';$('#pTeo').textContent=fmt(p.teo)+' °C';
+    $('#pPres').textContent=p.P;$('#pPresSub').textContent=p.Ps;$('#pGruix').textContent=p.g;$('#pThick').style.width=p.gw+'%';
+    $('#pBar').innerHTML=p.comp.map(([n,v,c])=>`<span style="width:${Math.max(v,0.5)}%;background:${c}" title="${n}"></span>`).join('');
+    $('#pLeg').innerHTML=p.comp.map(([n,v,c])=>`<span><b style="background:${c}"></b>${n} ${fmt(v,v<0.1?3:(v%1?(String(v).split('.')[1].length):0))} %</span>`).join('');
+    $('#pFact').textContent=p.f}
+  $$('.pb').forEach(b=>b.onclick=()=>sel(b.dataset.p));
+  function frame(now){if(!ctx){W=$('#pVig').clientWidth;ctx=hidpi($('#pcan'),W,W);$('#pcan').style.width=W+'px';$('#pcan').style.height=W+'px'}
+    const p=P[curP];ctx.fillStyle='#0A0E1F';ctx.fillRect(0,0,W,W);drawStars(ctx,W,W,st,now);
+    const D=W*0.64,c=W/2,R=D/2,[ht,col,al]=p.halo,g=ctx.createRadialGradient(c,c,R*0.97,c,c,R*(1+ht));g.addColorStop(0,`rgba(${col},${al})`);g.addColorStop(1,`rgba(${col},0)`);
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(c,c,R*(1+ht),0,Math.PI*2);ctx.fill();renderSphere(now/(curP==='venus'?160000:60000),TEX[curP]);ctx.drawImage(sph,c-R,c-R,D,D);
+    raf=requestAnimationFrame(frame)}
+  sel('mart');
+  H.l1a={enter(){ctx=null;if(!raf)raf=requestAnimationFrame(frame)},leave(){cancelAnimationFrame(raf);raf=null}};
+}
+
+/* =================== LAB 1.2 · efecte hivernacle =================== */
+{
+  const GH=[["Prem ▶ per començar",""],["Sol","La font d'energia del nostre planeta."],["Superfície terrestre","On hi ha els continents i els oceans."],["Atmosfera terrestre","La capa de gasos que envolta el planeta."],["Radiació emesa pel Sol","L'energia que arriba de la nostra estrella, sobretot com a llum visible."],["Radiació reflectida per l'atmosfera","Una part de la llum rebota als núvols i als gasos i torna a l'espai."],["Radiació reflectida per la superfície terrestre","El gel, la neu i els deserts fan rebotar una altra part de la llum."],["Radiació absorbida","La resta de la llum escalfa el terra i els oceans."],["Radiació emesa per la Terra","El terra calent emet calor en forma de radiació invisible (infraroja)."],["Gasos d'efecte hivernacle","Alguns gasos, com el CO₂ i el vapor d'aigua, atrapen aquesta calor."],["Radiació terrestre que retorna a la superfície","Aquests gasos tornen part de la calor cap al terra."],["Radiació terrestre que s'escapa a l'espai","La resta de la calor surt cap a l'espai."]];
+  function wave(x1,y1,x2,y2,amp,n){const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),px=-dy/L,py=dx/L;let d=`M${x1},${y1}`;for(let i=1;i<=60;i++){const t=i/60,w=amp*Math.sin(t*n*Math.PI*2)*Math.min(1,(1-t)*6);d+=` L${(x1+dx*t+px*w).toFixed(1)},${(y1+dy*t+py*w).toFixed(1)}`}return d}
+  function head(x2,y2,x1,y1,sz,col){const a=Math.atan2(y2-y1,x2-x1),p=(t,r)=>`${(x2+Math.cos(a+t)*r).toFixed(1)},${(y2+Math.sin(a+t)*r).toFixed(1)}`;return `<polygon class="head" points="${p(0,sz*0.9)} ${p(2.5,sz)} ${p(-2.5,sz)}" fill="${col}"/>`}
+  let built=false,builtProf=null;
+  function build(){builtProf=PROF;
+    const Y=x=>1650-Math.sqrt(1180*1180-(x-500)**2),SUN='#ffc21a',IR='#ff3b1f';
+    let g=`<defs><linearGradient id="ghSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#020412"/><stop offset="1" stop-color="#0d1d52"/></linearGradient>
+    <radialGradient id="ghAtm" cx="500" cy="1650" r="1400" gradientUnits="userSpaceOnUse"><stop offset=".84" stop-color="#8fc4ff" stop-opacity=".75"/><stop offset=".93" stop-color="#4f86d8" stop-opacity=".45"/><stop offset="1" stop-color="#2b4fa0" stop-opacity="0"/></radialGradient>
+    <radialGradient id="ghSea" cx="500" cy="700" r="600" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1f7ac9"/><stop offset="1" stop-color="#0b3f86"/></radialGradient>
+    <radialGradient id="ghSun"><stop offset="0" stop-color="#fff6b0"/><stop offset=".6" stop-color="#ffd23a"/><stop offset="1" stop-color="#ff9d00"/></radialGradient>
+    <clipPath id="ghClip"><circle cx="500" cy="1650" r="1180"/></clipPath></defs><rect width="1000" height="620" fill="url(#ghSky)"/>`;
+    for(let i=0;i<70;i++){const x=(i*137.5)%1000,y=(i*71.3)%250;g+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${i%5?1.2:2}" fill="#fff" opacity="${(0.4+0.5*((i*13)%7)/7).toFixed(2)}"/>`}
+    g+=`<circle cx="500" cy="1650" r="1400" fill="url(#ghAtm)"/><circle cx="500" cy="1650" r="1400" fill="#9fd0ff" opacity=".16"/><circle cx="500" cy="1650" r="1400" fill="none" stroke="#bfe0ff" stroke-width="2" stroke-dasharray="8 8" opacity=".6"/>`;
+    g+=`<g fill="#fff" opacity=".9"><ellipse cx="235" cy="345" rx="70" ry="16"/><ellipse cx="275" cy="333" rx="45" ry="15"/><ellipse cx="560" cy="330" rx="90" ry="15"/><ellipse cx="600" cy="318" rx="50" ry="14"/><ellipse cx="880" cy="345" rx="80" ry="14"/><ellipse cx="90" cy="400" rx="60" ry="13"/></g>`;
+    g+=`<circle cx="500" cy="1650" r="1180" fill="url(#ghSea)"/><g clip-path="url(#ghClip)" fill="#3f8f3a"><path d="M40,560 C120,520 220,500 300,520 C330,560 260,600 180,620 L0,620 Z"/><path d="M470,470 C560,455 640,470 700,500 C720,540 640,560 560,580 C520,560 480,530 470,470 Z" fill="#6f9f3c"/><path d="M820,500 C880,480 960,490 1000,510 L1000,620 L860,620 C830,580 800,540 820,500 Z"/></g>`;
+    g+=`<g class="st" data-s="1">`+Array.from({length:16},(_,i)=>{const a=i*Math.PI/8;return `<line x1="${130+Math.cos(a)*64}" y1="${110+Math.sin(a)*64}" x2="${130+Math.cos(a)*84}" y2="${110+Math.sin(a)*84}" stroke="#ffc21a" stroke-width="5" stroke-linecap="round"/>`}).join('')+`</g><circle cx="130" cy="110" r="58" fill="url(#ghSun)"/>`;
+    const arrow=(s,x1,y1,x2,y2,w,col)=>`<g class="st" data-s="${s}"><path class="draw" d="M${x1},${y1} L${x2},${y2}" stroke="${col}" stroke-width="${w}" fill="none" stroke-linecap="round"/>${head(x2,y2,x1,y1,w*1.4,col)}</g>`;
+    const warrow=(s,x1,y1,x2,y2,w)=>`<g class="st" data-s="${s}"><path class="draw" d="${wave(x1,y1,x2,y2,9,4)}" stroke="${IR}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>${head(x2,y2,x1,y1,w*1.5,IR)}</g>`;
+    g+=arrow(4,170,160,392,Y(400)-14,30,SUN)+arrow(5,262,285,345,140,14,SUN)+arrow(6,404,Y(404)-8,505,175,12,SUN);
+    let ab='';for(let x=400;x<=590;x+=10)ab+=(x===400?'M':' L')+x+','+(Y(x)+12).toFixed(1);
+    g+=`<g class="st" data-s="7"><path d="${ab}" stroke="#ff9d00" stroke-width="18" fill="none" stroke-linecap="round" opacity=".9"/><circle cx="400" cy="${Y(400)+6}" r="26" fill="#ff9d00" opacity=".55"/></g>`;
+    g+=warrow(8,592,Y(592)-6,625,300,18);
+    const mol=(x,y)=>`<g><circle cx="${x-15}" cy="${y}" r="8" fill="#e33"/><circle cx="${x}" cy="${y}" r="10" fill="#222" stroke="#fff" stroke-width="2"/><circle cx="${x+15}" cy="${y}" r="8" fill="#e33"/></g>`;
+    g+=`<g class="st" data-s="9">${mol(600,262)}${mol(665,300)}${mol(715,262)}${mol(560,305)}${mol(730,335)}${mol(650,345)}</g>`;
+    g+=warrow(10,690,300,705,Y(705)-8,16)+warrow(11,640,285,690,60,14);
+    const TAGS=[[1,215,28,['Sol'],190,95],[2,40,570,['Superfície terrestre'],null],[3,24,470,['Atmosfera terrestre'],null],[4,20,250,['Radiació emesa','pel Sol'],245,275],[5,360,92,['Radiació reflectida',"per l'atmosfera"],328,168],[6,90,365,['Radiació reflectida per','la superfície terrestre'],425,395],[7,440,552,['Radiació absorbida'],480,490],[8,770,400,['Radiació emesa','per la Terra'],606,400],[9,770,160,["Gasos d'efecte",'hivernacle'],722,262],[10,770,275,['Radiació terrestre que','retorna a la superfície'],700,420],[11,770,40,['Radiació terrestre que',"s'escapa a l'espai"],672,110]];
+    TAGS.forEach(([s,x,y,ls,lx,ly])=>{if(!PROF)ls=['?'];g+=`<g class="st tag" data-s="${s}" data-x="${x}" data-y="${y}" data-n="${ls.length}" ${lx!=null?`data-lx="${lx}" data-ly="${ly}"`:''}><line/><rect rx="6"/><text>${ls.map((t,q)=>`<tspan x="${x+12}" y="${y+26+q*25}">${t}</tspan>`).join('')}</text></g>`});
+    $('#gh').innerHTML=g;
+    $$('#gh .tag').forEach(t=>{const tx=t.querySelector('text'),bb=tx.getBBox(),x=+t.dataset.x,y=+t.dataset.y,n=+t.dataset.n,w=bb.width+24,h=14+n*25,X=Math.min(x,1000-w-6);
+      tx.querySelectorAll('tspan').forEach(ts=>ts.setAttribute('x',X+12));const r=t.querySelector('rect');r.setAttribute('x',X);r.setAttribute('y',y);r.setAttribute('width',w);r.setAttribute('height',h);
+      const l=t.querySelector('line');if(t.dataset.lx){const lx=+t.dataset.lx,ly=+t.dataset.ly;l.setAttribute('x1',clamp(lx,X,X+w));l.setAttribute('y1',clamp(ly,y,y+h));l.setAttribute('x2',lx);l.setAttribute('y2',ly)}});
+    $$('#gh .draw').forEach(p=>{const L=p.getTotalLength();p.style.strokeDasharray=L;p.style.strokeDashoffset=L});
+    $('#ghlist').innerHTML=GH.slice(1).map((g,i)=>`<li data-i="${i+1}"><i>${i+1}</i><span>${g[0]}</span></li>`).join('');
+    built=true}
+  function draw(s){if(!built||builtProf!==PROF)build();
+    $$('#gh .st').forEach(e=>{const on=+e.dataset.s<=s;e.classList.toggle('on',on);e.classList.toggle('cur',+e.dataset.s===s);const d=e.querySelector('.draw');if(d)d.style.strokeDashoffset=on?0:d.getTotalLength()});
+    if(s>0&&s!==lastS)sfx.blip();lastS=s;
+    $('#ghS').textContent=s?`Pas ${s} de 11`:'';$('#ghT').textContent=s===0?GH[0][0]:(PROF?GH[s][0]:GH[s][1]);$('#ghX').textContent=s===0?(PROF?'':'Escriu al dossier el nom de cada element de l\'esquema.'):(PROF?GH[s][1]:'Quin és el nom d\'aquest element?');
+    $('#ghlist').style.display=PROF?'':'none';
+    $$('#ghlist li').forEach(li=>{const i=+li.dataset.i;li.classList.toggle('on',i<=s);li.classList.toggle('cur',i===s);li.querySelector('span').textContent=i<=s?GH[i][0]:'· · ·'});
+    $('#ghNext').textContent=s>=11?'Següent ▶':'▶'}
+  $('#ghNext').onclick=next;$('#ghPrev').onclick=()=>{if(k>0){k--;applyStep()}};$('#ghReset').onclick=()=>{k=0;applyStep()};
+  let lastS=0;H.l1b={step:draw};
+}
+
+/* =================== termòmetre =================== */
+function thermo(svg,T,lo,hi,marks){
+  const top=24,bot=290,x=80,yT=t=>bot-(clamp(t,lo,hi)-lo)/(hi-lo)*(bot-top);let g='';
+  g+=`<rect x="${x-16}" y="${top-12}" width="32" height="${bot-top+20}" rx="16" fill="#fff" stroke="#1B1B1B" stroke-width="4"/>`;
+  (marks||[]).forEach(([t,l])=>{g+=`<line x1="${x+20}" y1="${yT(t)}" x2="${x+32}" y2="${yT(t)}" stroke="#1B1B1B" stroke-width="3"/><text x="${x+38}" y="${yT(t)+6}" font-size="17" font-weight="700" fill="#6B635D">${l}</text>`});
+  g+=`<rect x="${x-8}" y="${yT(T)}" width="16" height="${bot-yT(T)+10}" rx="8" fill="#D62828"/><circle cx="${x}" cy="${bot+28}" r="30" fill="#D62828" stroke="#1B1B1B" stroke-width="4"/>`;
+  svg.innerHTML=g}
+
+/* =================== LAB 1.3 · PAS 1 =================== */
+{
+  let w=1,c=1,ctx=null,W=0,raf=null;const st=stars(110,11);
+  const T=()=>-18+32*(0.75*w+0.25*c);
+  function upd(){const t=T();$('#o1w').textContent=fmt(w*100)+' %';$('#o1c').textContent=fmt(c*100)+' %';$('#o1t').textContent=fmt(t)+' °C';$('#o1d').textContent=sgn(t+18)+' °C';
+    $('#s1w').value=w*100;$('#s1c').value=c*100;thermo($('#th1'),t,-30,30,[[14,'14 °C'],[0,'0 °C'],[-18,'−18 °C']])}
+  $('#s1w').oninput=e=>{w=e.target.value/100;upd()};$('#s1c').oninput=e=>{c=e.target.value/100;upd()};
+  $('#b1zero').onclick=()=>{animTo(0,0)};$('#b1reset').onclick=()=>{animTo(1,1)};
+  let an=null;function animTo(W2,C2){cancelAnimationFrame(an);const w0=w,c0=c,t0=performance.now(),D=reduce?1:1600;(function f(n){const p=clamp((n-t0)/D,0,1),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;w=w0+(W2-w0)*e;c=c0+(C2-c0)*e;upd();if(p<1)an=requestAnimationFrame(f)})(t0)}
+  function frame(now){if(!ctx){W=430;ctx=hidpi($('#ecan'),W,W);$('#ecan').style.width=W+'px';$('#ecan').style.height=W+'px'}
+    ctx.fillStyle='#0A0E1F';ctx.fillRect(0,0,W,W);drawStars(ctx,W,W,st,now);
+    const t=T(),ice=22+(14-t)/32*63,D=W*0.72,cc=W/2,R=D/2;
+    const g=ctx.createRadialGradient(cc,cc,R*0.97,cc,cc,R*1.07);g.addColorStop(0,`rgba(170,210,255,${0.6*(0.3+0.7*(0.75*w+0.25*c))})`);g.addColorStop(1,'rgba(170,210,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cc,cc,R*1.07,0,Math.PI*2);ctx.fill();
+    renderSphere(now/60000,makeTex('terra'),ice);ctx.drawImage(sph,cc-R,cc-R,D,D);raf=requestAnimationFrame(frame)}
+  upd();
+  H.l1c={enter(){ctx=null;if(!raf)raf=requestAnimationFrame(frame)},leave(){cancelAnimationFrame(raf);raf=null}};
+}
+
+/* =================== LAB 1.3 · PAS 2 =================== */
+{
+  const HIST=[[1750,278],[1800,283],[1850,285],[1900,296],[1950,311],[1960,317],[1970,326],[1980,339],[1990,354],[2000,370],[2010,390],[2020,414],[2024,425]];
+  const SC={low:[[2024,425],[2030,435],[2050,460],[2070,455],[2100,445]],mid:[[2024,425],[2030,440],[2050,490],[2070,545],[2100,600]],high:[[2024,425],[2030,450],[2050,560],[2070,760],[2100,1135]]};
+  const SCN={low:'baixes',mid:'moderades',high:'altes'};
+  const lin=(tab,x)=>{for(let i=1;i<tab.length;i++)if(x<=tab[i][0]){const [a,b]=tab[i-1],[c,d]=tab[i];return b+(d-b)*(x-a)/(c-a)}return tab[tab.length-1][1]};
+  const FL=[
+    {t:330,h:'El gel es fon',x:'Les glaceres i els casquets polars es fan cada vegada més petits.',ic:'<svg viewBox="0 0 48 48"><path d="M6 40 L20 10 L28 24 L33 16 L42 40Z" fill="#fff" stroke="#1B1B1B" stroke-width="3" stroke-linejoin="round"/><path d="M14 45 q2 -4 4 0 M26 46 q2 -4 4 0" stroke="#3d7fd1" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'},
+    {t:380,h:'Puja el nivell del mar',x:"L'aigua del mar s'escalfa i s'expandeix, i hi arriba el gel fos.",ic:'<svg viewBox="0 0 48 48"><path d="M3 24 q6 -6 12 0 t12 0 t12 0 t9 0" fill="none" stroke="#3d7fd1" stroke-width="4" stroke-linecap="round"/><path d="M3 36 q6 -6 12 0 t12 0 t12 0 t9 0" fill="none" stroke="#3d7fd1" stroke-width="4" stroke-linecap="round"/><path d="M40 6 v12 M35 11 l5 -5 l5 5" stroke="#D62828" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>'},
+    {t:420,h:'Onades de calor',x:'Estius més calorosos i sequeres més llargues i freqüents.',ic:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="9" fill="#D62828"/><g stroke="#D62828" stroke-width="3.5" stroke-linecap="round"><path d="M24 4v6M24 38v6M4 24h6M38 24h6M10 10l4 4M34 34l4 4M38 10l-4 4M14 34l-4 4"/></g></svg>'},
+    {t:550,h:'Temporals extrems',x:'Pluges torrencials, inundacions i tempestes més intenses.',ic:'<svg viewBox="0 0 48 48"><path d="M12 30 a9 9 0 0 1 2 -17 a12 12 0 0 1 22 4 a7 7 0 0 1 0 13Z" fill="#fff" stroke="#1B1B1B" stroke-width="3" stroke-linejoin="round"/><path d="M24 30 l-5 9 h6 l-4 8" fill="none" stroke="#D62828" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/></svg>'}];
+  const LOCK='<svg viewBox="0 0 34 34"><rect x="7" y="15" width="20" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="3"/><path d="M11 15 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="currentColor" stroke-width="3"/></svg>';
+  $('#flips').innerHTML=FL.map((f,i)=>`<button class="flip" type="button" data-i="${i}" aria-label="Efecte ${i+1}"><span class="in"><span class="fa">${LOCK}<span class="fl">Es desbloqueja a ${fmt(f.t)} ppm</span></span><span class="ba">${f.ic}<span><b>${f.h}</b>${f.x}</span></span></span></button>`).join('');
+  let year=1750,scn='mid',maxP=278,unl=[false,false,false,false];
+  const ppmAt=y=>y<=2024?lin(HIST,y):lin(SC[scn],y);
+  function refreshFlips(){$$('#flips .flip').forEach((b,i)=>{const u=unl[i]||PROF;b.classList.toggle('unl',u&&!b.classList.contains('open'));b.querySelector('.fl').textContent=u?'Toca per girar':`Es desbloqueja a ${fmt(FL[i].t)} ppm`})}
+  $$('#flips .flip').forEach((b,i)=>b.onclick=()=>{if(!(unl[i]||PROF))return;b.classList.toggle('open');sfx.flip();refreshFlips()});
+  function chart(){
+    const X0=64,X1=930,Y0=338,Y1=26,xs=y=>X0+(y-1750)/350*(X1-X0),ys=p=>Y0-(p-250)/(1200-250)*(Y0-Y1);let g='';
+    g+=`<rect x="${xs(1750)}" y="${Y1}" width="${xs(1850)-xs(1750)}" height="${Y0-Y1}" fill="#F6F3F1"/><rect x="${xs(1850)}" y="${Y1}" width="${xs(2024)-xs(1850)}" height="${Y0-Y1}" fill="#FDF1EF"/><rect x="${xs(2024)}" y="${Y1}" width="${xs(2100)-xs(2024)}" height="${Y0-Y1}" fill="#EEF2F6"/>`;
+    [[1750,1850,'Era preindustrial'],[1850,2024,'Era industrial'],[2024,2100,'Previsió']].forEach(([a,b,l])=>g+=`<text x="${(xs(a)+xs(b))/2}" y="${Y1-8}" text-anchor="middle" font-size="16" font-weight="700" fill="#6B635D">${l}</text>`);
+    for(let p=300;p<=1200;p+=100)g+=`<line x1="${X0}" y1="${ys(p)}" x2="${X1}" y2="${ys(p)}" stroke="#E6E0DB" stroke-width="1.2"/><text x="${X0-8}" y="${ys(p)+5}" text-anchor="end" font-size="15" fill="#6B635D">${fmt(p)}</text>`;
+    for(let y=1750;y<=2100;y+=50)g+=`<line x1="${xs(y)}" y1="${Y1}" x2="${xs(y)}" y2="${Y0}" stroke="#E6E0DB" stroke-width="1.2"/><text x="${xs(y)}" y="${Y0+20}" text-anchor="middle" font-size="15" fill="#6B635D">${y}</text>`;
+    g+=`<text x="12" y="${(Y0+Y1)/2}" transform="rotate(-90 12 ${(Y0+Y1)/2})" text-anchor="middle" font-size="15" fill="#1B1B1B">ppm</text>`;
+    Object.keys(SC).forEach(k=>{const on=k===scn;g+=`<polyline points="${SC[k].map(([y,p])=>xs(y)+','+ys(p)).join(' ')}" fill="none" stroke="${on?'#D62828':'#C9C1BA'}" stroke-width="${on?4:2.5}" stroke-dasharray="8 6"/>`;
+      const e=SC[k][SC[k].length-1];g+=`<text x="${xs(2100)-6}" y="${ys(e[1])+(k==='low'?18:-8)}" text-anchor="end" font-size="14" font-weight="700" fill="${on?'#A51C1C':'#9A928B'}">${SCN[k]}</text>`});
+    g+=`<polyline points="${HIST.map(([y,p])=>xs(y)+','+ys(p)).join(' ')}" fill="none" stroke="#1B1B1B" stroke-width="4" stroke-linejoin="round"/>`;
+    HIST.forEach(([y,p])=>g+=`<circle cx="${xs(y)}" cy="${ys(p)}" r="3.5" fill="#1B1B1B"/>`);
+    FL.forEach(f=>g+=`<line x1="${X0}" y1="${ys(f.t)}" x2="${X0+12}" y2="${ys(f.t)}" stroke="#D62828" stroke-width="3"/>`);
+    const p=ppmAt(year);g+=`<line x1="${xs(year)}" y1="${Y1}" x2="${xs(year)}" y2="${Y0}" stroke="#D62828" stroke-width="1.5" stroke-dasharray="3 4"/><circle cx="${xs(year)}" cy="${ys(p)}" r="10" fill="#D62828" stroke="#fff" stroke-width="3.5"/>`;
+    $('#co2chart').innerHTML=g}
+  function bars(){const D=[['Electricitat i calefacció',33],['Indústria',19],['Transport',16],['Agricultura i ramaderia',12],['Edificis (cases i comerços)',6],['Altres (fuites, residus, desforestació)',13]];
+    let g='';const X0=10,W=300;D.forEach(([n,v],i)=>{const y=6+i*45;g+=`<text x="${X0}" y="${y+14}" font-size="14.5" font-weight="700" fill="#1B1B1B">${n}</text><rect x="${X0}" y="${y+20}" width="${v/35*W}" height="18" rx="4" fill="${i===0?'#D62828':'#E9908F'}"/><text x="${X0+v/35*W+8}" y="${y+35}" font-size="17" font-weight="800" fill="#A51C1C">${v} %</text>`});
+    $('#srcchart').innerHTML=g}
+  function upd(){const p=ppmAt(year);$('#s2y').value=year;$('#o2y').textContent=`${year} · ${fmt(Math.round(p))} ppm`;
+    $$('.sb').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===scn));
+    if(p>maxP)maxP=p;let nu=false;FL.forEach((f,i)=>{if(!unl[i]&&maxP>=f.t){unl[i]=true;nu=true}});if(nu)sfx.unlock();refreshFlips();chart()}
+  $('#s2y').oninput=e=>{year=+e.target.value;upd()};$$('.sb').forEach(b=>b.onclick=()=>{scn=b.dataset.s;upd()});
+  bars();upd();window._refreshFlips=refreshFlips;
+}
+
+/* =================== LAB 1.3 · PAS 3 =================== */
+const TE={venus:428,terra:255,mart:222.15};
+function surfT(Te,P,C,W){const pc=P*C/100,pw=P*W/100,tau=0.0527*Math.pow(pc,0.52)+1.468e-4*Math.pow(pc,1.2)+0.80*Math.sqrt(pw/10);return Te*Math.pow(1+0.75*tau,0.25)}
+{
+  let C=95,lp=Math.log10(8),meas=[],ex='A';
+  const P=()=>Math.pow(10,lp),s2l=v=>Math.log10(8)+v/1000*3,l2s=l=>Math.round((l-Math.log10(8))/3*1000);
+  const fP=p=>p>=100?fmt(p)+' hPa':fmt(p,p>=10?0:1)+' hPa';
+  function upd(){const p=P(),t=surfT(TE.mart,p,C,0)-273.15,d=t-(TE.mart-273.15);
+    $('#s3c').value=C;$('#s3p').value=l2s(lp);$('#o3c').textContent=fmt(C)+' %';$('#o3p').textContent=fP(p);$('#o3t').textContent=fmt(t)+' °C';$('#o3d').textContent=sgn(d)+' °C';
+    $$('.xb').forEach(b=>b.setAttribute('aria-pressed',b.dataset.x===ex))}
+  $('#s3c').oninput=e=>{C=+e.target.value;upd()};$('#s3p').oninput=e=>{lp=s2l(+e.target.value);upd()};
+  $$('.xb').forEach(b=>b.onclick=()=>{ex=b.dataset.x;if(ex==='A'){lp=Math.log10(8)}else{C=95}upd()});
+  function table(){const tb=$('#m3');tb.innerHTML=meas.map((m,i)=>`<tr class="${i===meas.length-1?'new':''}"><td>${m.ex}</td><td>${fP(m.p)}</td><td>${fmt(m.c)} %</td><td class="t">${fmt(m.t)} °C</td><td>${sgn(m.d)} °C</td></tr>`).join('');$('#m3empty').style.display=meas.length?'none':''}
+  $('#b3save').onclick=()=>{sfx.blip();const p=P(),t=surfT(TE.mart,p,C,0)-273.15;meas.push({ex,p,c:C,t,d:t-(TE.mart-273.15)});if(meas.length>9)meas.shift();table()};
+  $('#b3clear').onclick=()=>{meas=[];table()};
+  function planets(){const rows=[['Venus',93000,'#E7C27D',306],['Terra',1013,'#3d7fd1',32],['Mart',8,'#C1440E',5]];let g='';
+    const lx=p=>150+Math.log10(p)/5*290;
+    rows.forEach(([n,p,col,inc],i)=>{const y=66+i*116,th=3+Math.log10(p)*3.2;
+      g+=`<circle cx="58" cy="${y}" r="${30+th}" fill="${col}" opacity=".22"/><circle cx="58" cy="${y}" r="30" fill="${col}" stroke="#1B1B1B" stroke-width="3"/>`;
+      g+=`<text x="58" y="${y+56+th*0.3}" text-anchor="middle" font-size="18" font-weight="700" fill="#1B1B1B">${n}</text>`;
+      g+=`<rect x="150" y="${y-30}" width="${lx(p)-150}" height="22" rx="5" fill="#1B1B1B"/><text x="${Math.min(lx(p)+8,380)}" y="${y-13}" font-size="17" font-weight="700" fill="${lx(p)>380?'#fff':'#1B1B1B'}" ${lx(p)>380?'text-anchor="end"':''}>${fmt(p)} hPa</text>`;
+      g+=`<text x="150" y="${y+20}" font-size="17" fill="#6B635D">Escalfament:</text><text class="studonly" x="262" y="${y+21}" font-size="22" font-weight="800" fill="#A51C1C">?</text><text class="profonly" x="262" y="${y+21}" font-size="22" font-weight="800" fill="#A51C1C">+${inc} °C</text>`});
+    g+=`<text x="150" y="16" font-size="15" fill="#6B635D">Pressió (escala de 10 en 10)</text>`;
+    $('#tp3').innerHTML=g}
+  planets();upd();table();
+}
+
+/* =================== LAB 2 · capes =================== */
+{
+  const EPROF=[[0,15],[11,-56.5],[20,-56.5],[32,-44.5],[47,-2.5],[51,-2.5],[71,-58.5],[85,-86.3],[100,-78],[110,-40],[120,10]];
+  const EPRES=[[0,1013.25],[5,540.5],[10,265],[15,121.1],[20,55.3],[25,25.5],[30,11.97],[35,5.75],[40,2.87],[50,0.798],[60,0.219],[70,0.052],[80,0.0105],[90,0.0018],[100,0.00032],[120,0.000025]];
+  const interp=(tab,z,log)=>{for(let i=1;i<tab.length;i++)if(z<=tab[i][0]){const [a,b]=tab[i-1],[c,d]=tab[i],t=(z-a)/(c-a);return log?Math.exp(Math.log(b)+(Math.log(d)-Math.log(b))*t):b+(d-b)*t}return tab[tab.length-1][1]};
+  const LAY=[
+    {pr:null,n:"Troposfera",a:0,b:12,alt:"De 0 a 12 km",t:"Baixa amb l'altura (fins a uns −56 °C)",c:["Conté el 80 % de l'aire i gairebé tot el vapor d'aigua","Hi passen els fenòmens meteorològics: núvols, pluja i vent","Hi vivim nosaltres i hi volen els avions"]},
+    {pr:{ab:["UV-C","UV-B"],pa:["UV-B"],t:"La capa d'ozó absorbeix gairebé tota la radiació ultraviolada perillosa (UV-C i la major part de la UV-B)."},n:"Estratosfera",a:12,b:50,alt:"De 12 a 50 km",t:"Puja amb l'altura (fins a uns 0 °C)",c:["Capa d'ozó (20-30 km): absorbeix la radiació ultraviolada","Aire estable, gairebé sense núvols","Hi arriben els globus sonda"]},
+    {pr:null,n:"Mesosfera",a:50,b:85,alt:"De 50 a 85 km",t:"Baixa fins a uns −90 °C: la zona més freda",c:["Es desintegren els meteorits: estels fugaços"]},
+    {pr:{ab:["Raigs X","UV extrem"],pa:[],t:"Absorbeix els raigs X i l'ultraviolat extrem del Sol. Per això s'escalfa tant."},n:"Termosfera",a:85,b:120,alt:"De 85 a 600 km",t:"Puja fins a més de 1.000 °C",c:["Aire molt poc dens","Aurores polars i ionosfera (reflecteix les ones de ràdio)","Hi orbita l'Estació Espacial Internacional (400 km)"]},
+    {pr:null,n:"Exosfera",a:120,b:120,alt:"De 600 a 10.000 km",t:"Transició cap a l'espai",c:["Els àtoms lleugers (hidrogen i heli) s'escapen","Hi orbiten molts satèl·lits"]}];
+  const BANDS=['Raigs X','UV extrem','UV-C','UV-B','UV-A','Llum visible','Infraroig'];
+  function protHTML(L){const p=L.pr;
+    const chips=BANDS.map(b=>{const ab=p&&p.ab.includes(b),pa=p&&p.pa.includes(b);return `<span class="band${ab?' ab':''}${pa?' pa':''}">${b}</span>`}).join('');
+    return `<div class="prot${p?' on':''}"><div class="ph">${p?'🛡️ Capa protectora':'Sense funció de filtre de radiació'}</div><div class="spec">${chips}</div><div class="pt">${p?p.t:'La radiació del Sol la travessa sense que en quedi absorbida cap part important.'}</div></div>`}
+  let sel=0,alt=0,exo=false;
+  $('#chips2').innerHTML=LAY.map((L,i)=>`<button class="chip2" type="button" data-i="${i}">${L.n}</button>`).join('');
+  $$('#chips2 .chip2').forEach(c=>c.onclick=()=>pick(+c.dataset.i));
+  function pick(i){exo=i===4;alt=exo?120:(LAY[i].a+LAY[i].b)/2;upd()}
+  function draw(){const X0=90,X1=650,Y0=560,Y1=30,Tmin=-150,Tmax=40,X=T=>X0+(T-Tmin)/(Tmax-Tmin)*(X1-X0),Y=z=>Y0-z/120*(Y0-Y1);let s='';
+    LAY.slice(0,4).forEach((L,i)=>{const on=i===sel&&!exo;s+=`<rect class="band" data-i="${i}" x="${X0}" y="${Y(L.b)}" width="${820-X0}" height="${Y(L.a)-Y(L.b)}" fill="${on?'#FDE4E2':(i%2?'#F6F3F1':'#fff')}" stroke="#E6E0DB" style="cursor:pointer"/>`;
+      if(L.pr)s+=`<g transform="translate(${X1-34},${(Y(L.a)+Y(L.b))/2-12})" style="pointer-events:none"><path d="M11 0 L22 4 V11 C22 18 17 22 11 25 C5 22 0 18 0 11 V4Z" fill="#D62828" stroke="#1B1B1B" stroke-width="2"/></g>`;
+      s+=`<text x="${X1+14}" y="${(Y(L.a)+Y(L.b))/2+9}" font-family="Bricolage Grotesque,Arial Black,sans-serif" font-weight="800" font-size="26" fill="${on?'#D62828':'#6B635D'}" style="pointer-events:none">${L.n}</text>`});
+    for(let T=-140;T<=40;T+=20)s+=`<line x1="${X(T)}" y1="${Y1}" x2="${X(T)}" y2="${Y0}" stroke="#E6E0DB" stroke-width=".8" style="pointer-events:none"/><text x="${X(T)}" y="${Y0+24}" text-anchor="middle" font-size="16" fill="#6B635D">${fmt(T)}</text>`;
+    for(let z=0;z<=120;z+=20)s+=`<text x="${X0-10}" y="${Y(z)+5}" text-anchor="end" font-size="17" fill="#6B635D">${z}</text>`;
+    s+=`<text x="${(X0+X1)/2}" y="${Y0+38}" text-anchor="middle" font-size="17" fill="#1B1B1B">Temperatura (°C)</text><text x="22" y="${(Y0+Y1)/2}" transform="rotate(-90 22 ${(Y0+Y1)/2})" text-anchor="middle" font-size="17" fill="#1B1B1B">Altitud (km)</text>`;
+    const mk=(tab,st)=>`<polyline points="${tab.map(([z,T])=>X(T)+','+Y(z)).join(' ')}" fill="none" ${st} style="pointer-events:none"/>`;
+    s+=mk(EPROF,'stroke="#D62828" stroke-width="6"');
+    [[11,"avions"],[30,"globus sonda"],[80,"estels fugaços"],[110,"aurores"]].forEach(([z,t])=>{s+=`<circle cx="${X0+18}" cy="${Y(z)}" r="4" fill="#1B1B1B"/><text x="${X0+28}" y="${Y(z)+5}" font-size="16" fill="#1B1B1B">${t}</text>`});
+    const Ta=interp(EPROF,alt);s+=`<line x1="${X0}" y1="${Y(alt)}" x2="${X1}" y2="${Y(alt)}" stroke="#1B1B1B" stroke-width="2" stroke-dasharray="4 4" style="pointer-events:none"/><circle cx="${X(Ta)}" cy="${Y(alt)}" r="10" fill="#D62828" stroke="#fff" stroke-width="3"/>`;
+    $('#profile').innerHTML=s;$$('#profile .band').forEach(r=>r.onclick=()=>pick(+r.dataset.i))}
+  function upd(){sel=exo?4:Math.max(0,LAY.slice(0,4).findIndex(L=>alt<=L.b));const L=LAY[sel];
+    $$('#chips2 .chip2').forEach((c,i)=>c.setAttribute('aria-pressed',i===sel));
+    $('#layerInfo').innerHTML=`<h3>${L.n}</h3><dl><dt>Altitud</dt><dd>${L.alt}</dd><dt>Temperatura</dt><dd>${L.t}</dd><dt>Característiques</dt><dd><ul>${L.c.map(x=>`<li>${x}</li>`).join('')}</ul></dd></dl>${protHTML(L)}`;
+    $('#sAlt').value=alt;$('#oAlt').textContent=fmt(alt,alt%1?1:0)+' km';$('#aT').textContent=exo?'–':fmt(interp(EPROF,alt))+' °C';
+    const P=interp(EPRES,alt,true);$('#aP').textContent=exo?'≈ 0':(P>=10?fmt(P)+' hPa':P>=0.1?fmt(P,2)+' hPa':P.toExponential(1).replace('.',',')+' hPa');draw()}
+  $('#sAlt').oninput=e=>{alt=+e.target.value;exo=false;upd()};upd();
+}
+
+/* =================== LAB 3 · camp magnètic =================== */
+{
+  const cv=$('#mag');let ctx=null,W=930,Hh=430,raf=null,planet='terra',field=true,parts=[],esc=[],atm=1,simT=0,aur=0,aT=0,aB=0;const st=stars(120,5);
+  function reset(){parts=[];esc=[];atm=1;simT=0;aur=0;aT=aB=0;ui()}
+  function ui(){$$('.mp').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===planet));$$('.mf').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.f==='1')===field));
+    $('#mAtm').textContent=fmt(atm*100)+' %';$('#mBar').style.width=(atm*100)+'%';$('#mTime').textContent=fmt(simT)+' Ma';$('#mAur').textContent=fmt(aur)}
+  $$('.mp').forEach(b=>b.onclick=()=>{planet=b.dataset.p;field=planet==='terra';reset()});$$('.mf').forEach(b=>b.onclick=()=>{field=b.dataset.f==='1';ui()});$('#magReset').onclick=reset;
+  function frame(){if(!ctx){ctx=hidpi(cv,W,Hh);cv.style.width=W+'px';cv.style.height=Hh+'px'}
+    const cx=W*0.63,cy=Hh/2,R=(planet==='terra'?0.13:0.075)*Hh,v=W/260;
+    ctx.fillStyle='#0A0E1F';ctx.fillRect(0,0,W,Hh);drawStars(ctx,W,Hh,st,0);
+    const sg=ctx.createRadialGradient(-Hh*0.25,cy,Hh*0.1,-Hh*0.25,cy,Hh*0.55);sg.addColorStop(0,'#ffcc33');sg.addColorStop(.55,'#ff8a1f');sg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=sg;ctx.beginPath();ctx.arc(-Hh*0.25,cy,Hh*0.55,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='700 18px Atkinson Hyperlegible, sans-serif';ctx.fillText('Sol',10,cy+6);ctx.fillText('vent solar →',W*0.14,28);
+    if(field){ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1.4;[1.7,2.4,3.3,4.4].forEach(Lk=>{[-1,1].forEach(side=>{const sc=side<0?0.72:1.55;ctx.beginPath();for(let a=-78;a<=78;a+=3){const la=a*Math.PI/180,r=Lk*R*Math.cos(la)**2,x=cx+side*r*Math.cos(la)*sc,y=cy-r*Math.sin(la);a===-78?ctx.moveTo(x,y):ctx.lineTo(x,y)}ctx.stroke()})});
+      ctx.strokeStyle='rgba(255,90,90,.45)';ctx.lineWidth=2;ctx.setLineDash([6,6]);ctx.beginPath();ctx.arc(cx,cy,3*R,Math.PI*0.55,Math.PI*1.45);ctx.stroke();ctx.setLineDash([])}
+    for(let i=0;i<4;i++){const u=v*(0.85+Math.random()*0.4);parts.push({x:-5,y:Math.random()*Hh,vx:u,vy:0,u,trap:field&&Math.random()<0.05})}
+    const rmin=3*R,Ratm=R*(1+0.32*atm);ctx.fillStyle='#ffb347';
+    for(let i=parts.length-1;i>=0;i--){const p=parts[i],dx=p.x-cx,dy=p.y-cy,r=Math.hypot(dx,dy);
+      if(field){if(p.trap&&r<rmin*1.15){const ty=cy+(dy<0?-1:1)*R*0.95,tx=cx-R*0.15,ex=tx-p.x,ey=ty-p.y,d=Math.hypot(ex,ey);p.vx=ex/d*v*1.2;p.vy=ey/d*v*1.2;if(d<R*0.22){if(dy<0)aT=1;else aB=1;aur++;parts.splice(i,1);continue}}
+        else{const a2=rmin*rmin,r4=Math.max(r,rmin*0.9)**4,U=p.u;p.vx=U*(1-a2*(dx*dx-dy*dy)/r4);p.vy=-U*(2*a2*dx*dy)/r4;const spd=Math.hypot(p.vx,p.vy);if(spd<U*0.25){p.vx+=U*0.25*(dx>0?1:0.3);p.vy+=U*0.25*Math.sign(dy||1)}}}
+      else if(r<Ratm){parts.splice(i,1);if(Math.random()<0.5&&atm>0.02){atm=Math.max(0.02,atm-0.0012);const ang=Math.atan2(dy,dx)+(Math.random()-.5);esc.push({x:cx+Math.cos(ang)*Ratm,y:cy+Math.sin(ang)*Ratm,vx:v*(0.6+Math.random()*0.6),vy:(Math.random()-.5)*v,l:1})}continue}
+      p.x+=p.vx;p.y+=p.vy;if(p.x>W+10||p.y<-20||p.y>Hh+20){parts.splice(i,1);continue}ctx.fillRect(p.x,p.y,2.4,2.4)}
+    ctx.fillStyle='rgba(255,255,255,.9)';for(let i=esc.length-1;i>=0;i--){const e=esc[i];e.x+=e.vx;e.y+=e.vy;e.l-=0.008;if(e.l<=0||e.x>W){esc.splice(i,1);continue}ctx.globalAlpha=e.l;ctx.fillRect(e.x,e.y,3,3)}ctx.globalAlpha=1;
+    const ag=ctx.createRadialGradient(cx,cy,R,cx,cy,Ratm+1);ag.addColorStop(0,'rgba(160,200,255,.55)');ag.addColorStop(1,'rgba(160,200,255,0)');ctx.fillStyle=ag;ctx.beginPath();ctx.arc(cx,cy,Ratm+1,0,Math.PI*2);ctx.fill();
+    const pg=ctx.createRadialGradient(cx-R*0.4,cy-R*0.4,R*0.1,cx,cy,R);if(planet==='terra'){pg.addColorStop(0,'#7fb6ff');pg.addColorStop(1,'#1d4f9a')}else{pg.addColorStop(0,'#ffb07a');pg.addColorStop(1,'#9c3b10')}
+    ctx.fillStyle=pg;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
+    [[aT,-1],[aB,1]].forEach(([a,s])=>{if(a>0.02){ctx.strokeStyle=`rgba(120,255,170,${a})`;ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,R*1.08,s<0?Math.PI*1.3:Math.PI*0.3,s<0?Math.PI*1.7:Math.PI*0.7);ctx.stroke()}});aT*=0.95;aB*=0.95;
+    ctx.fillStyle='#fff';ctx.fillText(planet==='terra'?'Terra':'Mart',cx-R*0.5,cy+R+30);simT+=0.8;ui();raf=requestAnimationFrame(frame)}
+  ui();H.l3={enter(){if(!raf)raf=requestAnimationFrame(frame)},leave(){cancelAnimationFrame(raf);raf=null}};
+}
+
+/* =================== LAB 4.1 · diagrama de fases =================== */
+{
+  const VAP=[[0.01,0.006036],[10,0.01212],[20,0.02308],[30,0.04187],[40,0.07279],[50,0.1217],[60,0.1965],[70,0.3075],[80,0.4675],[90,0.6918],[100,1.0],[120,1.966],[150,4.697],[200,15.34]];
+  const PT=0.006036;
+  function pvap(T){if(T<=VAP[0][0])return VAP[0][1];for(let i=1;i<VAP.length;i++)if(T<=VAP[i][0]){const [t1,p1]=VAP[i-1],[t2,p2]=VAP[i],x1=1/(t1+273.15),x2=1/(t2+273.15),x=1/(T+273.15);return Math.exp(Math.log(p1)+(Math.log(p2)-Math.log(p1))*(x-x1)/(x2-x1))}return 15.34}
+  const psub=T=>PT*Math.exp(-51060/8.314*(1/(T+273.15)-1/273.16)),tmelt=P=>0.01-0.0074*(P-PT);
+  const phaseOf=(T,P)=>{if(P<PT)return(T<=0.01&&P>psub(T))?'S':'G';if(T<tmelt(P))return 'S';if(P>pvap(T))return 'L';return 'G'};
+  const PTS=[[1,"Mar a l'equador",27,1],[2,'Pols terrestres',-40,1],[3,"Cim de l'Everest",-20,0.33],[4,'Pol de Mart',-80,0.006],[5,'Equador de Mart (migdia)',10,0.006]];
+  const NAME={S:'Sòlid',L:'Líquid',G:'Gas'};
+  $('#ptab').innerHTML=PTS.map(([n,l,T,P])=>`<tr data-n="${n}"><td class="n"><b>${n}</b></td><td>${l}<br><span class="note">${fmt(T)} °C · ${fmt(P,P<0.1?3:P<1?2:0)} atm</span></td><td class="mk"><button class="act mkb" type="button" data-n="${n}">📍 Marca</button></td><td class="s"><span class="stq studonly">?</span><span class="stb" hidden>${["S","L","G"].map(v=>`<button type="button" class="stbtn" data-n="${n}" data-v="${v}">${v}</button>`).join("")}</span><span class="profans"><span class="profonly in">${phaseOf(T,P)}</span></span></td></tr>`).join('');
+  const cv=$('#phase'),W=900,Hh=548,ctx=hidpi(cv,W,Hh);cv.style.width=W+'px';cv.style.height=Hh+'px';
+  const TMIN=-100,TMAX=200,LPMIN=-4,LPMAX=3,m={l:84,r:20,t:18,b:58};
+  const X=T=>m.l+(T-TMIN)/(TMAX-TMIN)*(W-m.l-m.r),Y=lp=>Hh-m.b-(lp-LPMIN)/(LPMAX-LPMIN)*(Hh-m.t-m.b),iT=x=>TMIN+(x-m.l)/(W-m.l-m.r)*(TMAX-TMIN),iP=y=>LPMIN+(Hh-m.b-y)/(Hh-m.t-m.b)*(LPMAX-LPMIN);
+  const reg=document.createElement('canvas');
+  (function(){const w=Math.round((W-m.l-m.r)),h=Math.round(Hh-m.t-m.b);reg.width=w;reg.height=h;const c=reg.getContext('2d'),img=c.createImageData(w,h);
+    const col={S:[214,226,238],L:[178,212,242],G:[255,255,255]};
+    for(let y=0;y<h;y++){const P=Math.pow(10,iP(m.t+y));for(let x=0;x<w;x++){const s=phaseOf(iT(m.l+x),P),o=(y*w+x)*4,q=col[s];img.data[o]=q[0];img.data[o+1]=q[1];img.data[o+2]=q[2];img.data[o+3]=255}}c.putImageData(img,0,0)})();
+  let pt={T:140,lp:1.6},show=false;const placed={};
+  function draw(){ctx.clearRect(0,0,W,Hh);ctx.drawImage(reg,m.l,m.t,W-m.l-m.r,Hh-m.t-m.b);
+    ctx.strokeStyle='#E6E0DB';ctx.lineWidth=1;ctx.fillStyle='#6B635D';ctx.font='16px Atkinson Hyperlegible, sans-serif';ctx.textAlign='right';
+    const lab={'-4':'0,0001','-3':'0,001','-2':'0,01','-1':'0,1','0':'1','1':'10','2':'100','3':'1.000'};
+    ctx.strokeStyle='rgba(27,27,27,.07)';for(let l=LPMIN;l<LPMAX;l++)for(const k of [2,3,4,5,6,7,8,9]){const yy=Y(l+Math.log10(k));ctx.beginPath();ctx.moveTo(m.l,yy);ctx.lineTo(W-m.r,yy);ctx.stroke()}
+    for(let T=-100;T<=200;T+=10){if(T%50===0)continue;ctx.beginPath();ctx.moveTo(X(T),m.t);ctx.lineTo(X(T),Hh-m.b);ctx.stroke()}
+    for(let l=LPMIN;l<=LPMAX;l++){ctx.strokeStyle='rgba(27,27,27,.2)';ctx.beginPath();ctx.moveTo(m.l,Y(l));ctx.lineTo(W-m.r,Y(l));ctx.stroke();ctx.fillText(lab[l],m.l-8,Y(l)+5)}
+    ctx.textAlign='center';for(let T=-100;T<=200;T+=50){ctx.beginPath();ctx.moveTo(X(T),m.t);ctx.lineTo(X(T),Hh-m.b);ctx.stroke();ctx.fillText(fmt(T),X(T),Hh-m.b+22)}
+    ctx.fillStyle='#1B1B1B';ctx.font='700 17px Atkinson Hyperlegible, sans-serif';ctx.fillText('Temperatura (°C)',(m.l+W-m.r)/2,Hh-10);ctx.save();ctx.translate(18,(m.t+Hh-m.b)/2);ctx.rotate(-Math.PI/2);ctx.fillText('Pressió (atm)',0,0);ctx.restore();
+    ctx.strokeStyle='#1B1B1B';ctx.lineWidth=3;ctx.beginPath();let f=true;for(let T=-100;T<=0.01;T+=0.5){const l=Math.log10(psub(T));if(l<LPMIN)continue;f?ctx.moveTo(X(T),Y(l)):ctx.lineTo(X(T),Y(l));f=false}ctx.stroke();
+    ctx.beginPath();for(let T=0.01;T<=200;T+=1){const l=Math.log10(pvap(T));T===0.01?ctx.moveTo(X(T),Y(l)):ctx.lineTo(X(T),Y(l))}ctx.stroke();
+    ctx.beginPath();ctx.moveTo(X(tmelt(PT)),Y(Math.log10(PT)));ctx.lineTo(X(tmelt(1000)),Y(3));ctx.stroke();
+    ctx.fillStyle='#1B1B1B';ctx.beginPath();ctx.arc(X(0.01),Y(Math.log10(PT)),6,0,Math.PI*2);ctx.fill();ctx.font='700 15px Atkinson Hyperlegible, sans-serif';ctx.textAlign='right';ctx.fillText('Punt triple',X(0.01)-10,Y(Math.log10(PT))+24);
+    ctx.setLineDash([8,6]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(m.l,Y(0));ctx.lineTo(W-m.r,Y(0));ctx.stroke();ctx.setLineDash([]);ctx.textAlign='right';ctx.fillText('1 atm',W-m.r-8,Y(0)-7);
+    ctx.font='800 30px Bricolage Grotesque, Arial Black, sans-serif';ctx.fillStyle='#1B1B1B';ctx.textAlign='center';ctx.fillText('Sòlid',X(-60),Y(1.6));ctx.fillText('Líquid',X(60),Y(1.9));ctx.fillText('Gas',X(130),Y(-2.6));
+    PTS.forEach(([n,,T,P])=>{if(!(show||placed[n]))return;const x=X(T),y=Y(Math.log10(P));ctx.fillStyle='#fff';ctx.strokeStyle='#D62828';ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(x,y,15,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#A51C1C';ctx.font='800 17px Bricolage Grotesque, sans-serif';ctx.textAlign='center';ctx.fillText(n,x,y+6)});
+    const x=X(pt.T),y=Y(pt.lp);ctx.strokeStyle='#D62828';ctx.lineWidth=1.5;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,Hh-m.b);ctx.moveTo(x,y);ctx.lineTo(m.l,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#D62828';ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.fill();ctx.stroke();
+    const P=Math.pow(10,pt.lp);$('#phRead').innerHTML=`<b>Cursor:</b> ${fmt(pt.T)} °C · ${nice(P)} atm<span class="profonly in"> → <b class="red">${NAME[phaseOf(pt.T,P)]}</b></span>`}
+  function nice(P){const e=Math.floor(Math.log10(P)),q=+(P/Math.pow(10,e)).toPrecision(2),v=q*Math.pow(10,e);const d=Math.max(0,1-e);return fmt(+v.toFixed(Math.min(6,d)),Math.min(6,d)).replace(/(,\d*?)0+$/,'$1').replace(/,$/,'')}
+  function ptr(e){const r=cv.getBoundingClientRect();pt.T=Math.round(clamp(iT((e.clientX-r.left)*W/r.width),TMIN,TMAX));pt.lp=clamp(iP((e.clientY-r.top)*Hh/r.height),LPMIN,LPMAX);draw()}
+  let dr=false;cv.addEventListener('pointerdown',e=>{dr=true;cv.setPointerCapture(e.pointerId);ptr(e)});cv.addEventListener('pointermove',e=>{if(dr)ptr(e)});cv.addEventListener('pointerup',()=>dr=false);
+  $$('.mkb').forEach(b=>b.onclick=()=>{const n=+b.dataset.n,q=PTS.find(x=>x[0]===n);
+    const ok=Math.abs(pt.T-q[2])<=8&&Math.abs(pt.lp-Math.log10(q[3]))<=0.22;
+    if(ok){placed[n]=true;b.textContent='✓ Fet';b.classList.add('done');sfx.ok();const tr=b.closest('tr');tr.querySelector('.stq').hidden=true;tr.querySelector('.stq').style.display='none';tr.querySelector('.stb').hidden=false;$('#phMsg').textContent=`Molt bé! Punt ${n} col·locat.`;$('#phMsg').className='okmsg'}
+    else{sfx.bad();$('#phMsg').textContent=`Encara no: mou el cursor fins al punt ${n} i torna-ho a provar.`;$('#phMsg').className='badmsg'}draw()});
+  const STSEL={};
+  $('#ptab').addEventListener('click',e=>{const b=e.target.closest('.stbtn');if(!b)return;const n=+b.dataset.n;STSEL[n]=b.dataset.v;
+    b.parentNode.querySelectorAll('.stbtn').forEach(x=>x.setAttribute('aria-pressed',x===b));sfx.tick();
+    const all=PTS.every(q=>STSEL[q[0]]),ok=all&&PTS.every(q=>STSEL[q[0]]===phaseOf(q[2],q[3]));
+    if(ok){$('#phMsg').textContent='Correcte! Tots els estats són correctes.';$('#phMsg').className='okmsg';sfx.ok()}
+    else if($('#phMsg').textContent.startsWith('Correcte')){$('#phMsg').textContent='';$('#phMsg').className=''}});
+  $('#ptsBtn').onclick=e=>{show=!show;e.target.setAttribute('aria-pressed',show);e.target.textContent=show?'Amaga els punts':'Mostra els punts';draw()};
+  H.l4a={enter:draw};
+  window._phRedraw=draw;
+}
+
+/* =================== LAB 4.2 · molècula 3D =================== */
+{
+  const cv=$('#mol'),W=600,Hh=540,ctx=hidpi(cv,W,Hh);cv.style.width=W+'px';cv.style.height=Hh+'px';
+  const a=104.5/2*Math.PI/180,L=1.9;
+  const AT=[{e:'O',p:[0,0.35,0],r:0.72,c:['#ff7a7a','#D62828','#7a0f0f']},{e:'H',p:[Math.sin(a)*L,0.35-Math.cos(a)*L*-1,0],r:0.46,c:['#ffffff','#e9e9e9','#8f8f8f']},{e:'H',p:[-Math.sin(a)*L,0.35-Math.cos(a)*L*-1,0],r:0.46,c:['#ffffff','#e9e9e9','#8f8f8f']}];
+  AT[1].p[1]=0.35-Math.cos(a)*L;AT[2].p[1]=0.35-Math.cos(a)*L;
+  AT.forEach(t=>t.p[1]=-t.p[1]-0.35);
+  let yaw=0,pitch=0.2,drag=null,raf=null,last=0,osc=0;
+  function rot(p){let [x,y,z]=p;const cy=Math.cos(yaw),sy=Math.sin(yaw);[x,z]=[x*cy+z*sy,-x*sy+z*cy];const cp=Math.cos(pitch),sp=Math.sin(pitch);[y,z]=[y*cp-z*sp,y*sp+z*cp];return [x,y,z]}
+  const SC=118,CX=W/2,CY=Hh/2-20;
+  function proj(p){const f=6/(6-p[2]);return [CX+p[0]*SC*f,CY+p[1]*SC*f,f]}
+  function frame(now){const dt=Math.min(50,now-(last||now));last=now;if(!drag&&!reduce){osc+=dt*0.0011}const yaw0=yaw;yaw=yaw0+(drag||reduce?0:Math.sin(osc)*0.75);
+    ctx.clearRect(0,0,W,Hh);const P=AT.map(t=>{const r=rot(t.p);return {t,r,s:proj(r)}});
+    const O=P[0];
+    const items=[];P.slice(1).forEach(h=>items.push({z:Math.min(O.r[2],h.r[2])-0.01,draw:()=>{ctx.strokeStyle='#bdbdbd';ctx.lineWidth=22*((O.s[2]+h.s[2])/2);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(O.s[0],O.s[1]);ctx.lineTo(h.s[0],h.s[1]);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(O.s[0],O.s[1]-4);ctx.lineTo(h.s[0],h.s[1]-4);ctx.stroke()}}));
+    P.forEach(q=>items.push({z:q.r[2],draw:()=>{const R=q.t.r*SC*q.s[2]*0.78,[x,y]=q.s,g=ctx.createRadialGradient(x-R*0.35,y-R*0.4,R*0.1,x,y,R);g.addColorStop(0,q.t.c[0]);g.addColorStop(.55,q.t.c[1]);g.addColorStop(1,q.t.c[2]);
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#1B1B1B';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle=q.t.e==='O'?'#fff':'#1B1B1B';ctx.font=`800 ${q.t.e==='O'?46:32}px Bricolage Grotesque, Arial Black, sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(q.t.e,x,y+2);
+      ctx.font='700 22px Atkinson Hyperlegible, sans-serif';ctx.fillStyle='#A51C1C';ctx.fillText(q.t.e==='O'?'δ−':'δ+',x+R*0.95,y-R*0.95);ctx.textBaseline='alphabetic'}}));
+    items.sort((A,B)=>A.z-B.z).forEach(i=>i.draw());
+    ctx.fillStyle='#6B635D';ctx.font='700 20px Atkinson Hyperlegible, sans-serif';ctx.textAlign='center';ctx.fillText('H₂O · angle de 104,5°',W/2,Hh-22);
+    yaw=yaw0;raf=requestAnimationFrame(frame)}
+  cv.addEventListener('pointerdown',e=>{osc=0;drag={x:e.clientX,y:e.clientY,yw:yaw,pt:pitch};cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing'});
+  cv.addEventListener('pointermove',e=>{if(!drag)return;const r=cv.getBoundingClientRect(),sc=W/r.width;yaw=drag.yw+(e.clientX-drag.x)*sc*0.01;pitch=clamp(drag.pt+(e.clientY-drag.y)*sc*0.01,-1.3,1.3)});
+  cv.addEventListener('pointerup',()=>{drag=null;cv.style.cursor='grab'});
+  $$('#vf .vbtn').forEach(b=>b.onclick=()=>{b.parentNode.querySelectorAll('.vbtn').forEach(x=>x.setAttribute('aria-pressed',x===b));sfx.tick();$('#vfMsg').textContent=''});
+  $('#vfDone').onclick=()=>{const li=$$('#vf li'),ans=li.map(l=>{const p=l.querySelector('.vbtn[aria-pressed="true"]');return p?p.dataset.v:null}),m=$('#vfMsg');
+    if(ans.includes(null)){m.textContent='Contesta-les totes primer.';m.className='badmsg';sfx.bad();return}
+    const ok=ans.every((a,i)=>a===li[i].dataset.a);m.textContent=ok?'Molt bé! Totes són correctes.':"N'hi ha alguna de malament. Revisa-les.";m.className=ok?'okmsg':'badmsg';ok?sfx.ok():sfx.bad()};
+  H.l4b={enter(){last=0;if(!raf)raf=requestAnimationFrame(frame)},leave(){cancelAnimationFrame(raf);raf=null}};
+}
+
+/* =================== LAB 5.1 · problemes i solucions =================== */
+{
+  const IC={
+    temp:'<svg viewBox="0 0 34 34"><rect x="13" y="3" width="8" height="20" rx="4" fill="#fff" stroke="#1B1B1B" stroke-width="2.5"/><circle cx="17" cy="26" r="6" fill="#D62828" stroke="#1B1B1B" stroke-width="2.5"/><rect x="15.5" y="13" width="3" height="12" fill="#D62828"/></svg>',
+    mag:'<svg viewBox="0 0 34 34"><path d="M7 6v12a10 10 0 0 0 20 0V6" fill="none" stroke="#D62828" stroke-width="6"/><path d="M4 6h7M23 6h7" stroke="#1B1B1B" stroke-width="5"/></svg>',
+    aig:'<svg viewBox="0 0 34 34"><path d="M17 3 C10 13 7 18 7 22 a10 10 0 0 0 20 0 c0 -4 -3 -9 -10 -19Z" fill="#cfe4fb" stroke="#1B1B1B" stroke-width="2.5"/><path d="M12 22 h10 M17 17 v10" stroke="#3d7fd1" stroke-width="2.5"/></svg>',
+    grav:'<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="13" fill="none" stroke="#1B1B1B" stroke-width="2.5"/><path d="M17 8v9l6 4" stroke="#D62828" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',
+    alt:'<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="13" fill="none" stroke="#1B1B1B" stroke-width="2.5" stroke-dasharray="4 3"/><path d="M17 10v14M10 17h14" stroke="#D62828" stroke-width="3.5" stroke-linecap="round"/></svg>'};
+  const PR=[
+    {ic:'temp',h:'Fred i pressió',t:'Temperatura mitjana de −46 °C i pressió de només 8 hPa.',ex:['Alliberar el CO₂ dels pols, miralls en òrbita, gasos artificials.','Hàbitats pressuritzats i escalfats, vestits espacials.']},
+    {ic:'mag',h:'Sense escut',t:'Sense camp magnètic global, Mart perd atmosfera i rep molta radiació.',ex:['Escut magnètic artificial entre el Sol i Mart.','Viure sota terra o sota metres de regolit.']},
+    {ic:'aig',h:'Aigua',t:"L'aigua només hi és en forma de gel i de vapor.",ex:['Fondre el gel dels pols, portar-hi cometes.','Extreure i fondre el gel del subsòl, reciclar l\'aigua.']},
+    {ic:'grav',h:'Gravetat i dia',t:'La gravetat és 0,38 vegades la de la Terra i el dia dura 24 h 39 min.',ex:['No es pot canviar la gravetat d\'un planeta.','Exercici diari, horaris adaptats al dia marcià.']},
+    {ic:'alt',h:'Altres',t:null,ex:['Oxigen: plantes i microorganismes que facin la fotosíntesi.','Oxigen: obtenir-lo del CO₂ o de l\'aigua amb màquines.']}];
+  const KEY='tf2-l5';let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+  const ta=(id,ph)=>`<textarea data-k="${id}" placeholder="${ph}" aria-label="${ph}">${(saved[id]||'').replace(/</g,'&lt;')}</textarea>`;
+  const arrows=cls=>`<div class="arow ${cls}"><span class="rowlab" style="top:50%">${cls==='ad'?'Ens adaptem?':'Canviem Mart?'}</span><svg viewBox="0 0 1488 52" preserveAspectRatio="none">${PR.map((_,i)=>{const x=(i+.5)*(1488/5)+ (i===0?40:0);return `<path d="M${x},4 L${x},38"/><polygon points="${x-9},36 ${x+9},36 ${x},50"/>`}).join('')}</svg></div>`;
+  let h=`<div class="l5grid">${PR.map((p,i)=>`<div class="pcard${p.t?'':' other'}"><div class="ic">${IC[p.ic]}${p.h}</div>${p.t?`<p>${p.t}</p>`:ta('p'+i,'Un altre problema que hàgiu trobat…')}</div>`).join('')}</div>`;
+  h+=arrows('tf')+`<div class="l5grid">${PR.map((p,i)=>`<div class="scard tf"><span class="h">Canviem Mart?</span>${ta('t'+i,'Solució terraformadora…')}<span class="ex profonly">${p.ex[0]}</span></div>`).join('')}</div>`;
+  h+=arrows('ad')+`<div class="l5grid">${PR.map((p,i)=>`<div class="scard ad"><span class="h">Ens adaptem?</span>${ta('a'+i,'Solució adaptativa…')}<span class="ex profonly">${p.ex[1]}</span></div>`).join('')}</div>`;
+  h+=`<div class="hint5" id="hint5"></div>`;
+  $('#l5').innerHTML=h;
+  $$('#l5 textarea').forEach(t=>t.addEventListener('input',()=>{saved[t.dataset.k]=t.value;try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}}));
+  H.l5a={step(s){$$('#l5 .arow.tf').forEach(a=>a.classList.toggle('on',s>=1));$$('#l5 .scard.tf').forEach(a=>a.classList.toggle('on',s>=1));
+    $$('#l5 .arow.ad').forEach(a=>a.classList.toggle('on',s>=2));$$('#l5 .scard.ad').forEach(a=>a.classList.toggle('on',s>=2));
+    $('#hint5').textContent=s===0?'Prem ▶ per proposar solucions que canviïn Mart.':s===1?'Prem ▶ per proposar solucions per adaptar-nos.':''}};
+}
+
+/* =================== LAB 5.2 · informe i pes =================== */
+{
+  const cv=$('#endcan');let ctx=null,W=0,Hh=0,raf=null;const st=stars(160,9);
+  function frame(now){if(!ctx){W=$('#endVig').clientWidth;Hh=$('#endVig').clientHeight;ctx=hidpi(cv,W,Hh);cv.style.width=W+'px';cv.style.height=Hh+'px'}
+    ctx.fillStyle='#0A0E1F';ctx.fillRect(0,0,W,Hh);drawStars(ctx,W,Hh,st,now);const D=Hh*0.78,mx=W*0.5,my=Hh*0.52;
+    const ang=now/2200;ctx.strokeStyle='rgba(255,255,255,.35)';ctx.setLineDash([5,6]);ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(mx,my,D*0.68,D*0.2,-0.2,Math.PI,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    renderSphere(now/90000,makeTex('mart'));ctx.drawImage(sph,mx-D/2,my-D/2,D,D);
+ctx.strokeStyle='rgba(255,255,255,.35)';ctx.setLineDash([5,6]);ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(mx,my,D*0.68,D*0.2,-0.2,0,Math.PI);ctx.stroke();ctx.setLineDash([]);
+    const sx=mx+Math.cos(ang)*D*0.68*Math.cos(-0.2)-Math.sin(ang)*D*0.2*Math.sin(-0.2),sy=my+Math.cos(ang)*D*0.68*Math.sin(-0.2)+Math.sin(ang)*D*0.2*Math.cos(-0.2);
+    if(Math.sin(ang)>0||Math.hypot(sx-mx,sy-my)>D/2){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(sx,sy,5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#D62828';ctx.lineWidth=2.5;ctx.stroke()}
+    raf=requestAnimationFrame(frame)}
+  H.l5b={enter(){ctx=null;if(!raf)raf=requestAnimationFrame(frame);setTimeout(()=>sfx.sonar(),300)},leave(){cancelAnimationFrame(raf);raf=null}};
+  function updW(){const m=clamp(+$('#mass').value||60,1,500);$('#wE').textContent=fmt(m*9.8)+' N';$('#wM').textContent=fmt(m*3.7)+' N';
+    $('#wTxt').innerHTML=`A Mart pesaries com un objecte de <b>${fmt(m*0.38)} kg</b> a la Terra. Si a la Terra saltes 40 cm, a Mart saltaries més d'<b>1 metre</b>.`}
+  function updC(){const d=+$('#days').value,lag=d*(39*60+35)/3600,hh=Math.floor(lag),mm=Math.round((lag-hh)*60);$('#oDays').textContent=d+(d===1?' dia':' dies');$('#clockTxt').innerHTML=`Un rellotge de la Terra aniria endarrerit <b>${hh} h ${mm} min</b>${lag>=24?` (uns ${fmt(lag/24,1)} dies)`:''}.`}
+  $('#mass').oninput=updW;$('#days').oninput=updC;updW();updC();
+  $('#pesBtn').onclick=()=>{$('#pesDrawer').classList.add('open')};
+}
+
+/* =================== solucions (professorat) =================== */
+const SOL={
+  pont:['Portada',''],
+  l1a:['Tres planetes',`<div class="it"><b>Increment de temperatura</b>Venus: 461 − 155 = <b>+306 °C</b> · Terra: 14 − (−18) = <b>+32 °C</b> · Mart: −46 − (−51) = <b>+5 °C</b></div><div class="it"><b>Nota per al professorat</b>Són les dades de la PAU de Ciències Generals (juny 2024). Amb el càlcul físic estàndard (llei de Stefan-Boltzmann i albedo del 76 %), Venus sortiria a uns −44 °C sense atmosfera, no a 155 °C. Si algun alumne ho troba en altres fonts, aquesta és l'explicació.</div><div class="it"><b>Efecte hivernacle</b>Alguns gasos de l'atmosfera (CO₂, vapor d'aigua, metà) deixen passar la llum del Sol però retenen part de la calor (radiació infraroja) que emet la superfície. Així el planeta és més calent del que seria sense atmosfera.</div>`],
+  l1b:['Efecte hivernacle',`<div class="it"><b>Mode alumne</b>A l'esquema surten caselles amb «?» i només la descripció de cada element: els alumnes n'escriuen el nom al dossier. En mode professorat es veuen els noms.</div><div class="it"><b>Ordre dels elements</b>Sol, superfície terrestre, atmosfera, radiació emesa pel Sol, reflectida per l'atmosfera, reflectida per la superfície, absorbida, radiació emesa per la Terra (infraroja), gasos d'efecte hivernacle, radiació que retorna a la superfície, radiació que s'escapa a l'espai.</div><div class="it"><b>Idea clau</b>La llum del Sol entra fàcilment; la calor que surt de la Terra queda en part atrapada pels gasos d'efecte hivernacle.</div>`],
+  l1c:['Pregunta 1',`<div class="it"><b>Resposta esperada</b>La temperatura mitjana baixaria de 14 °C a uns <b>−18 °C</b> (32 °C menys). La calor que emet la superfície s'escaparia directament a l'espai, sense gasos que la retinguin. L'aigua es glaçaria i la vida tal com la coneixem tindria molts problemes.</div><div class="it"><b>Al simulador</b>El vapor d'aigua i els núvols fan la major part de l'efecte; el CO₂ i els altres gasos, la resta. (En realitat, si treiem el CO₂ la Terra es refreda i el vapor d'aigua també disminueix.)</div>`],
+  l1d:['Pregunta 2',`<div class="it"><b>1. Què passa</b>En augmentar els gasos d'efecte hivernacle, l'atmosfera reté més calor i la temperatura mitjana del planeta puja: és l'<b>escalfament global</b>. Des de 1850 el CO₂ ha passat d'uns 285 a uns 425 ppm (gràfica), sobretot per cremar combustibles fòssils: electricitat, indústria i transport (gràfic de barres).</div><div class="it"><b>Dades de la gràfica</b>1750: 278 ppm · 1850: 285 · 1950: 311 · 2000: 370 · avui: 425. El 2100: uns 445 (emissions baixes), 600 (moderades) o 1.135 ppm (altes). Llindars de les fitxes: 330, 380, 420 i 550 ppm.</div><div class="it"><b>2. Efectes (dos)</b><ul><li>Fusió de glaceres i dels casquets polars</li><li>Pujada del nivell del mar</li><li>Onades de calor i sequeres més freqüents</li><li>Temporals i pluges torrencials més intensos</li><li>Acidificació dels oceans, pèrdua de biodiversitat</li></ul></div><div class="it"><b>3. Mesures</b>Energies renovables, transport públic i bicicleta, eficiència energètica a casa, reduir el consum i el malbaratament, reforestar, menjar menys carn, captura de CO₂…</div>`],
+  l1e:['Pregunta 3',`<div class="it"><b>1. Existeix a Mart?</b>Sí, però és molt feble: només <b>+5 °C</b>, davant dels +32 °C de la Terra. L'atmosfera és tan prima (8 hPa) que reté molt poca calor, tot i ser quasi tota de CO₂.</div><div class="it"><b>2. Pressió i gruix</b>Venus (93.000 hPa, molt gruixuda): +306 °C. Terra (1.013 hPa, gruix mitjà): +32 °C. Mart (8 hPa, molt prima): +5 °C. <b>Com més gruixuda és l'atmosfera, més calor reté.</b></div><div class="it"><b>3. Composició o gruix?</b>És més important <b>fer-la més gruixuda</b>. Experiment A (pressió fixa): canviant el CO₂ de 0 a 100 %, la temperatura gairebé no varia. Experiment B (CO₂ fix): augmentant la pressió, la temperatura puja molt.</div><div class="it"><b>Valors del simulador</b>A (8 hPa): 0 % → −51 °C · 50 % → −47 °C · 100 % → −45 °C.<br>B (95 %): 8 hPa → −45 °C · 80 → −32 °C · 800 → +8 °C · 8.000 → +123 °C. (Poden variar 1 o 2 °C segons on deixin el control.)</div><div class="it"><b>Curiositat per a tu</b>Per metre quadrat, Mart té més CO₂ que la Terra. Li falten pressió (que fa que el CO₂ absorbeixi més) i vapor d'aigua.</div>`],
+  l2:['Capes de l\'atmosfera',`<div class="it"><b>Capes protectores</b>Estratosfera (capa d'ozó): absorbeix l'ultraviolat UV-C i la major part de l'UV-B. Termosfera: absorbeix els raigs X i l'ultraviolat extrem.</div><div class="it"><b>Troposfera (0-12 km)</b>Temps meteorològic, 80 % de l'aire; la temperatura baixa.</div><div class="it"><b>Estratosfera (12-50 km)</b>Capa d'ozó, absorbeix l'ultraviolat; la temperatura puja.</div><div class="it"><b>Mesosfera (50-85 km)</b>La més freda; estels fugaços.</div><div class="it"><b>Termosfera (85-600 km)</b>Molt calenta, aurores, ionosfera, Estació Espacial.</div><div class="it"><b>Exosfera (600-10.000 km)</b>Transició a l'espai, satèl·lits.</div>`],
+  l3:['Camp magnètic',`<div class="it"><b>Quina part genera el camp?</b>El <b>nucli extern</b>, de ferro i níquel líquids (efecte dinamo).</div><div class="it"><b>Funció: vent solar</b>El desvia i n'atrapa una part cap als pols (aurores).</div><div class="it"><b>Funció: atmosfera</b>Evita que el vent solar l'arrenqui i se l'endugui a l'espai.</div><div class="it"><b>Importància per a la vida</b>Protegeix de la radiació i permet mantenir l'atmosfera i l'aigua líquida.</div><div class="it"><b>Conclusió</b>Sense camp magnètic, la Terra <b>aniria perdent l'atmosfera i quedaria exposada a la radiació</b>.</div><div class="it"><b>Taula</b>Camp magnètic global: Terra ✔ · Mart ❌. Atmosfera gruixuda: Terra ✔ · Mart ❌. Protecció davant el vent solar: Terra ✔ · Mart ❌.</div><div class="it"><b>Què va passar a Mart?</b>És més petit i es va refredar més de pressa. Fa uns 4.000 milions d'anys el nucli va deixar de moure's, la dinamo es va apagar i el vent solar li va anar arrencant l'atmosfera (la sonda MAVEN ho ha mesurat).</div>`],
+  l4a:['Diagrama de fases',`<div class="it"><b>Marcar punts</b>L'alumne porta el cursor fins al punt i prem «Marca»: es valida amb una tolerància d'uns 8 °C i un 60 % en pressió.</div><div class="it"><b>Estats</b>1 Líquid · 2 Sòlid · 3 Sòlid · 4 Sòlid · 5 Gas</div><div class="it"><b>A 1 atm</b>Ebullició: <b>100 °C</b> · Solidificació: <b>0 °C</b></div><div class="it"><b>Punts 4 i 5</b>A 0,006 atm la pressió és com la del punt triple o més baixa: l'aigua no pot ser líquida. A −80 °C és sòlida; a 10 °C el gel passa directament a gas (sublimació), sense fondre's.</div><div class="it"><b>Frase</b>A Mart, l'aigua només pot trobar-se en estat <b>sòlid</b> o <b>gasós</b>, però no en estat <b>líquid</b>.</div><div class="it"><b>Pregunta oral</b>De nit, el mateix lloc del punt 5 estaria a uns −70 °C: l'aigua tornaria a ser gel.</div>`],
+  l4b:['La molècula d\'aigua',`<div class="it"><b>Àtoms</b>3 àtoms: 1 d'oxigen (O) i 2 d'hidrogen (H).</div><div class="it"><b>Vertader o fals</b>F (el gel és menys dens i per això flota) · V · V · V · F</div><div class="it"><b>On buscar aigua líquida o vida</b>Sota terra o sota el gel dels pols: la pressió és més alta i la temperatura més estable, i l'aigua es pot mantenir líquida (també protegida de la radiació).</div>`],
+  l5a:['Problemes i solucions',`<div class="it"><b>Exemples</b>Apareixen en petit a cada fitxa mentre estàs en mode professorat.</div><div class="it"><b>Idea per al debat</b>Algunes coses no es poden canviar (la gravetat). Les solucions adaptatives es poden fer ara; les terraformadores necessitarien segles o mil·lennis.</div>`],
+  l5b:['Informe per a la Terra',`<div class="it"><b>Què valorar</b><ul><li>Decisió clara i justificada.</li><li>Dos arguments científics dels laboratoris.</li><li>Prioritat raonada.</li><li>Consciència del temps: adaptar-se és possible ara; terraformar trigaria molt.</li></ul></div><div class="it"><b>Conclusió científica habitual</b>Primer adaptar-nos (hàbitats, recursos locals) i, potser, terraformar a molt llarg termini.</div>`]
+};
+function openSol(){const s=SOL[SL[cur].id]||['',''];$('#solTitle').textContent=s[0];$('#solbody').innerHTML=(s[1]||'<p>Aquesta pantalla no té solucions.</p>')+'<button class="act main" type="button" onclick="window._soluOpen()" style="align-self:flex-start;margin-top:6px">📋 Solucionari complet del dossier</button>';$('#solDrawer').classList.add('open')}
+function closeDrawers(){$$('.drawer').forEach(d=>d.classList.remove('open'))}
+
+
+/* =================== solucionari =================== */
+{
+const Q=(t,h,w)=>`<div class="q${w?' w':''}"><b class="n2">${t}</b>${h}</div>`;
+const SECS2=[
+ {t:"Taula dels planetes",i:"L'atmosfera",app:'l1a',h:
+  Q("Increment de temperatura","<table><tr><th></th><th>Real</th><th>Sense atm.</th><th>Increment</th></tr><tr><td>Venus</td><td>461</td><td>155</td><td><b>+306 °C</b></td></tr><tr><td>Terra</td><td>14</td><td>−18</td><td><b>+32 °C</b></td></tr><tr><td>Mart</td><td>−46</td><td>−51</td><td><b>+5 °C</b></td></tr></table>")+
+  Q("Què és l'efecte hivernacle?","Alguns gasos de l'atmosfera (CO₂, vapor d'aigua, metà) deixen passar la llum del Sol, però retenen part de la calor (radiació infraroja) que emet la superfície. Per això el planeta és més calent del que seria sense atmosfera.")+
+  Q("Nota per al professorat","Dades de la PAU de Ciències Generals (juny 2024, ex. 4B). Amb el càlcul físic estàndard (Stefan-Boltzmann i albedo), Venus sortiria a uns −44 °C sense atmosfera.",1)},
+ {t:"Esquema de l'efecte hivernacle",i:"L'atmosfera",app:'l1b',h:
+  Q("Ordre dels 11 elements","<ol><li>Sol</li><li>Superfície terrestre</li><li>Atmosfera terrestre</li><li>Radiació emesa pel Sol</li><li>Radiació reflectida per l'atmosfera</li><li>Radiació reflectida per la superfície</li><li>Radiació absorbida per la superfície</li><li>Radiació emesa per la Terra (infraroja)</li><li>Gasos d'efecte hivernacle</li><li>Radiació terrestre que retorna a la superfície</li><li>Radiació terrestre que s'escapa a l'espai</li></ol>")+
+  Q("Com corregir-ho","Obre la pantalla 1.2 de l'app i prem ▶ fins al pas 11: en mode professorat cada casella mostra el nom. Els números del dossier segueixen el mateix ordre que els passos.")},
+ {t:"Simulador: treu els gasos",i:"La Terra s'escalfa",app:'l1c',h:
+  Q("Què passaria sense gasos d'efecte hivernacle?","La temperatura mitjana baixaria de 14 °C a uns <b>−18 °C</b> (32 °C menys). La calor que emet la superfície s'escaparia directament a l'espai. L'aigua es glaçaria i la vida tal com la coneixem tindria greus problemes.",1)},
+ {t:"La Terra s'escalfa",i:"La Terra s'escalfa",app:'l1d',h:
+  Q("a) Dades de CO₂","<table><tr><th>1750</th><th>1850</th><th>1950</th><th>2000</th><th>2024</th></tr><tr><td>278</td><td>285</td><td>311</td><td>370</td><td>425</td></tr></table>2100: baixes ≈ <b>445</b> · moderades ≈ <b>600</b> · altes ≈ <b>1.135</b> ppm")+
+  Q("b) Augment des de 1850","425 − 285 = <b>140 ppm</b> → 140 / 285 × 100 ≈ <b>49 %</b> més.")+
+  Q("c) Tres activitats que més emeten","1. Electricitat i calefacció (33 %) · 2. Indústria (19 %) · 3. Transport (16 %)")+
+  Q("d) Efectes de l'escalfament global","Fusió de glaceres i casquets polars · pujada del nivell del mar · onades de calor i sequeres · temporals i pluges torrencials més intensos (també: acidificació dels oceans, pèrdua de biodiversitat).")+
+  Q("e) Una mesura lligada a una font","Electricitat: energies renovables, estalvi energètic. Transport: transport públic, bicicleta, vehicle elèctric. Indústria: eficiència, reciclatge. Agricultura: menys carn, menys malbaratament. Valorar que la relacioni amb una barra del gràfic.",1)},
+ {t:"Tornem a Mart",i:"La Terra s'escalfa",app:'l1e',h:
+  Q("Experiment A (8 hPa)","<table><tr><th>CO₂</th><td>0 %</td><td>50 %</td><td>100 %</td></tr><tr><th>T</th><td>−51 °C</td><td>−47 °C</td><td>−45 °C</td></tr></table>")+
+  Q("Experiment B (95 % CO₂)","<table><tr><th>P</th><td>8</td><td>80</td><td>800</td><td>8.000 hPa</td></tr><tr><th>T</th><td>−45</td><td>−32</td><td>+8</td><td>+123 °C</td></tr></table><span class='note'>Poden variar 1 o 2 °C segons on deixin el control.</span>")+
+  Q("f) Existeix l'efecte hivernacle a Mart?","Sí, però és molt feble: només +5 °C davant dels +32 °C de la Terra. L'atmosfera és tan prima (8 hPa) que reté molt poca calor, tot i ser quasi tota de CO₂.")+
+  Q("g) Pressió, gruix i calor","Venus 93.000 hPa (molt gruixuda): +306 °C. Terra 1.013 hPa: +32 °C. Mart 8 hPa (molt prima): +5 °C. <b>Com més gruixuda i més pressió, més calor reté.</b>")+
+  Q("h) Composició o gruix?","<b>Fer-la més gruixuda.</b> A: canviant el CO₂ de 0 a 100 % la temperatura només varia 6 °C. B: augmentant la pressió puja més de 160 °C.",1)},
+ {t:"Capes de l'atmosfera",i:"L'atmosfera",app:'l2',h:
+  Q("De baix a dalt","<b>Troposfera</b> (0-12 km): temps meteorològic, 80 % de l'aire, la temperatura baixa.<br><b>Estratosfera</b> (12-50 km): capa d'ozó, absorbeix l'ultraviolat; la temperatura puja.<br><b>Mesosfera</b> (50-85 km): la més freda; estels fugaços.<br><b>Termosfera</b> (85-600 km): aurores, ionosfera, Estació Espacial; absorbeix raigs X i UV extrem.",1)+
+  Q("Franja ratllada","<b>Capa d'ozó</b> (20-30 km, dins l'estratosfera): absorbeix la radiació UV-C i la major part de la UV-B.")+
+  Q("Capes protectores","Estratosfera (ozó) i termosfera.")},
+ {t:"El camp magnètic",i:"Camp magnètic",app:'l3',h:
+  Q("Quina part genera el camp?","El <b>nucli extern</b>, de ferro i níquel líquids, pel seu moviment (efecte dinamo).")+
+  Q("Simulador","<table><tr><th></th><th>Partícules</th><th>Atmosfera</th><th>Aurores</th></tr><tr><td>Terra, camp actiu</td><td>es desvien</td><td>100 %</td><td>sí</td></tr><tr><td>Terra, camp apagat</td><td>xoquen</td><td>baixa</td><td>no</td></tr><tr><td>Mart</td><td>xoquen</td><td>baixa</td><td>no</td></tr></table>")+
+  Q("Funció: vent solar / atmosfera","Desvia el vent solar (una part va als pols: aurores) · evita que el vent solar arrenqui l'atmosfera.")+
+  Q("Importància per a la vida","Protegeix de la radiació i permet conservar l'atmosfera i l'aigua líquida.")+
+  Q("Taula ✔/❌","Nucli líquid en moviment, camp global, atmosfera gruixuda, protecció: <b>Terra ✔ ✔ ✔ ✔ · Mart ❌ ❌ ❌ ❌</b>")+
+  Q("Què va passar a Mart?","És més petit i es va refredar més de pressa. Fa uns 4.000 milions d'anys el nucli va deixar de moure's, la dinamo es va apagar i el vent solar li va anar arrencant l'atmosfera (ho ha mesurat la sonda MAVEN).")},
+ {t:"Diagrama de fases",i:"L'aigua",app:'l4a',h:
+  Q("Estat de l'aigua","1 Mar a l'equador: <b>L</b> · 2 Pols: <b>S</b> · 3 Everest: <b>S</b> · 4 Pol de Mart: <b>S</b> · 5 Equador de Mart: <b>G</b>")+
+  Q("A 1 atm","Ebullició: <b>100 °C</b> · Solidificació: <b>0 °C</b>")+
+  Q("Per què els punts 4 i 5 són diferents?","La pressió (0,006 atm) és la del punt triple o més baixa: l'aigua no pot ser líquida. A −80 °C és gel; a 10 °C el gel passa directament a gas (sublimació).")+
+  Q("Completa la frase","…en estat <b>sòlid</b> o <b>gasós</b>, però no en estat <b>líquid</b>.")},
+ {t:"La molècula de l'aigua",i:"L'aigua",app:'l4b',h:
+  Q("Àtoms","3 àtoms: 1 d'<b>oxigen</b> (O, al centre) i 2 d'<b>hidrogen</b> (H).")+
+  Q("Vertader o fals","<b>F</b> El gel és <i>menys</i> dens que l'aigua líquida (per això flota).<br><b>V</b> · <b>V</b> · <b>V</b><br><b>F</b> A Mart no hi ha aigua líquida estable a la superfície: només gel i vapor.")+
+  Q("On buscar aigua líquida o vida?","<b>Sota terra o sota el gel dels pols:</b> la pressió és més alta i la temperatura més estable, de manera que l'aigua es pot mantenir líquida, i a més hi ha protecció davant la radiació.",1)},
+ {t:"Canviem Mart o ens adaptem?",i:"Decisió",app:'l5a',h:
+  Q("Temperatura i pressió","Canviar: alliberar el CO₂ dels pols, miralls en òrbita, gasos artificials. Adaptar-nos: hàbitats pressuritzats i escalfats, vestits.")+
+  Q("Sense camp magnètic / radiació","Canviar: escut magnètic artificial entre el Sol i Mart. Adaptar-nos: viure sota terra o sota metres de regolit.")+
+  Q("Aigua","Canviar: fondre el gel dels pols, portar-hi cometes. Adaptar-nos: extreure i fondre el gel del subsòl, reciclar l'aigua.")+
+  Q("Gravetat i durada del dia","Canviar: no és possible canviar la gravetat d'un planeta. Adaptar-nos: exercici diari, horaris de 24 h 39 min.")+
+  Q("Idea per al debat","Les solucions adaptatives es poden fer ara; les terraformadores necessitarien segles o mil·lennis. Conclusió habitual: primer adaptar-nos i, potser, terraformar a molt llarg termini.",1)}
+];
+let si2=0;
+$('#solnav').innerHTML=SECS2.map((x,i)=>`<button type="button" data-i="${i}"><i>${x.i}</i>${i+1}. ${x.t}</button>`).join('');
+function showS(i){si2=clamp(i,0,SECS2.length-1);const x=SECS2[si2];$('#solh').textContent=(si2+1)+'. '+x.t;$('#solc').innerHTML=x.h;$('#solc').scrollTop=0;
+  const ai=SL.findIndex(z=>z.id===x.app);$('#solapp').textContent='Obre a l\'app: '+SL[ai].chip;$('#solapp').dataset.i=ai;
+  $$('#solnav button').forEach((b,k)=>b.classList.toggle('on',k===si2));$('#solprev').style.visibility=si2?'visible':'hidden';$('#solnext').style.visibility=si2<SECS2.length-1?'visible':'hidden'}
+$$('#solnav button').forEach(b=>b.onclick=()=>showS(+b.dataset.i));
+$('#solprev').onclick=()=>showS(si2-1);$('#solnext').onclick=()=>showS(si2+1);
+window._soluOpen=()=>{if(!PROF)return;const k=SECS2.findIndex(x=>x.app===SL[cur].id);showS(k<0?si2:k);$('#solu').classList.add('open')};
+window._soluClose=()=>$('#solu').classList.remove('open');
+window._soluNav=d=>{if($('#solu').classList.contains('open')){showS(si2+d);return true}return false};
+$('#soluBtn').onclick=()=>window._soluOpen();$('#soluClose').onclick=()=>window._soluClose();
+$('#solapp').onclick=e=>{window._soluClose();go(+e.target.dataset.i)};
+}
+
+/* =================== mode professorat =================== */
+const ph=s=>{let h=5381;for(const c of s)h=((h<<5)+h+c.charCodeAt(0))>>>0;return h};
+const PW_H=ph('1144');
+let lastAct=Date.now();['pointerdown','keydown','wheel'].forEach(ev=>document.addEventListener(ev,()=>{lastAct=Date.now()},{capture:true,passive:true}));
+setInterval(()=>{if(PROF&&Date.now()-lastAct>30*60*1000)setProf(false)},20000);
+function setProf(on){if(on)lastAct=Date.now();if(!on&&window._soluClose)window._soluClose();PROF=on;stage.classList.toggle('prof',on);buildNav();if(window._phRedraw)window._phRedraw();if(window._refreshFlips)window._refreshFlips();applyStep()}
+const pwbox=$('#pwbox'),pwin=$('#pwin');let fails=0,lockUntil=0;
+function pwDots(){const n=Math.max(4,pwin.value.length);$('#pwdots').innerHTML=Array.from({length:n},(_,i)=>`<i class="${i<pwin.value.length?'on':''}"></i>`).join('')}
+function pwOpen(){if(PROF)return;pwbox.classList.add('open');pwin.value='';pwDots();$('#pwmsg').textContent='';setTimeout(()=>pwin.focus(),30)}
+function pwClose(){pwbox.classList.remove('open');pwin.blur();pwin.value=''}
+function pwTry(){if(Date.now()<lockUntil){$('#pwmsg').textContent='Massa intents. Espera un minut.';return}const v=pwin.value;if(!v)return;
+  if(ph(v)===PW_H){pwClose();fails=0;sfx.ok();setProf(true);return}
+  fails++;pwin.value='';pwDots();sfx.bad();$('#pwdots').animate([{transform:'translateX(-10px)'},{transform:'translateX(10px)'},{transform:'none'}],{duration:300});
+  if(fails>=3){lockUntil=Date.now()+60000;fails=0;$('#pwmsg').textContent='Massa intents. Espera un minut.'}else $('#pwmsg').textContent=3-fails===1?'Contrasenya incorrecta. Queda 1 intent.':`Contrasenya incorrecta. Queden ${3-fails} intents.`}
+pwin.addEventListener('input',()=>{pwin.value=pwin.value.replace(/\D/g,'');pwDots();if(pwin.value.length===4)pwTry()});
+pwin.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();pwTry()}else if(e.key==='Escape'){e.preventDefault();pwClose()}});
+$('#pwok').onclick=pwTry;$('#brand svg').addEventListener('dblclick',e=>{e.preventDefault();pwOpen()});$('#profbadge').onclick=()=>setProf(false);
+pwbox.addEventListener('click',e=>{if(e.target===pwbox||e.target.closest('[data-close]'))pwClose();else pwin.focus()});
+$('#credbox').addEventListener('click',e=>{if(e.target.id==='credbox'||e.target.closest('[data-close]'))$('#credbox').classList.remove('open')});
+
+/* =================== calculadora =================== */
+const calc=$('#calc');let cexp='',cans=null,cjust=false;
+const KEYS=[['C','cl'],['(','fn'],[')','fn'],['⌫','fn'],['÷','op'],['7'],['8'],['9'],['×','op'],['x²','fn'],['4'],['5'],['6'],['−','op'],['√','fn'],['1'],['2'],['3'],['+','op'],['xʸ','fn'],['0'],[','],['×10ⁿ','fn'],['π','fn'],['=','eq']];
+$('#ckeys').innerHTML=KEYS.map(([t,c])=>`<button type="button" class="${c||''}" data-k="${t}">${t}</button>`).join('');
+$('#ckeys').addEventListener('click',e=>{const b=e.target.closest('button');if(b){cpress(b.dataset.k);b.blur()}});
+const craw=v=>String(+v.toPrecision(12)).replace('.',',').replace('e+','E').replace('e','E').replace(/-/g,'−');
+const cshow=x=>x.replace(/E/g,'·10^');
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+function cfmt(v){if(!isFinite(v))return 'Error';if(v===0)return '0';const a=Math.abs(v);
+  if(a>=1e9||a<1e-4){const e=Math.floor(Math.log10(a));let m=+(v/Math.pow(10,e)).toPrecision(5);return String(m).replace('.',',').replace('-','−')+' · 10'+String(e).split('').map(c=>SUP[c]).join('')}
+  let s=String(+v.toPrecision(10));return fmt(+s,(s.split('.')[1]||'').length)}
+function ceval(src){const s=src.replace(/\s/g,'');let i=0;const peek=()=>s[i];
+  function num(){const m=s.slice(i).match(/^(\d+([.,]\d*)?|[.,]\d+)(E[−-]?\d+)?/);if(!m)return null;i+=m[0].length;return parseFloat(m[0].replace(',','.').replace('−','-'))}
+  function primary(){const c=peek();if(c==='('){i++;const v=expr();if(peek()===')')i++;return v}if(c==='π'){i++;return Math.PI}if(c==='√'){i++;const v=power();if(v<0)throw 0;return Math.sqrt(v)}const n=num();if(n==null)throw 0;return n}
+  function post(){let v=primary();while(peek()==='²'){i++;v=v*v}return v}
+  function power(){let v=post();if(peek()==='^'){i++;v=Math.pow(v,unary())}return v}
+  function unary(){if(peek()==='−'||peek()==='-'){i++;return -unary()}if(peek()==='+'){i++;return unary()}return power()}
+  function term(){let v=unary();for(;;){const c=peek();if(c==='×'||c==='*'){i++;v*=unary()}else if(c==='÷'||c==='/'){i++;v/=unary()}else if(c&&/[\d(π√]/.test(c)){v*=unary()}else break}return v}
+  function expr(){let v=term();for(;;){const c=peek();if(c==='+'){i++;v+=term()}else if(c==='−'||c==='-'){i++;v-=term()}else break}return v}
+  try{if(!s)return null;const v=expr();if(i<s.length)return null;return isFinite(v)?v:null}catch(e){return null}}
+function cpress(key){const isOp=['+','−','×','÷'].includes(key)||key==='x²'||key==='xʸ';
+  if(cjust){if(isOp&&cans!=null)cexp=craw(cans);else if(key!=='='&&key!=='⌫')cexp='';cjust=false}
+  switch(key){case 'C':cexp='';break;case '⌫':cexp=cexp.slice(0,-1);break;case 'x²':cexp+='²';break;case 'xʸ':cexp+='^';break;case '√':cexp+='√(';break;case '×10ⁿ':cexp+='E';break;
+    case '=':{const v=ceval(cexp);if(v!=null){cans=v;cjust=true;const r=$('#cres');r.classList.remove('err');r.style.opacity=1;r.innerHTML=cfmt(v)}else{$('#cres').textContent='Revisa l’operació';$('#cres').classList.add('err')}$('#cexp').textContent=cshow(cexp);return}
+    default:cexp+=key}
+  $('#cexp').textContent=cshow(cexp)||' ';const v=cexp?ceval(cexp):null;$('#cres').classList.remove('err');$('#cres').style.opacity=v!=null?.45:1;$('#cres').innerHTML=v!=null?cfmt(v):(cexp?'…':'0')}
+function calcToggle(o){o=o!=null?o:!calc.classList.contains('open');calc.classList.toggle('open',o);$('#bCalc').classList.toggle('on',o)}
+$('#bCalc').onclick=()=>{calcToggle();$('#bCalc').blur()};$('#cclose').onclick=()=>calcToggle(false);
+function dragWin(win,handle){let dr=null;handle.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const r=stage.getBoundingClientRect(),sc=r.width/1600;dr={x:e.clientX,y:e.clientY,l:win.offsetLeft,t:win.offsetTop,sc};handle.setPointerCapture(e.pointerId)});
+  handle.addEventListener('pointermove',e=>{if(!dr)return;win.style.left=clamp(dr.l+(e.clientX-dr.x)/dr.sc,0,1600-win.offsetWidth)+'px';win.style.top=clamp(dr.t+(e.clientY-dr.y)/dr.sc,0,780)+'px';win.style.right='auto'});
+  handle.addEventListener('pointerup',()=>dr=null)}
+dragWin(calc,$('#cdrag'));
+function calcKey(e){const m={'Enter':'=','=':'=','Backspace':'⌫','Delete':'C','*':'×','x':'×','/':'÷',':':'÷','-':'−','+':'+','^':'xʸ','(':'(',')':')',',':',','.':',','p':'π','r':'√','E':'×10ⁿ'};
+  let kk=null;if(/^[0-9]$/.test(e.key))kk=e.key;else if(m[e.key])kk=m[e.key];if(!kk)return false;e.preventDefault();cpress(kk);return true}
+
+/* =================== esborrany =================== */
+const draft=$('#draft'),dcv=$('#dcv'),dctx=dcv.getContext('2d');const DR={};let dDirty=false,dCol='#1B1B1B',dW=7,dErase=false;
+function draftToggle(open){const o=open!=null?open:!draft.classList.contains('open');if(!o)saveDraft();draft.classList.toggle('open',o);$('#bDraft').classList.toggle('on',o);if(o)loadDraft();sfx.tick()}
+function saveDraft(){if(dDirty){DR[cur]=dcv.toDataURL();dDirty=false}}
+function loadDraft(){dctx.clearRect(0,0,1600,718);if(DR[cur]){const im=new Image(),c=cur;im.onload=()=>{if(c===cur)dctx.drawImage(im,0,0)};im.src=DR[cur]}}
+$('#bDraft').onclick=()=>{draftToggle();$('#bDraft').blur()};$('#dclose').onclick=()=>draftToggle(false);
+$('#dclear').onclick=()=>{dctx.clearRect(0,0,1600,718);delete DR[cur];dDirty=false};
+$('#dmode').onclick=()=>{const g=draft.classList.toggle('glass');draft.classList.toggle('paper',!g);$('#dmode').textContent=g?'Full blanc':'Transparent'};
+$$('#dtools .sw').forEach(b=>b.onclick=()=>{$$('#dtools .sw').forEach(x=>x.classList.remove('on'));b.classList.add('on');dCol=b.dataset.c;dErase=false;$('#deraser').classList.remove('on')});
+$('#dthin').onclick=()=>{dW=3.5;$('#dthin').classList.add('on');$('#dthick').classList.remove('on')};
+$('#dthick').onclick=()=>{dW=7;$('#dthick').classList.add('on');$('#dthin').classList.remove('on')};
+$('#deraser').onclick=()=>{dErase=!dErase;$('#deraser').classList.toggle('on',dErase)};
+(function(){let last=null;
+  const P=e=>{const r=dcv.getBoundingClientRect();return [(e.clientX-r.left)*1600/r.width,(e.clientY-r.top)*718/r.height]};
+  function style(e){dctx.globalCompositeOperation=dErase?'destination-out':'source-over';dctx.strokeStyle=dCol;dctx.fillStyle=dCol;dctx.lineCap='round';dctx.lineJoin='round';const pr=e.pressure&&e.pointerType==='pen'?.5+e.pressure:1;dctx.lineWidth=dErase?46:dW*pr}
+  dcv.addEventListener('pointerdown',e=>{last=P(e);dcv.setPointerCapture(e.pointerId);style(e);dctx.beginPath();dctx.arc(last[0],last[1],dctx.lineWidth/2,0,Math.PI*2);dctx.fill();dDirty=true});
+  dcv.addEventListener('pointermove',e=>{if(!last)return;const p=P(e);style(e);dctx.beginPath();dctx.moveTo(last[0],last[1]);dctx.lineTo(p[0],p[1]);dctx.stroke();dDirty=true;last=p});
+  ['pointerup','pointercancel'].forEach(t=>dcv.addEventListener(t,()=>last=null))})();
+
+/* =================== temporitzador =================== */
+{
+  const tm=$('#timer'),bt=$('#bTime');let tot=300,rem=300,run=false,endAt=0,iv=null;
+  const mmss=v=>{v=Math.max(0,Math.ceil(v));return String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0')};
+  function draw(){$('#tdisp').textContent=mmss(rem);$('#tgo').textContent=run?'⏸ Pausa':(rem<tot&&rem>0?'▶ Continua':'▶ Comença');const w=run&&rem<=10;tm.classList.toggle('warn',w);bt.classList.toggle('run',run);bt.classList.toggle('warn',w);$('#bTimeL').textContent=run||(rem<tot&&rem>0)?mmss(rem):''}
+  function tick(){rem=(endAt-Date.now())/1000;if(rem<=0){rem=0;run=false;clearInterval(iv);draw();tm.classList.add('open','end');setTimeout(()=>tm.classList.remove('end'),3200);sfx.alarm();return}draw()}
+  function setT0(s){run=false;clearInterval(iv);tot=rem=clamp(s,60,5940);draw()}
+  $('#tgo').onclick=()=>{if(run){run=false;clearInterval(iv);rem=(endAt-Date.now())/1000}else{if(rem<=0)rem=tot;run=true;endAt=Date.now()+rem*1000;clearInterval(iv);iv=setInterval(tick,250)}draw()};
+  $('#treset').onclick=()=>setT0(tot);
+  $$('#tpre [data-m]').forEach(b=>b.onclick=()=>{$$('#tpre [data-m]').forEach(x=>x.classList.toggle('on',x===b));setT0(+b.dataset.m*60)});
+  $('#tplus').onclick=()=>{if(run){endAt+=60000;tot+=60;tick()}else setT0(tot+60)};
+  $('#tminus').onclick=()=>{if(run){if(rem>61){endAt-=60000;tick()}}else setT0(tot-60)};
+  window._tToggle=o=>{const v=o!=null?o:!tm.classList.contains('open');tm.classList.toggle('open',v)};
+  bt.onclick=()=>{window._tToggle();bt.blur()};$('#tclose').onclick=()=>window._tToggle(false);dragWin(tm,$('#tdrag'));draw();
+}
+
+/* =================== teclat =================== */
+document.addEventListener('keydown',e=>{
+  const t=e.target;if(t&&(t.id==='pwin'||t.tagName==='TEXTAREA'||(t.tagName==='INPUT'&&t.type!=='range')))return;
+  if(t&&t.tagName==='INPUT'&&t.type==='range'&&/Arrow/.test(e.key))return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(calc.classList.contains('open')&&calcKey(e))return;
+  const key=e.key;
+  if(window._soluNav&&$('#solu').classList.contains('open')&&['ArrowRight','ArrowLeft',' '].includes(key)){e.preventDefault();window._soluNav(key==='ArrowLeft'?-1:1);return}
+  if(['ArrowRight','PageDown',' ','ArrowDown'].includes(key)){e.preventDefault();sfx.tick();next()}
+  else if(['ArrowLeft','PageUp','ArrowUp'].includes(key)){e.preventDefault();sfx.tick();prev()}
+  else if(key==='c'||key==='C')calcToggle();
+  else if(key==='e'||key==='E')draftToggle();
+  else if(key==='t'||key==='T')window._tToggle();
+  else if(key==='f'||key==='F')fsToggle();
+  else if(key==='m'||key==='M')sndToggle();
+  else if(key==='Home')go(0);
+  else if(key==='Escape'){if(window._soluClose)window._soluClose();if(draft.classList.contains('open'))draftToggle(false);calcToggle(false);window._tToggle(false);closeDrawers();$$('.modal').forEach(m=>m.classList.remove('open'))}
+});
+
+go(0);
+})();
+</script>
+</body>
+</html>
+
+</body></html>

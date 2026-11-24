@@ -1,0 +1,1212 @@
+<!doctype html><html><head><title>Detectius del microscopi</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: escenari fix 16:9 (1600×900) escalat a la pantalla; una diapo cada cop, sense scroll. Un sol tema clar pensat per projectar. */
+:root{
+  --bg:#FFFFFF; --ink:#141414; --or:#FF6A13; --ord:#C24A00; --tint:#FFE8D8; --line:#E4E1DD; --mid:#6E6862;
+  --fd:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink)}
+body{margin:0}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  font-family:var(--fb);font-size:36px;line-height:1.28;background:var(--bg);overflow:hidden}
+button{font-family:var(--fb);cursor:pointer}
+button:focus-visible{outline:4px solid var(--or);outline-offset:3px}
+
+/* ---------- diapos ---------- */
+.slide{position:absolute;inset:0;padding:54px 96px 128px;display:flex;flex-direction:column;gap:26px;
+  opacity:0;visibility:hidden;transform:translateX(70px);
+  transition:opacity .45s ease, transform .6s cubic-bezier(.2,.8,.2,1), visibility 0s linear .6s}
+.slide.active{opacity:1;visibility:visible;transform:none;
+  transition:opacity .45s ease, transform .6s cubic-bezier(.2,.8,.2,1)}
+.slide:not(.active) *{animation-play-state:paused!important}
+.kick{font:700 24px/1 var(--fb);letter-spacing:.16em;text-transform:uppercase;color:var(--ord);display:flex;align-items:center;gap:14px}
+.kick::before{content:"";width:18px;height:18px;background:var(--or);border-radius:4px}
+h1,h2,h3{margin:0}
+h2{font:800 78px/1 var(--fd);letter-spacing:-.025em;text-wrap:balance}
+.lead{font-size:40px;max-width:30ch}
+.cols{display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;flex:1;min-height:0}
+.art{min-height:0;height:100%;display:flex;align-items:center;justify-content:center}
+.art svg{width:100%;height:100%;max-height:620px;overflow:visible}
+.txt{display:flex;flex-direction:column;gap:26px;min-width:0;padding-right:40px}
+.blk h3{font:700 24px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ord);margin-bottom:10px}
+.blk p{margin:0}
+.blk p+p{margin-top:8px}
+b,strong{font-weight:700}
+.or{color:var(--ord)}
+.like{border:3px solid var(--ink);border-radius:18px;padding:16px 24px;font-size:32px;display:flex;gap:18px;align-items:baseline}
+.like span{font:700 22px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--mid);white-space:nowrap}
+.like b{color:var(--ord)}
+
+/* fragments (apareixen pas a pas) */
+.f{opacity:0;transform:translateY(18px);transition:opacity .45s ease, transform .45s ease}
+.f.on{opacity:1;transform:none}
+g.f{transform:none}
+
+svg text{font-family:var(--fb);fill:var(--ink)}
+.lab{font-size:26px;font-weight:700}
+.sub{font-size:20px;fill:var(--mid)}
+
+/* ---------- portada ---------- */
+.cover{justify-content:center;gap:22px}
+.cover h1{font:800 124px/.9 var(--fd);letter-spacing:-.04em;max-width:9ch}
+.cover h1 em{font-style:normal;color:var(--or)}
+.cover .lead{font-size:44px;color:var(--mid)}
+.keys{display:flex;gap:28px;flex-wrap:wrap;font-size:24px;color:var(--mid);margin-top:4px}
+.keys kbd{font:700 22px var(--fb);border:2px solid var(--ink);border-bottom-width:5px;border-radius:8px;padding:2px 10px;color:var(--ink);margin-right:6px}
+
+/* ---------- targetes genèriques ---------- */
+.row{display:grid;gap:36px;flex:1;min-height:0}
+.r2{grid-template-columns:1fr 1fr}
+.r3{grid-template-columns:repeat(3,1fr)}
+.r4{grid-template-columns:repeat(4,1fr)}
+.card{border:3px solid var(--ink);border-radius:24px;padding:26px 28px;display:flex;flex-direction:column;gap:14px;min-width:0;min-height:0}
+.card h3{font:800 44px/1 var(--fd);letter-spacing:-.02em}
+.r4 .card{padding:22px 22px}
+.r4 .card h3{font-size:34px}
+.r4 .small{font-size:26px}
+.card p{margin:0}
+.card .pic{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.card .pic svg{width:100%;height:100%;max-height:300px}
+.tag{align-self:flex-start;font:700 20px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:8px}
+.tag.o{background:var(--or);color:var(--ink)}
+.ex{font-size:28px;color:var(--mid)}
+.small{font-size:30px}
+
+/* funcions vitals */
+.vit{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:6px}
+.vit div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:28px;font-weight:700}
+.vit svg{width:120px;height:90px}
+
+/* ameba */
+.ameba{width:240px;height:200px;background:var(--tint);border:5px solid var(--ink);position:relative;
+  animation:ameba 6s ease-in-out infinite}
+.ameba::after{content:"";position:absolute;width:56px;height:56px;border-radius:50%;background:var(--or);border:4px solid var(--ink);left:40%;top:36%}
+@keyframes ameba{
+  0%,100%{border-radius:55% 45% 60% 40%/50% 60% 40% 50%;transform:translateX(0)}
+  33%{border-radius:40% 60% 45% 55%/60% 40% 60% 40%;transform:translateX(16px)}
+  66%{border-radius:60% 40% 55% 45%/40% 55% 45% 60%;transform:translateX(-12px)}}
+
+/* llistes de parts */
+.parts{display:flex;flex-direction:column;gap:22px;padding-right:60px}
+.parts .p{display:grid;grid-template-columns:56px 1fr;gap:18px;align-items:start}
+.parts .n{width:52px;height:52px;border-radius:50%;background:var(--or);color:var(--ink);font:800 30px/52px var(--fd);text-align:center}
+.parts h3{font:800 38px/1.05 var(--fd)}
+.parts p{margin:4px 0 0;font-size:30px}
+
+/* cèl·lula: destacats */
+.cell .org{transition:opacity .35s, filter .35s}
+.cell.focus .org:not(.hl){opacity:.18}
+.cell .org.hl{filter:drop-shadow(0 0 5px #FF6A13) drop-shadow(0 0 10px #FF6A13)}
+.cell.map .org{cursor:pointer}
+.cell.map .org:hover{filter:drop-shadow(0 0 4px #FF6A13)}
+.wob{animation:wob 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes wob{0%,100%{transform:scale(1)}50%{transform:scale(1.012,.99)}}
+
+/* mapa interactiu */
+.mapwrap{display:grid;grid-template-columns:1.15fr 1fr;gap:50px;flex:1;min-height:0;align-items:center}
+.panel{display:flex;flex-direction:column;gap:20px;min-width:0;padding-right:40px}
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chip{border:3px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:999px;padding:8px 18px;font-size:24px;font-weight:700}
+.chip.sel{background:var(--or)}
+.chip.only{border-style:dashed}
+.info{border:3px solid var(--ink);border-radius:22px;padding:22px 26px;min-height:250px;display:flex;flex-direction:column;gap:10px}
+.info h3{font:800 46px/1 var(--fd)}
+.info p{margin:0;font-size:32px}
+.info .c{font-size:28px;color:var(--mid)}
+.info .c b{color:var(--ord)}
+
+/* animacions d'orgànuls */
+.bead{opacity:0;animation:bead 6s linear infinite}
+@keyframes bead{0%{opacity:0}8%{opacity:1}85%{opacity:1}100%{opacity:0}}
+.mrna{animation:mrna 6s linear infinite}
+@keyframes mrna{from{transform:translateX(0)}to{transform:translateX(-120px)}}
+.enz{animation:spin 2.6s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.eaten{animation:eaten 6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes eaten{0%{transform:translateX(0) scale(1);opacity:1}45%{transform:translateX(-270px) scale(.8);opacity:1}75%{transform:translateX(-270px) scale(0);opacity:0}100%{transform:translateX(0) scale(0);opacity:0}}
+.bolt{animation:bolt 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes bolt{0%,100%{opacity:0;transform:scale(.6)}30%,60%{opacity:1;transform:scale(1.1)}}
+.pass{animation:pass 3.4s ease-in-out infinite}
+@keyframes pass{0%{transform:translateY(0);opacity:0}12%{opacity:1}88%{opacity:1}100%{transform:translateY(330px);opacity:0}}
+.bounce{animation:bnc 3.4s ease-in-out infinite}
+@keyframes bnc{0%,100%{transform:translateY(0)}45%{transform:translateY(64px)}55%{transform:translateY(56px)}}
+.pulse{animation:pulse 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.water{animation:water 5s ease-in-out infinite}
+@keyframes water{0%,100%{transform:translateY(170px)}50%{transform:translateY(20px)}}
+.grow{animation:grow 4s cubic-bezier(.3,1.5,.5,1) infinite;transform-box:fill-box;transform-origin:center}
+@keyframes grow{0%{transform:scale(0) rotate(-40deg)}30%,85%{transform:scale(1) rotate(0)}100%{transform:scale(0) rotate(0)}}
+.rays{animation:spin 10s linear infinite;transform-box:fill-box;transform-origin:center}
+.o2{animation:o2 3s ease-in infinite}
+@keyframes o2{0%{transform:translateY(40px);opacity:0}20%{opacity:1}100%{transform:translateY(-90px);opacity:0}}
+.spinslow{animation:spin 24s linear infinite;transform-box:fill-box;transform-origin:center}
+.mt{stroke-dasharray:6 8;animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-28}}
+.flag{animation:flag 1s ease-in-out infinite;transform-box:fill-box;transform-origin:left center}
+@keyframes flag{0%,100%{transform:scaleY(1)}50%{transform:scaleY(-1)}}
+.split{animation:split 3s ease-in-out infinite}
+@keyframes split{0%,20%{transform:translateX(0)}60%,100%{transform:translateX(var(--d))}}
+.ring{animation:ring 2s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes ring{from{transform:scale(.4);opacity:1}to{transform:scale(1.6);opacity:0}}
+.gauge{height:46px;border:3px solid var(--ink);border-radius:12px;overflow:hidden;position:relative;background:var(--bg)}
+.gauge i{position:absolute;inset:0 auto 0 0;width:0;background:var(--or);transition:width 1.6s cubic-bezier(.2,.8,.2,1)}
+.gauge b{position:absolute;right:14px;top:50%;transform:translateY(-50%);font:800 30px var(--fd)}
+.f.on .gauge i{width:85%}
+
+/* ruta de la proteïna */
+#pk{transition:transform 1s cubic-bezier(.5,0,.3,1), opacity .4s}
+#pk .box{opacity:0;transition:opacity .4s}
+#pk.boxed .box{opacity:1}
+#pk .ves{opacity:0;transition:opacity .4s}
+#pk.ves .ves{opacity:1}
+.st{transition:opacity .4s}
+
+/* repte */
+.quiz{display:grid;grid-template-columns:1fr 1fr;gap:14px 50px;flex:1;align-content:start}
+.q{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border-bottom:3px solid var(--line);padding-bottom:12px}
+.q .nm{font-size:30px;font-weight:700}
+.q.ok .nm{color:var(--ord)}
+.q .bt{display:flex;gap:8px}
+.q button{border:3px solid var(--ink);background:var(--bg);color:var(--ink);border-radius:12px;padding:6px 12px;font-size:22px;font-weight:700}
+.q button.good{background:var(--or)}
+.q button.bad{text-decoration:line-through;opacity:.35;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.qbar{display:flex;gap:18px;align-items:center;font-size:30px}
+.qbar .act{border:3px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 20px;font-size:26px;font-weight:700}
+.qbar .act.light{background:var(--bg);color:var(--ink)}
+.score{font:800 40px var(--fd)}
+
+/* qui sóc */
+.riddles{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:28px;flex:1;min-height:0}
+.rc{perspective:1200px;border:0;background:none;padding:0;text-align:left;display:block;width:100%;height:100%;font:inherit}
+.rc .in{display:block;position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.rc.flip .in{transform:rotateY(180deg)}
+.rc .fa,.rc .ba{position:absolute;inset:0;backface-visibility:hidden;border:3px solid var(--ink);border-radius:22px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;color:var(--ink)}
+.rc .fa{background:var(--bg);font-size:31px}
+.rc .fa small{font:700 20px var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--mid)}
+.rc .ba{background:var(--or);transform:rotateY(180deg);justify-content:center;align-items:center;font:800 50px/1 var(--fd);text-align:center}
+
+/* final */
+.end h2{font-size:96px}
+.end ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:20px;max-width:880px}
+.end li{display:grid;grid-template-columns:40px 1fr;gap:14px;font-size:38px}
+.end li::before{content:"";width:22px;height:22px;background:var(--or);border-radius:50%;margin-top:12px}
+
+/* ---------- barra i mascota ---------- */
+#bar{position:absolute;left:0;right:0;bottom:0;height:76px;display:flex;align-items:center;gap:14px;padding:0 40px;z-index:5}
+.nb{width:54px;height:54px;border:3px solid var(--ink);border-radius:14px;background:var(--bg);display:grid;place-items:center;padding:0;color:var(--ink)}
+.nb svg{width:26px;height:26px}
+.nb.off{opacity:.45}
+.nb.wide{width:auto;display:flex;gap:10px;padding:0 16px;font:700 20px var(--fb)}
+.bigfs{align-self:flex-start;display:flex;align-items:center;gap:16px;border:4px solid var(--ink);background:var(--or);color:var(--ink);border-radius:18px;padding:16px 30px;font:800 36px var(--fd);box-shadow:8px 8px 0 var(--ink);transition:transform .15s, box-shadow .15s}
+.bigfs:hover{transform:translate(-2px,-2px);box-shadow:10px 10px 0 var(--ink)}
+.bigfs:active{transform:translate(4px,4px);box-shadow:4px 4px 0 var(--ink)}
+.bigfs svg{width:40px;height:40px}
+#count{font:800 26px var(--fd);min-width:90px;text-align:center;font-variant-numeric:tabular-nums}
+#prog{position:absolute;left:0;bottom:0;height:8px;background:var(--or);transition:width .5s ease;z-index:6}
+
+#ammo{position:absolute;right:34px;bottom:14px;width:150px;z-index:7;cursor:pointer;
+  transition:width .9s cubic-bezier(.3,1.3,.5,1), right .9s cubic-bezier(.3,1.3,.5,1), bottom .9s cubic-bezier(.3,1.3,.5,1)}
+#ammo svg{width:100%;display:block;transform:scaleX(-1);overflow:visible}
+#ammo .bob{animation:bob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-3deg)}}
+#ammo .eye{animation:blink 4.5s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+#ammo .tent{animation:tent 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:left center}
+#ammo .tent:nth-of-type(2){animation-delay:.3s}
+#ammo .tent:nth-of-type(3){animation-delay:.6s}
+@keyframes tent{0%,100%{transform:rotate(0)}50%{transform:rotate(9deg)}}
+#ammo .lid,#ammo .spark{opacity:0}
+#ammo .body,#ammo .shellg,#ammo .jump{transform-box:fill-box}
+/* saltiró */
+#ammo.hop .jump{animation:hop .7s cubic-bezier(.3,1.6,.5,1);transform-origin:center bottom}
+@keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-22px) rotate(-12deg)}100%{transform:translateY(0)}}
+/* saltirons */
+#ammo.jumps .jump{animation:jumps 1.5s ease-in-out;transform-origin:center bottom}
+@keyframes jumps{0%,33%,66%,100%{transform:translateY(0) scale(1.08,.9)}
+ 16%{transform:translateY(-26px) scale(.95,1.06) rotate(-8deg)}
+ 50%{transform:translateY(-34px) scale(.95,1.06) rotate(8deg)}
+ 83%{transform:translateY(-20px) scale(.95,1.06) rotate(-4deg)}}
+/* picada d'ull */
+#ammo.wink .eye{animation:none;opacity:0}
+#ammo.wink .lid{opacity:1}
+#ammo.wink .spark{animation:spark 1.2s ease-out;transform-box:fill-box;transform-origin:center}
+@keyframes spark{0%{opacity:0;transform:scale(0) rotate(0)}30%{opacity:1;transform:scale(1.3) rotate(45deg)}100%{opacity:0;transform:scale(.6) rotate(90deg)}}
+#ammo.wink .jump{animation:tilt 1.2s ease-in-out;transform-origin:center}
+@keyframes tilt{30%,70%{transform:rotate(-10deg)}}
+/* s'amaga a la closca */
+#ammo.hide .body{animation:retract 2.4s ease-in-out;transform-origin:0% 50%}
+@keyframes retract{0%,100%{transform:none}25%,75%{transform:translate(-14px,-6px) scale(.05)}}
+#ammo.hide .shellg{animation:shy 2.4s ease-in-out;transform-origin:center}
+@keyframes shy{0%,25%,75%,100%{transform:none}35%{transform:rotate(-6deg)}45%{transform:rotate(5deg)}55%{transform:rotate(-3deg)}}
+/* rodolí */
+#ammo.roll .jump{animation:roll 1.4s cubic-bezier(.5,0,.3,1);transform-origin:center}
+@keyframes roll{0%{transform:none}25%{transform:translateY(-12px)}100%{transform:rotate(360deg)}}
+/* no */
+#ammo.no .jump{animation:no .5s}
+@keyframes no{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+#stage.big #ammo{width:430px;right:150px;bottom:190px}
+
+#bubble{position:absolute;right:196px;bottom:12px;max-width:820px;z-index:8;background:var(--bg);border:3px solid var(--ink);
+  border-radius:22px;padding:16px 22px;font-size:27px;line-height:1.3;box-shadow:8px 8px 0 var(--or);
+  opacity:0;transform:scale(.7);transform-origin:100% 100%;pointer-events:none;
+  transition:opacity .3s, transform .4s cubic-bezier(.3,1.5,.5,1)}
+#bubble.show{opacity:1;transform:none}
+#bubble::after{content:"";position:absolute;right:-16px;bottom:30px;width:24px;height:24px;background:var(--bg);
+  border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(-45deg)}
+#bubble .who{display:inline-block;font:700 18px var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ord);margin-right:12px}
+#stage.big #bubble .who{display:block;margin-bottom:4px}
+#stage.big #bubble{right:100px;bottom:640px;max-width:410px;transform-origin:50% 100%}
+#stage.big #bubble::after{right:auto;left:60%;bottom:-16px;transform:rotate(45deg)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01s!important}
+}
+</style>
+
+<style>
+[hidden]{display:none!important}
+/* ---------- ajustos per a l'activitat ---------- */
+.slide{padding:122px 80px 136px;gap:16px}
+.slide.cover,.slide.end{padding-top:54px}
+.slide h2{font-size:62px}
+.cover h1{font-size:118px;max-width:11ch}
+.end h2{font-size:92px}
+
+/* menú superior */
+#menu{position:absolute;left:0;right:0;top:0;height:104px;z-index:9;background:var(--bg);border-bottom:3px solid var(--ink);
+  display:flex;flex-direction:column;justify-content:center;gap:8px;padding:0 30px 0 118px}
+#stage.big #menu{display:none}
+#logo{position:absolute;left:22px;top:12px;width:80px;height:80px;border:0;background:none;padding:0}
+#logo svg{width:100%;height:100%;transform:scaleX(-1)}
+#logo .mark{position:absolute;right:2px;bottom:6px;width:9px;height:9px;border-radius:50%;background:var(--or);opacity:0;transition:opacity .3s}
+#logo.secret .mark{opacity:.6}
+.tabs,.subs{display:flex;gap:10px;flex-wrap:nowrap}
+.tab{border:3px solid var(--ink);border-radius:12px;background:var(--bg);color:var(--ink);padding:3px 16px;font:700 22px/1.25 var(--fb)}
+.tab.on{background:var(--ink);color:#fff}
+.sb{position:relative;white-space:nowrap;border:2px solid var(--ink);border-radius:10px;background:var(--bg);color:var(--ink);padding:2px 10px 2px 8px;font:700 17px/1.3 var(--fb);display:flex;align-items:center;gap:7px}
+.sb .lv{width:11px;height:11px;border-radius:50%;border:2px solid var(--ink);background:#fff;flex:none}
+.sb .lv.l2{background:var(--tint)}.sb .lv.l3{background:var(--or)}.sb .lv.r{border:0;width:auto;height:auto;background:none;font-size:15px}
+.sb.on{background:var(--or)}
+.sb.done::after{content:"✓";font-weight:800;color:var(--ord);margin-left:2px}
+.sb.on.done::after{color:var(--ink)}
+.sb.skip{text-decoration:line-through;opacity:.5}
+
+/* exercicis: figura + resolució */
+.ex2{display:grid;grid-template-columns:1.12fr 1fr;gap:44px;flex:1;min-height:0}
+.fig{position:relative;min-height:0;border:3px solid var(--ink);border-radius:20px;overflow:hidden;background:#777;display:flex}
+.fig svg{width:100%;height:100%;display:block}
+.fig .cap{position:absolute;right:12px;top:10px;font:700 16px var(--fb);letter-spacing:.12em;text-transform:uppercase;background:var(--ink);color:#fff;padding:5px 10px;border-radius:8px}
+.sol{display:flex;flex-direction:column;gap:10px;min-width:0;font-size:27px;line-height:1.22}
+.qq{font-size:27px;border-left:8px solid var(--or);padding:4px 0 4px 18px}
+.qq b{color:var(--ord)}
+.stp{border:3px solid var(--ink);border-radius:16px;padding:7px 16px;display:grid;grid-template-columns:118px 1fr;gap:14px;align-items:baseline}
+.stp .k{font:700 17px/1.2 var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--ord)}
+.stp .m{font-family:var(--fd);font-weight:700}
+.ans{background:var(--or);border:3px solid var(--ink);border-radius:16px;padding:10px 18px;font:800 31px/1.12 var(--fd);box-shadow:6px 6px 0 var(--ink)}
+.ans small{display:block;font:400 23px/1.25 var(--fb);margin-top:4px}
+.note{font-size:23px;color:var(--mid)}
+.note b{color:var(--ink)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.85em;line-height:1.05;margin:0 4px}
+.frac i{font-style:normal;border-top:3px solid var(--ink);padding-top:2px}
+
+/* micrografies */
+.ov{opacity:0;transition:opacity .4s}
+.ov.show{opacity:1;animation:ovp 1.6s ease-in-out infinite}
+@keyframes ovp{50%{opacity:.55}}
+.emlab{font:700 26px Arial,Helvetica,sans-serif;paint-order:stroke;stroke:#fff;stroke-width:4px;fill:#111}
+.emlab.w{fill:#fff;stroke:#111}
+.ruler{cursor:grab}
+.ruler.off{display:none}
+.ruler .h{cursor:grab}
+.ruler text{font:700 26px var(--fb);paint-order:stroke;stroke:#fff;stroke-width:6px;fill:var(--ink)}
+.blur0{transition:filter 1s}
+.mys1{filter:blur(14px)}.mys2{filter:blur(8px)}.mys3{filter:blur(3px)}
+
+/* xips d'abreviatures */
+.abbr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ab{perspective:900px;border:0;background:none;padding:0;height:86px;font:inherit}
+.ab .in{display:block;position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.ab.flip .in{transform:rotateY(180deg)}
+.ab .fa,.ab .ba{position:absolute;inset:0;backface-visibility:hidden;border:3px solid var(--ink);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.ab .fa{background:#fff;font:800 40px var(--fd)}
+.ab .ba{background:var(--or);transform:rotateY(180deg);font:700 24px/1.1 var(--fb);padding:0 10px;text-align:center}
+
+/* mapa clicable */
+.mapwrap{grid-template-columns:1fr 1fr}
+.info{min-height:220px}
+.info h3{font-size:42px}
+.info p{font-size:29px}
+
+/* cromatina o cromosomes */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:40px;flex:1;min-height:0}
+.ph{display:flex;flex-direction:column;gap:14px;min-height:0}
+.ph .fig{flex:1;background:#f2f2f2}
+.pick{display:flex;gap:12px;justify-content:center}
+.pick button,.wbank button,.qbtn{border:3px solid var(--ink);background:#fff;color:var(--ink);border-radius:14px;padding:8px 18px;font:700 26px var(--fb)}
+.pick button.good,.wbank button.used{background:var(--or)}
+.pick button.bad{text-decoration:line-through;opacity:.35;animation:shake .4s}
+.big-ans{font:800 40px var(--fd);text-align:center;min-height:50px;color:var(--ord)}
+
+/* cromosoma */
+.wbank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.wbank button.sel{outline:5px solid var(--or);outline-offset:2px}
+.wbank button.used{opacity:.45}
+.bx rect{fill:#fff;stroke:var(--ink);stroke-width:3}
+.bx.ok rect{fill:var(--or)}
+.bx.bad rect{animation:shakeb .4s;fill:#ddd}
+@keyframes shakeb{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.bx text{font:700 24px var(--fb)}
+.bx{cursor:pointer}
+.qbar2{display:flex;gap:16px;justify-content:center}
+
+/* escala */
+.scale svg text{font-family:var(--fb)}
+
+/* llista de comprovació */
+.chk{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;border-bottom:3px solid var(--line);padding:6px 0;font-size:28px}
+.chk .v{font:800 34px var(--fd);width:48px;text-align:center}
+.chk .v.y{color:var(--ord)}
+
+/* test */
+.quizc{border:3px solid var(--ink);border-radius:24px;padding:28px 34px;display:flex;flex-direction:column;gap:18px;flex:1;min-height:0}
+.qtop{display:flex;align-items:center;gap:20px;font:700 22px var(--fb);color:var(--mid)}
+.qprog{flex:1;height:14px;border:2px solid var(--ink);border-radius:8px;overflow:hidden}
+.qprog i{display:block;height:100%;background:var(--or);width:0;transition:width .4s}
+.qtext{font:800 44px/1.1 var(--fd)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.opt{display:flex;gap:16px;align-items:center;text-align:left;border:3px solid var(--ink);background:#fff;color:var(--ink);border-radius:16px;padding:12px 18px;font:400 29px/1.2 var(--fb)}
+.opt kbd{font:700 22px var(--fb);border:2px solid var(--ink);border-bottom-width:4px;border-radius:8px;padding:0 9px}
+.opt.good{background:var(--or)}
+.opt.bad{text-decoration:line-through;opacity:.4}
+.expl{font-size:27px;min-height:70px;color:var(--ink)}
+.expl b{color:var(--ord)}
+.qnext{align-self:flex-end}
+
+/* mapa de blocs */
+.mcard{border:3px solid var(--ink);border-radius:22px;padding:20px 22px;background:#fff;color:var(--ink);text-align:left;display:flex;flex-direction:column;gap:10px;font:inherit;min-width:0}
+.mcard:hover{box-shadow:8px 8px 0 var(--or);transform:translate(-2px,-2px)}
+.mcard{transition:transform .15s, box-shadow .15s}
+.mcard h3{font:800 34px/1.05 var(--fd)}
+.mcard p{margin:0;font-size:23px;color:var(--mid)}
+.mcard .pic{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.mcard .pic svg{width:100%;max-height:200px}
+.r5{grid-template-columns:repeat(5,1fr)}
+
+/* barra: botons d'eines */
+.nb.tl{width:auto;padding:0 12px;font:700 20px var(--fb);gap:6px;display:flex}
+.nb.tl kbd{font:700 15px var(--fb);opacity:.6}
+.nb.tl.on{background:var(--or)}
+
+/* eines */
+.tool{position:absolute;z-index:20;background:#fff;border:3px solid var(--ink);border-radius:18px;box-shadow:8px 8px 0 var(--or);font-family:var(--fb)}
+.tool .th{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 10px 8px 16px;font:700 20px var(--fb);letter-spacing:.1em;text-transform:uppercase;border-bottom:3px solid var(--ink);cursor:move;user-select:none;touch-action:none}
+.tool .x{border:2px solid var(--ink);border-radius:8px;background:#fff;font:700 20px var(--fb);width:34px;height:34px;padding:0}
+#calc{width:400px;left:1120px;top:130px}
+#calc .disp{margin:12px;border:3px solid var(--ink);border-radius:12px;padding:8px 12px;text-align:right;background:var(--tint)}
+#calc .ce{font-size:22px;min-height:28px;word-break:break-all;color:var(--mid)}
+#calc .cr{font:800 40px var(--fd);min-height:48px}
+#calc .kg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 12px 12px}
+#calc .kg button{height:54px;border:2px solid var(--ink);border-radius:10px;background:#fff;font:700 24px var(--fb);color:var(--ink);padding:0}
+#calc .kg button.o{background:var(--tint)}
+#calc .kg button.eq{background:var(--or)}
+#timer{left:40px;top:470px;width:360px}
+#timer .tv{font:800 84px/1 var(--fd);text-align:center;padding:12px 0 6px;font-variant-numeric:tabular-nums}
+#timer.end .tv{color:var(--or);animation:ovp .6s infinite}
+#timer .tb{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:0 12px 14px}
+#timer .tb button{border:2px solid var(--ink);border-radius:10px;background:#fff;font:700 22px var(--fb);padding:6px 12px;color:var(--ink)}
+#timer .tb button.go{background:var(--or)}
+#draw{position:absolute;left:0;top:0;width:1600px;height:900px;z-index:14;pointer-events:none}
+#draw.on{pointer-events:auto;cursor:crosshair}
+#draw.white{background:#fff}
+#drawbar{left:50%;top:116px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;padding:8px 12px}
+#drawbar .th{border:0;padding:0 6px;cursor:default}
+#drawbar button{height:46px;min-width:46px;border:2px solid var(--ink);border-radius:10px;background:#fff;font:700 20px var(--fb);color:var(--ink);padding:0 10px}
+#drawbar button.sel{outline:4px solid var(--or);outline-offset:2px}
+#drawbar .sw{width:46px;padding:0}
+#lupaInd{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);z-index:12;background:var(--ink);color:#fff;font:700 22px var(--fb);padding:8px 16px;border-radius:12px}
+.slide.zoomable{cursor:zoom-in}
+</style>
+<style>
+.gwrap{display:grid;grid-template-columns:1.45fr 1fr;grid-template-rows:minmax(0,1fr);gap:40px;flex:1;min-height:0;align-items:center}
+.gwrap .art{height:100%;min-height:0}
+.gwrap .art svg{max-height:100%}
+.gside{display:flex;flex-direction:column;gap:18px;padding-bottom:40px}
+.gside .wbank{display:grid;grid-template-columns:1fr 1fr}
+.gside .wbank button{font-size:28px}
+.gside .qbar2{justify-content:flex-start;flex-wrap:wrap}
+</style>
+<div id="stage">
+
+<!-- 0 · PORTADA -->
+<section class="slide cover" data-big data-blk="0" data-lab="Portada" data-tip="Hola! Sóc l'Ammo. Avui farem de detectius amb fotos de microscopi electrònic.">
+  <div class="kick">Biologia i Geologia · 4t d'ESO · Activitat 1.3</div>
+  <h1>Detectius del <em>microscopi</em></h1>
+  <p class="lead">Els orgànuls cel·lulars vistos de veritat</p>
+  <div style="display:flex;gap:22px">
+    <button class="bigfs" id="startBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l12 8-12 8z" fill="currentColor"/></svg><span>Comença</span></button>
+    <button class="bigfs" id="fs2" type="button" style="background:#fff"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="fslab">Pantalla completa</span></button>
+  </div>
+  <div class="keys">
+    <span><kbd>→</kbd><kbd>espai</kbd>avança</span><span><kbd>←</kbd>enrere</span><span><kbd>S</kbd>salta</span>
+    <span><kbd>C</kbd>calculadora</span><span><kbd>E</kbd>esborrany</span><span><kbd>T</kbd>temps</span><span><kbd>L</kbd>lupa</span><span><kbd>R</kbd>regle</span><span><kbd>M</kbd>so</span><span><kbd>F</kbd>pantalla completa</span>
+  </div>
+</section>
+
+<!-- 1 · MAPA -->
+<section class="slide" data-blk="0" data-lab="Mapa" data-tip="Tria per on comencem. Pots tornar aquí clicant el logotip de dalt a l'esquerra.">
+  <div class="kick">La missió</div>
+  <h2>Tres casos per resoldre</h2>
+  <div class="row r5" id="mapcards"></div>
+</section>
+
+<!-- 2 · ESCALA -->
+<section class="slide scale" data-blk="0" data-lab="Escala" data-lv="1" data-tip="Un micròmetre és la mil·lèsima part d'un mil·límetre. Un cabell fa uns 70 µm de gruix!">
+  <div class="kick">Escalfament</div>
+  <h2>Com de petit és petit?</h2>
+  <div class="art" data-draw="scaleBar" style="flex:1"></div>
+</section>
+
+<!-- 3 · P1 a -->
+<section class="slide" data-blk="1" data-lab="a) Eucariota?" data-lv="1" data-hook="p1a" data-tip="Aquesta cèl·lula és del fetge: un hepatòcit. Té moltíssims mitocondris perquè treballa molt.">
+  <div class="kick">Part 1 · El nucli · a)</div>
+  <h2>Eucariota o procariota?</h2>
+  <div class="ex2">
+    <div class="fig"><span class="cap">Microscopi electrònic</span><div data-draw="emNucleus" data-id="n1" style="width:100%;height:100%"></div></div>
+    <div class="sol">
+      <p class="qq">Observa la imatge. És una cèl·lula <b>eucariota</b> o <b>procariota</b>? Per què?</p>
+      <div class="stp f" data-s="1"><span class="k">Busca</span><span>Hi ha un <b>nucli</b> (N) envoltat per una <b>membrana nuclear</b> (Mn).</span></div>
+      <div class="stp f" data-s="2"><span class="k">I a més</span><span>Té orgànuls amb membrana: <b>mitocondris</b> (Mi) i <b>reticle</b> (RER).</span></div>
+      <div class="ans f" data-s="3">És una cèl·lula EUCARIOTA<small>perquè té el material genètic dins d'un nucli envoltat de membrana.</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · P1 b -->
+<section class="slide" data-blk="1" data-lab="b) Abreviatures" data-lv="1" data-hook="p1b" data-tip="Pista: «hetero» vol dir diferent, i «eu» vol dir veritable o bo.">
+  <div class="kick">Part 1 · El nucli · b)</div>
+  <h2>Què volen dir les abreviatures?</h2>
+  <div class="ex2">
+    <div class="fig"><span class="cap">Toca una abreviatura</span><div data-draw="emNucleus" data-id="n2" style="width:100%;height:100%"></div></div>
+    <div class="sol">
+      <p class="qq">Proposa què vol dir cada etiqueta. Després gira la targeta.</p>
+      <div class="abbr" id="abbr"></div>
+      <p class="note">A l'enunciat posa <b>MI</b> i <b>HC</b>; a la foto, <b>Mi</b> i <b>Hc</b>. Extra: <b>Ec</b> = eucromatina.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · P1 c -->
+<section class="slide" data-blk="1" data-lab="c) Parts" data-lv="1" data-hook="nmap" data-tip="Els porus nuclears són portes: per aquí surten les ordres del nucli cap al citoplasma.">
+  <div class="kick">Part 1 · El nucli · c)</div>
+  <h2>Les parts del nucli</h2>
+  <div class="mapwrap">
+    <div class="art" data-draw="nucMap"></div>
+    <div class="panel">
+      <div class="chips" id="nchips"></div>
+      <div class="info" id="ninfo"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · P1 d -->
+<section class="slide" data-blk="1" data-lab="d) Mesura" data-lv="2" data-hook="p1d" data-tip="Al vostre full els mil·límetres seran diferents, però la proporció és la mateixa. Per això funciona!">
+  <div class="kick">Part 1 · El nucli · d)</div>
+  <h2>Quant mesura el nuclèol?</h2>
+  <div class="ex2">
+    <div class="fig"><span class="cap">Arrossega el regle · R</span><div data-draw="emNucleus" data-id="n3" data-ruler style="width:100%;height:100%"></div></div>
+    <div class="sol">
+      <p class="qq">Fes servir l'<b>escala gràfica</b> de 4 µm. Expressa-ho en <b>µm</b> i en <b>mm</b>.</p>
+      <div class="stp f" data-s="1"><span class="k">Escala</span><span>Barra de <b>4 µm</b> → mesura <span class="m">17 mm</span></span></div>
+      <div class="stp f" data-s="2"><span class="k">Nuclèol</span><span>Diàmetre → <span class="m">6 mm</span></span></div>
+      <div class="stp f" data-s="3"><span class="k">Regla de tres</span><span class="m">x = <span class="frac">6 · 4<i>17</i></span> = 1,4 µm</span></div>
+      <div class="stp f" data-s="4"><span class="k">En mm</span><span class="m">1,4 µm ÷ 1000 = 0,0014 mm</span></div>
+      <div class="ans f" data-s="5">Nuclèol ≈ 1,4 µm = 0,0014 mm</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · P1 d repte -->
+<section class="slide" data-blk="1" data-lab="d) Dues escales" data-lv="r" data-hook="p1d2" data-tip="Un bon científic sempre comprova si el resultat té sentit!">
+  <div class="kick">Part 1 · El nucli · d) Repte</div>
+  <h2>Compte! La foto té dues escales</h2>
+  <div class="ex2">
+    <div class="fig"><span class="cap">Quina és la bona?</span><div data-draw="emNucleus" data-id="n4" data-ruler style="width:100%;height:100%"></div></div>
+    <div class="sol">
+      <p class="qq">Mesurem el <b>nucli sencer</b>: 27 mm. Quina escala dona un resultat lògic?</p>
+      <div class="stp f" data-s="1"><span class="k">Amb 4 µm</span><span><span class="m"><span class="frac">27 · 4<i>17</i></span> = 6,4 µm</span> ✔ normal (5–10 µm)</span></div>
+      <div class="stp f" data-s="2"><span class="k">Amb 0,5 µm</span><span>barra 7 mm → <span class="m"><span class="frac">27 · 0,5<i>7</i></span> = 1,9 µm</span> ✘ com un bacteri!</span></div>
+      <div class="ans f" data-s="3">L'escala bona és la de 4 µm<small>La de 0,5 µm és d'un detall ampliat de l'atles original.</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · P1 e -->
+<section class="slide" data-blk="1" data-lab="e) Fotos" data-lv="1" data-hook="p1e" data-tip="Si estiréssim l'ADN d'una sola cèl·lula humana, faria uns 2 metres!">
+  <div class="kick">Part 1 · El nucli · e)</div>
+  <h2>Cromatina o cromosomes?</h2>
+  <div class="pair">
+    <div class="ph" data-a="cromatina"><div class="fig"><div data-draw="chromatinPic" style="width:100%;height:100%"></div></div>
+      <div class="pick"><button type="button" data-v="cromatina">Fibres de cromatina</button><button type="button" data-v="cromosomes">Cromosomes condensats</button></div>
+      <div class="big-ans f" data-s="1">Fibres de cromatina</div></div>
+    <div class="ph" data-a="cromosomes"><div class="fig"><div data-draw="chromoPic" style="width:100%;height:100%"></div></div>
+      <div class="pick"><button type="button" data-v="cromatina">Fibres de cromatina</button><button type="button" data-v="cromosomes">Cromosomes condensats</button></div>
+      <div class="big-ans f" data-s="2">Cromosomes condensats</div></div>
+  </div>
+</section>
+
+<!-- 9 · P1 f -->
+<section class="slide" data-blk="1" data-lab="f) Diferència" data-lv="2" data-tip="És com un fil de llana: escampat ocupa molt, cabdellat és fàcil de moure.">
+  <div class="kick">Part 1 · El nucli · f)</div>
+  <h2>Cromatina i cromosomes: quina diferència hi ha?</h2>
+  <div class="art" data-draw="condense" style="flex:1.2"></div>
+  <div class="row r2" style="flex:0 0 auto">
+    <div class="card f" data-s="6" style="padding:16px 24px"><span class="tag o">Cromatina</span><p class="small">ADN + proteïnes <b>descondensat</b>. Quan la cèl·lula <b>no es divideix</b> (interfase).</p></div>
+    <div class="card f" data-s="7" style="padding:16px 24px"><span class="tag">Cromosoma</span><p class="small">La mateixa cromatina <b>molt condensada</b>. Només quan la cèl·lula <b>es divideix</b>.</p></div>
+  </div>
+</section>
+
+<!-- 10 · P1 g -->
+<section class="slide" data-blk="1" data-lab="g) Cromosoma" data-lv="2" data-hook="p1g" data-tip="Els telòmers s'escurcen una mica cada vegada que la cèl·lula es divideix.">
+  <div class="kick">Part 1 · El nucli · g)</div>
+  <h2>Completa el cromosoma</h2>
+  <div class="gwrap">
+    <div class="art" data-draw="chromoDiag"></div>
+    <div class="gside"><p class="qq">Tria una paraula i després la casella.</p><div class="wbank" id="wbank"></div>
+    <div class="qbar2"><button class="qbtn" type="button" id="gsol">Mostra la solució</button><button class="qbtn" type="button" id="greset">Torna a començar</button></div></div>
+  </div>
+</section>
+
+<!-- 11 · P2 a -->
+<section class="slide" data-blk="2" data-lab="a) Qui és?" data-lv="1" data-hook="p2a" data-tip="Els mitocondris tenen el seu propi ADN, i l'hereteu només de la mare!">
+  <div class="kick">Part 2 · L'orgànul misteriós · a)</div>
+  <h2>Quin orgànul pot ser?</h2>
+  <div class="ex2">
+    <div class="fig"><span class="cap">Microscopi electrònic</span><div data-draw="emMito" data-id="m1" style="width:100%;height:100%"></div></div>
+    <div class="sol">
+      <p class="qq">Observa l'orgànul marcat amb la <b>línia discontínua</b>.</p>
+      <div class="stp f" data-s="1"><span class="k">Pista 1</span><span>Està envoltat per <b>dues membranes</b>.</span></div>
+      <div class="stp f" data-s="2"><span class="k">Pista 2</span><span>La membrana interna fa <b>plecs</b> cap endins.</span></div>
+      <div class="stp f" data-s="3"><span class="k">Pista 3</span><span>Forma ovalada, de bastonet, d'uns 0,5–1 µm.</span></div>
+      <div class="ans f" data-s="4">És un MITOCONDRI<small>Els plecs són les crestes mitocondrials.</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · P2 b c -->
+<section class="slide" data-blk="2" data-lab="b–c) On i què fa" data-lv="1" data-tip="Una cèl·lula del múscul pot tenir milers de mitocondris.">
+  <div class="kick">Part 2 · L'orgànul misteriós · b) i c)</div>
+  <h2>On el trobem i què fa?</h2>
+  <div class="cols" style="grid-template-columns:1fr 1.05fr">
+    <div class="art" data-draw="mitoAnim"></div>
+    <div class="txt" style="font-size:30px;gap:18px;padding-right:20px">
+      <p class="qq f" data-s="1"><b>b)</b> A les cèl·lules <b>eucariotes</b>: animals, vegetals, fongs i protists. Els bacteris <b>no</b> en tenen.</p>
+      <p class="qq f" data-s="2"><b>c)</b> Fa la <b>respiració cel·lular</b>: obté l'<b>energia</b> que necessita la cèl·lula.</p>
+      <div class="like f" data-s="3" style="font-size:27px"><span>Equació</span><div>glucosa + O₂ → CO₂ + H₂O + <b>energia (ATP)</b></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · P2 d -->
+<section class="slide" data-blk="2" data-lab="d) Mesura" data-lv="2" data-hook="p2d" data-tip="1 µm = 1000 nm. Un nanòmetre és una milionèsima de mil·límetre!">
+  <div class="kick">Part 2 · L'orgànul misteriós · d)</div>
+  <h2>Quant mesura el mitocondri?</h2>
+  <div class="ex2">
+    <div class="fig"><span class="cap">Arrossega el regle · R</span><div data-draw="emMito" data-id="m2" data-ruler style="width:100%;height:100%"></div></div>
+    <div class="sol">
+      <p class="qq">Amb l'escala de <b>100 nm</b>, calcula l'<b>amplada</b> i l'<b>alçada</b>. Expressa-ho en nm i µm.</p>
+      <div class="stp f" data-s="1"><span class="k">Escala</span><span>Barra de <b>100 nm</b> → <span class="m">6,2 mm</span></span></div>
+      <div class="stp f" data-s="2"><span class="k">Amplada</span><span class="m">45,8 mm → <span class="frac">45,8 · 100<i>6,2</i></span> ≈ 740 nm = 0,74 µm</span></div>
+      <div class="stp f" data-s="3"><span class="k">Alçada</span><span class="m">28,5 mm → <span class="frac">28,5 · 100<i>6,2</i></span> ≈ 460 nm = 0,46 µm</span></div>
+      <div class="ans f" data-s="4">≈ 740 nm × 460 nm<small>= 0,74 µm × 0,46 µm</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 · P3 -->
+<section class="slide" data-blk="3" data-lab="a–b) Quin tipus?" data-lv="2" data-hook="p3" data-tip="Els bacteris van ser els primers éssers vius de la Terra, fa uns 3.500 milions d'anys.">
+  <div class="kick">Part 3 · Quina cèl·lula és?</div>
+  <h2>Quin tipus de cèl·lula és?</h2>
+  <div class="ex2">
+    <div class="fig" style="background:#ddd"><span class="cap">Microscopi electrònic</span><div data-draw="emBact" data-id="b1" style="width:100%;height:100%"></div></div>
+    <div class="sol" style="gap:8px">
+      <div class="chk f" data-s="1"><span>Té un nucli amb membrana?</span><span class="v">✘</span></div>
+      <div class="chk f" data-s="2"><span>Té mitocondris o altres orgànuls amb membrana?</span><span class="v">✘</span></div>
+      <div class="chk f" data-s="3"><span>L'ADN és en una zona sense membrana: el <b>nucleoide</b></span><span class="v y">✔</span></div>
+      <div class="chk f" data-s="4"><span>Té <b>paret cel·lular</b> i forma de bastó</span><span class="v y">✔</span></div>
+      <div class="ans f" data-s="5" style="margin-top:10px">a) PROCARIOTA: un bacteri (bacil)<small>b) No té nucli: el seu ADN és lliure al nucleoide.</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 · TEST -->
+<section class="slide" data-blk="4" data-lab="Test" data-lv="1" data-hook="quiz" data-tip="Pensa-hi bé abans de respondre!">
+  <div class="kick">Repàs</div>
+  <h2>Test del detectiu</h2>
+  <div class="quizc" id="quizc"></div>
+</section>
+
+<!-- 16 · FINAL -->
+<section class="slide end" data-big data-blk="4" data-lab="Final" data-tip="Jo també surto en fotos de microscopi: les meves closques fòssils tenen cambres i envans. Fins aviat, detectius!">
+  <div class="kick">Cas tancat</div>
+  <h2>Ara ja ho saps!</h2>
+  <ul>
+    <li class="f" data-s="1">Nucli amb membrana → eucariota. Sense nucli → procariota.</li>
+    <li class="f" data-s="2">Cromatina i cromosomes: el mateix ADN, menys o més condensat.</li>
+    <li class="f" data-s="3">Mida real = mida al dibuix × escala ÷ barra. 1 mm = 1000 µm = 1 000 000 nm.</li>
+  </ul>
+</section>
+
+<div id="menu"><button id="logo" type="button" aria-label="Mapa"><span class="mark"></span></button><div class="tabs" id="tabs"></div><div class="subs" id="subs"></div></div>
+
+<canvas id="draw" width="1600" height="900"></canvas>
+<div id="drawbar" class="tool" hidden>
+  <span class="th">Esborrany</span>
+  <button class="sw sel" data-c="#141414" style="background:#141414" aria-label="Negre"></button>
+  <button class="sw" data-c="#FF6A13" style="background:#FF6A13" aria-label="Taronja"></button>
+  <button class="sw" data-c="#1E6FD9" style="background:#1E6FD9" aria-label="Blau"></button>
+  <button data-tool="eraser">Goma</button>
+  <button data-tool="white">Full blanc</button>
+  <button data-tool="clear">Esborra tot</button>
+  <button data-tool="close">✕</button>
+</div>
+<div id="calc" class="tool" hidden><div class="th">Calculadora <button class="x" type="button">×</button></div><div class="disp"><div class="ce"></div><div class="cr">0</div></div><div class="kg"></div></div>
+<div id="timer" class="tool" hidden><div class="th">Temps <button class="x" type="button">×</button></div><div class="tv">05:00</div>
+  <div class="tb"><button data-m="1">1 min</button><button data-m="3">3 min</button><button data-m="5">5 min</button><button data-m="10">10 min</button><button data-d="-1">−1</button><button data-d="1">+1</button><button class="go" id="tgo">▶ Inicia</button></div></div>
+<div id="lupaInd" hidden>Lupa activa: clica per ampliar · L per sortir</div>
+
+<div id="bar">
+  <button class="nb" id="prev" type="button" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <span id="count">1 / 17</span>
+  <button class="nb" id="next" type="button" aria-label="Diapositiva següent"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button class="nb" id="snd" type="button" aria-label="So activat"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="sndw" d="M16 8.5c1.5 1 1.5 6 0 7M18.5 6c3 2.5 3 9.5 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path id="sndx" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="display:none"/></svg></button>
+  <button class="nb wide" id="fs" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="fslab">Pantalla completa</span></button>
+  <button class="nb tl" data-k="c" type="button">Calculadora <kbd>C</kbd></button>
+  <button class="nb tl" data-k="e" type="button">Esborrany <kbd>E</kbd></button>
+  <button class="nb tl" data-k="t" type="button">Temps <kbd>T</kbd></button>
+  <button class="nb tl" data-k="l" type="button">Lupa <kbd>L</kbd></button>
+</div>
+<div id="prog"></div>
+<div id="bubble" role="status"><span class="who">Ammo</span><span id="btxt"></span></div>
+<div id="ammo" title="Ammo"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const C={ink:'#141414',or:'#FF6A13',ord:'#C24A00',tint:'#FFE8D8',nuc:'#FFD2B3',grey:'#EDEBE8',mid:'#8A847E',w:'#FFFFFF',l2:'#FFB27F'};
+const R=n=>Math.round(n*10)/10;
+const pt=(cx,cy,r,deg)=>{const a=deg*Math.PI/180;return [R(cx+r*Math.cos(a)),R(cy+r*Math.sin(a))]};
+function arc(cx,cy,r,a1,a2){const[x1,y1]=pt(cx,cy,r,a1),[x2,y2]=pt(cx,cy,r,a2);return `M${x1} ${y1} A${r} ${r} 0 ${a2-a1>180?1:0} 1 ${x2} ${y2}`}
+function tube(d,w,fill){return `<path d="${d}" fill="none" stroke="${C.ink}" stroke-width="${w+6}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${fill}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`}
+function sinePath(x1,x2,y,A,per,ph=0){let d='';const N=60;for(let i=0;i<=N;i++){const x=x1+(x2-x1)*i/N;const yy=y+A*Math.sin(ph+2*Math.PI*per*i/N);d+=(i?'L':'M')+R(x)+' '+R(yy)+' '}return d.trim()}
+function sineDots(x1,x2,y,A,per,ph,off,n,r=4.5){let s='';for(let i=0;i<=n;i++){const t=i/n,x=x1+(x2-x1)*t,th=ph+2*Math.PI*per*t,yy=y+A*Math.sin(th);const dy=A*Math.cos(th)*2*Math.PI*per/(x2-x1);const L=Math.hypot(1,dy);s+=`<circle cx="${R(x-dy/L*off)}" cy="${R(yy+off/L)}" r="${r}" fill="${C.ink}"/>`}return s}
+function mito(x,y,rot=0,s=1,org=true){return `<g ${org?'class="org" data-org="mito"':''} transform="translate(${x} ${y}) rotate(${rot}) scale(${s})"><ellipse rx="46" ry="22" fill="${C.or}" stroke="${C.ink}" stroke-width="3.5"/><path d="M-34 0 l8 -12 l8 24 l8 -24 l8 24 l8 -24 l8 24 l8 -12" fill="none" stroke="${C.ink}" stroke-width="2.5" stroke-linejoin="round"/></g>`}
+
+const D={};
+/* ---------- dibuixos propis ---------- */
+let SEED=11;const rnd=()=>{SEED=(SEED*16807)%2147483647;return (SEED-1)/2147483646};
+const rr=(a,b)=>a+(b-a)*rnd();
+const grainDef=(id,f=.85,o=.32)=>`<filter id="${id}" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="${f}" numOctaves="2" seed="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="${o}"/></feComponentTransfer></filter>`;
+function blobPath(cx,cy,r,n=9,j=.3){let p=[];for(let i=0;i<n;i++){const a=i/n*2*Math.PI,rad=r*(1+rr(-j,j));p.push([cx+rad*Math.cos(a),cy+rad*Math.sin(a)])}
+  let d=`M${R((p[0][0]+p[n-1][0])/2)} ${R((p[0][1]+p[n-1][1])/2)}`;for(let i=0;i<n;i++){const a=p[i],b=p[(i+1)%n];d+=` Q${R(a[0])} ${R(a[1])} ${R((a[0]+b[0])/2)} ${R((a[1]+b[1])/2)}`}return d+'Z'}
+function rulerSvg(){return `<g class="ruler off"><line class="rl" stroke="${C.ink}" stroke-width="9" stroke-linecap="round"/><line class="rl2" stroke="${C.or}" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 6"/>
+  <circle class="h h1" r="13" fill="${C.or}" stroke="${C.ink}" stroke-width="3.5"/><circle class="h h2" r="13" fill="${C.or}" stroke="${C.ink}" stroke-width="3.5"/><text class="rt" text-anchor="middle"></text></g>`}
+
+/* micrografia del nucli (hepatòcit), en coordenades de la foto original */
+D.emNucleus=el=>{SEED=11;const id=el.dataset.id;const NX=496,NY=512,NR=136;
+  const inN=(x,y,m=0)=>Math.hypot(x-NX,(y-NY)*NR/138)<NR+m;
+  const inL=(x,y)=>y>540&&x<132+(y-540)*.9;
+  let gly='';for(let k=0;k<46;k++){let x,y,t=0;do{x=rr(140,880);y=rr(140,750);t++}while((inN(x,y,40)||inL(x,y))&&t<50);for(let i=0;i<26;i++){const a=rr(0,6.3),r=rr(0,34);gly+=`<circle cx="${R(x+r*Math.cos(a))}" cy="${R(y+r*Math.sin(a))}" r="${R(rr(1.6,3))}"/>`}}
+  const MP=[[178,236,20],[848,690,-10],[300,395,40],[232,470,-20],[655,330,10],[712,450,70],[772,232,-30],[820,560,30],[425,300,-10],[575,650,15],[305,615,-35],[690,610,60],[460,705,0],[185,380,80],[600,240,25],[835,400,-60],[380,190,10]];
+  const mt=(x,y,r,lab)=>`<g transform="translate(${x} ${y}) rotate(${r})"${lab?' class="mi"':''}><ellipse rx="36" ry="24" fill="#a6a6a6" stroke="#2d2d2d" stroke-width="3"/><path d="M-22 -8 l0 16 M-10 -14 l0 18 M2 -12 l0 22 M14 -14 l0 16 M24 -6 l0 12" stroke="#4a4a4a" stroke-width="3" stroke-linecap="round"/></g>`;
+  const mis=MP.map((m,i)=>mt(m[0],m[1],m[2],i<2)).join('');
+  let rer='';for(let i=0;i<4;i++){const y=300+i*13;rer+=`<path d="M215 ${y} Q258 ${y-14} 305 ${y+4}" fill="none" stroke="#d6d6d6" stroke-width="5"/>`;for(let x=220;x<300;x+=9)rer+=`<circle cx="${x}" cy="${R(y-6+((x-215)/90)*2-Math.sin((x-215)/90*Math.PI)*7)}" r="1.8" fill="#222"/>`}
+  let hc='';[[408,482,22],[600,560,14],[440,600,18],[530,610,13],[392,540,11],[560,415,12],[470,395,10],[612,480,10]].forEach(([x,y,r])=>{hc+=`<path d="${blobPath(x,y,r,8,.35)}" fill="#353535"/>`});
+  let edge='';for(let a=0;a<360;a+=9){const t=a*Math.PI/180,r1=NR-5;if(rnd()<.55)edge+=`<path d="${blobPath(NX+r1*Math.cos(t),NY+r1*138/NR*Math.sin(t),rr(5,11),6,.4)}" fill="#2f2f2f"/>`}
+  const L=(t,x,y,cls='')=>`<text class="emlab ${cls}" x="${x}" y="${y}">${t}</text>`;
+  const ov=(k,s)=>`<g class="ov" data-k="${k}" fill="none" stroke="${C.or}" stroke-width="6">${s}</g>`;
+  return `<svg viewBox="132 134 756 624" preserveAspectRatio="xMidYMid meet" id="${id}" role="img" aria-label="Micrografia electrònica d'un nucli">
+  <defs>${grainDef('g'+id)}<clipPath id="cl${id}"><ellipse cx="${NX}" cy="${NY}" rx="${NR}" ry="138"/></clipPath></defs>
+  <rect x="132" y="134" width="756" height="624" fill="#8e8e8e"/>
+  <path d="M132 540 C180 610 250 700 330 758 L132 758Z" fill="#e8e8e8" stroke="#5a5a5a" stroke-width="3"/>
+  <path d="M150 568 C200 632 255 700 300 740" fill="none" stroke="#777" stroke-width="2" stroke-dasharray="14 8"/>
+  <path d="M720 290 H888 V592 H720 Z" fill="none" stroke="#111" stroke-width="3"/>
+  <g fill="#262626">${gly}</g>
+  <g class="rerg">${rer}</g>
+  ${mis}
+  <g class="nuc"><ellipse cx="${NX}" cy="${NY}" rx="${NR}" ry="138" fill="#d2d2d2"/><g clip-path="url(#cl${id})">${edge}${hc}</g>
+  <path d="${blobPath(486,466,30,10,.12)}" fill="#2b2b2b"/>
+  <ellipse cx="${NX}" cy="${NY}" rx="${NR}" ry="138" fill="none" stroke="#1d1d1d" stroke-width="6"/></g>
+  <rect x="132" y="134" width="756" height="624" filter="url(#g${id})"/>
+  <rect x="200" y="134" width="170" height="10" fill="#111"/><text class="emlab" x="285" y="170" text-anchor="middle" style="font-size:22px">4 µm</text>
+  <rect x="813" y="741" width="71" height="12" fill="#111"/><text class="emlab" x="848" y="733" text-anchor="middle" style="font-size:22px">0,5 µm</text>
+  ${L('Mi',160,212)}${L('RER',224,340,'w')}${L('Mn',642,446)}${L('N',452,548)}${L('Nc',466,475,'w')}${L('Hc',392,492,'w')}${L('Ec',532,462)}${L('Mi',842,672)}${L('L',160,700)}
+  <path d="M612 437 L638 438" stroke="#111" stroke-width="3"/>
+  ${ov('N',`<ellipse cx="${NX}" cy="${NY}" rx="${NR+14}" ry="152" stroke-dasharray="16 10"/>`)}
+  ${ov('Mn',`<ellipse cx="${NX}" cy="${NY}" rx="${NR}" ry="138" stroke-width="9"/>`)}
+  ${ov('Nc',`<circle cx="486" cy="466" r="42"/>`)}
+  ${ov('Hc',`<circle cx="408" cy="484" r="34"/><circle cx="440" cy="600" r="28"/><circle cx="600" cy="560" r="24"/>`)}
+  ${ov('Ec',`<circle cx="545" cy="500" r="42"/>`)}
+  ${ov('Mi',`<circle cx="178" cy="236" r="50"/><circle cx="848" cy="690" r="50"/>`)}
+  ${ov('RER',`<rect x="200" y="272" width="120" height="96" rx="20"/>`)}
+  ${ov('bar4',`<rect x="190" y="136" width="190" height="40" rx="10"/>`)}
+  ${ov('bar05',`<rect x="802" y="706" width="94" height="52" rx="10"/>`)}
+  ${el.hasAttribute('data-ruler')?rulerSvg():''}
+  </svg>`};
+
+/* micrografia del mitocondri */
+D.emMito=el=>{SEED=5;const id=el.dataset.id;const cx=312,cy=198,a=229,b=142;
+  let out='';const n=40;let pts=[];for(let i=0;i<n;i++){const t=i/n*2*Math.PI;const k=1+.02*Math.sin(3*t)+.015*Math.cos(5*t);pts.push([cx+a*k*Math.cos(t),cy+b*k*Math.sin(t)])}
+  const pth=(s)=>'M'+pts.map(([x,y])=>`${R(cx+(x-cx)*s)} ${R(cy+(y-cy)*s)}`).join(' L')+'Z';
+  let cr='';[[150,-1,.55],[200,1,.8],[245,-1,.85],[290,1,.9],[335,-1,.92],[380,1,.85],[420,-1,.8],[460,1,.5]].forEach(([x,dir,h])=>{const yy=b*Math.sqrt(Math.max(0,1-((x-cx)/a)**2))*.9;const y1=dir<0?cy-yy:cy+yy,y2=y1-dir*2*yy*h;
+    cr+=`<path d="M${x} ${R(y1)} C${x+12} ${R((y1+y2)/2)} ${x-10} ${R((y1+y2)/2)} ${x+4} ${R(y2)}" fill="none" stroke="#2c2c2c" stroke-width="15" stroke-linecap="round"/><path d="M${x} ${R(y1)} C${x+12} ${R((y1+y2)/2)} ${x-10} ${R((y1+y2)/2)} ${x+4} ${R(y2)}" fill="none" stroke="#cfcfcf" stroke-width="8" stroke-linecap="round"/>`});
+  let bg='';for(let i=0;i<70;i++)bg+=`<circle cx="${R(rr(0,623))}" cy="${R(rr(0,418))}" r="${R(rr(2,6))}" fill="#5f5f5f" opacity=".6"/>`;
+  return `<svg viewBox="0 0 623 418" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Micrografia d'un orgànul"><defs>${grainDef('g'+id,.9,.38)}</defs>
+  <g class="blur0 em">
+  <rect width="623" height="418" fill="#868686"/>${bg}
+  <path d="M0 360 C140 340 300 380 623 350" fill="none" stroke="#4d4d4d" stroke-width="4"/><path d="M0 378 C150 360 320 396 623 368" fill="none" stroke="#4d4d4d" stroke-width="4"/>
+  <path d="M520 20 C560 60 600 50 623 30" fill="none" stroke="#4d4d4d" stroke-width="4"/><ellipse cx="20" cy="70" rx="40" ry="28" fill="#9a9a9a" stroke="#3d3d3d" stroke-width="3"/>
+  <path d="${pth(1)}" fill="#7a7a7a" stroke="#262626" stroke-width="5"/>
+  <path d="${pth(.955)}" fill="#8e8e8e" stroke="#2c2c2c" stroke-width="4"/>
+  ${cr}
+  <rect width="623" height="418" filter="url(#g${id})"/>
+  </g>
+  <path class="ov show" data-k="out" d="${pth(1.06)}" fill="none" stroke="${C.or}" stroke-width="5" stroke-dasharray="16 10" style="animation:none"/>
+  <rect x="540" y="398" width="62" height="7" fill="#fff"/><text x="571" y="388" text-anchor="middle" style="font:700 20px Arial;fill:#fff">100 nm</text>
+  ${el.hasAttribute('data-ruler')?rulerSvg():''}
+  </svg>`};
+
+/* micrografia del bacteri */
+D.emBact=el=>{SEED=21;const id=el.dataset.id;
+  let rib='';for(let i=0;i<520;i++){const x=rr(-90,90),y=rr(-230,230);rib+=`<circle cx="${R(x)}" cy="${R(y)}" r="${R(rr(1.2,2.6))}"/>`}
+  let fib='';for(let i=0;i<90;i++){let x=rr(-26,26),y=rr(-130,130);let d=`M${R(x)} ${R(y)}`;for(let k=0;k<4;k++){x+=rr(-9,9);y+=rr(-9,9);d+=` L${R(x)} ${R(y)}`}fib+=`<path d="${d}"/>`}
+  const cell=(t,s)=>`<g transform="${t}"><rect x="-100" y="-250" width="200" height="500" rx="100" fill="#555"/><rect x="-92" y="-242" width="184" height="484" rx="92" fill="#ececec"/><rect x="-86" y="-236" width="172" height="472" rx="86" fill="#8f8f8f" stroke="#3a3a3a" stroke-width="2"/>${s||''}</g>`;
+  return `<svg viewBox="0 0 420 470" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Micrografia d'una cèl·lula"><defs>${grainDef('g'+id,.9,.35)}<clipPath id="cb${id}"><rect x="-86" y="-236" width="172" height="472" rx="86"/></clipPath></defs>
+  <rect width="420" height="470" fill="#e2e2e2"/>
+  ${cell('translate(10 70) rotate(36)')}${cell('translate(400 520) rotate(36)')}
+  ${cell('translate(225 240) rotate(36)',`<g clip-path="url(#cb${id})"><g fill="#2f2f2f">${rib}</g>
+    <path d="M-34 -140 C-10 -160 30 -150 34 -110 C40 -40 30 60 26 120 C22 160 -20 170 -32 130 C-44 70 -40 -60 -34 -140Z" fill="#d9d9d9" stroke="#bdbdbd" stroke-width="3"/>
+    <g fill="none" stroke="#2a2a2a" stroke-width="2.4" stroke-linecap="round">${fib}</g></g>
+    <g class="ov" data-k="nucleoide" fill="none" stroke="${C.or}" stroke-width="5"><path d="M-48 -158 C-10 -184 50 -166 50 -110 C56 -40 46 60 42 126 C36 184 -30 190 -48 136 C-62 70 -58 -60 -48 -158Z"/></g>
+    <g class="ov" data-k="paret" fill="none" stroke="${C.or}" stroke-width="7"><rect x="-108" y="-258" width="216" height="516" rx="108"/></g>`)}
+  <rect width="420" height="470" filter="url(#g${id})"/>
+  </svg>`};
+
+/* fotos de l'apartat e) */
+D.chromatinPic=()=>{SEED=3;let s='';for(let i=0;i<230;i++){let x=rr(0,330),y=rr(0,280);if(x>260&&rnd()<.6)continue;let d=`M${R(x)} ${R(y)}`;let ang=rr(0,6.3);for(let k=0;k<6;k++){ang+=rr(-1.2,1.2);const L=rr(10,22);const x2=x+L*Math.cos(ang),y2=y+L*Math.sin(ang);d+=` Q${R(x+L*.6*Math.cos(ang-.6))} ${R(y+L*.6*Math.sin(ang-.6))} ${R(x2)} ${R(y2)}`;x=x2;y=y2}s+=`<path d="${d}"/>`}
+  let dots='';for(let i=0;i<120;i++)dots+=`<circle cx="${R(rr(260,400))}" cy="${R(rr(0,280))}" r="${R(rr(.8,2))}"/>`;
+  return `<svg viewBox="0 0 400 280" preserveAspectRatio="xMidYMid slice"><rect width="400" height="280" fill="#efefef"/><g fill="none" stroke="#4b4b4b" stroke-width="2" stroke-linecap="round">${s}</g><g fill="#666">${dots}</g></svg>`};
+D.chromoPic=()=>{SEED=9;let s='';const P=[[40,80],[110,60],[180,70],[250,50],[330,70],[60,160],[130,150],[200,140],[290,150],[360,160],[50,230],[140,230],[220,220],[300,230],[370,240],[170,110]];
+  P.forEach(([x,y],i)=>{const r=rr(0,180),L=rr(26,46),v=i%4===0;const ch=(rot)=>`<g transform="rotate(${rot})"><rect x="-5" y="${-L/2}" width="10" height="${R(L)}" rx="5" fill="#6d6d6d"/><rect x="-5" y="${-L/2}" width="10" height="7" rx="4" fill="#111"/><rect x="-5" y="${R(L/2-8)}" width="10" height="8" rx="4" fill="#111"/><rect x="-5" y="${R(-L*.1)}" width="10" height="5" fill="#2a2a2a"/></g>`;
+    s+=`<g transform="translate(${R(x+rr(-10,10))} ${R(y+rr(-10,10))}) rotate(${R(r)})">${v?`<g transform="translate(0 ${R(-L/4)})">${ch(-25)}${ch(25)}</g>`:ch(-12)+ch(12)}</g>`});
+  return `<svg viewBox="0 0 400 280" preserveAspectRatio="xMidYMid meet"><rect width="400" height="280" fill="#f4f4f4"/>${s}</svg>`};
+
+/* barra d'escala */
+D.scaleBar=()=>{const X=lm=>R(120+(-3-lm)*(1240/5));const lg=um=>Math.log10(um*1e-6);
+  const ticks=[['1 mm',-3],['100 µm',-4],['10 µm',-5],['1 µm',-6],['100 nm',-7],['10 nm',-8]].map(([t,l])=>`<line x1="${X(l)}" y1="250" x2="${X(l)}" y2="275" stroke="${C.ink}" stroke-width="4"/><text x="${X(l)}" y="308" text-anchor="middle" style="font-size:27px;font-weight:700">${t}</text>`).join('');
+  const obj=[[1,'Cèl·lula animal','20 µm',20,1],[2,'Nucli','6 µm',6,2],[3,'Bacteri','2 µm',2,1],[4,'Nuclèol','1,4 µm',1.4,3],[5,'Mitocondri','0,74 µm',.74,2],[6,'Ribosoma','25 nm',.025,1]];
+  const ob=obj.map(([s,n,v,um,lv])=>{const x=X(lg(um)),y=230-lv*58;return `<g class="f" data-s="${s}"><line x1="${x}" y1="${y+8}" x2="${x}" y2="244" stroke="${C.ink}" stroke-width="3" stroke-dasharray="5 5"/><circle cx="${x}" cy="250" r="11" fill="${C.or}" stroke="${C.ink}" stroke-width="3"/><text x="${x}" y="${y-18}" text-anchor="middle" style="font-size:28px;font-weight:700">${n}</text><text x="${x}" y="${y+8}" text-anchor="middle" style="font-size:24px;fill:${C.ord};font-weight:700">${v}</text></g>`}).join('');
+  const conv=`<g class="f" data-s="8"><g transform="translate(0 430)">
+   ${[['mm',260],['µm',760],['nm',1260]].map(([u,x])=>`<rect x="${x-120}" y="0" width="240" height="96" rx="20" fill="#fff" stroke="${C.ink}" stroke-width="4"/><text x="${x}" y="66" text-anchor="middle" style="font:800 52px var(--fd)">${u}</text>`).join('')}
+   ${[510,1010].map(x=>`<path d="M${x-110} 30 h200 m-20 -16 l20 16 l-20 16" fill="none" stroke="${C.or}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><text x="${x-10}" y="16" text-anchor="middle" style="font-size:26px;font-weight:700">× 1000</text>
+   <path d="M${x+90} 74 h-200 m20 -16 l-20 16 l20 16" fill="none" stroke="${C.ink}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><text x="${x-10}" y="122" text-anchor="middle" style="font-size:26px;font-weight:700">÷ 1000</text>`).join('')}</g></g>`;
+  return `<svg viewBox="0 0 1440 570" style="max-height:none">
+  <g class="f" data-s="7"><rect x="${X(-3)}" y="330" width="${X(-6.7)-X(-3)}" height="34" rx="8" fill="${C.tint}" stroke="${C.ink}" stroke-width="2"/><text x="${(+X(-3)+ +X(-6.7))/2}" y="356" text-anchor="middle" style="font-size:24px;font-weight:700">microscopi òptic</text>
+  <rect x="${X(-3)}" y="372" width="${X(-8)-X(-3)}" height="34" rx="8" fill="${C.or}" stroke="${C.ink}" stroke-width="2"/><text x="${X(-7.3)}" y="398" text-anchor="middle" style="font-size:24px;font-weight:700">electrònic</text></g>
+  <line x1="${X(-3)}" y1="250" x2="${X(-8)}" y2="250" stroke="${C.ink}" stroke-width="6" stroke-linecap="round"/>
+  <path d="M${+X(-8)+6} 250 l-22 -14 v28z" fill="${C.ink}"/><text x="${X(-8)}" y="226" text-anchor="end" style="font-size:22px;fill:${C.mid}">més petit →</text>
+  ${ticks}${ob}${conv}</svg>`};
+
+/* mapa del nucli (esquema) */
+D.nucMap=()=>{const cx=300,cy=250;let pores='';[10,55,100,145,190,235,280,325].forEach(a=>{pores+=`<rect x="${cx+200}" y="${cy-10}" width="34" height="20" rx="6" fill="${C.or}" stroke="${C.ink}" stroke-width="2.5" transform="rotate(${a} ${cx} ${cy})"/>`});
+  let eu='';SEED=8;for(let i=0;i<26;i++){let x=rr(150,450),y=rr(110,390);if(Math.hypot(x-cx,y-cy)>165||Math.hypot(x-360,y-215)<60){continue}let d=`M${R(x)} ${R(y)}`;for(let k=0;k<4;k++){x+=rr(-22,22);y+=rr(-22,22);d+=` Q${R(x+rr(-10,10))} ${R(y+rr(-10,10))} ${R(x)} ${R(y)}`}eu+=`<path d="${d}"/>`}
+  let he='';[[205,330],[250,160],[420,330],[180,230],[330,380]].forEach(([x,y])=>{he+=`<path d="${blobPath(x,y,16,7,.35)}"/>`});
+  return `<svg viewBox="0 0 600 500" class="cell map" role="img" aria-label="Esquema del nucli">
+  <g class="org" data-org="nucleoplasma"><circle cx="${cx}" cy="${cy}" r="200" fill="${C.nuc}"/></g>
+  <g class="org" data-org="cromatina"><g fill="none" stroke="${C.ord}" stroke-width="4" stroke-linecap="round">${eu}</g><g fill="${C.ink}">${he}</g></g>
+  <g class="org" data-org="nucleol"><circle cx="360" cy="215" r="50" fill="${C.or}" stroke="${C.ink}" stroke-width="4"/><circle cx="345" cy="205" r="8" fill="${C.ord}"/><circle cx="375" cy="228" r="6" fill="${C.ord}"/></g>
+  <g class="org" data-org="embolcall"><circle cx="${cx}" cy="${cy}" r="210" fill="none" stroke="transparent" stroke-width="40"/><circle cx="${cx}" cy="${cy}" r="210" fill="none" stroke="${C.ink}" stroke-width="9"/><circle cx="${cx}" cy="${cy}" r="196" fill="none" stroke="${C.ink}" stroke-width="4"/></g>
+  <g class="org" data-org="porus">${pores}</g>
+  </svg>`};
+
+/* condensació */
+D.condense=()=>{const xs=[130,420,710,1000,1270];
+  const helix=()=>{let a=sinePath(70,190,140,26,2,0),b=sinePath(70,190,140,26,2,Math.PI);let r='';for(let x=76;x<190;x+=10){const t=(x-70)/120*2*Math.PI*2;r+=`<line x1="${x}" y1="${R(140+26*Math.sin(t))}" x2="${x}" y2="${R(140-26*Math.sin(t))}" stroke="${C.mid}" stroke-width="3"/>`}return r+`<path d="${a}" fill="none" stroke="${C.ink}" stroke-width="5"/><path d="${b}" fill="none" stroke="${C.or}" stroke-width="5"/>`};
+  const beads=()=>{let s=`<path d="${sinePath(340,500,140,30,1.5,0)}" fill="none" stroke="${C.ink}" stroke-width="3"/>`;for(let i=0;i<7;i++){const x=345+i*25,y=140+30*Math.sin(2*Math.PI*1.5*(x-340)/160);s+=`<circle cx="${x}" cy="${R(y)}" r="11" fill="${C.or}" stroke="${C.ink}" stroke-width="2.5"/>`}return s};
+  const fiber=()=>{let s='';for(let i=0;i<12;i++){const x=640+i*12,y=140+(i%2?14:-14);s+=`<circle cx="${x}" cy="${y}" r="13" fill="${C.or}" stroke="${C.ink}" stroke-width="2.5"/>`}return s};
+  const loops=()=>{let s='';for(let i=0;i<8;i++){const a=i*45;s+=`<ellipse cx="1000" cy="140" rx="64" ry="18" transform="rotate(${a} 1000 140)" fill="none" stroke="${C.or}" stroke-width="9"/>`}return s+`<circle cx="1000" cy="140" r="12" fill="${C.ink}"/>`};
+  const chrom=()=>`<g transform="translate(1270 140)">${tube('M-22 -80 Q-4 0 -22 80',30,C.or)}${tube('M22 -80 Q4 0 22 80',30,C.or)}<circle r="11" fill="${C.ink}"/></g>`;
+  const arr=x=>`<path d="M${x} 140 h46 m-14 -12 l14 12 l-14 12" fill="none" stroke="${C.ink}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const labs=['Doble hèlix d\'ADN','ADN + proteïnes','Fibra de cromatina','Cromatina plegada','Cromosoma'];
+  const G=[helix,beads,fiber,loops,chrom];
+  return `<svg viewBox="0 0 1400 300" style="max-height:none">
+  <g class="f" data-s="4"><rect x="40" y="10" width="1060" height="44" rx="12" fill="${C.tint}"/><text x="570" y="42" text-anchor="middle" style="font-size:26px;font-weight:700">INTERFASE · cromatina (descondensada)</text>
+  <rect x="1150" y="10" width="240" height="44" rx="12" fill="${C.or}"/><text x="1270" y="42" text-anchor="middle" style="font-size:26px;font-weight:700">DIVISIÓ</text></g>
+  ${G.map((g,i)=>`<g class="f" data-s="${i<4?i:5}">${g()}${i?arr(xs[i]-150):''}<text x="${xs[i]}" y="270" text-anchor="middle" style="font-size:25px;font-weight:700">${labs[i]}</text></g>`).join('')}
+  </svg>`};
+
+/* cromosoma per completar (posicions de l'activitat) */
+const GBOX=[['cromatide',357,100,163,42,'Cromàtide'],['curt',232,172,113,58,'Braç curt'],['centromer',218,250,112,40,'Centròmer'],['llarg',230,308,113,62,'Braç llarg'],['telomer',222,378,116,40,'Telòmer'],['cromosoma',320,432,167,42,'Cromosoma'],['cromatina',527,432,167,42,'Cromatina']];
+D.chromoDiag=()=>{const ln=(d)=>`<path d="${d}" fill="none" stroke="${C.ink}" stroke-width="2.5"/>`;
+  const arrow=(x1,y1,x2,y2)=>`<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${C.ink}" stroke-width="2.5"/><path d="M${x2} ${y2} l-12 -6 v12z" fill="${C.ink}" transform="rotate(${R(Math.atan2(y2-y1,x2-x1)*180/Math.PI)} ${x2} ${y2})"/>`;
+  let sq='';const d=sinePath(470,745,290,46,4.2,Math.PI);sq=`<path d="${d}" fill="none" stroke="${C.ord}" stroke-width="9" stroke-dasharray="3 5" stroke-linecap="round"/>`;
+  const boxes=GBOX.map(([k,x,y,w,h])=>`<g class="bx" data-k="${k}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10"/><text x="${x+w/2}" y="${y+h/2+8}" text-anchor="middle"></text></g>`).join('');
+  return `<svg viewBox="200 90 570 390" style="max-height:none">
+  ${tube('M407 182 Q432 262 405 390',30,C.or)}${tube('M450 182 Q425 262 452 390',30,C.or)}
+  <circle cx="417" cy="262" r="10" fill="${C.tint}" stroke="${C.ink}" stroke-width="2.5"/><circle cx="440" cy="262" r="10" fill="${C.tint}" stroke="${C.ink}" stroke-width="2.5"/>
+  ${sq}
+  <rect x="385" y="166" width="47" height="232" rx="4" fill="none" stroke="${C.ink}" stroke-width="2.5"/>
+  ${arrow(438,142,410,162)}
+  ${ln('M360 190 h-6 v66 h6 M354 222 h-9')}
+  ${arrow(330,270,408,264)}
+  ${ln('M360 280 h-6 v100 h6 M354 330 h-11')}
+  ${arrow(338,397,396,392)}
+  ${ln('M398 410 v8 h70 v-8 M433 418 v14')}${ln('M480 410 v8 h265 v-8 M610 418 v14')}
+  ${boxes}
+  </svg>`};
+
+/* mitocondri animat (del model dels orgànuls) */
+D.mitoAnim=()=>{const cx=300,cy=220,a=226,b=104;let f='';let k=0;for(let x=118;x<=482;x+=45,k++){const yy=b*Math.sqrt(Math.max(0,1-((x-cx)/a)**2));const top=k%2===0;const y1=top?cy-yy+4:cy+yy-4,y2=top?cy+22:cy-22;f+=`<line x1="${x}" y1="${R(y1)}" x2="${x}" y2="${y2}" stroke="${C.ink}" stroke-width="18" stroke-linecap="round"/><line x1="${x}" y1="${R(y1)}" x2="${x}" y2="${y2}" stroke="${C.or}" stroke-width="9" stroke-linecap="round"/>`}
+  const bolt=(x,y,d)=>`<g transform="translate(${x} ${y})"><path class="bolt" style="animation-delay:${d}s" d="M0 0 l-14 24 h14 l-9 24 l26 -34 h-14 l9 -14z" fill="${C.or}" stroke="${C.ink}" stroke-width="2.5" stroke-linejoin="round"/></g>`;
+  return `<svg viewBox="0 0 600 440"><ellipse cx="${cx}" cy="${cy}" rx="250" ry="128" fill="${C.or}" stroke="${C.ink}" stroke-width="6"/><ellipse cx="${cx}" cy="${cy}" rx="${a}" ry="${b}" fill="${C.l2}" stroke="${C.ink}" stroke-width="4"/>${f}
+  ${bolt(555,40,0)}${bolt(582,232,.6)}${bolt(10,232,1.2)}${bolt(50,372,.9)}${bolt(530,372,.3)}
+  <text x="20" y="40" class="lab">membrana externa</text><text x="300" y="420" class="lab" text-anchor="middle">crestes (membrana interna)</text></svg>`};
+
+document.querySelectorAll('[data-draw]').forEach(el=>{const f=D[el.dataset.draw];if(f)el.innerHTML=f(el)});
+/* ---------- mascota ---------- */
+(function(){
+  const cx=48,cy=48,a=6,b=Math.log(2)/(2*Math.PI);
+  const P=t=>{const r=a*Math.exp(b*t);return [R(cx+r*Math.cos(t)),R(cy-r*Math.sin(t))]};
+  const pts=(t1,t2,n)=>{let o=[];for(let i=0;i<=n;i++)o.push(P(t1+(t2-t1)*i/n));return o};
+  const PI=Math.PI;
+  const outer=pts(3.5*PI,5.5*PI,90);
+  let shell='M'+outer.map(p=>p.join(' ')).join(' L')+'Z';
+  let spiral='M'+pts(-PI,5.5*PI,220).map(p=>p.join(' ')).join(' L');
+  let ribs='';for(let t=1.6*PI;t<=5.42*PI;t+=0.24){const[x1,y1]=P(t-2*PI),[x2,y2]=P(t);ribs+=`M${x1} ${y1} L${x2} ${y2} `}
+  const svg=`<svg viewBox="0 6 96 92" aria-hidden="true"><g class="jump"><g class="bob">
+   <g class="body">
+    <path class="tent" d="M60 72 q8 -2 14 -8" fill="none" stroke="${C.ink}" stroke-width="2.8" stroke-linecap="round"/>
+    <path class="tent" d="M61 78 q9 0 16 -2" fill="none" stroke="${C.ink}" stroke-width="2.8" stroke-linecap="round"/>
+    <path class="tent" d="M60 84 q8 3 14 6" fill="none" stroke="${C.ink}" stroke-width="2.8" stroke-linecap="round"/>
+    <ellipse cx="54" cy="78" rx="10" ry="11" fill="${C.ink}"/>
+    <g class="eye"><circle cx="56" cy="74" r="4.4" fill="#fff"/><circle cx="57.2" cy="74" r="2.2" fill="${C.ink}"/></g>
+    <path class="lid" d="M52 74.5 q4 -4.5 8 0" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+    <path class="spark" d="M66 62 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6z" fill="${C.or}" stroke="${C.ink}" stroke-width="1"/>
+   </g>
+   <g class="shellg">
+    <path d="${shell}" fill="${C.or}"/>
+    <path d="${ribs}" stroke="${C.ink}" stroke-width="1.3" stroke-linecap="round" opacity=".55"/>
+    <path d="${spiral}" fill="none" stroke="${C.ink}" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="${shell}" fill="none" stroke="${C.ink}" stroke-width="2.6" stroke-linejoin="round"/>
+   </g>
+  </g></g></svg>`;
+  document.getElementById('ammo').innerHTML=svg;
+})();
+
+/* ---------- so ---------- */
+let AC=null,muted=false;
+function ac(){if(muted)return null;try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();}catch(e){AC=null}return AC}
+function tone(f,dur,type='sine',vol=.12,when=0,f2){const c=ac();if(!c)return;const t=c.currentTime+when;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.012);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.02)}
+function whoosh(dir){const c=ac();if(!c)return;const t=c.currentTime,len=.35;const buf=c.createBuffer(1,c.sampleRate*len,c.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);const s=c.createBufferSource();s.buffer=buf;const bp=c.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.2;bp.frequency.setValueAtTime(dir>0?400:2400,t);bp.frequency.exponentialRampToValueAtTime(dir>0?2400:400,t+len);const g=c.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.08);g.gain.exponentialRampToValueAtTime(0.0001,t+len);s.connect(bp).connect(g).connect(c.destination);s.start(t);s.stop(t+len)}
+const sfx={
+  pop(){tone(520,.09,'sine',.14,0,860)},
+  ok(){[523,659,784,1047].forEach((f,i)=>tone(f,.16,'triangle',.13,i*.08))},
+  ko(){tone(180,.22,'square',.06,0,110)},
+  chirp(){tone(880,.08,'sine',.12,0,1500);tone(1250,.09,'sine',.1,.09,1800)},
+  flip(){tone(330,.12,'triangle',.12,0,660)},
+  blip(){tone(700,.07,'sine',.07,0,950)}
+};
+
+/* ---------- motor de diapos ---------- */
+const stage=document.getElementById('stage');
+const slides=[...document.querySelectorAll('.slide')];
+const N=slides.length;
+let cur=0,step=0;
+const maxStep=s=>Math.max(0,...[...s.querySelectorAll('.f')].map(e=>+e.dataset.s||0));
+function fit(){const s=Math.min(window.innerWidth/1600,window.innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+window.addEventListener('resize',fit);fit();
+
+const hooks={};
+function applyStep(sl,st){sl.querySelectorAll('.f').forEach(e=>e.classList.toggle('on',(+e.dataset.s||0)<=st));const h=hooks[sl.dataset.hook];if(h&&h.step)h.step(sl,st)}
+
+const bubble=document.getElementById('bubble'),btxt=document.getElementById('btxt'),ammo=document.getElementById('ammo');
+let bt=null;
+function say(text,ms=8000){btxt.textContent=text;bubble.classList.add('show');clearTimeout(bt);bt=setTimeout(()=>bubble.classList.remove('show'),ms)}
+const ACTS={hop:700,jumps:1500,wink:1200,hide:2400,roll:1400,no:500};
+let actT=null,lastAct=Date.now();
+function act(name){ammo.classList.remove(...Object.keys(ACTS));void ammo.offsetWidth;ammo.classList.add(name);lastAct=Date.now();clearTimeout(actT);actT=setTimeout(()=>ammo.classList.remove(name),ACTS[name]+50);
+  if(name==='hide')tone(600,.25,'sine',.08,0,200),tone(220,.2,'sine',.07,1.6,700);
+  else if(name==='jumps'){tone(500,.1,'sine',.08,0,900);tone(560,.1,'sine',.08,.5,1000);tone(620,.1,'sine',.08,1,1100)}
+  else if(name==='wink')tone(1400,.06,'sine',.06,.1,2200);
+  else if(name==='roll')tone(300,.5,'triangle',.06,0,900)}
+function hop(cls='hop'){act(cls==='no'?'hide':cls)}
+const CLICK=['jumps','wink','hide','roll'];let ci=0;
+ammo.addEventListener('click',()=>{sfx.chirp();act(CLICK[ci++%CLICK.length]);if(bubble.classList.contains('show'))bubble.classList.remove('show');else say(slides[cur].dataset.tip||'')});
+setInterval(()=>{if(Date.now()-lastAct>11000&&!document.hidden){const opts=['wink','hide','jumps','roll','hop'];act(opts[Math.floor(Math.random()*opts.length)])}},4000);
+
+/* ---------- logotip i menú ---------- */
+const logo=document.getElementById('logo');
+logo.insertAdjacentHTML('afterbegin',document.getElementById('ammo').innerHTML);
+const BLK=['Inici','Part 1 · El nucli',"Part 2 · L'orgànul",'Part 3 · La cèl·lula','Repàs'];
+const done=new Set(),skipped=new Set();
+const tabs=document.getElementById('tabs'),subs=document.getElementById('subs');
+tabs.innerHTML=BLK.map((b,i)=>`<button type="button" class="tab" data-b="${i}">${b}</button>`).join('');
+tabs.addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;if(e.detail)t.blur();const i=slides.findIndex(s=>+s.dataset.blk===+t.dataset.b&&!s.hasAttribute('data-big'));go(i<0?slides.findIndex(s=>+s.dataset.blk===+t.dataset.b):i)});
+subs.addEventListener('click',e=>{const t=e.target.closest('.sb');if(!t)return;if(e.detail)t.blur();go(+t.dataset.i)});
+function renderMenu(){const b=+slides[cur].dataset.blk;
+  tabs.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',+t.dataset.b===b));
+  subs.innerHTML=slides.map((s,i)=>+s.dataset.blk===b?`<button type="button" class="sb${i===cur?' on':''}${done.has(i)?' done':''}${skipped.has(i)?' skip':''}" data-i="${i}">${s.dataset.lv?`<span class="lv ${s.dataset.lv==='r'?'r':'l'+s.dataset.lv}">${s.dataset.lv==='r'?'🔥':''}</span>`:''}${s.dataset.lab}</button>`:'').join('')}
+let lastTap=0;
+logo.addEventListener('click',e=>{if(e.detail)logo.blur();const now=Date.now();
+  if(now-lastTap<350){clearTimeout(logo._t);showAll();return}
+  lastTap=now;logo._t=setTimeout(()=>go(1),360)});
+/* superajuda secreta (doble clic al logotip): mostra tota la resolució de la diapositiva */
+function showAll(){const s=slides[cur];step=maxStep(s);applyStep(s,step);logo.classList.add('secret');setTimeout(()=>logo.classList.remove('secret'),1500);sfx.blip()}
+
+/* ---------- motor ---------- */
+function go(n,full){
+  if(n<0||n>=N)return;
+  saveDraw();resetZoom();
+  const dir=n>=cur?1:-1;const old=slides[cur],nw=slides[n];
+  if(step>=maxStep(old))done.add(cur);
+  if(n!==cur){
+    old.style.transform=`translateX(${dir>0?-70:70}px)`;old.classList.remove('active');
+    nw.style.transition='none';nw.style.transform=`translateX(${dir>0?70:-70}px)`;void nw.offsetWidth;nw.style.transition='';nw.style.transform='';
+    whoosh(dir);
+  }
+  nw.classList.add('active');
+  cur=n;step=full?maxStep(nw):0;
+  const h=hooks[nw.dataset.hook];if(h&&h.enter)h.enter(nw);
+  applyStep(nw,step);
+  stage.classList.toggle('big',nw.hasAttribute('data-big'));
+  document.getElementById('count').textContent=`${n+1} / ${N}`;
+  document.getElementById('prog').style.width=`${(n+1)/N*100}%`;
+  bubble.classList.remove('show');clearTimeout(bt);
+  if(nw.dataset.tip){bt=setTimeout(()=>{say(nw.dataset.tip);sfx.blip();act(['hop','wink','jumps'][n%3])},n===0?400:900)}
+  renderMenu();loadDraw();
+  try{history.replaceState(null,'','#s'+(n+1))}catch(e){}
+}
+function next(){const s=slides[cur];const h=hooks[s.dataset.hook];if(h&&h.next&&h.next())return;if(step<maxStep(s)){step++;applyStep(s,step);sfx.pop();if(step===maxStep(s)){done.add(cur);renderMenu()}}else go(cur+1)}
+function prev(){const s=slides[cur];if(step>0){step--;applyStep(s,step)}else go(cur-1,true)}
+function skip(){skipped.add(cur);done.delete(cur);sfx.ko();act('roll');go(Math.min(N-1,cur+1))}
+document.getElementById('startBtn').addEventListener('click',e=>{if(e.detail)e.currentTarget.blur();go(1)});
+
+/* ---------- mapa de blocs ---------- */
+(function(){
+  const icon={
+    esc:`<svg viewBox="0 0 200 120"><line x1="10" y1="80" x2="190" y2="80" stroke="${C.ink}" stroke-width="5"/>${[20,60,100,140,180].map(x=>`<line x1="${x}" y1="70" x2="${x}" y2="90" stroke="${C.ink}" stroke-width="4"/>`).join('')}<circle cx="60" cy="50" r="22" fill="${C.tint}" stroke="${C.ink}" stroke-width="4"/><circle cx="140" cy="60" r="8" fill="${C.or}" stroke="${C.ink}" stroke-width="3"/></svg>`,
+    nuc:`<svg viewBox="0 0 200 120"><circle cx="100" cy="60" r="50" fill="${C.nuc}" stroke="${C.ink}" stroke-width="6" stroke-dasharray="30 6"/><circle cx="112" cy="52" r="16" fill="${C.or}" stroke="${C.ink}" stroke-width="3"/></svg>`,
+    mit:`<svg viewBox="0 0 200 120">${mito(100,60,0,1.7,false)}</svg>`,
+    bac:`<svg viewBox="0 0 200 120"><rect x="30" y="30" width="140" height="60" rx="30" fill="#D9D4CE" stroke="${C.ink}" stroke-width="4"/><path d="M70 60 c10 -20 20 20 30 0 s20 20 30 0" fill="none" stroke="${C.or}" stroke-width="5" stroke-linecap="round"/></svg>`,
+    rep:`<svg viewBox="0 0 200 120"><text x="100" y="95" text-anchor="middle" style="font:800 100px var(--fd);fill:${C.or}">?</text></svg>`};
+  const M=[['esc','Escalfament','Mides i unitats',2],['nuc','Part 1','El nucli: a) – g)',3],['mit','Part 2',"L'orgànul misteriós",11],['bac','Part 3','Quina cèl·lula és?',14],['rep','Repàs','Test i resum',15]];
+  const box=document.getElementById('mapcards');
+  box.innerHTML=M.map(([ic,t,p,i],k)=>`<button type="button" class="mcard f" data-s="${k+1}" data-go="${i}"><div class="pic">${icon[ic]}</div><h3>${t}</h3><p>${p}</p></button>`).join('');
+  box.addEventListener('click',e=>{const c=e.target.closest('.mcard');if(c){c.classList.add('on');go(+c.dataset.go)}});
+})();
+
+/* ---------- regle ---------- */
+function rulerOf(sl){return sl.querySelector('.ruler')}
+function setRuler(r,x1,y1,x2,y2){r._p=[x1,y1,x2,y2];const[l,l2]=[r.querySelector('.rl'),r.querySelector('.rl2')];[l,l2].forEach(L=>{L.setAttribute('x1',x1);L.setAttribute('y1',y1);L.setAttribute('x2',x2);L.setAttribute('y2',y2)});
+  const h1=r.querySelector('.h1'),h2=r.querySelector('.h2');h1.setAttribute('cx',x1);h1.setAttribute('cy',y1);h2.setAttribute('cx',x2);h2.setAttribute('cy',y2);
+  const len=Math.hypot(x2-x1,y2-y1)/10;const t=r.querySelector('.rt');const hz=Math.abs(y2-y1)<Math.abs(x2-x1);
+  t.setAttribute('x',(x1+x2)/2+(hz?0:18));t.setAttribute('y',(y1+y2)/2+(hz?-22:8));t.setAttribute('text-anchor',hz?'middle':'start');
+  t.textContent=len.toFixed(1).replace('.',',')+' mm'}
+function moveRuler(r,to){r.classList.remove('off');const from=r._p||to;const t0=performance.now();cancelAnimationFrame(r._raf);
+  const f=now=>{const k=Math.min(1,(now-t0)/650),e=1-Math.pow(1-k,3);setRuler(r,...from.map((v,i)=>v+(to[i]-v)*e));if(k<1)r._raf=requestAnimationFrame(f)};r._raf=requestAnimationFrame(f)}
+document.querySelectorAll('.ruler').forEach(r=>{const svg=r.ownerSVGElement;setRuler(r,300,700,470,700);let drag=null;
+  const P=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())};
+  r.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();const p=P(e);const h=e.target.classList.contains('h1')?1:e.target.classList.contains('h2')?2:0;drag={h,p,o:[...r._p]};r.setPointerCapture(e.pointerId)});
+  r.addEventListener('pointermove',e=>{if(!drag)return;const p=P(e),dx=p.x-drag.p.x,dy=p.y-drag.p.y,o=drag.o;
+    if(drag.h===1)setRuler(r,o[0]+dx,o[1]+dy,o[2],o[3]);else if(drag.h===2)setRuler(r,o[0],o[1],o[2]+dx,o[3]+dy);else setRuler(r,o[0]+dx,o[1]+dy,o[2]+dx,o[3]+dy)});
+  r.addEventListener('pointerup',()=>{drag=null});});
+function toggleRuler(){const r=rulerOf(slides[cur]);if(!r){say("En aquesta diapositiva no cal el regle.",3000);return}r.classList.toggle('off');sfx.pop()}
+
+/* ---------- hooks de les diapositives ---------- */
+const ovs=(sl,keys)=>sl.querySelectorAll('.ov').forEach(o=>o.classList.toggle('show',keys.includes(o.dataset.k)));
+hooks.p1a={step(sl,st){ovs(sl,[[],['N','Mn'],['Mi','RER'],['Mn']][st]||[])}};
+hooks.p1b={enter(sl){},step(sl,st){const cards=[...sl.querySelectorAll('.ab')];cards.forEach((c,i)=>c.classList.toggle('flip',i<st));ovs(sl,st?[ABB[st-1][0]]:[])}};
+const ABB=[['N','Nucli'],['Mn','Membrana nuclear'],['Nc','Nuclèol'],['Mi','Mitocondri'],['RER','Reticle endoplasmàtic rugós'],['Hc','Heterocromatina']];
+(function(){const sl=document.querySelector('[data-hook="p1b"]');const box=sl.querySelector('#abbr');
+  box.innerHTML=ABB.map(([a,m],i)=>`<button type="button" class="ab f" data-s="99" data-i="${i}"><span class="in"><span class="fa">${a}</span><span class="ba">${m}</span></span></button>`).join('');
+  box.querySelectorAll('.ab').forEach(b=>{b.classList.remove('f');b.removeAttribute('data-s')});
+  for(let i=1;i<=ABB.length;i++){const g=document.createElement('span');g.className='f';g.dataset.s=i;g.hidden=true;sl.appendChild(g)}
+  box.addEventListener('click',e=>{const b=e.target.closest('.ab');if(!b)return;if(e.detail)b.blur();b.classList.toggle('flip');const k=ABB[+b.dataset.i][0];ovs(sl,b.classList.contains('flip')?[k]:[]);b.classList.contains('flip')?(sfx.ok(),act('wink')):sfx.flip()});
+})();
+
+/* parts del nucli */
+const NUC={embolcall:{n:'Embolcall nuclear',f:'Doble membrana que envolta el nucli i el separa del citoplasma.'},
+  porus:{n:'Porus nuclears',f:"Forats de l'embolcall. Controlen què entra i què surt del nucli."},
+  nucleoplasma:{n:'Nucleoplasma',f:"El medi líquid de dins del nucli."},
+  cromatina:{n:'Cromatina',f:"ADN + proteïnes. Fluixa: eucromatina (Ec). Compacta i fosca: heterocromatina (Hc)."},
+  nucleol:{n:'Nuclèol',f:"Zona fosca on es fabriquen els ribosomes. N'hi pot haver més d'un."}};
+(function(){const sl=document.querySelector('[data-hook="nmap"]');const cell=sl.querySelector('.cell'),chips=sl.querySelector('#nchips'),info=sl.querySelector('#ninfo');
+  chips.innerHTML=Object.entries(NUC).map(([k,v])=>`<button type="button" class="chip" data-k="${k}">${v.n}</button>`).join('');
+  const reset=()=>{cell.classList.remove('focus');cell.querySelectorAll('.org').forEach(o=>o.classList.remove('hl'));chips.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));info.innerHTML='<h3>Toca una part</h3><p>Al dibuix o a la llista. Són les parts que surten als apunts.</p>'};
+  function pick(k){const v=NUC[k];cell.classList.add('focus');cell.querySelectorAll('.org').forEach(o=>o.classList.toggle('hl',o.dataset.org===k));chips.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',c.dataset.k===k));info.innerHTML=`<h3>${v.n}</h3><p>${v.f}</p>`;sfx.pop()}
+  cell.addEventListener('click',e=>{const o=e.target.closest('.org');if(o)pick(o.dataset.org)});
+  chips.addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){pick(c.dataset.k);if(e.detail)c.blur()}});
+  const keys=Object.keys(NUC);keys.forEach((k,i)=>{const g=document.createElement('span');g.className='f';g.dataset.s=i+1;g.hidden=true;sl.appendChild(g)});
+  hooks.nmap={enter:reset,step(s,st){if(st===0)reset();else pick(keys[st-1])}};
+})();
+
+/* mesures */
+hooks.p1d={enter(sl){rulerOf(sl).classList.add('off')},step(sl,st){const r=rulerOf(sl);ovs(sl,st===1?['bar4']:st===2?['Nc']:[]);
+  if(st===0){r.classList.add('off');return}
+  if(st===1)moveRuler(r,[200,190,370,190]);else moveRuler(r,[456,520,516,520])}};
+hooks.p1d2={enter(sl){rulerOf(sl).classList.add('off')},step(sl,st){const r=rulerOf(sl);ovs(sl,st===1?['bar4']:st===2?['bar05']:st===3?['bar4']:[]);
+  if(st===0){r.classList.add('off');return}moveRuler(r,[360,690,630,690]);if(st===2)act('no')}};
+hooks.p2d={enter(sl){rulerOf(sl).classList.add('off')},step(sl,st){const r=rulerOf(sl);if(st===0){r.classList.add('off');return}
+  if(st===1)moveRuler(r,[540,380,602,380]);else if(st===2||st===4)moveRuler(r,[83,198,541,198]);else moveRuler(r,[312,56,312,341])}};
+hooks.p2a={step(sl,st){const g=sl.querySelector('.em');g.classList.remove('mys1','mys2','mys3');if(st<4)g.classList.add('mys'+(st+1))}};
+hooks.p3={step(sl,st){ovs(sl,st===3?['nucleoide']:st===4?['paret']:st===5?['nucleoide']:[])}};
+
+/* e) dues fotos */
+(function(){const sl=document.querySelector('[data-hook="p1e"]');
+  sl.querySelectorAll('.ph').forEach(ph=>ph.addEventListener('click',e=>{const b=e.target.closest('.pick button');if(!b)return;if(e.detail)b.blur();if(ph.querySelector('.good'))return;
+    if(b.dataset.v===ph.dataset.a){b.classList.add('good');sfx.ok();act('jumps')}else{b.classList.add('bad');sfx.ko();act('no')}}));
+  hooks.p1e={enter(s){s.querySelectorAll('.pick button').forEach(b=>b.classList.remove('good','bad'))},step(s,st){s.querySelectorAll('.ph').forEach((ph,i)=>{if(st>i){const b=ph.querySelector(`[data-v="${ph.dataset.a}"]`);b.classList.add('good')}})}};
+})();
+
+/* g) cromosoma */
+(function(){const sl=document.querySelector('[data-hook="p1g"]');const bank=sl.querySelector('#wbank');let sel=null;
+  const words=['Cromatina','Cromosoma','Braç curt','Centròmer','Braç llarg','Telòmer','Cromàtide'];
+  const fill=(k)=>{const g=sl.querySelector(`.bx[data-k="${k}"]`);const b=GBOX.find(x=>x[0]===k);g.classList.add('ok');g.querySelector('text').textContent=b[5];const w=[...bank.children].find(x=>x.textContent===b[5]);if(w)w.classList.add('used')};
+  function reset(){sel=null;bank.innerHTML=words.map(w=>`<button type="button">${w}</button>`).join('');sl.querySelectorAll('.bx').forEach(g=>{g.classList.remove('ok','bad');g.querySelector('text').textContent=''})}
+  bank.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.classList.contains('used'))return;if(e.detail)b.blur();bank.querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b&&!b.classList.contains('sel')));sel=b.classList.contains('sel')?b.textContent:null;sfx.pop()});
+  sl.querySelector('svg').addEventListener('click',e=>{const g=e.target.closest('.bx');if(!g||g.classList.contains('ok'))return;
+    if(!sel){say('Primer tria una paraula de sota!',3000);return}
+    const b=GBOX.find(x=>x[0]===g.dataset.k);if(b[5]===sel){fill(b[0]);sel=null;bank.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));sfx.ok();act('jumps');if(sl.querySelectorAll('.bx.ok').length===7)setTimeout(()=>say('Perfecte! Cromosoma complet!',5000),300)}
+    else{g.classList.remove('bad');void g.getBBox();g.classList.add('bad');setTimeout(()=>g.classList.remove('bad'),450);sfx.ko();act('no')}});
+  sl.querySelector('#gsol').addEventListener('click',e=>{if(e.detail)e.currentTarget.blur();GBOX.forEach(b=>fill(b[0]));sfx.flip()});
+  sl.querySelector('#greset').addEventListener('click',e=>{if(e.detail)e.currentTarget.blur();reset();sfx.blip()});
+  GBOX.forEach((b,i)=>{const s=document.createElement('span');s.className='f';s.dataset.s=i+1;s.hidden=true;sl.appendChild(s)});
+  hooks.p1g={enter:reset,step(s,st){if(st===0)return;GBOX.slice(0,st).forEach(b=>fill(b[0]))}};
+  reset();
+})();
+
+/* test */
+(function(){const Q=[
+  ['Quina estructura ens diu que una cèl·lula és eucariota?',['Té ribosomes','Té un nucli envoltat de membrana','Té paret cel·lular','Té citoplasma'],1,'Els <b>procariotes</b> també tenen ribosomes, citoplasma i sovint paret. El que no tenen és <b>nucli</b>.'],
+  ['Què es fabrica al nuclèol?',['Els ribosomes','L\'energia (ATP)','Els lípids','La paret cel·lular'],0,'Al <b>nuclèol</b> es fabriquen les peces dels <b>ribosomes</b>.'],
+  ['La cromatina i els cromosomes són…',['Molècules diferents','Orgànuls del citoplasma','El mateix ADN amb diferent grau de condensació','Només de les cèl·lules vegetals'],2,'<b>Cromatina</b>: descondensada (interfase). <b>Cromosoma</b>: molt condensat (divisió).'],
+  ['1 µm equival a…',['0,1 mm','0,01 mm','1000 mm','0,001 mm'],3,'1 mm = <b>1000 µm</b>, per tant 1 µm = 0,001 mm.'],
+  ['Quants nanòmetres són 0,74 µm?',['740 nm','74 nm','7400 nm','0,00074 nm'],0,'De µm a nm multipliquem per 1000: 0,74 × 1000 = <b>740 nm</b>.'],
+  ['Les crestes mitocondrials són plecs de…',['La membrana externa','La membrana interna','L\'embolcall nuclear','El reticle'],1,'La <b>membrana interna</b> es plega per tenir més superfície i fer més energia.'],
+  ['On és l\'ADN d\'un bacteri?',['Dins d\'un nucli','Als mitocondris','Al nucleoide, sense membrana','A la paret cel·lular'],2,'Els bacteris són <b>procariotes</b>: l\'ADN és al <b>nucleoide</b>.'],
+  ['Quina part uneix les dues cromàtides d\'un cromosoma?',['El telòmer','El centròmer','El braç llarg','El nuclèol'],1,'El <b>centròmer</b> és l\'«estrenyiment» que uneix les cromàtides.']];
+  const box=document.getElementById('quizc');let qi=0,ok=0,answered=false;
+  function show(){answered=false;if(qi>=Q.length){box.innerHTML=`<div class="qtop"><span>Resultat</span><span class="qprog"><i style="width:100%"></i></span></div><div class="qtext" style="font-size:72px">${ok} / ${Q.length} encerts</div><p class="expl">${ok===Q.length?'Cas resolt a la perfecció!':ok>=6?'Molt bona feina, detectius!':'Repassem les diapositives on hi ha hagut dubtes.'}</p><button type="button" class="qbtn qnext" id="qagain">Torna a començar</button>`;
+      box.querySelector('#qagain').addEventListener('click',e=>{if(e.detail)e.currentTarget.blur();qi=0;ok=0;show()});if(ok>=6){act('jumps');sfx.ok()}return}
+    const [q,o]=Q[qi];box.innerHTML=`<div class="qtop"><span>Pregunta ${qi+1} de ${Q.length}</span><span class="qprog"><i style="width:${qi/Q.length*100}%"></i></span><span>Encerts: ${ok}</span></div><div class="qtext">${q}</div><div class="opts">${o.map((t,i)=>`<button type="button" class="opt" data-i="${i}"><kbd>${i+1}</kbd><span>${t}</span></button>`).join('')}</div><p class="expl"></p><button type="button" class="qbtn qnext" hidden>Següent →</button>`;
+    box.querySelector('.qnext').addEventListener('click',e=>{if(e.detail)e.currentTarget.blur();qi++;show()})}
+  function answer(i){if(answered||qi>=Q.length)return;answered=true;const [,,c,ex]=Q[qi];const bs=box.querySelectorAll('.opt');bs[c].classList.add('good');
+    if(i===c){ok++;sfx.ok();act('jumps')}else{bs[i].classList.add('bad');sfx.ko();act('no')}box.querySelector('.expl').innerHTML=ex;box.querySelector('.qnext').hidden=false;box.querySelector('.qtop span:last-child').textContent='Encerts: '+ok}
+  box.addEventListener('click',e=>{const b=e.target.closest('.opt');if(b){if(e.detail)b.blur();answer(+b.dataset.i)}});
+  hooks.quiz={answer,next(){if(qi<Q.length&&answered){qi++;show();sfx.pop();return true}if(qi<Q.length&&!answered){say('Tria una resposta (tecles 1 a 4).',2500);return true}return false}};
+  show();
+})();
+
+/* ---------- lupa ---------- */
+let lupa=false,zl=0;const ZL=[1,1.5,2];
+function resetZoom(){zl=0;slides.forEach(s=>{if(s.classList.contains('active'))s.style.transform=''})}
+function toggleLupa(){lupa=!lupa;document.getElementById('lupaInd').hidden=!lupa;slides.forEach(s=>s.classList.toggle('zoomable',lupa));if(!lupa)resetZoom();syncTools();sfx.pop()}
+stage.addEventListener('click',e=>{if(!lupa)return;const sl=e.target.closest('.slide.active');if(!sl)return;e.preventDefault();e.stopPropagation();
+  const r=stage.getBoundingClientRect(),k=r.width/1600;const x=(e.clientX-r.left)/k,y=(e.clientY-r.top)/k;zl=(zl+1)%ZL.length;
+  sl.style.transformOrigin=`${x}px ${y}px`;sl.style.transform=zl?`scale(${ZL[zl]})`:''},true);
+
+/* ---------- esborrany ---------- */
+const cv=document.getElementById('draw'),cx2=cv.getContext('2d'),dbar=document.getElementById('drawbar');let drawOn=false,col='#141414',eraser=false,drawing=false,white=false;const store={};
+function saveDraw(){if(!cv)return;const blank=!cx2.getImageData(0,0,1600,900).data.some(v=>v);store[cur]=blank&&!white?null:{url:blank?null:cv.toDataURL(),white}}
+function loadDraw(){cx2.clearRect(0,0,1600,900);const s=store[cur];white=!!(s&&s.white);cv.classList.toggle('white',white&&drawOn);if(s&&s.url){const im=new Image();im.onload=()=>cx2.drawImage(im,0,0);im.src=s.url}}
+function toggleDraw(){drawOn=!drawOn;cv.classList.toggle('on',drawOn);cv.classList.toggle('white',white&&drawOn);dbar.hidden=!drawOn;syncTools();sfx.pop()}
+const cpt=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*1600/r.width,(e.clientY-r.top)*900/r.height]};
+cv.addEventListener('pointerdown',e=>{if(!drawOn)return;drawing=true;cv.setPointerCapture(e.pointerId);const[x,y]=cpt(e);cx2.beginPath();cx2.moveTo(x,y);cx2.lineTo(x+.1,y);stroke()});
+cv.addEventListener('pointermove',e=>{if(!drawing)return;const[x,y]=cpt(e);cx2.lineTo(x,y);stroke()});
+cv.addEventListener('pointerup',()=>{drawing=false});
+function stroke(){cx2.lineCap='round';cx2.lineJoin='round';cx2.globalCompositeOperation=eraser?'destination-out':'source-over';cx2.strokeStyle=col;cx2.lineWidth=eraser?44:6;cx2.stroke()}
+dbar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(e.detail)b.blur();
+  if(b.dataset.c){col=b.dataset.c;eraser=false;dbar.querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))}
+  else if(b.dataset.tool==='eraser'){eraser=true;dbar.querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))}
+  else if(b.dataset.tool==='white'){white=!white;cv.classList.toggle('white',white);b.textContent=white?'Transparent':'Full blanc'}
+  else if(b.dataset.tool==='clear'){cx2.clearRect(0,0,1600,900)}
+  else if(b.dataset.tool==='close')toggleDraw()});
+
+/* ---------- eines arrossegables ---------- */
+function dragTool(el){const th=el.querySelector('.th');let d=null;
+  th.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const k=stage.getBoundingClientRect().width/1600;d={x:e.clientX,y:e.clientY,l:el.offsetLeft,t:el.offsetTop,k};th.setPointerCapture(e.pointerId)});
+  th.addEventListener('pointermove',e=>{if(!d)return;el.style.left=Math.max(0,Math.min(1500,d.l+(e.clientX-d.x)/d.k))+'px';el.style.top=Math.max(0,Math.min(820,d.t+(e.clientY-d.y)/d.k))+'px'});
+  th.addEventListener('pointerup',()=>{d=null});
+  const x=el.querySelector('.x');if(x)x.addEventListener('click',()=>{el.hidden=true;syncTools()})}
+/* calculadora */
+const calc=document.getElementById('calc');dragTool(calc);
+(function(){const K=[['7'],['8'],['9'],['÷','o'],['DEL','o'],['4'],['5'],['6'],['×','o'],['AC','o'],['1'],['2'],['3'],['−','o'],['(','o'],['0'],[','],['EXP','o'],['+','o'],[')','o'],['x²','o'],['√','o'],['π','o'],['Ans','o'],['=','eq']];
+  const kg=calc.querySelector('.kg'),ce=calc.querySelector('.ce'),cr=calc.querySelector('.cr');let ex='',ans=0;
+  kg.innerHTML=K.map(([t,c])=>`<button type="button" class="${c||''}">${t}</button>`).join('');
+  const fmt=v=>{if(!isFinite(v))return 'Error';let s=Math.abs(v)!==0&&(Math.abs(v)<1e-6||Math.abs(v)>=1e10)?v.toExponential(4).replace('e',' ×10^'):String(+v.toPrecision(10));return s.replace('.',',')};
+  function ev(){let s=ex.replace(/,/g,'.').replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,'(Math.PI)').replace(/²/g,'**2').replace(/√\(/g,'Math.sqrt(').replace(/E/g,'*10**').replace(/Ans/g,'('+ans+')');
+    if(!/^[\d.+\-*/()\se]*$/.test(s.replace(/Math\.(PI|sqrt)/g,'')))return NaN;try{return Function('"use strict";return ('+s+')')()}catch(e){return NaN}}
+  kg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(e.detail)b.blur();const t=b.textContent;sfx.blip();
+    if(t==='AC'){ex='';cr.textContent='0'}else if(t==='DEL'){ex=ex.replace(/(Ans|√\(|.)$/,'')}else if(t==='='){const v=ev();cr.textContent=fmt(v);if(isFinite(v))ans=v}
+    else if(t==='x²')ex+='²';else if(t==='√')ex+='√(';else if(t==='EXP')ex+='E';else ex+=t;ce.textContent=ex.replace(/E/g,'×10^')});
+})();
+/* temps */
+const tmr=document.getElementById('timer');dragTool(tmr);let tLeft=300,tRun=false,tInt=null;const tv=tmr.querySelector('.tv'),tgo=tmr.querySelector('#tgo');
+const tShow=()=>{tv.textContent=`${String(Math.floor(tLeft/60)).padStart(2,'0')}:${String(tLeft%60).padStart(2,'0')}`};
+function tStop(){tRun=false;clearInterval(tInt);tgo.textContent='▶ Inicia'}
+tmr.querySelector('.tb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(e.detail)b.blur();tmr.classList.remove('end');
+  if(b.dataset.m){tStop();tLeft=+b.dataset.m*60}else if(b.dataset.d){tLeft=Math.max(0,tLeft+ +b.dataset.d*60)}
+  else if(b===tgo){if(tRun)tStop();else if(tLeft>0){tRun=true;tgo.textContent='❚❚ Pausa';tInt=setInterval(()=>{tLeft--;tShow();if(tLeft<=0){tStop();tmr.classList.add('end');sfx.ok();setTimeout(()=>sfx.ok(),500);act('jumps');say("S'ha acabat el temps!",5000)}},1000)}}
+  tShow();sfx.blip()});
+function toggleTool(el){el.hidden=!el.hidden;syncTools();sfx.pop()}
+function syncTools(){document.querySelectorAll('.nb.tl').forEach(b=>{const k=b.dataset.k;b.classList.toggle('on',k==='c'?!calc.hidden:k==='t'?!tmr.hidden:k==='e'?drawOn:lupa)})}
+document.querySelectorAll('.nb.tl').forEach(b=>b.addEventListener('click',e=>{if(e.detail)b.blur();({c:()=>toggleTool(calc),t:()=>toggleTool(tmr),e:toggleDraw,l:toggleLupa})[b.dataset.k]()}));
+
+/* ---------- teclat ---------- */
+document.addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  const onBtn=e.target&&e.target.tagName==='BUTTON';const k=e.key;
+  if(slides[cur].dataset.hook==='quiz'&&/^[1-4]$/.test(k)){hooks.quiz.answer(+k-1);return}
+  if(['ArrowRight','ArrowDown','PageDown'].includes(k)||((k===' '||k==='Enter')&&!onBtn)){e.preventDefault();next()}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){e.preventDefault();prev()}
+  else if(k==='Home'){go(0)}else if(k==='End'){go(N-1)}
+  else{const l=k.toLowerCase();
+    if(l==='m')toggleSound();else if(l==='f')fs();else if(l==='s')skip();else if(l==='c')toggleTool(calc);else if(l==='t')toggleTool(tmr);
+    else if(l==='e')toggleDraw();else if(l==='l')toggleLupa();else if(l==='r')toggleRuler();else if(k==='Escape'){if(lupa)toggleLupa();if(drawOn)toggleDraw()}}
+});
+let tx=null;stage.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+stage.addEventListener('touchend',e=>{if(tx===null||drawOn)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>80&&!e.target.closest('.ruler'))(dx<0?next:prev)();tx=null});
+
+document.getElementById('next').addEventListener('click',e=>{next();if(e.detail)e.currentTarget.blur()});
+document.getElementById('prev').addEventListener('click',e=>{prev();if(e.detail)e.currentTarget.blur()});
+const sndBtn=document.getElementById('snd');
+function toggleSound(){muted=!muted;sndBtn.classList.toggle('off',muted);document.getElementById('sndw').style.display=muted?'none':'';document.getElementById('sndx').style.display=muted?'':'none';sndBtn.setAttribute('aria-label',muted?'So desactivat':'So activat');if(!muted)sfx.blip()}
+sndBtn.addEventListener('click',e=>{toggleSound();if(e.detail)e.currentTarget.blur()});
+const isFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function fsFail(){say("Aquí el navegador no deixa posar la pantalla completa. Prem F11 (al Mac: Ctrl+Cmd+F) i ja ho tens!",9000);act('hide')}
+function fs(){
+  try{
+    if(isFS()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);return}
+    const el=document.documentElement,req=el.requestFullscreen||el.webkitRequestFullscreen;
+    if(!req||document.fullscreenEnabled===false){fsFail();return}
+    const p=req.call(el);
+    if(p&&p.catch)p.catch(fsFail);
+    setTimeout(()=>{if(!isFS()&&!(p&&p.catch))fsFail()},600);
+  }catch(e){fsFail()}
+}
+function fsLabel(){const on=isFS();document.querySelectorAll('.fslab').forEach(l=>l.textContent=on?'Surt de pantalla completa':'Pantalla completa');setTimeout(fit,100);if(on)act('jumps')}
+document.addEventListener('fullscreenchange',fsLabel);document.addEventListener('webkitfullscreenchange',fsLabel);
+['fs','fs2'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{fs();if(e.detail)e.currentTarget.blur()}));
+
+let start=0;const m0=(location.hash||'').match(/^#s(\d+)$/);if(m0)start=Math.min(N-1,Math.max(0,+m0[1]-1));
+slides[start].classList.add('active');cur=start;go(start);
+})();
+</script>
+
+</body></html>

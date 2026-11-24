@@ -1,0 +1,919 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Les capes de la Terra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&family=IBM+Plex+Sans+Condensed:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Llibre-pissarra apaïsat 16:9: escenari fix de 1600×900 escalat a la pantalla; columna esquerra = figures i simulacions, dreta = text de llibre amb «Recorda». Un sol tema (blanc pissarra) per decisió. */
+:root{
+  --paper:#fbfcfe;      /* blanc pissarra, lleugerament blau */
+  --sheet:#ffffff;
+  --ink:#14233a;        /* tinta blau nit */
+  --ink-2:#4b5b73;      /* text secundari */
+  --rule:#d4dde9;       /* filets */
+  --ice:#edf3fb;        /* fons dels quadres Recorda */
+  --ice-2:#f4f8fc;
+  --blue:#1d5fae;       /* accent i ones P */
+  --deep:#0d2c52;       /* títols */
+  --S:#b3264b;          /* ones S */
+  --ok:#1f7a55;
+  --f-display:"Literata", "Iowan Old Style", Georgia, serif;
+  --f-body:"Literata", "Iowan Old Style", Georgia, serif;
+  --f-label:"IBM Plex Sans Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:#e9eef5;color:var(--ink);font-family:var(--f-body);overflow:hidden}
+#app{position:fixed;inset:0;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;background:var(--paper);display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(13,44,82,.12)}
+
+/* Barra superior */
+.bar{height:58px;flex:none;display:flex;align-items:center;gap:20px;padding:0 40px;border-bottom:1px solid var(--rule);font-family:var(--f-label);font-size:17px;color:var(--ink-2);letter-spacing:.02em}
+.bar .book{display:flex;gap:14px;align-items:baseline;min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .book b{color:var(--deep);font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:15px}
+.btn{font-family:var(--f-label);font-size:16px;font-weight:500;color:var(--deep);background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:7px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;line-height:1.1}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #7fb0ea;outline-offset:2px}
+.btn[aria-pressed="true"]{background:var(--deep);color:#fff;border-color:var(--deep)}
+.btn.sm{font-size:15px;padding:6px 11px}
+
+/* Pàgines */
+#pages{flex:1;position:relative;min-height:0}
+.page{position:absolute;inset:0;padding:30px 48px 22px;display:grid;grid-template-columns:minmax(0,55fr) minmax(0,45fr);grid-template-rows:auto minmax(0,1fr);column-gap:44px;row-gap:18px}
+.page[hidden]{display:none!important}
+.page.enter{animation:pageIn .45s ease both}
+@keyframes pageIn{from{opacity:.0;transform:translateX(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.page.enter{animation:none}}
+.phead{grid-column:1 / -1;display:flex;align-items:baseline;gap:22px;border-bottom:2px solid var(--deep);padding-bottom:12px}
+.phead .code{font-family:var(--f-mono);font-size:19px;color:var(--blue);font-weight:500;white-space:nowrap}
+.phead h2{font-family:var(--f-display);font-weight:600;font-size:38px;line-height:1.1;color:var(--deep);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.phead .sec{margin-left:auto;font-family:var(--f-label);font-size:16px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+
+.fig{min-width:0;min-height:0;display:flex;flex-direction:column;gap:12px}
+.cv{position:relative;flex:1;min-height:0;background:var(--sheet);border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+.cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv.tall{flex:1}
+.cap{font-family:var(--f-label);font-size:16px;color:var(--ink-2);line-height:1.4}
+.cap b{color:var(--deep);font-weight:600}
+.ctrls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-family:var(--f-label);font-size:17px;color:var(--ink)}
+.ctrls label{display:flex;align-items:center;gap:10px}
+.ctrls input[type=range]{width:210px;accent-color:var(--blue)}
+.ctrls .val{font-family:var(--f-mono);font-size:16px;color:var(--deep);min-width:7.5em}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.seg button{font-family:var(--f-label);font-size:16px;border:0;background:var(--sheet);color:var(--deep);padding:7px 14px;cursor:pointer;border-right:1px solid var(--rule)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--deep);color:#fff}
+.chk{display:inline-flex;align-items:center;gap:7px;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--blue)}
+
+.txt{min-width:0;min-height:0;overflow:auto;padding-right:8px;font-size:19.5px;line-height:1.48;scrollbar-width:thin}
+.txt p{margin:0 0 .7em;max-width:64ch;hyphens:auto}
+.txt p.lead{font-size:21px;color:var(--deep)}
+.txt h3{font-family:var(--f-label);font-size:17px;text-transform:uppercase;letter-spacing:.09em;color:var(--blue);margin:1em 0 .45em;font-weight:600}
+.txt h3:first-child{margin-top:0}
+.txt dl{margin:0 0 .6em}
+.txt dt{font-weight:600;color:var(--deep)}
+.txt dd{margin:0 0 .5em}
+.txt strong{color:var(--deep);font-weight:600}
+.txt .term{font-style:italic}
+.txt ul{margin:0 0 .7em;padding-left:1.1em}
+.txt li{margin-bottom:.3em}
+.recorda{background:var(--ice);border-left:5px solid var(--deep);padding:12px 18px 11px;margin:12px 0 4px;font-size:18.5px;line-height:1.45}
+.recorda .k{font-family:var(--f-label);font-weight:600;text-transform:uppercase;letter-spacing:.14em;font-size:15px;color:var(--deep);display:block;margin-bottom:4px}
+.recorda p{margin:0}
+.mes{border:1px dashed #9db6d6;padding:10px 16px;margin:10px 0;font-size:18.5px;background:var(--ice-2)}
+.mes .k{font-family:var(--f-label);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:14px;color:var(--blue);display:block;margin-bottom:2px}
+.eq{font-family:var(--f-mono);font-size:18px;color:var(--deep);white-space:nowrap}
+
+/* Preguntes amb resposta */
+.pensa{margin:10px 0}
+.pensa > .k{font-family:var(--f-label);font-weight:600;text-transform:uppercase;letter-spacing:.14em;font-size:15px;color:var(--blue);display:block;margin-bottom:6px}
+details.q{border-top:1px solid var(--rule);padding:8px 0}
+details.q:last-child{border-bottom:1px solid var(--rule)}
+details.q summary{cursor:pointer;list-style:none;display:flex;gap:12px;align-items:baseline;font-weight:500;color:var(--deep);font-size:19.5px;line-height:1.4}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::before{content:"+";font-family:var(--f-mono);font-weight:500;color:var(--blue);flex:none;width:1em;transition:transform .2s}
+details.q[open] summary::before{content:"−"}
+details.q .a{padding:8px 0 4px 2em;font-size:18.5px;line-height:1.5;color:var(--ink)}
+details.q .a::before{content:"Resposta";display:block;font-family:var(--f-label);font-size:13.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--ok);font-weight:600;margin-bottom:2px}
+.qn{font-family:var(--f-mono);font-size:16px;color:var(--ink-2);flex:none}
+
+/* Taules */
+table.t{border-collapse:collapse;width:100%;font-size:17.5px;line-height:1.35;margin:6px 0 10px}
+table.t th{font-family:var(--f-label);font-weight:600;text-align:left;color:var(--deep);border-bottom:2px solid var(--deep);padding:6px 8px;font-size:16px;text-transform:uppercase;letter-spacing:.05em}
+table.t td{border-bottom:1px solid var(--rule);padding:7px 8px;vertical-align:top}
+table.t td.n{font-family:var(--f-mono);font-size:16px;white-space:nowrap}
+
+/* Portada */
+.cover .phead{border-bottom:0;padding:0}
+.cover h1{font-family:var(--f-display);font-weight:700;font-size:62px;line-height:1.02;letter-spacing:-.02em;color:var(--deep);margin:6px 0 10px;text-wrap:balance}
+.cover .eyebrow{font-family:var(--f-label);font-size:18px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:600}
+.cover .subt{font-family:var(--f-mono);font-size:19px;color:var(--ink-2);margin-bottom:22px}
+.toc-list{list-style:none;margin:16px 0 0;padding:0;border-top:1px solid var(--rule)}
+.toc-list li{border-bottom:1px solid var(--rule)}
+.toc-list button{all:unset;cursor:pointer;display:flex;gap:18px;align-items:baseline;width:100%;padding:5px 2px;font-size:18px;color:var(--deep)}
+.toc-list button:hover{color:var(--blue)}
+.toc-list button:focus-visible{outline:3px solid #7fb0ea}
+.toc-list .c{font-family:var(--f-mono);font-size:16px;color:var(--blue);width:5.4em;flex:none}
+
+/* Kircher */
+.engr{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#f3f1ec;border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+.engr img{max-height:100%;max-width:100%;object-fit:contain;display:block;filter:contrast(1.05)}
+
+/* Fitxes mètodes indirectes */
+.cards{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px}
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:4px;padding:14px 16px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:start;min-height:0;overflow:hidden}
+.card svg{width:150px;height:auto}
+.card h4{margin:0 0 4px;font-family:var(--f-label);font-weight:600;font-size:19px;color:var(--deep);letter-spacing:.02em}
+.card p{margin:0 0 .4em;font-size:16.5px;line-height:1.42}
+.card .tag{font-family:var(--f-mono);font-size:14.5px;color:var(--blue)}
+
+/* Analogia */
+.ana{flex:1;min-height:0;display:grid;grid-template-rows:auto repeat(3,1fr);border:1px solid var(--rule);border-radius:4px;background:var(--sheet);overflow:hidden}
+.ana .row{display:grid;grid-template-columns:1fr 64px 1fr;align-items:center;border-top:1px solid var(--rule);padding:10px 18px;gap:8px;min-height:0}
+.ana .row:first-child{border-top:0;padding:10px 18px 8px;font-family:var(--f-label);text-transform:uppercase;letter-spacing:.1em;font-size:15px;color:var(--ink-2);font-weight:600}
+.ana .cell{display:grid;grid-template-columns:112px minmax(0,1fr);gap:12px;align-items:center}
+.ana svg{width:112px;height:auto}
+.ana h5{margin:0;font-family:var(--f-label);font-size:19px;color:var(--deep);font-weight:600}
+.ana p{margin:2px 0 0;font-size:16px;line-height:1.38;color:var(--ink)}
+.ana .eqv{font-family:var(--f-mono);color:var(--blue);font-size:26px;text-align:center}
+
+/* Meteorits */
+.met{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px}
+.mcard{background:var(--sheet);border:1px solid var(--rule);border-radius:4px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto}
+.mcard canvas{width:100%;aspect-ratio:16/9;border-radius:3px;border:1px solid var(--rule);max-width:100%}
+.mcard h4{margin:4px 0 0;font-family:var(--f-display);font-size:24px;color:var(--deep);font-weight:600}
+.mcard .alias{font-family:var(--f-label);font-size:16px;color:var(--ink-2)}
+.mcard dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:4px 0 0;font-size:16.5px;line-height:1.38}
+.mcard dt{font-family:var(--f-label);font-weight:600;color:var(--blue);text-transform:uppercase;font-size:13.5px;letter-spacing:.08em;padding-top:3px}
+.mcard dd{margin:0}
+.mbtns{display:flex;flex-wrap:wrap;gap:8px}
+.mbtns .btn[aria-pressed="true"]{background:var(--deep);color:#fff}
+
+/* Glossari i autoavaluació */
+.full{grid-column:1 / -1;min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:0 56px;align-content:start;font-size:18px;line-height:1.42;padding-right:8px}
+.full > div + div{border-left:1px solid var(--rule);padding-left:28px}
+.full dl{margin:0}
+.full dt{font-weight:600;color:var(--deep);break-after:avoid}
+.full dd{margin:0 0 .6em;break-inside:avoid}
+.quiz{grid-column:1 / -1;min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:0 56px;align-content:start;padding-right:8px}
+.quiz details.q:first-child{border-top:1px solid var(--rule)}
+
+/* Peu de navegació */
+.nav{height:66px;flex:none;border-top:1px solid var(--rule);display:flex;align-items:center;gap:22px;padding:0 40px;font-family:var(--f-label)}
+.nav .where{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.nav .where .lbl{font-size:15px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav .where .lbl b{font-family:var(--f-mono);font-weight:500;color:var(--blue);margin-right:8px}
+.prog{display:flex;gap:4px}
+.prog button{flex:1;height:7px;border:0;padding:0;background:var(--rule);cursor:pointer;border-radius:2px}
+.prog button.done{background:#9fbbe0}
+.prog button.cur{background:var(--deep)}
+.nav .count{font-family:var(--f-mono);font-size:16px;color:var(--ink-2);white-space:nowrap}
+
+/* Índex lateral */
+#toc{position:absolute;top:58px;left:0;bottom:66px;width:470px;background:var(--sheet);border-right:1px solid var(--rule);box-shadow:12px 0 30px rgba(13,44,82,.10);z-index:5;overflow:auto;padding:22px 26px}
+#toc h3{margin:0 0 10px;font-family:var(--f-label);text-transform:uppercase;letter-spacing:.12em;font-size:15px;color:var(--ink-2)}
+#toc ol{list-style:none;margin:0;padding:0}
+#toc li button{all:unset;cursor:pointer;display:grid;grid-template-columns:5.6em 1fr;gap:10px;padding:8px 6px;width:calc(100% - 12px);font-size:18px;line-height:1.3;color:var(--deep);border-bottom:1px solid var(--rule)}
+#toc li button:hover{background:var(--ice)}
+#toc li button[aria-current="true"]{background:var(--ice);font-weight:600}
+#toc li .c{font-family:var(--f-mono);font-size:15px;color:var(--blue)}
+
+/* Llegenda dins figures */
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--f-label);font-size:15.5px;color:var(--ink-2)}
+.legend i{display:inline-block;width:22px;height:4px;vertical-align:middle;margin-right:6px;border-radius:2px}
+.info{font-family:var(--f-label);font-size:16.5px;line-height:1.4;color:var(--ink);background:var(--ice-2);border:1px solid var(--rule);border-radius:4px;padding:9px 13px;min-height:3.2em}
+.info b{color:var(--deep)}
+
+/* Mòbil / pantalla estreta: llibre en flux vertical */
+body.flow{overflow:auto;background:var(--paper)}
+body.flow #app{position:static;overflow:visible}
+body.flow #stage{position:relative;width:auto;height:auto;transform:none!important;box-shadow:none;min-height:100vh}
+body.flow .bar{padding:0 16px;height:auto;min-height:54px;flex-wrap:wrap;gap:8px;padding-block:8px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--paper);z-index:6}
+body.flow .bar .book span{display:none}
+body.flow #pages{flex:none}
+body.flow .page{position:relative;grid-template-columns:minmax(0,1fr);padding:18px 16px;row-gap:16px}
+body.flow .phead{flex-wrap:wrap;gap:4px 12px}
+body.flow .phead h2{font-size:28px}
+body.flow .phead .sec{margin-left:0}
+body.flow .cv{flex:none;height:360px}
+body.flow .engr{flex:none;max-height:420px}
+body.flow .txt{overflow:visible;font-size:18px}
+body.flow .cards{grid-template-columns:1fr;grid-template-rows:none}
+body.flow .card{grid-template-columns:96px minmax(0,1fr)}
+body.flow .card svg{width:96px}
+body.flow .met{grid-template-columns:1fr}
+body.flow .met .cv{height:320px}
+body.flow .ana .row{grid-template-columns:1fr;gap:6px}
+body.flow .ana .eqv{transform:rotate(90deg)}
+body.flow .ana .row:first-child{display:none}
+body.flow .full{grid-template-columns:1fr;overflow:visible}
+body.flow .full > div + div{border-left:0;padding-left:0}
+body.flow .quiz{grid-template-columns:1fr;overflow:visible}
+body.flow .cover h1{font-size:44px}
+body.flow .nav{padding:0 16px;gap:10px;position:sticky;bottom:env(safe-area-inset-bottom,0px);background:var(--paper)}
+body.flow .nav .btn .w{display:none}
+body.flow #toc{position:fixed;top:0;bottom:0;width:auto;right:0;z-index:20}
+body.flow .ctrls input[type=range]{width:150px}
+.full dl{margin:0}
+.mleg{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-family:var(--f-label);font-size:15px;color:var(--ink)}
+.mleg i{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:7px;border:1px solid rgba(0,0,0,.15)}
+.lehm{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:start}
+.lehm figure{margin:0;display:flex;flex-direction:column;gap:8px;min-height:0}
+.lehm img{width:100%;height:auto;max-height:600px;object-fit:contain;object-position:top left;filter:sepia(.15)}
+.lehm figcaption{font-family:var(--f-label);font-size:15px;color:var(--ink-2)}
+.tl{list-style:none;margin:0;padding:0 0 0 20px;border-left:2px solid var(--deep);display:flex;flex-direction:column;gap:18px}
+.tl li{position:relative;font-size:18px;line-height:1.4}
+.tl li::before{content:"";position:absolute;left:-28px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--blue)}
+.tl b{display:block;font-family:var(--f-mono);font-weight:500;color:var(--blue);font-size:17px}
+body.flow .lehm{grid-template-columns:1fr}
+body.flow .lehm img{max-height:420px}
+.page.wide{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;row-gap:12px}
+.page.wide .phead .seg{margin-left:auto}
+.page.wide .cv{position:relative}
+.cvbtn{position:absolute;left:14px;top:12px;z-index:2}
+.strip{min-height:0;max-height:178px;overflow:auto;font-size:18.5px;line-height:1.46;border-top:1px solid var(--rule);padding-top:10px}
+.sgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:start}
+.sgrid p{margin:0;max-width:none}
+.sgrid .recorda,.sgrid .pensa{margin:0}
+body.flow .page.wide .phead .seg{margin-left:0;flex-wrap:wrap}
+body.flow .page.wide .cv{height:auto;aspect-ratio:2/3}
+body.flow .strip{max-height:none}
+body.flow .sgrid{grid-template-columns:1fr;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--f-label);font-size:16px;font-weight:500;color:var(--deep);background:var(--sheet);border:1px solid var(--rule);border-radius:20px;padding:6px 14px;cursor:pointer}
+.chip:hover{border-color:var(--blue)}
+.chip[aria-pressed="true"]{background:var(--deep);color:#fff;border-color:var(--deep)}
+details.gloss{margin-top:14px;border:1px solid var(--rule);border-radius:4px;padding:8px 14px;background:var(--ice-2)}
+details.gloss summary{cursor:pointer;font-family:var(--f-label);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:15px;color:var(--blue)}
+details.gloss dl{margin:10px 0 0;font-size:17px;line-height:1.4}
+details.gloss dt{font-weight:600;color:var(--deep)}
+details.gloss dd{margin:0 0 6px}
+.page .phead .seg{white-space:nowrap}
+.wInfo{min-height:4.4em}
+</style>
+<div id="app">
+<div id="stage">
+<header class="bar">
+  <div class="book"><b>Biologia, Geologia i Ciències Ambientals</b><span>1r de Batxillerat · 2.2.B Les capes de la Terra</span></div>
+  <button class="btn" id="btnToc" aria-expanded="false" aria-controls="toc">☰ Índex</button>
+  <button class="btn" id="btnSo" aria-pressed="false" title="Activa o desactiva el so">So: desactivat</button>
+</header>
+
+<main id="pages">
+
+<!-- 1 · DOS CRITERIS -->
+<section class="page cover" data-code="2.2.B.1" data-title="Dos criteris per dividir la Terra" data-sim="w1">
+  <div class="phead"><span class="eyebrow">2.2.B · Les capes de la Terra</span></div>
+  <div class="fig">
+    <div class="cv"><canvas aria-label="Falca de l'interior de la Terra: a l'esquerra el model geoquímic i a la dreta el model dinàmic"></canvas></div>
+    <div class="cap">Falca de l'interior de la Terra. A l'esquerra, les capes segons la <b>composició</b>; a la dreta, segons el <b>comportament</b>. Les línies que travessen tota la falca són límits comuns als dos models. Els primers 1.000 km estan ampliats.</div>
+  </div>
+  <div class="txt">
+    <h1>Les capes de la Terra</h1>
+    <div class="subt">2.2.B · Model geoquímic i model dinàmic</div>
+    <p class="lead">Les ones sísmiques ens han mostrat on són els límits. Ara cal posar nom a les capes que queden entre ells.</p>
+    <p>Hi ha dues maneres de classificar-les, i totes dues són correctes:</p>
+    <dl>
+      <dt>Model geoquímic</dt><dd>Divideix la Terra segons la <strong>composició química</strong> dels materials: escorça, mantell i nucli.</dd>
+      <dt>Model dinàmic</dt><dd>La divideix segons el <strong>comportament mecànic</strong>: si els materials són rígids, si es deformen lentament o si són líquids. Litosfera, astenosfera, mesosfera i endosfera.</dd>
+    </dl>
+    <p>Un mateix tros de roca pot pertànyer al mantell per la seva composició i a la litosfera pel seu comportament.</p>
+    <ul class="toc-list" id="coverToc"></ul>
+  </div>
+</section>
+
+<!-- 2 · MODEL GEOQUÍMIC -->
+<section class="page" data-code="2.2.B.2" data-title="Model geoquímic" data-sim="w2">
+  <div class="phead"><span class="code">2.2.B.2</span><h2>Model geoquímic: escorça, mantell i nucli</h2><span class="sec">Segons la composició</span></div>
+  <div class="fig">
+    <div class="cv"><canvas aria-label="Falca amb les capes del model geoquímic"></canvas></div>
+    <div class="ctrls"><label class="chk"><input type="checkbox" class="wLupa"> Lupa: amplia els primers 1.000 km</label><span class="cap">Clica una capa per veure'n la fitxa.</span></div>
+    <div class="info wInfo">Clica una capa de la falca.</div>
+  </div>
+  <div class="txt">
+    <dl>
+      <dt>Escorça</dt>
+      <dd>Capa externa, per sobre del <strong>Moho</strong>. N'hi ha de dos tipus. L'<strong>oceànica</strong> és <strong>basàltica</strong>, prima (6–12 km) i més densa (3,0 g/cm³). La <strong>continental</strong> és més gruixuda (25–70 km) i menys densa (2,7 g/cm³); la part superior té una composició <strong>granítica</strong>.</dd>
+      <dt>Mantell</dt>
+      <dd>Del Moho a 2.900 km; és el 83 % del volum. Format per silicats de Fe i Mg; la roca típica és la <strong>peridotita</strong>. El <strong>superior</strong> arriba fins a la discontinuïtat de <strong>Repetti</strong> (660 km). Entre 410 i 660 km, la <strong>zona de transició</strong>: la pressió transforma els minerals en altres de més densos. L'<strong>inferior</strong> té una química semblant, però minerals d'alta pressió. A la base hi ha la capa <strong>D″</strong>, d'uns 200 km.</dd>
+      <dt>Nucli</dt>
+      <dd>De la discontinuïtat de <strong>Gutenberg</strong> (2.900 km) fins al centre (6.371 km). És de <strong>ferro i níquel</strong>. L'<strong>extern</strong> és líquid; l'<strong>intern</strong>, sòlid per la pressió, separats per la discontinuïtat de <strong>Lehmann</strong> (5.150 km).</dd>
+    </dl>
+    <div class="recorda"><span class="k">Recorda</span><p>Model geoquímic: escorça (oceànica basàltica i densa; continental granítica i lleugera), mantell (peridotita) i nucli (Fe-Ni). Límits: Moho, Gutenberg i, dins de les capes, Repetti i Lehmann.</p></div>
+  </div>
+</section>
+
+<!-- 3 · L'ESCORÇA -->
+<section class="page" data-code="2.2.B.3" data-title="L'escorça" data-sim="crust">
+  <div class="phead"><span class="code">2.2.B.3</span><h2>L'escorça: oceànica i continental</h2><span class="sec">Model geoquímic</span></div>
+  <div class="fig">
+    <div class="cv"><canvas aria-label="Tall de l'escorça des d'un oceà fins a una serralada, amb les litologies i el Moho"></canvas></div>
+    <div class="info" id="crInfo">Passa el cursor per les roques. Clica el <b>vaixell</b> per fer un sondeig, o clica el <b>continent</b> per mesurar-ne el gruix.</div>
+  </div>
+  <div class="txt">
+    <p>L'escorça és la capa més prima, però la més variada. N'hi ha de dos tipus:</p>
+    <table class="t">
+      <thead><tr><th></th><th>Oceànica</th><th>Continental</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Roques</strong></td><td>Sediments sobre <strong>basalt</strong> i, a sota, gabre</td><td>Cobertora sedimentària; a sota, roques <strong>granítiques</strong> i metamòrfiques</td></tr>
+        <tr><td><strong>Gruix</strong></td><td class="n">6–12 km</td><td class="n">25–70 km</td></tr>
+        <tr><td><strong>Densitat</strong></td><td class="n">≈ 3,0 g/cm³</td><td class="n">≈ 2,7 g/cm³</td></tr>
+        <tr><td><strong>Edat màxima</strong></td><td class="n">≈ 180 Ma</td><td class="n">≈ 4.000 Ma</td></tr>
+      </tbody>
+    </table>
+    <p>El <strong>Moho</strong> és la base de l'escorça. Sota els oceans és a poc més de 10 km; sota els continents, a uns 35–40 km, i sota les grans serralades s'enfonsa fins a 60–70 km: és l'<strong>arrel</strong> de la serralada.</p>
+    <p>L'oceànica és jove perquè es crea a les dorsals i es destrueix a les zones de subducció; la continental, més lleugera, no s'enfonsa i es conserva.</p>
+    <div class="recorda"><span class="k">Recorda</span><p>Escorça oceànica: basàltica, prima, densa i jove. Escorça continental: granítica a la part superior, gruixuda, lleugera i antiga. El Moho la separa del mantell i és més profund sota les serralades.</p></div>
+  </div>
+</section>
+
+<!-- 4 · LITOSFERA I ASTENOSFERA -->
+<section class="page" data-code="2.2.B.4" data-title="Litosfera i astenosfera" data-sim="sec">
+  <div class="phead"><span class="code">2.2.B.4</span><h2>Litosfera i astenosfera</h2>
+    <div class="seg" role="group" aria-label="Criteri" id="secMode" style="margin-left:auto"><button data-m="comp" aria-pressed="true">Composició</button><button data-m="dyn" aria-pressed="false">Comportament</button></div>
+  </div>
+  <div class="fig">
+    <div class="cv"><canvas aria-label="Tall d'un oceà i un continent fins a 300 km de profunditat"></canvas></div>
+    <div class="info" id="rockCard">Clica les mostres de roca (●) per veure'n la fitxa.</div>
+  </div>
+  <div class="txt">
+    <p>La <strong>litosfera</strong> és la capa externa i <strong>rígida</strong>. Està formada per l'<strong>escorça</strong> i la part superior del mantell, el <strong>mantell litosfèric</strong>. Està fragmentada en <strong>plaques litosfèriques</strong>.</p>
+    <div class="mes"><span class="k">Fixa-t'hi</span>Canvia de <strong>Composició</strong> a <strong>Comportament</strong>: el <strong>Moho no es mou</strong>, i queda dins la litosfera. El Moho separa l'escorça del mantell, però no és la base de les plaques.</div>
+    <p>Sota l'oceà, la litosfera fa uns <strong>100 km</strong>; sota els continents, <strong>150–200 km</strong>. La seva base no és un canvi de composició sinó de temperatura: a sota, el mantell és prou calent per deformar-se.</p>
+    <p>L'<strong>astenosfera</strong> arriba fins a uns 400 km, amb un límit difús. És <strong>sòlida però dúctil</strong>: flueix molt lentament, uns quants centímetres per any. Pot contenir una mica de fusió parcial (1–2 %), que explica que les ones sísmiques hi vagin més lentes.</p>
+    <div class="recorda"><span class="k">Recorda</span><p>LITOSFERA = escorça + Moho + mantell litosfèric: rígida i fragmentada en plaques. A sota, l'ASTENOSFERA: sòlida però dúctil, permet el moviment de les plaques.</p></div>
+  </div>
+</section>
+
+<!-- 5 · MODEL DINÀMIC -->
+<section class="page" data-code="2.2.B.5" data-title="Model dinàmic" data-sim="w4">
+  <div class="phead"><span class="code">2.2.B.5</span><h2>Model dinàmic: com es comporten les capes</h2><span class="sec">Segons el comportament</span></div>
+  <div class="fig">
+    <div class="cv"><canvas aria-label="Falca amb les capes del model dinàmic"></canvas></div>
+    <div class="ctrls"><label class="chk"><input type="checkbox" class="wLupa" checked> Lupa: amplia els primers 1.000 km</label><span class="cap">Clica una capa per veure'n la fitxa.</span></div>
+    <div class="info wInfo">Clica una capa de la falca.</div>
+  </div>
+  <div class="txt">
+    <dl>
+      <dt>Litosfera</dt><dd>Rígida: es trenca i forma falles. Escorça + mantell litosfèric, fins a ≈100 km sota els oceans i 150–200 km sota els continents. Fragmentada en plaques.</dd>
+      <dt>Astenosfera</dt><dd>Sòlida però dúctil, fins a ≈400 km. Flueix molt lentament i permet el moviment de les plaques.</dd>
+      <dt>Mesosfera</dt><dd>La resta del mantell, fins a 2.900 km. Sòlida i més viscosa que l'astenosfera, però també es mou per convecció, molt a poc a poc. Inclou la capa D″.</dd>
+      <dt>Endosfera</dt><dd>El nucli. La part <strong>externa és líquida</strong>: els seus corrents generen el camp magnètic. La part <strong>interna és sòlida</strong>.</dd>
+    </dl>
+    <p>La convecció afecta tot el mantell, no només l'astenosfera. El motor principal de les plaques és el pes de la litosfera que s'enfonsa a les zones de subducció.</p>
+    <div class="recorda"><span class="k">Recorda</span><p>Model dinàmic: litosfera (rígida), astenosfera (dúctil), mesosfera (sòlida i viscosa) i endosfera (nucli: extern líquid i intern sòlid).</p></div>
+  </div>
+</section>
+
+<!-- 6 · ELS DOS MODELS -->
+<section class="page" data-code="2.2.B.6" data-title="Els dos models junts" data-sim="w5">
+  <div class="phead"><span class="code">2.2.B.6</span><h2>Els dos models junts</h2><span class="sec">Comparació</span></div>
+  <div class="fig">
+    <div class="cv"><canvas aria-label="Falca doble amb els dos models"></canvas></div>
+    <div class="ctrls"><label class="chk"><input type="checkbox" class="wLupa" checked> Lupa: amplia els primers 1.000 km</label></div>
+    <div class="info wInfo">Passa el cursor per una capa: a l'altra meitat es marca la mateixa franja de profunditat.</div>
+  </div>
+  <div class="txt">
+    <table class="t">
+      <thead><tr><th>Límit</th><th>Prof.</th><th>Model</th><th>Separa</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Mohorovičić</strong></td><td class="n">7–70 km</td><td>Geoquímic</td><td>Escorça / mantell</td></tr>
+        <tr><td>Base de la litosfera</td><td class="n">100–200 km</td><td>Dinàmic</td><td>Litosfera / astenosfera</td></tr>
+        <tr><td>Base de l'astenosfera</td><td class="n">≈ 400 km</td><td>Dinàmic</td><td>Astenosfera / mesosfera</td></tr>
+        <tr><td>Repetti</td><td class="n">≈ 660 km</td><td>Geoquímic</td><td>Mantell superior / inferior</td></tr>
+        <tr><td><strong>Gutenberg</strong></td><td class="n">≈ 2.900 km</td><td>Tots dos</td><td>Mantell / nucli · mesosfera / endosfera</td></tr>
+        <tr><td>Lehmann</td><td class="n">≈ 5.150 km</td><td>Tots dos</td><td>Nucli extern / intern (líquid / sòlid)</td></tr>
+      </tbody>
+    </table>
+    <div class="mes"><span class="k">Per què cada llibre dona xifres diferents?</span>Les profunditats depenen del model sísmic que es fa servir i de l'època en què es va publicar. Per exemple, trobaràs Lehmann a 5.080, 5.100 o 5.150 km. Aquí fem servir el model de referència actual (PREM). L'important és l'ordre de magnitud i què separa cada límit.</div>
+    <div class="recorda"><span class="k">Recorda</span><p>Només dos límits són comuns als dos models: Gutenberg i Lehmann. El Moho i Repetti són límits de composició; la base de la litosfera i la de l'astenosfera, de comportament.</p></div>
+  </div>
+</section>
+
+<!-- 7 · COMPROVA-HO -->
+<section class="page" data-code="2.2.B.7" data-title="Comprova-ho" data-sim="w6">
+  <div class="phead"><span class="code">2.2.B.7</span><h2>Comprova-ho</h2><span class="sec">Autoavaluació</span></div>
+  <div class="fig">
+    <div class="chips" id="exChips" role="group" aria-label="Noms de capes"></div>
+    <div class="cv"><canvas aria-label="Falca sense noms per etiquetar"></canvas></div>
+    <div class="ctrls"><span class="info" id="exMsg" style="flex:1">Ronda 1 de 2 · Tria un nom i després clica la capa on va.</span><button class="btn sm" id="exReset">Torna a començar</button></div>
+  </div>
+  <div class="txt">
+    <div class="pensa"><span class="k">Preguntes</span>
+      <details class="q"><summary>Per què el Moho no coincideix amb la base de la litosfera?</summary><div class="a">Perquè són límits de naturalesa diferent. El Moho és un canvi de composició (escorça / mantell). La base de la litosfera és un canvi de comportament (rígid / dúctil), que depèn sobretot de la temperatura. El mantell litosfèric és mantell per composició i litosfera per comportament.</div></details>
+      <details class="q"><summary>Per què a les zones de subducció s'enfonsa l'escorça oceànica i no la continental?</summary><div class="a">Perquè l'escorça oceànica és basàltica i més densa (≈3,0 g/cm³), mentre que la continental és granítica i més lleugera (≈2,7 g/cm³). La litosfera oceànica vella i freda acaba sent més densa que l'astenosfera i s'hi enfonsa.</div></details>
+      <details class="q"><summary>L'astenosfera és una capa líquida?</summary><div class="a">No. És sòlida, però dúctil: a escala de milions d'anys pot fluir molt lentament. Com a molt conté un 1–2 % de fusió parcial.</div></details>
+      <details class="q"><summary>Quins límits són comuns als dos models? Per què?</summary><div class="a">Gutenberg i Lehmann. A Gutenberg canvien alhora la composició (silicats → Fe-Ni) i el comportament (sòlid → líquid). A Lehmann canvia l'estat (líquid → sòlid), i això és rellevant per als dos criteris.</div></details>
+      <details class="q"><summary>Si el nucli intern és més calent que l'extern, per què és sòlid?</summary><div class="a">Perquè la pressió fa pujar la temperatura de fusió del ferro. Al nucli intern la pressió és tan alta que, tot i ser més calent, està per sota de la seva temperatura de fusió.</div></details>
+      <details class="q"><summary>Per què la litosfera és més gruixuda sota els continents que sota els oceans?</summary><div class="a">La base de la litosfera correspon aproximadament a una temperatura (uns 1.300 °C). Sota els continents antics, el mantell és més fred fins a més profunditat. La litosfera oceànica és més jove i calenta, i s'engruixeix a mesura que envelleix i es refreda.</div></details>
+    </div>
+    <details class="gloss"><summary>Glossari</summary><dl>
+      <dt>Astenosfera</dt><dd>Capa del mantell superior, sota la litosfera, sòlida però dúctil.</dd>
+      <dt>Capa D″</dt><dd>Franja d'uns 200 km a la base del mantell, molt heterogènia.</dd>
+      <dt>Endosfera</dt><dd>En el model dinàmic, el nucli: extern líquid i intern sòlid.</dd>
+      <dt>Escorça continental</dt><dd>Escorça gruixuda i lleugera; la part superior és de composició granítica.</dd>
+      <dt>Escorça oceànica</dt><dd>Escorça prima i densa, de composició basàltica.</dd>
+      <dt>Litosfera</dt><dd>Capa rígida externa: escorça + mantell litosfèric. Fragmentada en plaques.</dd>
+      <dt>Mantell litosfèric</dt><dd>Part superior del mantell que forma part de la litosfera.</dd>
+      <dt>Mesosfera</dt><dd>Mantell per sota de l'astenosfera; sòlid i més viscós.</dd>
+      <dt>Model dinàmic</dt><dd>Divisió de la Terra segons el comportament mecànic dels materials.</dd>
+      <dt>Model geoquímic</dt><dd>Divisió de la Terra segons la composició química.</dd>
+      <dt>Placa litosfèrica</dt><dd>Cadascun dels fragments rígids en què es divideix la litosfera.</dd>
+      <dt>Zona de transició</dt><dd>Part del mantell superior (410–660 km) on els minerals es transformen per la pressió.</dd>
+    </dl></details>
+  </div>
+</section>
+
+</main>
+
+<footer class="nav">
+  <button class="btn" id="prev" aria-label="Pàgina anterior">← <span class="w">Anterior</span></button>
+  <div class="where"><div class="lbl" id="where"></div><div class="prog" id="prog"></div></div>
+  <span class="count" id="count"></span>
+  <button class="btn" id="next" aria-label="Pàgina següent"><span class="w">Següent</span> →</button>
+</footer>
+
+<aside id="toc" hidden aria-label="Índex del capítol"><h3>Índex · 2.2.B Les capes de la Terra</h3><ol id="tocList"></ol></aside>
+</div>
+</div>
+<script>
+(function(){
+"use strict";
+/* ---------- Colors (coherents amb :root) ---------- */
+const C={paper:"#fbfcfe",ink:"#14233a",ink2:"#4b5b73",rule:"#d4dde9",ice:"#edf3fb",blue:"#1d5fae",deep:"#0d2c52",S:"#b3264b",light:"#7fa7d6"};
+const FL='"IBM Plex Sans Condensed", "Arial Narrow", Arial, sans-serif';
+const FM='"IBM Plex Mono", Menlo, monospace';
+const RE=6371,TAU=Math.PI*2;
+const fmt=(x,d)=>x.toLocaleString("ca-ES",{minimumFractionDigits:d||0,maximumFractionDigits:d||0});
+
+/* ---------- Escenari escalat / mode flux ---------- */
+const stage=document.getElementById("stage");
+let SCALE=1;
+function layout(){
+  const w=window.innerWidth,h=window.innerHeight;
+  const flow=w<820||(w/h<1.05&&w<1100);
+  document.body.classList.toggle("flow",flow);
+  if(flow){SCALE=1;stage.style.transform="";}
+  else{
+    SCALE=Math.min(w/1600,h/900);
+    const ox=(w-1600*SCALE)/2,oy=(h-900*SCALE)/2;
+    stage.style.transform=`translate(${ox}px,${oy}px) scale(${SCALE})`;
+  }
+  if(cur&&cur.sim&&cur.sim.resize)cur.sim.resize();
+}
+function fit(cv){
+  const w=cv.clientWidth,h=cv.clientHeight;
+  const k=(window.devicePixelRatio||1)*Math.max(SCALE,0.5);
+  cv.width=Math.max(1,Math.round(w*k));cv.height=Math.max(1,Math.round(h*k));
+  const ctx=cv.getContext("2d");ctx.setTransform(k,0,0,k,0,0);
+  return {ctx,w,h};
+}
+function toLocal(cv,ev){const r=cv.getBoundingClientRect();return {x:(ev.clientX-r.left)*cv.clientWidth/r.width,y:(ev.clientY-r.top)*cv.clientHeight/r.height};}
+
+/* ---------- So (Web Audio, desactivat per defecte) ---------- */
+let AC=null,soundOn=false;
+const btnSo=document.getElementById("btnSo");
+btnSo.addEventListener("click",()=>{
+  soundOn=!soundOn;
+  btnSo.setAttribute("aria-pressed",soundOn);btnSo.textContent=soundOn?"So: activat":"So: desactivat";
+  if(soundOn){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume();tone([[523.25,0],[659.25,.06],[783.99,.12]],.08,.045);}catch(e){soundOn=false;}}
+});
+function tone(notes,dur,vol){
+  if(!soundOn||!AC)return;
+  const t0=AC.currentTime;
+  notes.forEach(([f,dt])=>{
+    const o=AC.createOscillator(),g=AC.createGain(),lp=AC.createBiquadFilter();
+    o.type="triangle";o.frequency.value=f;
+    lp.type="lowpass";lp.frequency.value=1400;lp.Q.value=0.3;
+    g.gain.setValueAtTime(0,t0+dt);g.gain.linearRampToValueAtTime(vol,t0+dt+.006);
+    g.gain.exponentialRampToValueAtTime(.0001,t0+dt+dur);
+    o.connect(lp).connect(g).connect(AC.destination);o.start(t0+dt);o.stop(t0+dt+dur+.03);
+  });
+}
+const sndPage=()=>tone([[392,0],[523.25,.06]],.09,.045);
+const sndOpen=()=>tone([[440,0]],.06,.04);
+const sndLow=()=>tone([[196,0],[261.6,.07],[329.6,.14]],.08,.05);
+document.addEventListener("toggle",e=>{if(e.target.matches&&e.target.matches("details.q")&&e.target.open)sndOpen();},true);
+
+
+const SIMS={};
+/* ---------- Capes i colors ---------- */
+const GEO=[
+  {id:"esc",n:"Escorça",d0:0,d1:35,c:"#f1dcb4",tc:"#5a4630"},
+  {id:"msup",n:"Mantell superior",d0:35,d1:660,c:"#d9b48f",tc:"#4a3420"},
+  {id:"minf",n:"Mantell inferior",d0:660,d1:2900,c:"#f0a35e",tc:"#4a2a10"},
+  {id:"next",n:"Nucli extern",d0:2900,d1:5150,c:"#e45d3a",tc:"#ffffff"},
+  {id:"nint",n:"Nucli intern",d0:5150,d1:6371,c:"#f6c445",tc:"#4a3500"}];
+const DYN=[
+  {id:"lit",n:"Litosfera",d0:0,d1:100,c:"#9a8a78",tc:"#ffffff"},
+  {id:"ast",n:"Astenosfera",d0:100,d1:400,c:"#e9a3a8",tc:"#5a1e26"},
+  {id:"mes",n:"Mesosfera",d0:400,d1:2900,c:"#ef9c55",tc:"#4a2a10"},
+  {id:"endl",n:"Endosfera líquida",d0:2900,d1:5150,c:"#e45d3a",tc:"#ffffff"},
+  {id:"ends",n:"Endosfera sòlida",d0:5150,d1:6371,c:"#f6c445",tc:"#4a3500"}];
+const FITXA={
+  esc:"<b>Escorça</b> · 0 a 7–70 km (fins al Moho) · ≈1 % del volum, 0,4 % de la massa · <b>oceànica</b>: basàltica, 6–12 km, 3,0 g/cm³ · <b>continental</b>: granítica a la part superior, 25–70 km, 2,7 g/cm³ · sòlida.",
+  msup:"<b>Mantell superior</b> · Moho a 660 km · peridotita (olivina i piroxens) · 3,3–4,0 g/cm³ · fins a ≈1.700 °C · sòlid. Entre 410 i 660 km, <b>zona de transició</b>: els minerals passen a formes més denses.",
+  minf:"<b>Mantell inferior</b> · 660 a 2.900 km · mateixa química, minerals d'alta pressió (bridgmanita) · 4,4–5,6 g/cm³ · fins a 3.500–4.000 °C a la base · sòlid. A la base, la <b>capa D″</b> (≈200 km). El mantell és el 83 % del volum i el 67 % de la massa.",
+  next:"<b>Nucli extern</b> · 2.900 a 5.150 km · Fe-Ni amb ≈10 % d'elements lleugers (S, O, Si) · 9,9–12,2 g/cm³ · de ≈4.000 a més de 5.000 °C · <b>líquid</b>: els seus corrents generen el camp magnètic.",
+  nint:"<b>Nucli intern</b> · 5.150 a 6.371 km · Fe-Ni amb menys elements lleugers · ≈13 g/cm³ · ≈5.400 °C · <b>sòlid</b> per la pressió (≈360 GPa). El nucli és el 16 % del volum i el 32 % de la massa.",
+  lit:"<b>Litosfera</b> · 0 a ≈100 km (oceans) o 150–200 km (continents) · escorça + mantell litosfèric · <b>rígida</b>: es trenca i forma falles · fragmentada en plaques.",
+  ast:"<b>Astenosfera</b> · base de la litosfera a ≈400 km (límit difús) · <b>sòlida però dúctil</b>: flueix uns quants cm/any · 1–2 % de fusió parcial com a màxim · les ones sísmiques hi van més lentes.",
+  mes:"<b>Mesosfera</b> · ≈400 a 2.900 km · sòlida i més viscosa que l'astenosfera · es mou per convecció molt lenta (milions d'anys) · inclou la zona de transició, el mantell inferior i la capa D″.",
+  endl:"<b>Endosfera líquida</b> (nucli extern) · 2.900 a 5.150 km · líquida · convecció ràpida → geodinamo i camp magnètic.",
+  ends:"<b>Endosfera sòlida</b> (nucli intern) · 5.150 a 6.371 km · sòlida · creix lentament a mesura que el nucli extern es refreda i cristal·litza."
+};
+const DISC=[
+  {n:"Moho",d:35,m:"g"},{n:"Repetti",d:660,m:"g"},
+  {n:"Base de la litosfera",d:100,m:"d"},{n:"Base de l'astenosfera",d:400,m:"d"},
+  {n:"Gutenberg",d:2900,m:"b"},{n:"Lehmann",d:5150,m:"b"}];
+
+/* Falca doble reutilitzable. mode: "geo" | "dyn" | "both"; ex: mode exercici */
+function makeWedge(sec,mode,opt){
+  opt=opt||{};
+  const cv=sec.querySelector(".cv canvas"),info=sec.querySelector(".wInfo"),lupa=sec.querySelector(".wLupa");
+  let g,hover=null,sel=null,geo=null;const A=36*Math.PI/180;
+  const lab=opt.labels||{};
+  const LZ=()=>(lupa&&lupa.checked)||(typeof opt.forceLupa==="function"?opt.forceLupa():!!opt.forceLupa);
+  function f(d){if(!LZ())return d/RE;
+    if(d<=100)return 0.12*d/100;if(d<=1000)return 0.12+0.33*(d-100)/900;return 0.45+0.55*(d-1000)/(RE-1000);}
+  function finv(x){if(!LZ())return x*RE;
+    if(x<=0.12)return x/0.12*100;if(x<=0.45)return 100+(x-0.12)/0.33*900;return 1000+(x-0.45)/0.55*(RE-1000);}
+  function resize(){g=fit(cv);draw();}
+  function seg(ctx,d0,d1,t0,t1){const r0=geo.R*(1-f(d0)),r1=geo.R*(1-f(d1));ctx.beginPath();ctx.arc(geo.cx,geo.ay,r0,-Math.PI/2+t0,-Math.PI/2+t1);if(r1>0.5)ctx.arc(geo.cx,geo.ay,r1,-Math.PI/2+t1,-Math.PI/2+t0,true);else ctx.lineTo(geo.cx,geo.ay);ctx.closePath();}
+  function pt(d,t){const r=geo.R*(1-f(d));return [geo.cx+r*Math.sin(t),geo.ay-r*Math.cos(t)];}
+  function draw(){
+    if(!g)return;const {ctx,w,h}=g;ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);
+    const top=34,R=Math.min(h-top-14,(w-330)/(2*Math.sin(A)));const cx=w/2,ay=top+R;geo={cx,ay,R};
+    const halves=[["geo",GEO,-A,0],["dyn",DYN,0,A]];
+    halves.forEach(([k,L,t0,t1])=>{const faded=mode!=="both"&&mode!==k;
+      ctx.globalAlpha=faded?0.18:1;
+      L.forEach(l=>{seg(ctx,l.d0,l.d1,t0,t1);ctx.fillStyle=l.c;ctx.fill();});
+      if(k==="geo"){ // zona de transició i D″
+        seg(ctx,410,660,t0,t1);ctx.fillStyle="rgba(120,80,40,.18)";ctx.fill();
+        seg(ctx,2700,2900,t0,t1);ctx.fillStyle="rgba(170,70,20,.45)";ctx.fill();}
+      ctx.globalAlpha=1;});
+    // ressaltats
+    const hl=sel||hover;
+    if(hl){const side=hl.side==="geo"?[-A,0]:[0,A],other=hl.side==="geo"?[0,A]:[-A,0];
+      seg(ctx,hl.l.d0,hl.l.d1,side[0],side[1]);ctx.strokeStyle=C.deep;ctx.lineWidth=3;ctx.stroke();
+      if(mode==="both"){seg(ctx,hl.l.d0,hl.l.d1,other[0],other[1]);ctx.fillStyle="rgba(255,255,255,.35)";ctx.fill();ctx.setLineDash([6,4]);ctx.strokeStyle=C.deep;ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([]);}}
+    // contorn
+    ctx.strokeStyle=C.deep;ctx.lineWidth=1.4;ctx.beginPath();const [lx,ly]=pt(0,-A),[rx,ry]=pt(0,A);ctx.moveTo(lx,ly);ctx.arc(cx,ay,R,-Math.PI/2-A,-Math.PI/2+A);ctx.lineTo(cx,ay);ctx.closePath();ctx.stroke();
+    ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(cx,ay-R);ctx.lineTo(cx,ay);ctx.stroke();ctx.setLineDash([]);
+    // discontinuïtats
+    DISC.forEach(D=>{const t0=D.m==="d"?0:-A,t1=D.m==="g"?0:A;if(mode==="geo"&&D.m==="d"||mode==="dyn"&&D.m==="g")return;
+      const r=R*(1-f(D.d));ctx.strokeStyle="#2a1a10";ctx.lineWidth=D.m==="b"?2:1.6;ctx.setLineDash(D.m==="b"?[]:[7,4]);ctx.beginPath();ctx.arc(cx,ay,r,-Math.PI/2+t0,-Math.PI/2+t1);ctx.stroke();ctx.setLineDash([]);
+      if(opt.ex)return;ctx.font=`600 14px ${FL}`;ctx.fillStyle=C.deep;
+      const side=D.m==="d"?1:-1,tt=side*A,[x,y]=pt(D.d,tt);ctx.textAlign=side<0?"right":"left";
+      let dy=5;if(D.n==="Moho")dy=-2;if(D.n==="Base de la litosfera")dy=-2;
+      if(!LZ()){if(D.d===35&&side<0)dy=-6;if(D.d===660&&side<0)dy=14;if(D.d===100)dy=-8;if(D.d===400)dy=12;}
+      ctx.fillText(D.n,x+side*10,y+dy);
+      if(D.m==="b"&&mode!=="geo"){ctx.textAlign="left";const [x2,y2]=pt(D.d,A);ctx.fillText(D.n,x2+10,y2+5);}});
+    // noms de capes
+    if(!opt.ex)halves.forEach(([k,L,t0,t1])=>{if(mode!=="both"&&mode!==k)return;
+      L.forEach(l=>{const rp=R*(f(l.d1)-f(l.d0));const dm=finv((f(l.d0)+f(l.d1))/2);const [x,y]=pt(dm,(t0+t1)/2);
+        ctx.font=`600 ${rp>60?16:14}px ${FL}`;const rr=R*(1-f(dm)),arcW=rr*A*0.92;
+        if(rp>20&&ctx.measureText(l.n).width<arcW){ctx.fillStyle=l.tc;ctx.textAlign="center";ctx.fillText(l.n,x,y+5);}
+        else{const side=k==="geo"?-1:1;const [ex,ey]=pt(dm,side*A);const deep=dm>2900;const oy=deep?(dm>5150?34:20):-26;ctx.strokeStyle=C.ink2;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex+side*6,ey);ctx.lineTo(ex+side*(deep?70:60),ey+oy);ctx.stroke();
+          ctx.font=`600 14px ${FL}`;ctx.fillStyle=C.deep;ctx.textAlign=side<0?"right":"left";ctx.fillText(l.n,ex+side*(deep?74:64),ey+oy+(deep?5:-2));}});});
+    if(opt.ex)opt.ex.drawLabels(ctx,pt,f,finv,R,A);
+    // títols de meitat
+    ctx.font=`600 14px ${FL}`;ctx.textAlign="center";
+    ctx.globalAlpha=mode==="dyn"?0.35:1;ctx.fillStyle=C.deep;ctx.fillText("COMPOSICIÓ",cx-R*Math.sin(A)*0.45,18);
+    ctx.globalAlpha=mode==="geo"?0.35:1;ctx.fillText("COMPORTAMENT",cx+R*Math.sin(A)*0.45,18);ctx.globalAlpha=1;
+    // profunditats a l'eix central
+    ctx.font=`12.5px ${FM}`;ctx.textAlign="center";
+    const ticks=LZ()?[0,100,400,660,1000,2900,5150,6371]:[0,660,2900,5150,6371];
+    ticks.forEach(d=>{const y=ay-R*(1-f(d));const t=d===0?"0 km":fmt(d);const tw=ctx.measureText(t).width+6;ctx.fillStyle="rgba(255,255,255,.85)";ctx.fillRect(cx-tw/2,y-8,tw,15);ctx.fillStyle=C.ink;ctx.fillText(t,cx,y+4);});
+    if(LZ()){ctx.font=`500 13px ${FL}`;ctx.fillStyle=C.S;ctx.textAlign="left";ctx.fillText("Escala deformada: els primers 1.000 km ampliats",12,h-10);}
+  }
+  function hit(p){if(!geo)return null;const dx=p.x-geo.cx,dy=geo.ay-p.y,r=Math.hypot(dx,dy),t=Math.atan2(dx,dy);if(r>geo.R+4||Math.abs(t)>A)return null;
+    const d=finv(Math.max(0,1-r/geo.R)),side=t<0?"geo":"dyn";if(mode!=="both"&&mode!==side)return null;
+    const L=side==="geo"?GEO:DYN;const l=L.find(q=>d>=q.d0&&d<=q.d1)||L[L.length-1];return {side,l,d};}
+  function show(h){if(!info)return;if(!h){info.innerHTML=mode==="both"?"Passa el cursor per una capa: a l'altra meitat es marca la mateixa franja de profunditat.":"Clica una capa de la falca.";return;}
+    let s=FITXA[h.l.id];if(mode==="both"){const O=h.side==="geo"?DYN:GEO;const ov=O.filter(q=>q.d1>h.l.d0&&q.d0<h.l.d1).map(q=>q.n.toLowerCase());s+=`<br><span style="color:#1d5fae">A l'altre model correspon a: ${ov.join(", ")}.</span>`;}info.innerHTML=s;}
+  cv.addEventListener("pointermove",ev=>{if(opt.ex)return;const h=hit(toLocal(cv,ev));const k=h?h.side+h.l.id:"",k0=hover?hover.side+hover.l.id:"";if(k!==k0){hover=h;draw();if(!sel)show(h);}cv.style.cursor=h?"pointer":"default";});
+  cv.addEventListener("pointerleave",()=>{if(opt.ex)return;hover=null;draw();if(!sel)show(null);});
+  cv.addEventListener("click",ev=>{const h=hit(toLocal(cv,ev));if(opt.ex){opt.ex.click(h);draw();return;}sel=h;draw();show(h);if(h)sndOpen();});
+  if(lupa)lupa.addEventListener("change",draw);
+  return {resize,draw};
+}
+SIMS.w1=sec=>makeWedge(sec,"both",{forceLupa:true});
+SIMS.w2=sec=>makeWedge(sec,"geo");
+SIMS.w4=sec=>makeWedge(sec,"dyn");
+SIMS.w5=sec=>makeWedge(sec,"both");
+
+/* Exercici d'etiquetar */
+SIMS.w6=function(sec){
+  const chipsEl=sec.querySelector("#exChips"),msg=sec.querySelector("#exMsg");
+  const ALL=GEO.map(l=>["geo",l]).concat(DYN.map(l=>["dyn",l]));
+  const ROUNDS=[["Escorça","Mantell superior","Mantell inferior","Litosfera","Astenosfera","Mesosfera"],["Nucli extern","Nucli intern","Endosfera líquida","Endosfera sòlida"]];
+  let pick=null,done={},round=0;let W;
+  const intro=()=>round===0?"Ronda 1 de 2 · Capes externes (primers 1.000 km ampliats). Tria un nom i després clica la capa.":"Ronda 2 de 2 · El nucli, ara a escala real. Tria un nom i després clica la capa.";
+  function renderChips(){chipsEl.innerHTML="";ROUNDS[round].slice().sort().forEach(n=>{if(done[n])return;const b=document.createElement("button");b.className="chip";b.textContent=n;b.setAttribute("aria-pressed",pick===n);b.onclick=()=>{pick=n;renderChips();msg.textContent=`Ara clica la capa: ${n}.`;};chipsEl.appendChild(b);});}
+  function check(){if(ROUNDS[round].every(n=>done[n])){if(round===0){round=1;pick=null;renderChips();msg.innerHTML="<b>Ronda 1 completada.</b> "+intro();W.draw();}else{msg.innerHTML="<b>Molt bé!</b> Has etiquetat les deu capes dels dos models.";}}}
+  const ex={drawLabels(ctx,pt,f,finv,R,A){ALL.forEach(([side,l])=>{if(!done[l.n])return;const t=side==="geo"?-A/2:A/2;const dm=finv((f(l.d0)+f(l.d1))/2);const [x,y]=pt(dm,t);
+      const rp=R*(f(l.d1)-f(l.d0));ctx.font=`600 ${rp>40?15:13}px ${FL}`;ctx.textAlign="center";const tw=ctx.measureText(l.n).width+10;const arcW=R*(1-f(dm))*A;let lx=x,ly=y;
+      if(tw>arcW*0.95||rp<14){const s2=side==="geo"?-1:1;const [ex,ey]=pt(dm,s2*A);lx=ex+s2*(tw/2+14);ly=ey;ctx.strokeStyle=C.ink2;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(lx-s2*tw/2,ly);ctx.stroke();}
+      ctx.fillStyle="rgba(255,255,255,.9)";ctx.fillRect(lx-tw/2,ly-10,tw,19);ctx.fillStyle=C.deep;ctx.fillText(l.n,lx,ly+4);});},
+    click(h){if(!pick){msg.textContent="Primer tria un nom de la llista.";return;}if(!h){msg.textContent="Clica dins la falca.";return;}
+      if(h.l.n===pick){done[pick]=true;sndOpen();msg.innerHTML=`<b>Correcte:</b> ${pick}.`;pick=null;renderChips();check();}
+      else{msg.innerHTML=`No: aquesta capa no és «${pick}». Pensa si és una capa de <b>composició</b> (esquerra) o de <b>comportament</b> (dreta).`;}}};
+  sec.querySelector("#exReset").onclick=()=>{pick=null;done={};round=0;renderChips();msg.textContent=intro();W.draw();};
+  W=makeWedge(sec,"both",{ex,forceLupa:()=>round===0});renderChips();msg.textContent=intro();
+  return W;
+};
+
+/* Tall oceà–continent: litosfera i astenosfera */
+const ROCKS={
+  gra:{n:"Granit",t:"Roca plutònica de gra gros (es refreda lentament en profunditat). Quars, feldspat potàssic, plagiòclasi i mica (biotita). Densitat ≈2,7 g/cm³. Forma la part superior de l'escorça continental."},
+  bas:{n:"Basalt",t:"Roca volcànica de gra fi (es refreda de pressa). Piroxè, plagiòclasi càlcica i una mica d'olivina. Densitat ≈3,0 g/cm³. Forma l'escorça oceànica, que es crea a les dorsals; en profunditat, la mateixa roca de gra gros és el gabre."},
+  per:{n:"Peridotita",t:"Roca ultrabàsica d'olivina (més del 40 %) i piroxens. Densitat ≈3,3 g/cm³. Forma el mantell; arriba a la superfície com a xenòlits dins de laves o en ofiolites."}};
+function rockTex(cv,type){
+  const w=cv.clientWidth||120,h=cv.clientHeight||90;const k=(window.devicePixelRatio||1)*Math.max(SCALE,.5);cv.width=Math.round(w*k);cv.height=Math.round(h*k);
+  const ctx=cv.getContext("2d");ctx.setTransform(k,0,0,k,0,0);let s=type.length*131+17;const R=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};
+  if(type==="gra"){ctx.fillStyle="#d9c8bd";ctx.fillRect(0,0,w,h);
+    for(let i=0;i<70;i++){const x=R()*w,y=R()*h,r=4+R()*9,c=R();ctx.fillStyle=c<.35?"#e7a98f":c<.6?"#f2efe9":c<.85?"#a9a7a4":"#2b2622";ctx.beginPath();const n=5+(R()*3|0);for(let j=0;j<n;j++){const a=j/n*TAU+R()*.4,rr=r*(c>.85?.45:1)*(.7+R()*.4);j?ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr):ctx.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}ctx.closePath();ctx.fill();}}
+  else if(type==="bas"){ctx.fillStyle="#3d3f42";ctx.fillRect(0,0,w,h);for(let i=0;i<2600;i++){const v=R();ctx.fillStyle=v<.5?"rgba(0,0,0,.35)":"rgba(200,200,200,.18)";ctx.fillRect(R()*w,R()*h,1.3,1.3);}
+    for(let i=0;i<10;i++){ctx.fillStyle="#1d1e20";ctx.beginPath();ctx.ellipse(R()*w,R()*h,1.5+R()*3,1+R()*2,R()*3,0,TAU);ctx.fill();}
+    for(let i=0;i<8;i++){ctx.fillStyle="#7d8a3c";ctx.fillRect(R()*w,R()*h,2+R()*2,2+R()*2);}}
+  else{ctx.fillStyle="#6f7d3a";ctx.fillRect(0,0,w,h);for(let i=0;i<90;i++){const x=R()*w,y=R()*h,r=3+R()*6,c=R();ctx.fillStyle=c<.7?`rgb(${110+R()*40|0},${130+R()*35|0},${50+R()*25|0})`:c<.93?"#3e4a22":"#151515";ctx.beginPath();const n=5+(R()*3|0);for(let j=0;j<n;j++){const a=j/n*TAU+R()*.4,rr=r*(.7+R()*.4);j?ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr):ctx.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}ctx.closePath();ctx.fill();}}
+}
+SIMS.sec=function(sec){
+  const cv=sec.querySelector(".cv canvas"),card=sec.querySelector("#rockCard");let g,dyn=false,pins=[],selR=null,anim=0;
+  sec.querySelectorAll("#secMode [data-m]").forEach((b,i)=>b.addEventListener("click",()=>{dyn=i===1;sec.querySelectorAll("#secMode [data-m]").forEach((x,j)=>x.setAttribute("aria-pressed",j===i));sndOpen();draw();}));
+  function resize(){g=fit(cv);draw();}
+  function draw(){
+    if(!g)return;const {ctx,w,h}=g;ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);
+    const L=64,Rr=150,top=56,B=24,pw=w-L-Rr,ph=h-top-B,Dmax=300,Y=d=>top+d/Dmax*ph,X=u=>L+u*pw;
+    // perfils (u de 0 a 1), profunditats en km (negatives = per sobre del nivell del mar)
+    const sd=u=>u<0.46?4:u<0.56?4-(u-0.46)/0.1*4.5:-0.5-Math.exp(-Math.pow((u-0.8)/0.06,2))*4.5;
+    const moho=u=>u<0.44?11:u<0.58?11+(u-0.44)/0.14*24:35+Math.exp(-Math.pow((u-0.8)/0.09,2))*25;
+    const lab=u=>u<0.42?95:u<0.62?95+(u-0.42)/0.2*80:175+Math.exp(-Math.pow((u-0.82)/0.12,2))*20;
+    const N=160;
+    const surfY=u=>Y(sd(u)),yMoho=u=>Y(moho(u)),yLab=u=>Y(lab(u));
+    function fillBetween(f1,f2,col){ctx.beginPath();for(let i=0;i<=N;i++){const u=i/N;i?ctx.lineTo(X(u),f1(u)):ctx.moveTo(X(u),f1(u));}for(let i=N;i>=0;i--){const u=i/N;ctx.lineTo(X(u),f2(u));}ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+    // aigua
+    fillBetween(()=>Y(0),u=>Math.max(Y(0),surfY(u)),"#9cc3e6");
+    const cAst=dyn?"#e9a3a8":"#d9b48f",cLitM=dyn?"#9a8a78":"#d9b48f";
+    fillBetween(yLab,()=>Y(Dmax),cAst);
+    fillBetween(yMoho,yLab,cLitM);
+    // escorça
+    const oc=dyn?"#857565":"#5f6f80",co=dyn?"#a89886":"#f1dcb4";
+    ctx.save();ctx.beginPath();ctx.rect(X(0),0,X(0.5)-X(0),h);ctx.clip();fillBetween(surfY,yMoho,oc);ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(X(0.5),0,X(1)-X(0.5)+1,h);ctx.clip();fillBetween(surfY,yMoho,co);ctx.restore();
+    if(!dyn){ctx.save();ctx.beginPath();ctx.rect(X(0.5),0,X(1)-X(0.5),h);ctx.clip();fillBetween(u=>Y(moho(u)*0.45),yMoho,"rgba(160,120,80,.25)");ctx.restore();}
+    // línia de superfície
+    ctx.strokeStyle="#3b2c1c";ctx.lineWidth=1.2;ctx.beginPath();for(let i=0;i<=N;i++){const u=i/N;i?ctx.lineTo(X(u),surfY(u)):ctx.moveTo(X(u),surfY(u));}ctx.stroke();
+    // Moho
+    ctx.strokeStyle="#2a1a10";ctx.lineWidth=dyn?1.6:2.6;ctx.setLineDash([8,5]);ctx.beginPath();for(let i=0;i<=N;i++){const u=i/N;i?ctx.lineTo(X(u),yMoho(u)):ctx.moveTo(X(u),yMoho(u));}ctx.stroke();ctx.setLineDash([]);
+    // base litosfera
+    ctx.strokeStyle=dyn?"#7a1730":"rgba(122,23,48,.35)";ctx.lineWidth=dyn?3.4:1.4;ctx.setLineDash(dyn?[]:[3,4]);ctx.beginPath();for(let i=0;i<=N;i++){const u=i/N;i?ctx.lineTo(X(u),yLab(u)):ctx.moveTo(X(u),yLab(u));}ctx.stroke();ctx.setLineDash([]);
+    // eix de profunditat
+    ctx.font=`13px ${FM}`;ctx.fillStyle=C.ink2;ctx.textAlign="right";ctx.strokeStyle=C.rule;ctx.lineWidth=1;
+    for(let d=0;d<=300;d+=50){ctx.fillText(fmt(d),L-8,Y(d)+4);ctx.beginPath();ctx.moveTo(L-4,Y(d));ctx.lineTo(L,Y(d));ctx.stroke();}
+    ctx.save();ctx.translate(16,top+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign="center";ctx.font=`600 13px ${FL}`;ctx.fillText("Profunditat (km)",0,0);ctx.restore();
+    // etiquetes internes
+    ctx.font=`600 15px ${FL}`;ctx.textAlign="center";
+    ctx.fillStyle="#1f4f7a";ctx.fillText("OCEÀ",X(0.2),22);ctx.fillStyle="#5a4630";ctx.fillText("CONTINENT",X(0.8),22);
+    if(!dyn){ctx.fillStyle="#2c3a48";ctx.font=`600 13.5px ${FL}`;ctx.textAlign="left";ctx.fillText("↑ Escorça oceànica",X(0.04),Y(30));ctx.textAlign="center";
+      ctx.fillStyle="#5a4630";ctx.font=`600 14px ${FL}`;ctx.fillText("Escorça continental",X(0.66),Y(24));
+      ctx.fillStyle="#4a3420";ctx.font=`600 16px ${FL}`;ctx.fillText("MANTELL",X(0.5),Y(150));ctx.font=`500 13px ${FL}`;ctx.fillText("(peridotita: la mateixa roca a dalt i a baix)",X(0.5),Y(150)+18);}
+    else{ctx.fillStyle="#fff";ctx.font=`600 15px ${FL}`;ctx.fillText("Mantell litosfèric",X(0.2),Y(55));ctx.fillText("Mantell litosfèric",X(0.82),Y(110));
+      ctx.fillStyle="#5a1e26";ctx.font=`600 17px ${FL}`;ctx.fillText("ASTENOSFERA",X(0.3),Y(220));ctx.font=`500 13px ${FL}`;ctx.fillText("sòlida però dúctil",X(0.3),Y(220)+18);}
+    // etiquetes de línies
+    ctx.font=`600 13.5px ${FL}`;ctx.textAlign="left";ctx.fillStyle="#2a1a10";
+    ctx.fillText(dyn?"Moho (dins la litosfera)":"Moho",X(0.3),yMoho(0.3)+16);
+    ctx.fillStyle="#7a1730";ctx.globalAlpha=dyn?1:.55;ctx.fillText("Base de la litosfera",X(0.03),yLab(0.03)-8);ctx.globalAlpha=1;
+    // claus a la dreta
+    const bx=L+pw+14;const brace=(y0,y1,txt,col,sub)=>{ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(bx,y0);ctx.lineTo(bx+10,y0);ctx.lineTo(bx+10,y1);ctx.lineTo(bx,y1);ctx.stroke();
+      ctx.fillStyle=col;ctx.font=`700 15px ${FL}`;ctx.textAlign="left";ctx.fillText(txt,bx+18,(y0+y1)/2+(sub?-2:5));if(sub){ctx.font=`500 12.5px ${FL}`;sub.split("\n").forEach((s,i)=>ctx.fillText(s,bx+18,(y0+y1)/2+15+i*15));}};
+    if(dyn){brace(surfY(1),yLab(1),"LITOSFERA","#5c4f42","escorça + Moho\n+ mantell litosfèric");brace(yLab(1)+4,Y(Dmax),"ASTENOSFERA","#a03a4a");}
+    else{brace(surfY(1),yMoho(1),"ESCORÇA","#8a6a40");brace(yMoho(1)+4,Y(Dmax),"MANTELL","#8a6a40","superior");}
+    ctx.font=`500 12.5px ${FL}`;ctx.fillStyle=C.ink2;ctx.textAlign="left";ctx.fillText("Escala vertical real; escala horitzontal esquemàtica.",L,h-6);
+    // mostres
+    pins=[{id:"gra",x:X(0.9),y:Y(12)},{id:"bas",x:X(0.3),y:Y(8)},{id:"per",x:X(0.62),y:Y(120)}];
+    pins.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,selR===p.id?11:9,0,TAU);ctx.fillStyle="#fff";ctx.fill();ctx.strokeStyle=C.S;ctx.lineWidth=3;ctx.stroke();ctx.beginPath();ctx.arc(p.x,p.y,4,0,TAU);ctx.fillStyle=C.S;ctx.fill();
+      ctx.font=`700 13px ${FL}`;ctx.fillStyle=C.S;ctx.textAlign="left";const t=ROCKS[p.id].n;const tw=ctx.measureText(t).width+8;ctx.fillStyle="rgba(255,255,255,.85)";ctx.fillRect(p.x+12,p.y-9,tw,18);ctx.fillStyle=C.S;ctx.fillText(t,p.x+16,p.y+5);});
+  }
+  cv.addEventListener("click",ev=>{const p=toLocal(cv,ev);const hit=pins.find(q=>Math.hypot(q.x-p.x,q.y-p.y)<18);if(!hit)return;selR=hit.id;sndOpen();
+    card.innerHTML=`<div style="display:grid;grid-template-columns:130px minmax(0,1fr);gap:14px;align-items:center"><canvas style="width:130px;height:84px;border-radius:3px;border:1px solid #d4dde9" aria-hidden="true"></canvas><div><b>${ROCKS[hit.id].n}</b> · ${ROCKS[hit.id].t}</div></div>`;
+    requestAnimationFrame(()=>rockTex(card.querySelector("canvas"),hit.id));draw();});
+  cv.addEventListener("pointermove",ev=>{const p=toLocal(cv,ev);cv.style.cursor=pins.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<18)?"pointer":"default";});
+  return {resize,draw};
+};
+
+
+/* Tall de l'escorça amb litologies, vaixell i regle */
+SIMS.crust=function(sec){
+  const cv=sec.querySelector(".cv canvas"),info=sec.querySelector("#crInfo");
+  let g,geo=null,boatU=0.12,dir=1,ping=null,ruler=null,hoverId=null,selR=null,last=null,paused=false;
+  const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // perfils (u de 0 a 1; profunditat en km, positiva cap avall)
+  const COT=0.40;
+  const sm=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
+  // fons marí i relleu
+  const sd=u=>{let d;if(u<0.30)d=4.6+0.2*Math.sin(u*40);else if(u<0.42)d=4.6-(u-0.30)/0.12*1.0;else if(u<0.49)d=3.6-(u-0.42)/0.07*3.4;else if(u<0.56)d=0.2;else d=-0.3;
+    return d-Math.exp(-Math.pow((u-0.82)/0.075,2))*4.2-Math.exp(-Math.pow((u-0.66)/0.05,2))*0.6;};
+  // blocs basculats del marge continental (falles a FU, del costat de l'oceà cap al continent)
+  const FU=[0.40,0.435,0.47,0.505,0.54];
+  const trend=u=>9-7.5*sm((u-0.40)/0.18);
+  const saw=u=>{for(let k=0;k<FU.length;k++){const a=FU[k],b=k+1<FU.length?FU[k+1]:0.58;if(u>=a&&u<b)return 2.6*(u-a)/(b-a)*(1-(u-0.40)/0.24);}return 0;};
+  // sostre del sòcol (sota els sediments)
+  const btop=u=>u<0.40?sd(u)+0.5+(9-sd(0.40)-0.5)*sm((u-0.24)/0.16):u<0.58?Math.max(sd(u)+0.3,trend(u)+saw(u)):sd(u)+1.5;
+  const thick=u=>u<0.28?7:7-1.6*sm((u-0.28)/0.12);
+  const moho=u=>{let m;if(u<0.40)m=btop(u)+thick(u);else{const m0=btop(0.3999)+thick(0.3999);m=m0+(35.5-m0)*sm((u-0.40)/0.24);}return m+Math.exp(-Math.pow((u-0.82)/0.09,2))*29;};
+  const BND=d=>0.398+0.0035*(d-9);
+  const isOc=(u,d)=>u<BND(d);
+  const sedB=btop;
+  const conrad=u=>Math.max(btop(u)+2,moho(u)*0.52);
+  const basB=u=>btop(u)+2.2;
+  const LITH={
+    mar:{n:"Aigua del mar",t:"Fins a uns 4–5 km a les planes abissals."},
+    sed:{n:"Sediments",t:"Argiles, llims i restes d'organismes. Capa prima al fons oceànic; molt més gruixuda al marge continental (fins a desenes de km en alguns llocs)."},
+    bas:{n:"Basalt (laves i dics)",t:"Part superior de l'escorça oceànica. Roca volcànica fosca de gra fi · ≈3,0 g/cm³."},
+    gab:{n:"Gabre",t:"Part inferior de l'escorça oceànica. Mateixa composició que el basalt, però de gra gros perquè es refreda lentament en profunditat · ≈3,0 g/cm³."},
+    cob:{n:"Cobertora: roques sedimentàries, metamòrfiques i volcàniques",t:"Recobriment de l'escorça continental, de 0 a uns 3 km. Molt variable."},
+    gra:{n:"Escorça continental superior (granítica)",t:"Granits i roques metamòrfiques (gneis) · ≈2,7 g/cm³ · rica en Si i Al."},
+    inf:{n:"Escorça continental inferior",t:"Roques metamòrfiques d'alt grau i roques més bàsiques (amb composició propera al basalt) · ≈2,9 g/cm³. La separa de la superior la discontinuïtat de Conrad, que no sempre es detecta."},
+    man:{n:"Mantell litosfèric (peridotita)",t:"Per sota del Moho. Roca d'olivina i piroxens · ≈3,3 g/cm³. Continua fins a la base de la litosfera (≈100 km sota l'oceà, 150–200 km sota el continent)."}};
+  function lithAt(u,d){if(d<sd(u))return d>=0&&u<0.54?"mar":null;if(d>moho(u))return "man";
+    if(isOc(u,d)){if(d<sedB(u))return "sed";return d<basB(u)?"bas":"gab";}
+    if(d<btop(u)&&u<0.58)return "sed";if(d<sd(u)+1.5)return "cob";return d<conrad(u)?"gra":"inf";}
+  function resize(){g=fit(cv);}
+  function frame(ts){
+    if(!g)resize();const {ctx,w,h}=g;
+    if(last===null)last=ts;const dt=Math.min(.05,(ts-last)/1000);last=ts;
+    if(!reduce&&!ping){boatU+=dir*dt*0.018;if(boatU>0.4){boatU=0.4;dir=-1;}if(boatU<0.04){boatU=0.04;dir=1;}}
+    const L=58,Rr=168,top=34,B=26,pw=w-L-Rr,ph=h-top-B,D0=-5,D1=72;
+    const X=u=>L+u*pw,Y=d=>top+(d-D0)/(D1-D0)*ph;geo={L,pw,X,Y,top,ph,D0,D1};
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);
+    const N=240;
+    const band=(f1,f2,col,u0,u1)=>{u0=u0||0;u1=u1===undefined?1:u1;ctx.beginPath();for(let i=0;i<=N;i++){const u=u0+(u1-u0)*i/N;const y=Y(f1(u));i?ctx.lineTo(X(u),y):ctx.moveTo(X(u),y);}for(let i=N;i>=0;i--){const u=u0+(u1-u0)*i/N;ctx.lineTo(X(u),Y(f2(u)));}ctx.closePath();if(col){ctx.fillStyle=col;ctx.fill();}};
+    const pattern=(kind,clipFn)=>{ctx.save();clipFn();ctx.clip();ctx.strokeStyle=ctx.fillStyle="rgba(60,40,20,.35)";ctx.lineWidth=1;
+      const step=kind==="plus"?16:kind==="dash"?13:kind==="dot"?9:14;
+      for(let yy=top;yy<h;yy+=step)for(let xx=L+((yy/step)%2?step/2:0);xx<L+pw;xx+=step){
+        if(kind==="plus"){ctx.beginPath();ctx.moveTo(xx-3,yy);ctx.lineTo(xx+3,yy);ctx.moveTo(xx,yy-3);ctx.lineTo(xx,yy+3);ctx.stroke();}
+        else if(kind==="dash"){ctx.beginPath();ctx.moveTo(xx-3,yy);ctx.lineTo(xx+3,yy);ctx.stroke();}
+        else if(kind==="dot"){ctx.fillRect(xx,yy,1.6,1.6);}
+        else{ctx.beginPath();ctx.moveTo(xx-2.5,yy+2.5);ctx.lineTo(xx+2.5,yy-2.5);ctx.stroke();}}
+      ctx.restore();};
+    // mantell
+    band(moho,()=>D1,"#c9a27e");pattern("slash",()=>band(moho,()=>D1));
+    // escorça oceànica
+    const ocClip=()=>{ctx.beginPath();ctx.moveTo(X(0),Y(D0));for(let d=D0;d<=D1;d+=0.5)ctx.lineTo(X(BND(d)),Y(d));ctx.lineTo(X(0),Y(D1));ctx.closePath();};
+    const coClip=()=>{ctx.beginPath();ctx.moveTo(X(1),Y(D0));for(let d=D0;d<=D1;d+=0.5)ctx.lineTo(X(BND(d)),Y(d));ctx.lineTo(X(1),Y(D1));ctx.closePath();};
+    ctx.save();ocClip();ctx.clip();
+    band(basB,moho,"#8d7f70");pattern("dash",()=>band(basB,moho));
+    band(sedB,basB,"#55504b");pattern("dash",()=>band(sedB,basB));
+    ctx.restore();
+    ctx.save();coClip();ctx.clip();
+    // escorça continental
+    band(conrad,moho,"#e2c9a4");pattern("plus",()=>band(conrad,moho));
+    ctx.save();band(conrad,moho);ctx.clip();ctx.fillStyle="rgba(150,110,60,.35)";for(let i=0;i<9;i++){const u=0.5+i*0.055,d=moho(u)*0.8;ctx.beginPath();ctx.ellipse(X(u),Y(d),24,6,0,0,TAU);ctx.fill();}ctx.restore();
+    band(btop,conrad,"#f3e3c8");pattern("plus",()=>band(btop,conrad));
+    ctx.restore();
+    // cobertora continental en franges
+    const cobCols=["#7fae5a","#c7d66a","#e8b4c8","#f0e08a"];
+    cobCols.forEach((c,i)=>band(u=>sd(u)+i*0.375,u=>sd(u)+(i+1)*0.375,c,0.55,1));
+    // sediments (oceà i marge)
+    band(sd,btop,"#f2e27a",0,0.58);pattern("dot",()=>band(sd,btop,null,0,0.58));
+    ctx.strokeStyle="rgba(120,100,30,.45)";ctx.lineWidth=1;for(let k=1;k<5;k++){ctx.beginPath();for(let i=0;i<=N;i++){const u=0.58*i/N;const dd=sd(u)+(btop(u)-sd(u))*k/5;i?ctx.lineTo(X(u),Y(dd)):ctx.moveTo(X(u),Y(dd));}ctx.stroke();}
+    // mar
+    band(()=>0,u=>Math.max(0,sd(u)),"#a9cdee",0,0.56);
+    // falles normals al marge
+    ctx.lineCap="round";
+    FU.forEach((u0,k)=>{if(k===FU.length-1)return;const d0=btop(u0+0.0005);const L=0.05+0.006*k,dEnd=moho(u0-L)-0.3;ctx.strokeStyle="#3b2c1c";ctx.lineWidth=k===0?2.6:1.7;ctx.beginPath();let first=true;for(let j=0;j<=120;j++){const t=j/120;const u=u0-L*t,d=d0+(dEnd-d0)*(1-Math.pow(1-t,2.3));if(d>moho(u)+0.05)break;if(k===0&&u<BND(d)-0.002)break;first?ctx.moveTo(X(u),Y(d)):ctx.lineTo(X(u),Y(d));first=false;}ctx.stroke();});
+    // plutons granítics (cúpules)
+    ctx.save();coClip();ctx.clip();ctx.strokeStyle="rgba(90,70,40,.55)";ctx.lineWidth=1.3;
+    [[0.71,17,0.055],[0.82,15,0.065],[0.94,17,0.055],[0.76,25,0.05],[0.88,26,0.055],[0.64,23,0.04]].forEach(([u,d,r])=>{ctx.beginPath();ctx.ellipse(X(u),Y(d),r*pw,r*pw*0.9,0,Math.PI,TAU);ctx.stroke();});
+    ctx.restore();
+    ctx.strokeStyle="#2a1a10";ctx.lineWidth=2.2;ctx.beginPath();{let first=true;for(let d=btop(0.398);d<=moho(0.39);d+=0.2){const u=BND(d);first?ctx.moveTo(X(u),Y(d)):ctx.lineTo(X(u),Y(d));first=false;}}ctx.stroke();ctx.lineCap="butt";
+    // superfície
+    ctx.strokeStyle="#2f2416";ctx.lineWidth=1.3;ctx.beginPath();for(let i=0;i<=N;i++){const u=i/N;i?ctx.lineTo(X(u),Y(sd(u))):ctx.moveTo(X(u),Y(sd(u)));}ctx.stroke();
+    ctx.strokeStyle="#5a8fc4";ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(0.55),Y(0));ctx.stroke();
+    // Conrad
+    ctx.strokeStyle="rgba(60,40,20,.55)";ctx.setLineDash([3,4]);ctx.lineWidth=1.2;ctx.beginPath();for(let i=0;i<=N;i++){const u=0.47+(1-0.47)*i/N;const y=Y(conrad(u));i?ctx.lineTo(X(u),y):ctx.moveTo(X(u),y);}ctx.stroke();ctx.setLineDash([]);
+    // Moho
+    ctx.strokeStyle="#7a1730";ctx.lineWidth=3;ctx.setLineDash([10,5]);ctx.beginPath();for(let i=0;i<=N;i++){const u=i/N;i?ctx.lineTo(X(u),Y(moho(u))):ctx.moveTo(X(u),Y(moho(u)));}ctx.stroke();ctx.setLineDash([]);
+    // destacat de litologia
+    if(hoverId){ctx.save();ctx.globalAlpha=.18;ctx.fillStyle="#fff";ctx.fillRect(L,top,pw,ph);ctx.restore();}
+    // etiquetes
+    const tag=(t,x,y,col,al,bg)=>{ctx.font=`600 13.5px ${FL}`;ctx.textAlign=al||"left";const tw=ctx.measureText(t).width;const x0=al==="center"?x-tw/2:al==="right"?x-tw:x;if(bg!==false){ctx.fillStyle="rgba(255,255,255,.82)";ctx.fillRect(x0-4,y-12,tw+8,17);}ctx.fillStyle=col||C.deep;ctx.fillText(t,x,y);};
+    tag("Moho",X(0.2),Y(moho(0.2))+18,"#7a1730");tag("Moho",X(0.66),Y(moho(0.66))+18,"#7a1730");
+    tag("Arrel de la serralada",X(0.82),Y(moho(0.82))+20,"#7a1730","center");
+    tag("Conrad",X(0.97),Y(conrad(0.97))-5,"#5a4630","right",false);
+    tag("Escorça oceànica",X(0.03),Y(8.8),"#fff","left",false);
+    tag("Escorça continental superior",X(0.71),Y(9.5),C.deep,"center");
+    tag("Escorça continental inferior",X(0.6),Y(30),C.deep,"center");
+    tag("Mantell litosfèric (peridotita)",X(0.25),Y(40),"#4a3420","center",false);
+    tag("OCEÀ",X(0.25),Y(-3.2),"#1f4f7a","center",false);tag("PLATAFORMA I TALÚS",X(0.5),Y(-3.2),"#5a6a7a","center",false);tag("SERRALADA",X(0.82),Y(-4.4)-6,"#5a4630","center",false);
+    // eix
+    ctx.font=`13px ${FM}`;ctx.fillStyle=C.ink2;ctx.textAlign="right";for(let d=0;d<=70;d+=10){ctx.fillText(fmt(d),L-8,Y(d)+4);ctx.strokeStyle=C.rule;ctx.beginPath();ctx.moveTo(L-4,Y(d));ctx.lineTo(L,Y(d));ctx.stroke();}
+    ctx.save();ctx.translate(15,top+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign="center";ctx.font=`600 13px ${FL}`;ctx.fillText("Profunditat (km)",0,0);ctx.restore();
+    // llegenda
+    const lx=L+pw+16;let ly=top+8;ctx.font=`600 13px ${FL}`;ctx.textAlign="left";ctx.fillStyle=C.deep;ctx.fillText("LLEGENDA",lx,ly);ly+=10;
+    [["#f2e27a","Sediments"],["#55504b","Basalt"],["#8d7f70","Gabre"],["#7fae5a","Cobertora continental"],["#f3e3c8","Granítica (superior)"],["#e2c9a4","Continental inferior"],["#c9a27e","Mantell (peridotita)"]].forEach(([c,t])=>{ly+=24;ctx.fillStyle=c;ctx.fillRect(lx,ly-12,18,14);ctx.strokeStyle="rgba(0,0,0,.25)";ctx.strokeRect(lx+.5,ly-11.5,17,13);ctx.fillStyle=C.ink;ctx.font=`500 13px ${FL}`;ctx.fillText(t,lx+26,ly);});
+    ly+=30;ctx.strokeStyle="#7a1730";ctx.lineWidth=3;ctx.setLineDash([10,5]);ctx.beginPath();ctx.moveTo(lx,ly-4);ctx.lineTo(lx+18,ly-4);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=C.ink;ctx.fillText("Moho",lx+26,ly);
+    ly+=22;ctx.strokeStyle="rgba(60,40,20,.6)";ctx.lineWidth=1.2;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(lx,ly-4);ctx.lineTo(lx+18,ly-4);ctx.stroke();ctx.setLineDash([]);ctx.fillText("Conrad",lx+26,ly);
+    ctx.font=`500 12.5px ${FL}`;ctx.fillStyle=C.ink2;ctx.fillText("Escala vertical real;",lx,h-40);ctx.fillText("horitzontal esquemàtica.",lx,h-24);
+    // mostres
+    const pins=[{id:"gra",u:0.86,d:7},{id:"bas",u:0.24,d:6.3}];geo.pins=pins;
+    pins.forEach(p=>{const x=X(p.u),y=Y(p.d);ctx.beginPath();ctx.arc(x,y,selR===p.id?10:8,0,TAU);ctx.fillStyle="#fff";ctx.fill();ctx.strokeStyle=C.S;ctx.lineWidth=3;ctx.stroke();ctx.beginPath();ctx.arc(x,y,3.5,0,TAU);ctx.fillStyle=C.S;ctx.fill();tag(ROCKS[p.id].n,x+13,y+5,C.S);});
+    // regle continental
+    if(ruler!==null){const u=ruler,y0=Y(sd(u)),y1=Y(moho(u)),x=X(u);ctx.strokeStyle=C.deep;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y0);ctx.lineTo(x,y1);ctx.moveTo(x-7,y0);ctx.lineTo(x+7,y0);ctx.moveTo(x-7,y1);ctx.lineTo(x+7,y1);ctx.stroke();
+      tag(`Gruix: ${fmt(moho(u)-sd(u),0)} km`,u>0.75?x-10:x+10,(y0+y1)/2+5,C.deep,u>0.75?"right":"left");}
+    // vaixell
+    const bx=X(boatU),by=Y(0);geo.boat=[bx,by];
+    ctx.save();ctx.translate(bx,by);ctx.scale(dir,1);
+    ctx.fillStyle="#0d2c52";ctx.beginPath();ctx.moveTo(-20,-1);ctx.lineTo(18,-1);ctx.lineTo(13,6);ctx.lineTo(-16,6);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#fff";ctx.fillRect(-11,-9,15,8);ctx.strokeStyle="#0d2c52";ctx.lineWidth=1.2;ctx.strokeRect(-11,-9,15,8);
+    ctx.fillStyle="#b3264b";ctx.fillRect(-8,-15,4,6);
+    ctx.strokeStyle="#0d2c52";ctx.beginPath();ctx.moveTo(8,-1);ctx.lineTo(8,-16);ctx.lineTo(15,-1);ctx.stroke();
+    ctx.restore();
+    ctx.font=`italic 12px ${FL}`;ctx.fillStyle="#1f4f7a";ctx.textAlign="center";ctx.fillText("vaixell no a escala",bx,by+19);
+    // sondeig
+    if(ping){ping.t+=dt;const u=ping.u,x=X(u),yS=Y(0),yF=Y(sd(u)),yM=Y(moho(u));const sp=ph*0.9;const ry=ping.t*sp;
+      ctx.strokeStyle="rgba(29,95,174,.9)";ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x,yS+6);ctx.lineTo(x,Math.min(yS+6+ry,yM));ctx.stroke();ctx.setLineDash([]);
+      [yF,yM].forEach((yy,i)=>{const r=(yS+ry)-yy;if(r>0&&r<60){ctx.strokeStyle=`rgba(29,95,174,${1-r/60})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,yy,r*0.6,Math.PI*1.1,Math.PI*1.9);ctx.stroke();}});
+      if(yS+ry>yM){ctx.fillStyle=C.blue;ctx.beginPath();ctx.arc(x,yF,4,0,TAU);ctx.arc(x,yM,4,0,TAU);ctx.fill();
+        tag(`Fons marí: ${fmt(sd(u),1)} km`,x+10,yF+16,C.blue);tag(`Moho: ${fmt(moho(u),1)} km`,x+10,yM+4,C.blue);
+        tag(`Escorça oceànica: ${fmt(moho(u)-sd(u),1)} km`,x+10,yM+24,C.deep);}
+      if(ping.t>5.5)ping=null;}
+  }
+  function toUD(p){if(!geo)return null;const u=(p.x-geo.L)/geo.pw,d=geo.D0+(p.y-geo.top)/geo.ph*(geo.D1-geo.D0);if(u<0||u>1||d<geo.D0||d>geo.D1)return null;return {u,d};}
+  cv.addEventListener("pointermove",ev=>{const p=toLocal(cv,ev);if(geo&&geo.boat&&Math.hypot(p.x-geo.boat[0],p.y-geo.boat[1])<26){cv.style.cursor="pointer";info.innerHTML="<b>Vaixell oceanogràfic.</b> Clica'l per fer un sondeig sísmic: mesura on és el fons marí i el Moho.";return;}
+    if(geo&&geo.pins&&geo.pins.some(q=>Math.hypot(geo.X(q.u)-p.x,geo.Y(q.d)-p.y)<16)){cv.style.cursor="pointer";return;}
+    const q=toUD(p);const id=q?lithAt(q.u,q.d):null;cv.style.cursor=q&&q.u>0.5?"crosshair":"default";
+    if(id){const l=LITH[id];info.innerHTML=`<b>${l.n}</b> · ${l.t}`;}});
+  cv.addEventListener("click",ev=>{const p=toLocal(cv,ev);
+    if(geo.boat&&Math.hypot(p.x-geo.boat[0],p.y-geo.boat[1])<26){ping={u:boatU,t:0};tone([[660,0],[660,.35],[660,.7]],.07,.035);return;}
+    const pin=geo.pins.find(q=>Math.hypot(geo.X(q.u)-p.x,geo.Y(q.d)-p.y)<16);
+    if(pin){selR=pin.id;sndOpen();info.innerHTML=`<div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:center"><canvas style="width:120px;height:72px;border-radius:3px;border:1px solid #d4dde9" aria-hidden="true"></canvas><div><b>${ROCKS[pin.id].n}</b> · ${ROCKS[pin.id].t}</div></div>`;requestAnimationFrame(()=>rockTex(info.querySelector("canvas"),pin.id));return;}
+    const q=toUD(p);if(q&&q.u>0.5){ruler=q.u;sndOpen();info.innerHTML=`<b>Gruix de l'escorça continental en aquest punt:</b> ${fmt(moho(q.u)-sd(q.u),0)} km (de la superfície al Moho).`;}});
+  return {resize,frame,anim:true};
+};
+
+/* Embolcalla el text de les preguntes (perquè els subíndexs no trenquin el flex) */
+document.querySelectorAll("details.q summary").forEach(s=>{const sp=document.createElement("span");[...s.childNodes].forEach(n=>{if(!(n.nodeType===1&&n.classList.contains("qn")))sp.appendChild(n);});s.appendChild(sp);});
+/* ---------- Navegació del llibre ---------- */
+const pages=[...document.querySelectorAll(".page")];
+const prog=document.getElementById("prog"),where=document.getElementById("where"),count=document.getElementById("count");
+const tocList=document.getElementById("tocList"),coverToc=document.getElementById("coverToc"),toc=document.getElementById("toc"),btnToc=document.getElementById("btnToc");
+let idx=0,cur=null;
+pages.forEach((p,i)=>{
+  const b=document.createElement("button");b.title=p.dataset.title;b.setAttribute("aria-label","Pàgina "+(i+1)+": "+p.dataset.title);b.onclick=()=>go(i);prog.appendChild(b);
+  const li=document.createElement("li");li.innerHTML=`<button><span class="c">${p.dataset.code}</span><span>${p.dataset.title}</span></button>`;li.firstChild.onclick=()=>{go(i);closeToc();};tocList.appendChild(li);
+});
+// índex de la portada: una entrada per secció
+const seen=new Set();
+pages.forEach((p,i)=>{const c=p.dataset.code;if(i===0||seen.has(c))return;seen.add(c);
+  const names={"2.2.B.2":"Model geoquímic","2.2.B.3":"L'escorça","2.2.B.4":"Litosfera i astenosfera","2.2.B.5":"Model dinàmic","2.2.B.6":"Els dos models junts","2.2.B.7":"Comprova-ho"};
+  const li=document.createElement("li");li.innerHTML=`<button><span class="c">${c==="Glossari"?"—":c}</span><span>${names[c]||p.dataset.title}</span></button>`;li.firstChild.onclick=()=>go(i);coverToc.appendChild(li);});
+function closeToc(){toc.hidden=true;btnToc.setAttribute("aria-expanded","false");}
+btnToc.onclick=()=>{toc.hidden=!toc.hidden;btnToc.setAttribute("aria-expanded",String(!toc.hidden));};
+const simInst={};
+function go(i,silent){
+  i=Math.max(0,Math.min(pages.length-1,i));
+  pages.forEach((p,j)=>{p.hidden=j!==i;});
+  const p=pages[i];p.classList.remove("enter");void p.offsetWidth;p.classList.add("enter");
+  if(i!==idx&&!silent)sndPage();
+  idx=i;
+  const name=p.dataset.sim;
+  if(name&&!simInst[name])simInst[name]=SIMS[name](p);
+  cur={sim:name?simInst[name]:null};
+  if(cur.sim){if(cur.sim.enter)cur.sim.enter();requestAnimationFrame(()=>cur.sim&&cur.sim.resize&&cur.sim.resize());}
+  [...prog.children].forEach((b,j)=>{b.className=j===i?"cur":j<i?"done":"";});
+  [...tocList.querySelectorAll("button")].forEach((b,j)=>b.setAttribute("aria-current",j===i));
+  where.innerHTML=`<b>${p.dataset.code}</b>${p.dataset.title}`;count.textContent=`${i+1} / ${pages.length}`;
+  document.getElementById("prev").disabled=i===0;document.getElementById("next").disabled=i===pages.length-1;
+  try{history.replaceState(null,"","#p"+(i+1));}catch(e){}
+  if(document.body.classList.contains("flow"))window.scrollTo(0,0);
+}
+document.getElementById("prev").onclick=()=>go(idx-1);
+document.getElementById("next").onclick=()=>go(idx+1);
+document.addEventListener("keydown",e=>{
+  if(e.target.matches("input,textarea"))return;
+  if(e.key==="ArrowRight"||e.key==="PageDown"){go(idx+1);e.preventDefault();}
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){go(idx-1);e.preventDefault();}
+  else if(e.key==="Escape")closeToc();
+  else if(e.key==="Home")go(0);else if(e.key==="End")go(pages.length-1);
+});
+// lliscament tàctil
+let tx=null;document.getElementById("pages").addEventListener("touchstart",e=>{if(e.target.closest("canvas,input,.seg"))return;tx=e.touches[0].clientX;},{passive:true});
+document.getElementById("pages").addEventListener("touchend",e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(d)>70)go(idx+(d<0?1:-1));},{passive:true});
+
+/* bucle d'animació: només la simulació de la pàgina visible */
+function loop(ts){if(cur&&cur.sim&&cur.sim.anim)cur.sim.frame(ts);requestAnimationFrame(loop);}
+window.addEventListener("resize",layout);
+const m=/^#p(\d+)$/.exec(location.hash||"");
+layout();go(m?(+m[1]-1):0,true);
+requestAnimationFrame(loop);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(cur&&cur.sim&&cur.sim.resize)cur.sim.resize();});
+})();
+</script>
+
+</body></html>
