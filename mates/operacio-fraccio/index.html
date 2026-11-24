@@ -1,0 +1,1203 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Escape v2 · Operació Fracció: el laboratori precintat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --surface:#ffffff; --ink:#000000; --muted:#545454; --line:#d4d4d4; --slot:#efefef;
+  --accent:#ff6a00; --accent-soft:#ffe3cc; --on-accent:#000000;
+  --ok:#11803c; --ok-bg:#e2f6e8; --bad:#c42e1a; --bad-bg:#fde6e1;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#000000; --surface:#151515; --ink:#ffffff; --muted:#b5b5b5; --line:#3a3a3a; --slot:#2a2a2a;
+    --accent-soft:#3d1f08; --ok:#52d98a; --ok-bg:#0f2a1a; --bad:#ff8a73; --bad-bg:#3a140d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#151515; --ink:#ffffff; --muted:#b5b5b5; --line:#3a3a3a; --slot:#2a2a2a;
+  --accent-soft:#3d1f08; --ok:#52d98a; --ok-bg:#0f2a1a; --bad:#ff8a73; --bad-bg:#3a140d;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Atkinson Hyperlegible',Verdana,'Segoe UI',system-ui,sans-serif;font-size:20px;line-height:1.5;overflow-x:hidden}
+h1,h2,h3,.display{font-family:'Bricolage Grotesque','Arial Black',Impact,system-ui,sans-serif;font-weight:800;line-height:1.02;letter-spacing:-.02em}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* ---------- cinta policial ---------- */
+.tape{height:16px;background:repeating-linear-gradient(-45deg,var(--accent) 0 11px,#000 11px 22px);
+  -webkit-mask-image:repeating-linear-gradient(90deg,#000 0 110px,transparent 110px 126px);mask-image:repeating-linear-gradient(90deg,#000 0 110px,transparent 110px 126px)}
+.tape .run{display:none}
+.cover>.tape{height:22px}
+.tape-x{position:absolute;left:-25%;right:-25%;top:40%;height:22px;transform:rotate(-14deg);z-index:3;pointer-events:none}
+.tape-x.b{transform:rotate(11deg);top:58%}
+
+/* ---------- capçalera ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+.top-in{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:.6rem;justify-content:space-between;padding:.5rem 1rem;flex-wrap:wrap}
+.brand{font-family:'Bricolage Grotesque','Arial Black',sans-serif;font-weight:800;font-size:1.2rem;background:none;border:0;padding:0;cursor:pointer;display:flex;align-items:center;gap:.45rem}
+.brand svg{width:26px;height:30px}
+.stats{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+.chip{border:2px solid var(--ink);border-radius:999px;padding:.1rem .65rem;font-size:.95rem;background:var(--surface);white-space:nowrap}
+.chip b{font-variant-numeric:tabular-nums}
+button.chip{cursor:pointer}
+main{max-width:1000px;margin:0 auto;padding:1.2rem 1rem 3rem}
+
+/* ---------- fraccions ---------- */
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .12em;line-height:1.05;font-weight:700;font-variant-numeric:tabular-nums}
+.fr>span:first-child{border-bottom:.09em solid currentColor;padding:0 .18em .04em}
+.fr>span:last-child{padding:.04em .18em 0}
+.mix{display:inline-flex;align-items:center;gap:.05em;vertical-align:middle}
+.mix>b{font-size:1.25em}
+
+/* ---------- botons ---------- */
+.btn{border:3px solid var(--ink);background:var(--surface);color:var(--ink);padding:.65rem 1.15rem;border-radius:12px;box-shadow:4px 4px 0 var(--ink);cursor:pointer;font-weight:700;transition:transform .06s,box-shadow .06s}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.big{font-size:1.2rem;padding:.85rem 1.5rem}
+.btn.small{font-size:.9rem;padding:.35rem .8rem;box-shadow:3px 3px 0 var(--ink)}
+.btn.ghost{box-shadow:none;border-width:2px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin-top:1.2rem}
+.row.end{justify-content:flex-end}
+.row.center{justify-content:center}
+.muted{color:var(--muted)}
+
+/* ---------- robot ---------- */
+.bot{display:flex;gap:.8rem;align-items:flex-end;margin:1rem 0}
+.bot-av{flex:none;line-height:0}
+.bot .say{position:relative;background:var(--surface);border:3px solid var(--ink);border-radius:16px 16px 16px 4px;padding:.65rem 1rem;margin-bottom:.4rem}
+.bot .say b.who{display:block;font-size:.8rem;color:var(--muted);letter-spacing:.04em}
+.bot.small .say{font-size:1rem;padding:.45rem .8rem}
+.robot{overflow:visible}
+.robot .rb-head{fill:var(--surface);stroke:var(--ink);stroke-width:4}
+.robot .rb-screen{fill:#000}
+.robot .rb-eye{fill:var(--accent)}
+.robot .rb-l{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.robot .rb-body{fill:var(--accent);stroke:var(--ink);stroke-width:4}
+.robot .rb-ink{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+.robot .rb-bulb{fill:var(--accent);stroke:var(--ink);stroke-width:3}
+.robot .rb-arm{fill:none;stroke:var(--ink);stroke-width:6;stroke-linecap:round}
+.robot .rb-hand{fill:var(--accent);stroke:var(--ink);stroke-width:3}
+.robot .rb-txt{fill:#000;font:800 11px 'Bricolage Grotesque',sans-serif;text-anchor:middle}
+@keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+@keyframes tilt{0%,100%{transform:rotate(0)}30%{transform:rotate(-7deg)}70%{transform:rotate(5deg)}}
+@keyframes blink{0%,80%{opacity:1}85%{opacity:.25}}
+
+/* ---------- portada ---------- */
+.cover{position:relative;border:4px solid var(--ink);border-radius:22px;overflow:hidden;background:var(--surface);box-shadow:8px 8px 0 var(--ink);margin-top:.5rem}
+.cover-in{padding:1.6rem 1.4rem 1.4rem;position:relative}
+.cover h1{font-size:clamp(2.8rem,10vw,5.6rem);margin:.2rem 0 .6rem}
+.cover h1 small{display:block;font-size:.36em;letter-spacing:0;color:var(--muted);margin-top:.35rem;font-weight:500}
+.cover .tape{font-size:1.05rem}
+.cover-grid{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:end}
+.cover-lock{width:110px;height:130px}
+@media (max-width:620px){.cover-grid{grid-template-columns:1fr}.cover-lock{display:none}}
+.field{display:block;font-weight:700;margin:1.2rem 0 .4rem}
+.field input{display:block;width:100%;max-width:480px;margin-top:.35rem;padding:.7rem .9rem;border:3px solid var(--ink);border-radius:12px;background:var(--surface);font-size:1.15rem}
+.check{display:flex;gap:.5rem;align-items:center;font-size:1rem;margin-top:.6rem;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--accent)}
+.rules{margin-top:1.4rem;border:3px solid var(--ink);border-radius:14px;padding:1rem 1.2rem;background:var(--accent-soft)}
+.rules h3{margin:.1rem 0 .4rem;font-size:1.3rem}
+.rules ul{margin:.2rem 0;padding-left:1.2rem}
+.sign{margin-top:1.4rem;border-top:3px solid var(--ink);padding-top:.9rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center}
+.sign .school{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.15rem}
+.sign .ai{border:2px solid var(--ink);border-radius:999px;padding:.1rem .7rem;font-size:.9rem;font-weight:700}
+.linkbtn{background:none;border:0;padding:0;text-decoration:underline;cursor:pointer;color:var(--muted);font-size:1rem}
+
+/* ---------- mapa ---------- */
+.obj{margin-top:1.6rem}
+.obj-h{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap;border-bottom:3px solid var(--ink);padding-bottom:.3rem}
+.obj-h h3{margin:0;font-size:1.35rem}
+.obj-h .pg{font-size:.9rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;margin-top:.9rem}
+.card{position:relative;overflow:hidden;text-align:left;border:3px solid var(--ink);border-radius:16px;background:var(--surface);padding:1rem 1.1rem;cursor:pointer;box-shadow:5px 5px 0 var(--ink);display:flex;flex-direction:column;gap:.3rem;min-height:190px}
+.card:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.card.locked{cursor:not-allowed;box-shadow:none;background:var(--slot)}
+.card.locked .c-name,.card.locked .c-sub,.card.locked .c-top{opacity:.45}
+.card.done{background:var(--accent-soft)}
+.card.current{box-shadow:5px 5px 0 var(--accent)}
+.c-top{display:flex;justify-content:space-between;align-items:flex-start}
+.c-ic{font-size:2rem;line-height:1}
+.c-lock{width:30px;height:36px}
+.c-num{font-weight:700;font-size:.9rem;color:var(--muted)}
+.c-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.4rem;line-height:1.1}
+.c-sub{color:var(--muted);font-size:.95rem}
+.c-st{margin-top:auto;font-weight:700;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.digit-s{display:inline-grid;place-items:center;width:1.8em;height:1.8em;background:#000;color:var(--accent);border-radius:8px}
+.card.final{grid-column:1/-1;min-height:auto;background:#000;color:#fff;box-shadow:5px 5px 0 var(--accent);flex-direction:row;align-items:center;gap:1rem}
+.card.final .c-sub{color:#ddd}
+.card.final.locked{background:var(--slot);color:var(--ink)}
+.card.final.locked .c-sub{color:var(--muted)}
+.dots{display:inline-flex;gap:.35rem;vertical-align:middle}
+.dots i{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--ink);display:inline-block}
+.dots i.on{background:var(--accent)}
+
+/* ---------- sala ---------- */
+.rhead{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.rtitle{font-weight:700;color:var(--muted)}
+.pgchip{border:2px solid var(--ink);border-radius:8px;padding:0 .5rem;font-size:.85rem;font-weight:700;background:var(--accent-soft)}
+.room h2{font-size:clamp(2rem,6vw,3rem);margin:.8rem 0 .4rem}
+.progress{display:flex;gap:.7rem;align-items:center;margin:.8rem 0;font-weight:700;flex-wrap:wrap}
+details.theory{border:2px solid var(--ink);border-radius:12px;background:var(--surface);margin-bottom:1rem}
+details.theory summary{cursor:pointer;padding:.55rem .9rem;font-weight:700}
+details.theory .theory-card{border:0;border-top:2px solid var(--ink);border-radius:0 0 12px 12px;margin:0}
+.theory-card{border:3px solid var(--ink);border-radius:14px;padding:1rem 1.2rem;background:var(--surface)}
+.theory-card h4{margin:.6rem 0 .2rem;font-family:'Bricolage Grotesque',sans-serif;font-size:1.15rem}
+.theory-card p{margin:.3rem 0 .7rem}
+.theory-card ul,.theory-card ol{padding-left:1.3rem;margin:.3rem 0 .7rem}
+.theory-card li{margin:.2rem 0}
+.ex{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;background:var(--accent-soft);border-radius:10px;padding:.7rem .9rem;margin:.6rem 0}
+.ex>div{flex:1 1 220px}
+.names{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.35rem;margin:.5rem 0}
+.names div{display:flex;align-items:center;gap:.5rem;border:2px solid var(--line);border-radius:10px;padding:.25rem .55rem;font-size:1rem}
+.names .fr{color:var(--accent);font-size:1.05rem}
+
+.qcard{position:relative;border:3px solid var(--ink);border-radius:18px;background:var(--surface);padding:1.1rem 1.2rem 1.4rem;box-shadow:6px 6px 0 var(--accent)}
+.qnum{font-weight:700;color:var(--muted);font-size:.95rem}
+.prompt{font-size:1.4rem;line-height:1.45;margin:.4rem 0 1rem}
+.prompt .fr{font-size:1.15em}
+.visual{margin:1rem 0}
+.fig{display:block;margin:0 auto;max-width:100%;height:auto}
+.seg{fill:var(--slot);stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round}
+.seg.on{fill:var(--accent)}
+.outline{fill:none;stroke:var(--ink);stroke-width:4}
+.interactive .seg{cursor:pointer}
+.interactive .seg:hover{fill:var(--accent-soft)}
+.interactive .seg.on:hover{fill:var(--accent)}
+.axis{stroke:var(--ink);stroke-width:3;pointer-events:none}
+.tick{stroke:var(--ink);stroke-width:2;pointer-events:none}
+.tick.big{stroke-width:3.5}
+.lbl{fill:var(--ink);font-size:24px;font-weight:700;text-anchor:middle;pointer-events:none;font-family:'Atkinson Hyperlegible',sans-serif}
+.hit{fill:transparent;cursor:pointer}
+.hit:hover{fill:var(--accent);fill-opacity:.15}
+.mk{fill:var(--accent);stroke:var(--ink);stroke-width:2}
+.mk-ok{fill:var(--ok);stroke:var(--ink);stroke-width:2}
+.counter{text-align:center;font-weight:700;font-size:1.15rem;margin:.3rem 0 .6rem;min-height:1.6em}
+.eqref{display:grid;grid-template-columns:3.6rem 1fr;align-items:center;gap:.6rem;max-width:480px;margin:0 auto .8rem}
+.eqlab{font-size:1.5rem;text-align:center}
+.eqpair{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;max-width:520px;margin:.5rem 0}
+.eqpair>div{text-align:center}
+.pies2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;text-align:center;max-width:460px;margin:0 auto}
+.pies2 .who{font-weight:700;margin-bottom:.3rem}
+
+.opts{display:grid;grid-template-columns:1fr;gap:.7rem}
+@media (min-width:640px){.opts{grid-template-columns:1fr 1fr}}
+.opt{border:3px solid var(--ink);background:var(--surface);border-radius:12px;padding:.8rem 1rem;font-size:1.2rem;cursor:pointer;text-align:center;box-shadow:3px 3px 0 var(--ink);min-height:64px}
+.opt .fr{font-size:1.15em}
+.opt:hover:not(:disabled){background:var(--accent-soft)}
+.opt.right{background:var(--ok-bg);border-color:var(--ok);box-shadow:3px 3px 0 var(--ok)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad);box-shadow:3px 3px 0 var(--bad)}
+.opt:disabled{cursor:default}
+
+.ansrow{display:flex;gap:1.2rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:.8rem}
+.fracin{display:inline-flex;flex-direction:column;align-items:center;gap:.35rem}
+.fracin input,.numin,.mixw{width:5.2rem;text-align:center;font-size:1.8rem;font-weight:700;padding:.3rem;border:3px solid var(--ink);border-radius:10px;background:var(--bg)}
+.numin{width:8rem}
+.mixw{width:4.4rem;font-size:2.4rem}
+.mixin{display:inline-flex;align-items:center;gap:.5rem}
+.fbar{display:block;width:6rem;height:5px;background:var(--ink);border-radius:3px}
+.wordin{width:min(100%,460px);font-size:1.5rem;padding:.5rem .8rem;border:3px solid var(--ink);border-radius:12px;background:var(--bg)}
+.keys{display:flex;gap:.4rem;justify-content:center;margin-top:.5rem}
+.key{border:2px solid var(--ink);background:var(--surface);border-radius:8px;min-width:2.6rem;padding:.2rem .5rem;font-size:1.2rem;font-weight:700;cursor:pointer}
+
+/* ---------- cartes ---------- */
+.deck{display:flex;gap:.7rem;flex-wrap:wrap;justify-content:center;min-height:132px;align-items:center}
+.slots{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:center;align-items:center;margin:1rem 0;padding:.8rem;border:3px dashed var(--line);border-radius:16px}
+.slot{width:84px;height:118px;border:3px dashed var(--muted);border-radius:12px;display:grid;place-items:center;color:var(--muted);font-weight:700}
+.sign-op{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.6rem;color:var(--accent);padding:0 .1rem}
+.pcard{position:relative;width:84px;height:118px;border:3px solid var(--ink);border-radius:12px;background:var(--surface);box-shadow:3px 3px 0 var(--ink);cursor:pointer;display:grid;place-items:center;font-size:1.7rem;padding:0;transition:transform .12s}
+.pcard::before,.pcard::after{content:'◆';position:absolute;color:var(--accent);font-size:.8rem;line-height:1}
+.pcard::before{top:6px;left:8px}
+.pcard::after{bottom:6px;right:8px;transform:rotate(180deg)}
+.pcard:hover:not(:disabled){transform:translateY(-4px)}
+.pcard.sel{background:var(--accent);color:#000}
+.pcard.sel::before,.pcard.sel::after{color:#000}
+.pcard.good{border-color:var(--ok);box-shadow:3px 3px 0 var(--ok)}
+.pcard.badc{border-color:var(--bad);box-shadow:3px 3px 0 var(--bad)}
+.pcard:disabled{cursor:default}
+.cardlab{text-align:center;font-weight:700;color:var(--muted);font-size:.95rem}
+
+.tools{margin-top:1.1rem;display:flex;justify-content:flex-end}
+.hint{margin-top:.8rem;border:2px dashed var(--accent);border-radius:12px;padding:.6rem .9rem;background:var(--accent-soft)}
+.fb{margin-top:1rem;border:3px solid var(--ink);border-left-width:12px;border-radius:12px;padding:.4rem 1rem .9rem}
+.fb.ok{border-color:var(--ok);background:var(--ok-bg)}
+.fb.bad{border-color:var(--bad);background:var(--bad-bg)}
+.fb.warn{border-color:var(--accent);background:var(--accent-soft);padding:.6rem 1rem}
+.fb .bot{margin:.4rem 0 .2rem}
+.pts{display:inline-block;background:#000;color:var(--accent);border-radius:8px;padding:0 .45rem;font-size:.95rem;margin-left:.3rem}
+.exp{margin:.4rem 0 .9rem;line-height:1.75}
+.exp .fr{font-size:1.05em}
+.mini{margin:.5rem 0}
+.mini svg{max-width:340px}
+.cmp{display:grid;gap:.7rem}
+.cmp-row{display:grid;grid-template-columns:3.5rem 1fr;align-items:center;gap:.6rem}
+.cmp-f{font-size:1.5rem;text-align:center}
+
+/* ---------- revelació, porta, victòria ---------- */
+.reveal{text-align:center;padding-top:1rem}
+.reveal h2{font-size:clamp(2rem,7vw,3.2rem);margin:.4rem 0}
+.biglock{width:120px;height:150px;margin:0 auto;display:block}
+.biglock .shackle{transform-origin:78px 60px;transition:transform .6s cubic-bezier(.3,1.6,.5,1) .25s}
+.biglock.open .shackle{transform:translateY(-16px) rotate(28deg)}
+.bigdigit{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:8.5rem;line-height:1;width:1.4em;height:1.5em;display:grid;place-items:center;margin:1rem auto;background:#000;color:var(--accent);border-radius:24px;box-shadow:8px 8px 0 var(--accent)}
+.pop{animation:pop .6s cubic-bezier(.2,1.6,.4,1) .5s both}
+@keyframes pop{from{transform:scale(.2) rotate(-20deg);opacity:0}to{transform:none;opacity:1}}
+.code{display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap;margin:1.2rem 0}
+.code label{display:flex;flex-direction:column;align-items:center;gap:.2rem;font-size:1.3rem}
+.code input{width:3rem;height:3.8rem;text-align:center;font-size:2rem;font-weight:800;border:3px solid var(--ink);border-radius:12px;background:var(--surface)}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+.win h2{font-size:clamp(2.4rem,9vw,4.5rem);margin:.3rem 0}
+.stars{font-size:3rem;letter-spacing:.2rem}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem;margin:1.2rem 0;text-align:left}
+.statgrid div{border:3px solid var(--ink);border-radius:12px;padding:.6rem .8rem;background:var(--surface)}
+.statgrid b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:2rem}
+.codebox{display:inline-block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(1.6rem,6.5vw,2.4rem);letter-spacing:.08em;background:#000;color:var(--accent);padding:.4rem 1rem;border-radius:14px;margin:.4rem 0}
+.codepanel{margin-top:1rem;border:3px solid var(--ink);border-radius:14px;padding:1rem 1.2rem;background:var(--accent-soft);text-align:center}
+
+/* ---------- tauler professor ---------- */
+.tform{display:grid;grid-template-columns:1fr 1fr auto;gap:.7rem;align-items:end;margin:1rem 0}
+@media (max-width:640px){.tform{grid-template-columns:1fr}}
+.tform label{font-weight:700;font-size:.95rem}
+.tform input{display:block;width:100%;margin-top:.3rem;padding:.6rem .8rem;border:3px solid var(--ink);border-radius:12px;background:var(--surface);font-size:1.1rem}
+.tform input#tcode{text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.twrap{overflow-x:auto;border:3px solid var(--ink);border-radius:14px;background:var(--surface);margin-top:1rem}
+table.res{width:100%;border-collapse:collapse;font-size:1rem;min-width:620px}
+table.res th,table.res td{padding:.55rem .7rem;text-align:left;border-bottom:2px solid var(--line);white-space:nowrap}
+table.res th{background:#000;color:#fff}
+table.res tr:last-child td{border-bottom:0}
+.rm{background:none;border:0;cursor:pointer;font-size:1.1rem;color:var(--bad)}
+textarea.csv{width:100%;min-height:8rem;margin-top:.6rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;border:2px solid var(--ink);border-radius:10px;padding:.5rem;background:var(--surface);color:var(--ink)}
+
+/* ---------- pissarra ---------- */
+.wb-fab{position:fixed;right:max(1rem,env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:40;border:3px solid var(--ink);background:var(--accent);color:#000;border-radius:999px;padding:.6rem 1.1rem;font-weight:700;box-shadow:4px 4px 0 var(--ink);cursor:pointer}
+.wb-fab:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+body.wb-open .wb-fab{display:none}
+.wb{position:fixed;z-index:45;top:0;right:0;bottom:0;width:min(560px,46vw);background:var(--surface);border-left:4px solid var(--ink);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wb[hidden]{display:none}
+.wb-bar{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;padding:.5rem .6rem;border-bottom:3px solid var(--ink);background:var(--bg)}
+.wb-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;margin-right:auto}
+.wb-tool{border:2px solid var(--ink);background:var(--surface);border-radius:10px;min-width:46px;height:46px;font-size:1.15rem;cursor:pointer;font-weight:700;display:inline-grid;place-items:center;padding:0 .5rem}
+.wb-tool.on{background:var(--accent);color:#000;box-shadow:inset 0 0 0 2px #000}
+.wb-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--ink);display:block}
+.wb-q{display:none;padding:.4rem .8rem;border-bottom:2px solid var(--line);font-size:1rem;max-height:30vh;overflow:auto}
+.wb-wrap{flex:1;position:relative;background-color:var(--bg);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;touch-action:none;overflow:hidden}
+.wb canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.wb-foot{font-size:.85rem;padding:.3rem .8rem;border-top:2px solid var(--line)}
+@media (min-width:901px){body.wb-open main{max-width:none;margin:0 calc(min(560px,46vw) + 1rem) 0 1rem}}
+@media (max-width:900px){.wb{width:100%;border-left:0}.wb-q{display:block}}
+main{padding-bottom:6rem}
+
+/* ---------- accés i tauler ---------- */
+.pin{letter-spacing:.4em;max-width:180px!important;text-align:center;font-weight:700}
+.heat{display:inline-grid;place-items:center;width:1.9rem;height:1.6rem;border-radius:6px;font-size:.85rem;font-weight:700;border:1.5px solid var(--line)}
+.heat.h0{color:var(--muted)}.heat.h1{background:var(--accent-soft)}.heat.h2{background:#ffb27a;color:#000}.heat.h3{background:var(--accent);color:#000}
+.heat.open{outline:2px solid var(--ok);outline-offset:1px}
+table.res tfoot td{background:var(--accent-soft);font-weight:700;border-top:3px solid var(--ink)}
+.legend{font-size:.9rem;color:var(--muted);margin:.5rem 0}
+textarea.bulk{width:100%;min-height:7rem;border:3px solid var(--ink);border-radius:12px;padding:.6rem;background:var(--surface);color:var(--ink);font:1rem ui-monospace,Menlo,Consolas,monospace}
+
+/* ---------- robot animat ---------- */
+.robot .rb-all{animation:rbFloat 3.2s ease-in-out infinite}
+@keyframes rbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.robot .rb-eyes{transform-box:fill-box;transform-origin:center;animation:rbBlink 4.2s infinite}
+@keyframes rbBlink{0%,91%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+.robot .rb-bulb{animation:rbGlow 1.6s ease-in-out infinite}
+@keyframes rbGlow{0%,100%{opacity:1}50%{opacity:.3}}
+.robot.talking .rb-mouth{transform-box:fill-box;transform-origin:center;animation:rbTalk .16s ease-in-out infinite alternate}
+@keyframes rbTalk{from{transform:scale(1,1)}to{transform:scale(.8,.25)}}
+.robot .rb-armR{transform-box:view-box;transform-origin:72px 88px}
+.robot.mood-wave .rb-armR{animation:rbWave .45s ease-in-out 6 alternate}
+@keyframes rbWave{from{transform:rotate(-18deg)}to{transform:rotate(22deg)}}
+.robot.mood-happy .rb-all,.robot.mood-wow .rb-all{animation:rbHop .5s ease-out 2,rbFloat 3.2s ease-in-out 1s infinite}
+@keyframes rbHop{0%,100%{transform:translateY(0)}40%{transform:translateY(-12px)}}
+.robot.mood-happy .rb-armL,.robot.mood-wow .rb-armL{transform-box:view-box;transform-origin:28px 88px;animation:rbArmUp .5s ease-out 2 alternate}
+.robot.mood-happy .rb-armR,.robot.mood-wow .rb-armR{animation:rbArmUpR .5s ease-out 2 alternate}
+@keyframes rbArmUp{to{transform:rotate(60deg)}}
+@keyframes rbArmUpR{to{transform:rotate(-60deg)}}
+.robot .rb-spark{transform-box:fill-box;transform-origin:center;animation:rbSpark .9s ease-out 2 both}
+.robot .rb-spark.s2{animation-delay:.2s}.robot .rb-spark.s3{animation-delay:.4s}
+@keyframes rbSpark{0%{transform:scale(0) rotate(0);opacity:0}50%{transform:scale(1.2) rotate(45deg);opacity:1}100%{transform:scale(.5) rotate(90deg);opacity:0}}
+.robot.mood-oops .rb-headg{transform-box:view-box;transform-origin:50px 60px;animation:rbShake .45s ease-in-out 2}
+@keyframes rbShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-9deg)}75%{transform:rotate(9deg)}}
+.robot .rb-sweat{animation:rbSweat 1.3s ease-in 2 both}
+@keyframes rbSweat{0%{transform:translateY(-4px);opacity:0}20%{opacity:1}100%{transform:translateY(18px);opacity:0}}
+.robot.mood-think .rb-eyes{animation:rbLook 2.4s ease-in-out infinite}
+@keyframes rbLook{0%,100%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+.robot .rb-dot{animation:rbDots 1.2s infinite}.robot .rb-dot.d2{animation-delay:.2s}.robot .rb-dot.d3{animation-delay:.4s}
+@keyframes rbDots{0%,100%{opacity:.2}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.robot *{animation:none!important}}
+
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+@media (prefers-reduced-motion:reduce){.pop,.shake,.robot,.robot .rb-bulb{animation:none!important}.biglock .shackle{transition:none}}
+@media (max-width:520px){body{font-size:18px}.prompt{font-size:1.25rem}.bigdigit{font-size:6.5rem}.pcard,.slot{width:70px;height:100px;font-size:1.45rem}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in"><button class="brand" data-act="home" aria-label="Inici" id="brand"></button><div class="stats" id="stats"></div></div>
+<div class="tape" aria-hidden="true"></div></header>
+<main id="app"></main>
+<canvas id="confetti"></canvas>
+<script>
+/* =========================================================
+   UTILITATS
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;};
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const simp=(n,d)=>{const g=gcd(n,d)||1;return [n/g,d/g];};
+const F=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const MIX=(w,n,d)=>`<span class="mix"><b>${w}</b>${F(n,d)}</span>`;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function simpNote(n,d){const [x,y]=simp(n,d);if(y===1)return ` = <b>${x}</b>`;if(x!==n)return ` = ${F(x,y)} <span class="muted">(simplificada)</span>`;return '';}
+function coprime(bmin,bmax,improper){let a,b;do{b=rnd(bmin,bmax);a=rnd(1,improper?b+3:b-1);}while(gcd(a,b)!==1||a===b);return [a,b];}
+const fmtDec=x=>String(+x.toFixed(6)).replace('.',',');
+const strip=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+/* noms interculturals: pakistanesos, marroquins, catalans, espanyols, romanesos i xinesos */
+const PEOPLE=[
+  ['Ayesha','f'],['Hamza','m'],['Zainab','f'],['Bilal','m'],['Hira','f'],['Usman','m'],
+  ['Yassin','m'],['Salma','f'],['Imane','f'],['Ayoub','m'],['Nour','f'],['Youssef','m'],
+  ['Pol','m'],['Laia','f'],['Jordi','m'],['Núria','f'],['Arnau','m'],['Mireia','f'],
+  ['Lucía','f'],['Pablo','m'],['Sergio','m'],['Carmen','f'],['Álvaro','m'],['Marta','f'],
+  ['Andrei','m'],['Ioana','f'],['Mihai','m'],['Elena','f'],['Bogdan','m'],['Alina','f'],
+  ['Wei','m'],['Mei','f'],['Hao','m'],['Lin','f'],['Jun','m'],['Yan','f']];
+const art=([n,g])=>/^[AÀÁEÉÈIÍOÓÒUÚH]/i.test(n)?`l'${n}`:(g==='m'?`en ${n}`:`la ${n}`);
+const Art=p=>{const s=art(p);return s[0].toUpperCase()+s.slice(1);};
+const people=k=>shuffle(PEOPLE).slice(0,k);
+
+/* =========================================================
+   NOMS EN CATALÀ (dossier pàg. 3)
+   ========================================================= */
+const NUM=['zero','un','dos','tres','quatre','cinc','sis','set','vuit','nou','deu','onze','dotze','tretze','catorze','quinze','setze','disset','divuit','dinou','vint'];
+const DEN={2:['mig','mitjos'],3:['terç','terços'],4:['quart','quarts'],5:['cinquè','cinquens'],6:['sisè','sisens'],7:['setè','setens'],8:['vuitè','vuitens'],9:['novè','novens'],10:['desè','desens'],
+  11:['onzè','onzens'],12:['dotzè','dotzens'],13:['tretzè','tretzens'],14:['catorzè','catorzens'],15:['quinzè','quinzens'],16:['setzè','setzens'],17:['dissetè','dissetens'],18:['divuitè','divuitens'],19:['dinovè','dinovens']};
+const CAST={2:'medios',3:'tercios',4:'cuartos',5:'quintos',6:'sextos',7:'séptimos',8:'octavos',9:'novenos',10:'décimos'};
+const nameF=(n,d)=>`${NUM[n]} ${DEN[d][n===1?0:1]}`;
+const normW=s=>String(s).toLowerCase().replace(/[’`´]/g,"'").replace(/[-.,;:!?«»"]/g,' ').replace(/\s+/g,' ').trim();
+function acceptedNames(n,d){const s=[nameF(n,d)];if(n===1){s.push('u '+DEN[d][0]);if(d===2)s.push('la meitat','meitat','mig');}return s.map(normW);}
+function checkWords(n,d,input){const v=normW(input),acc=acceptedNames(n,d);
+  if(acc.includes(v))return {ok:true};
+  if(acc.map(strip).includes(strip(v)))return {ok:true,msg:`Correcte! Però compte amb els accents: s'escriu <b>«${nameF(n,d)}»</b>.`};
+  const sv=strip(v);let m='';
+  if(/cuart|terci|quint|sext|septim|octav|decimo|medio|avo/.test(sv))m='Això és castellà! 😉';
+  else if(/^dues /.test(sv))m='El numerador va en masculí: «dos», no «dues».';
+  else if(n>1&&sv===strip(normW(NUM[n]+' '+DEN[d][0])))m='Quan el numerador és més gran que 1, el denominador va en <b>plural</b>.';
+  else if(n===1&&sv===strip(normW('un '+DEN[d][1])))m='Quan el numerador és 1, el denominador va en <b>singular</b>.';
+  return {ok:false,msg:(m?m+'<br>':'')+`La teva resposta: «${esc(input)}»`};}
+
+/* =========================================================
+   FIGURES SVG
+   ========================================================= */
+function pieOne(d,k,cx,cy,r,inter,u){
+  if(d===1)return `<circle cx="${cx}" cy="${cy}" r="${r}" class="seg ${k>=1?'on':''}" ${inter?`data-i="${u}"`:''}/>`;
+  let s='';for(let i=0;i<d;i++){const a0=-Math.PI/2+2*Math.PI*i/d,a1=-Math.PI/2+2*Math.PI*(i+1)/d;
+    const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    s+=`<path d="M${cx},${cy} L${x0.toFixed(2)},${y0.toFixed(2)} A${r},${r} 0 0 1 ${x1.toFixed(2)},${y1.toFixed(2)} Z" class="seg ${i<k?'on':''}" ${inter?`data-i="${u*d+i}"`:''}/>`;}
+  return s;}
+function piesSVG(d,n,inter=false,units){units=units||Math.max(1,Math.ceil(n/d));const r=60,g=22,w=units*2*r+(units-1)*g+8,h=2*r+8;
+  let s=`<svg viewBox="0 0 ${w} ${h}" class="fig ${inter?'interactive':''}" style="width:min(100%,${units*170}px)" role="img" aria-label="cercles dividits en ${d} parts">`;
+  for(let u=0;u<units;u++){const k=inter?0:Math.max(0,Math.min(d,n-u*d));s+=pieOne(d,k,4+r+u*(2*r+g),4+r,r,inter,u);}
+  return s+'</svg>';}
+function barsSVG(d,n,inter=false,units){units=units||Math.max(1,Math.ceil(n/d));const W=360,H=48,g=14,h=units*H+(units-1)*g+6,sw=W/d;
+  let s=`<svg viewBox="0 0 ${W+6} ${h}" class="fig ${inter?'interactive':''}" style="width:min(100%,480px)" role="img" aria-label="barra dividida en ${d} parts">`;
+  for(let u=0;u<units;u++){const y=3+u*(H+g),k=inter?0:Math.max(0,Math.min(d,n-u*d));
+    for(let i=0;i<d;i++)s+=`<rect x="${(3+i*sw).toFixed(2)}" y="${y}" width="${sw.toFixed(2)}" height="${H}" class="seg ${i<k?'on':''}" ${inter?`data-i="${u*d+i}"`:''}/>`;}
+  return s+'</svg>';}
+/* rectangle de cols×rows; es pinta per columnes (com al dossier pàg. 10) o amb una llista d'índexs */
+function rectSVG(cols,rows,on,inter=false,maxw=360){const W=300,H=170,cw=W/cols,ch=H/rows;
+  let s=`<svg viewBox="0 0 ${W+8} ${H+8}" class="fig ${inter?'interactive':''}" style="width:min(100%,${maxw}px)" role="img" aria-label="rectangle dividit en ${cols*rows} parts">`;
+  for(let c=0;c<cols;c++)for(let r=0;r<rows;r++){const i=c*rows+r,p=inter?false:(Array.isArray(on)?on.includes(i):i<on);
+    s+=`<rect x="${(4+c*cw).toFixed(2)}" y="${(4+r*ch).toFixed(2)}" width="${cw.toFixed(2)}" height="${ch.toFixed(2)}" class="seg ${p?'on':''}" ${inter?`data-i="${i}"`:''}/>`;}
+  s+=`<rect x="4" y="4" width="${W}" height="${H}" class="outline"/>`;
+  return s+'</svg>';}
+function barCustom(w,p){const W=360,H=60,T=w.reduce((a,b)=>a+b,0);let x=3,s=`<svg viewBox="0 0 ${W+6} ${H+6}" class="fig" style="width:min(100%,480px)" role="img" aria-label="barra">`;
+  w.forEach((v,i)=>{const ww=W*v/T;s+=`<rect x="${x.toFixed(2)}" y="3" width="${ww.toFixed(2)}" height="${H}" class="seg ${i===p?'on':''}"/>`;x+=ww;});return s+'</svg>';}
+function lineSVG(d,U,opt={}){const W=600,x0=30,x1=570,tot=U*d,step=(x1-x0)/tot;
+  let s=`<svg viewBox="0 0 ${W} 112" class="fig ${opt.mark==null?'interactive':''}" style="width:100%;max-width:640px" data-x0="${x0}" data-step="${step}" role="img" aria-label="recta numèrica">`;
+  s+=`<line x1="${x0}" y1="52" x2="${x1}" y2="52" class="axis"/>`;
+  for(let i=0;i<=tot;i++){const x=x0+i*step,big=i%d===0;s+=`<line x1="${x}" y1="${big?32:42}" x2="${x}" y2="${big?72:62}" class="tick ${big?'big':''}"/>`;if(big)s+=`<text x="${x}" y="102" class="lbl">${i/d}</text>`;}
+  if(opt.mark!=null)s+=`<path transform="translate(${x0+opt.mark*step},40)" d="M0,0 L-12,-22 L12,-22 Z" class="mk"/>`;
+  else{for(let i=1;i<tot;i++){const x=x0+i*step;s+=`<rect x="${x-step/2}" y="6" width="${step}" height="80" class="hit" data-i="${i}"/>`;}
+    s+=`<path class="mk marker" d="M0,0 L-12,-22 L12,-22 Z" style="display:none"/><circle class="mk-ok okmark" r="10" cy="52" style="display:none"/>`;}
+  return s+'</svg>';}
+function padlock(open=false,cls='c-lock'){return `<svg viewBox="0 0 100 120" class="${cls} ${open?'open':''}" aria-hidden="true">
+  <g class="shackle"><path d="M28 58 V38 a22 22 0 0 1 44 0 V${open?44:58}" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></g>
+  <rect x="12" y="54" width="76" height="60" rx="12" fill="var(--accent)" stroke="currentColor" stroke-width="6"/>
+  <circle cx="50" cy="79" r="8" fill="currentColor"/><rect x="46" y="82" width="8" height="18" rx="3" fill="currentColor"/></svg>`;}
+
+/* =========================================================
+   ROBOT FR-4C
+   ========================================================= */
+function robot(mood='idle',size=76){
+  let eyes,mouth,extra='';
+  if(mood==='happy'){eyes=`<path d="M31 47 q7 -9 14 0" class="rb-l"/><path d="M55 47 q7 -9 14 0" class="rb-l"/>`;mouth=`<path d="M38 56 q12 11 24 0" class="rb-l"/>`;}
+  else if(mood==='oops'){eyes=`<circle cx="38" cy="46" r="4.5" class="rb-eye"/><circle cx="62" cy="46" r="4.5" class="rb-eye"/><path d="M31 37 l11 3" class="rb-l"/><path d="M69 37 l-11 3" class="rb-l"/>`;mouth=`<path d="M39 60 q5 -5 11 0 t11 0" class="rb-l"/>`;
+    extra=`<g transform="translate(92 22)"><path class="rb-sweat" d="M0 0 C-5 7 -5 11 0 11 C5 11 5 7 0 0Z" fill="#59b8ff" stroke="var(--ink)" stroke-width="2"/></g>`;}
+  else if(mood==='think'){eyes=`<circle cx="40" cy="42" r="5" class="rb-eye"/><circle cx="64" cy="42" r="5" class="rb-eye"/>`;mouth=`<path d="M42 58 h14" class="rb-l"/>`;
+    extra=`<circle class="rb-dot" cx="96" cy="14" r="3" fill="var(--ink)"/><circle class="rb-dot d2" cx="104" cy="7" r="3.5" fill="var(--ink)"/><circle class="rb-dot d3" cx="113" cy="0" r="4" fill="var(--ink)"/>`;}
+  else if(mood==='wow'){eyes=`<circle cx="38" cy="45" r="7" class="rb-eye"/><circle cx="62" cy="45" r="7" class="rb-eye"/>`;mouth=`<circle cx="50" cy="59" r="4.5" class="rb-l"/>`;}
+  else{eyes=`<circle cx="38" cy="45" r="5.5" class="rb-eye"/><circle cx="62" cy="45" r="5.5" class="rb-eye"/>`;mouth=`<path d="M41 57 q9 5 18 0" class="rb-l"/>`;}
+  if(mood==='happy'||mood==='wow'){const st='M0-7L2-2 7 0 2 2 0 7-2 2-7 0-2-2Z';
+    extra=`<g transform="translate(4 20)"><path class="rb-spark" d="${st}" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.5"/></g><g transform="translate(98 16)"><path class="rb-spark s2" d="${st}" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.5"/></g><g transform="translate(102 70)"><path class="rb-spark s3" d="${st}" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.5"/></g>`;}
+  const armR=mood==='wave'?`<path d="M72 88 L86 70" class="rb-arm"/><circle cx="87" cy="68" r="5" class="rb-hand"/>`:`<path d="M72 88 L84 100" class="rb-arm"/><circle cx="85" cy="101" r="5" class="rb-hand"/>`;
+  return `<svg class="robot mood-${mood}" width="${size}" height="${size*1.1}" viewBox="-10 -8 128 126" aria-hidden="true"><g class="rb-all">
+  <line x1="50" y1="10" x2="50" y2="22" class="rb-ink"/><circle cx="50" cy="8" r="6" class="rb-bulb"/>
+  <g class="rb-armL"><path d="M28 88 L16 100" class="rb-arm"/><circle cx="15" cy="101" r="5" class="rb-hand"/></g><g class="rb-armR">${armR}</g>
+  <rect x="30" y="82" width="40" height="26" rx="8" class="rb-body"/><text x="50" y="100" class="rb-txt">FR-4C</text>
+  <g class="rb-headg"><rect x="6" y="38" width="10" height="20" rx="4" class="rb-head"/><rect x="84" y="38" width="10" height="20" rx="4" class="rb-head"/>
+  <rect x="14" y="22" width="72" height="56" rx="16" class="rb-head"/><rect x="22" y="30" width="56" height="40" rx="10" class="rb-screen"/>
+  <g class="rb-eyes">${eyes}</g><g class="rb-mouth">${mouth}</g></g>${extra}</g></svg>`;}
+function botSay(mood,text,size=76,cls=''){return `<div class="bot ${cls}"><div class="bot-av">${robot(mood,size)}</div><div class="say"><b class="who">FR-4C</b><span class="txt">${text}</span></div></div>`;}
+const RM=()=>!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+function typeAll(root){if(RM())return;root.querySelectorAll('.say .txt:not([data-typed])').forEach(el=>{el.dataset.typed='1';
+  const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);const nodes=[];let n;while((n=w.nextNode()))nodes.push([n,n.nodeValue]);
+  const total=nodes.reduce((a,[,t])=>a+t.length,0);if(!total)return;nodes.forEach(([nd])=>nd.nodeValue='');
+  const rb=el.closest('.bot')&&el.closest('.bot').querySelector('.robot');if(rb)rb.classList.add('talking');
+  const step=Math.max(1,Math.ceil(total/65));let shown=0;
+  const iv=setInterval(()=>{shown+=step;let left=shown;for(const [nd,t] of nodes){nd.nodeValue=t.slice(0,Math.max(0,Math.min(t.length,left)));left-=t.length;}
+    if(shown>=total){clearInterval(iv);if(rb)rb.classList.remove('talking');}},18);});}
+
+/* =========================================================
+   CONSTRUCTORS DE PREGUNTES
+   ========================================================= */
+function mc(prompt,correct,distr,extra={}){const opts=shuffle([correct,...distr.slice(0,3)]);return Object.assign({kind:'mc',prompt,options:opts,correct:opts.indexOf(correct)},extra);}
+function uniqFr(correct,cands,n=3){const seen=new Set([correct.join('/')]);const out=[];for(const p of shuffle(cands)){if(!p||p[1]<2||p[0]<1)continue;const k=p.join('/');if(seen.has(k))continue;seen.add(k);out.push(F(p[0],p[1]));if(out.length===n)break;}return out;}
+const RECT={4:[[2,2]],6:[[3,2],[2,3]],8:[[4,2]],9:[[3,3]],10:[[5,2]],12:[[4,3],[3,4]],15:[[5,3]],16:[[4,4]]};
+const rectDims=d=>RECT[d]?pick(RECT[d]):[d,1];
+function figStatic(kind,d,n){if(kind==='pie')return piesSVG(d,n);if(kind==='rect'){const [c,r]=rectDims(d);return rectSVG(c,r,shuffle([...Array(d).keys()]).slice(0,n));}return barsSVG(d,n);}
+
+/* ---------- SALA 1 · La capsa d'en Joan (pàg. 3–4) ---------- */
+function s1_painted(){const kind=pick(['pie','bar','rect']);const d=kind==='rect'?pick([6,8,9,10,12,15,16]):rnd(3,10);const n=rnd(1,d-1);
+  return {kind:'frac',equiv:true,prompt:'Quina fracció de la figura està pintada?',visual:figStatic(kind,d,n),ans:[n,d],
+    hint:'Compta totes les parts (va a baix) i després les pintades (va a dalt).',
+    explain:`La unitat està dividida en <b>${d}</b> parts iguals → denominador ${d}. N'hi ha <b>${n}</b> de pintades → numerador ${n}.<br>És ${F(n,d)}, «${nameF(n,d)}».`};}
+function s1_paint(){const fig=pick(['pie','bar','rect']);const d=fig==='rect'?pick([6,8,10,12,15]):rnd(3,10);const n=rnd(1,d-1);const [c,r]=fig==='rect'?rectDims(d):[d,1];
+  return {kind:'paint',fig,d,cols:c,rows:r,units:1,target:n,prompt:`Pinta ${F(n,d)} de la figura. Toca les parts per pintar-les.`,
+    hint:`La figura ja està dividida en ${d} parts iguals (el denominador). N'has de pintar ${n} (el numerador).`,
+    explain:`Passos del dossier: 1r escollim la figura, 2n la dividim en <b>${d}</b> parts iguals, 3r en pintem <b>${n}</b>.`};}
+function s1_terms(){const d=rnd(3,12),n=rnd(1,d-1),v=rnd(0,3);
+  if(v===0)return {kind:'num',prompt:`Quin és el <b>denominador</b> de ${F(n,d)}?`,ans:d,hint:'El denominador és el nombre de baix.',explain:`El denominador és el de baix: <b>${d}</b>. Indica en quantes parts iguals es divideix la unitat.`};
+  if(v===1)return {kind:'num',prompt:`Quin és el <b>numerador</b> de ${F(n,d)}?`,ans:n,hint:'El numerador és el nombre de dalt.',explain:`El numerador és el de dalt: <b>${n}</b>. Indica quantes parts agafem de la unitat.`};
+  if(v===2)return mc(`A la fracció ${F(n,d)}, què ens diu el <b>${n}</b>?`,'Quantes parts agafem de la unitat',['En quantes parts iguals es divideix la unitat','Quantes unitats tenim','Quantes parts sobren'],{hint:'És a dalt o a baix?',explain:`El ${n} és el <b>numerador</b>: el nombre de parts que agafem.`});
+  return mc(`A la fracció ${F(n,d)}, què ens diu el <b>${d}</b>?`,'En quantes parts iguals es divideix la unitat',['Quantes parts agafem de la unitat','Quantes unitats tenim','Quantes parts sobren'],{hint:'És a dalt o a baix?',explain:`El ${d} és el <b>denominador</b>: el nombre de parts iguals en què es divideix la unitat.`});}
+function s1_equal(){const d=pick([3,4,5]);const eq=Math.random()<.45;let w;
+  if(eq)w=Array(d).fill(1);else{do{w=Array.from({length:d},()=>rnd(1,4));}while(new Set(w).size===1);}
+  const p=rnd(0,d-1);
+  return {kind:'mc',prompt:`La part pintada és ${F(1,d)} de la barra?`,visual:barCustom(w,p),options:[`Sí: és 1 de ${d} parts iguals`,'No: les parts no són iguals'],correct:eq?0:1,
+    hint:'Fixa\'t en la mida de cada tros.',explain:eq?`Les ${d} parts són iguals, així que la pintada és ${F(1,d)}.`:`Una fracció representa parts <b>IGUALS</b> de la unitat. Aquí els trossos tenen mides diferents, per tant la part pintada <b>no</b> és ${F(1,d)}.`};}
+const DAILY1=[
+  ()=>{const n=rnd(1,7);return {t:`🍕 Una pizza està tallada en 8 trossos iguals. Te'n menges ${n}. Quina fracció de pizza t'has menjat?`,n,d:8};},
+  ()=>{const n=rnd(1,7),[P]=people(1);return {t:`🥟 ${Art(P)} ha fet 8 dumplings per sopar i se n'ha menjat ${n}. Quina fracció dels dumplings s'ha menjat?`,n,d:8};},
+  ()=>{const n=rnd(2,10),[P]=people(1);return {t:`🫓 ${Art(P)} porta 12 samoses per compartir a classe i ja se n'han menjat ${n}. Quina fracció de les samoses s'han menjat?`,n,d:12};},
+  ()=>{const n=rnd(2,9),[P]=people(1);return {t:`🍪 ${Art(P)} ha portat 10 galetes de casa i n'ha repartit ${n}. Quina fracció de les galetes ha repartit?`,n,d:10};},
+  ()=>{const n=rnd(1,5);return {t:`🥛 Un pack té 6 iogurts. N'has pres ${n} de la nevera. Quina fracció del pack has pres?`,n,d:6};},
+  ()=>{const n=rnd(2,6);return {t:`🥚 Una capsa té 12 ous. En fas servir ${n} per fer una truita. Quina fracció dels ous has fet servir?`,n,d:12};},
+  ()=>({t:`🏫 La setmana té 7 dies i vas a l'institut 5 dies. Quina fracció de la setmana vas a l'institut?`,n:5,d:7}),
+  ()=>{const n=rnd(2,10);return {t:`🍫 Una rajola de xocolata té 15 trossos. Te'n menges ${n}. Quina fracció de la rajola t'has menjat?`,n,d:15};},
+  ()=>{const n=rnd(1,9);return {t:`📺 Una sèrie té 10 capítols i n'has vist ${n}. Quina fracció de la sèrie has vist?`,n,d:10};},
+  ()=>{const n=rnd(1,4);return {t:`👓 A casa sou 5 persones i ${n===1?'1 porta':n+' porten'} ulleres. Quina fracció de la família porta ulleres?`,n,d:5};},
+  ()=>({t:`⚽ Un partit dura 90 minuts. Has jugat 45 minuts. Quina fracció del partit has jugat?`,n:45,d:90}),
+  ()=>{const n=rnd(4,12);return {t:`🍞 Un paquet de pa de motlle té 24 llesques. En fas servir ${n} per als entrepans de la setmana. Quina fracció del paquet has fet servir?`,n,d:24};}];
+function s1_daily(){const c=pick(DAILY1)();
+  return {kind:'frac',equiv:true,prompt:c.t,ans:[c.n,c.d],hint:'El <b>total</b> va a baix (denominador) i la <b>part</b> que et pregunten va a dalt (numerador).',
+    explain:`Total: <b>${c.d}</b> → denominador. Part: <b>${c.n}</b> → numerador.<br>${F(c.n,c.d)}${simpNote(c.n,c.d)}`};}
+
+/* ---------- SALA 2 · Com s'escriu? (pàg. 3–5) ---------- */
+function randName(){const d=Math.random()<.75?rnd(2,12):rnd(13,19);let n=rnd(1,Math.min(20,d+4));if(n===d&&Math.random()<.7)n=Math.max(1,d-1);return [n,d];}
+function s2_words(){const [n,d]=randName();
+  return {kind:'words',n,d,prompt:`Escriu <b>en lletres</b> com es llegeix ${F(n,d)}`,hint:`Primer el numerador (${NUM[n]}) i després el nom del denominador ${d}${n>1?', en plural':', en singular'}.`,
+    explain:`${F(n,d)} es llegeix <b>«${nameF(n,d)}»</b>.${d>10?`<br>Recorda: si el denominador és més gran que 10, es llegeix el nombre seguit del terme «-è»: ${DEN[d][0]}, ${DEN[d][1]}.`:''}`};}
+function s2_digits(){const [n,d]=randName();
+  return {kind:'frac',equiv:false,prompt:`Escriu la fracció en xifres: «<b>${nameF(n,d)}</b>»`,ans:[n,d],hint:`«${DEN[d][n===1?0:1]}» vol dir que la unitat es divideix en ${d} parts.`,explain:`«${nameF(n,d)}» = ${F(n,d)}`};}
+function s2_pic(){const kind=pick(['pie','bar']);const d=rnd(2,10),n=rnd(1,d-1);
+  return {kind:'words',n,d,visual:figStatic(kind,d,n),prompt:'Escriu <b>en lletres</b> la fracció de la part pintada.',hint:'Compta les parts pintades (numerador) i les parts totals (denominador).',
+    explain:`Hi ha ${n} parts pintades de ${d}: ${F(n,d)}, que es llegeix <b>«${nameF(n,d)}»</b>.`};}
+function s2_fix(){const d=rnd(3,10);let n=rnd(2,9);if(n===d)n=d-1;if(n<2)n=2;const wrong=`${NUM[n]} ${CAST[d]}`;
+  const [P]=people(1);return {kind:'words',n,d,prompt:`${Art(P)} ha llegit ${F(n,d)} així: <b>«${wrong}»</b>. Això és castellà! Escriu-ho bé en català.`,hint:`El denominador ${d} en català és «${DEN[d][0]}».`,
+    explain:`En català diem <b>«${nameF(n,d)}»</b>.`};}
+function s2_half(){return {kind:'words',n:1,d:2,prompt:`Com es llegeix ${F(1,2)}? Escriu-ho en lletres.`,hint:'És la fracció més famosa. També en diem «la meitat».',explain:`${F(1,2)} es llegeix <b>«un mig»</b> o <b>«la meitat»</b>. I ${F(3,2)} serien «tres mitjos».`};}
+
+/* ---------- SALA 3 · Plàtans i metres (pàg. 5–6) ---------- */
+function terminates(n,d){let [,y]=simp(n,d);while(y%2===0)y/=2;while(y%5===0)y/=5;return y===1;}
+function s3_decimal(){let n,d;do{d=pick([2,4,5,8,10,15,20]);n=rnd(1,d+6);}while(!terminates(n,d)||n%d===0);
+  return {kind:'dec',prompt:`Troba l'expressió decimal de ${F(n,d)}`,ans:n/d,hint:`Divideix el numerador entre el denominador: ${n} : ${d}. Fes servir la coma.`,explain:`Una fracció també és una divisió: ${F(n,d)} = ${n} : ${d} = <b>${fmtDec(n/d)}</b>`};}
+const SHARE=[
+  [7,2,'🍌 Repartim 7 plàtans entre 2 ximpanzés a parts iguals. Quants plàtans toca a cadascun?','plàtans'],
+  [3,4,'🍕 Quatre amics es reparteixen 3 pizzes a parts iguals. Quanta pizza menja cadascú?','pizzes'],
+  [5,2,'💶 Dos germans es reparteixen 5 € a parts iguals. Quants euros té cadascú?','€'],
+  [3,2,'🥖 Dos amics es reparteixen 3 barres de pa a parts iguals. Quantes barres toca a cadascú?','barres'],
+  [2,5,'🎂 Cinc amics es reparteixen 2 pastissos a parts iguals. Quant pastís toca a cadascú?','pastissos'],
+  [9,4,'🧃 Quatre amics es reparteixen 9 litres de suc a parts iguals. Quants litres toca a cadascú?','litres'],
+  [1,2,'🍫 Dos germans es reparteixen 1 rajola de xocolata a parts iguals. Quanta xocolata toca a cadascú?','rajoles'],
+  [6,4,'🍉 Quatre amics es reparteixen 6 síndries petites a parts iguals. Quantes toca a cadascú?','síndries']];
+function s3_share(){const [a,b,t]=pick(SHARE);
+  return {kind:'dec',prompt:t+' <span class="muted">(en nombre decimal)</span>',ans:a/b,hint:`És la fracció ${F(a,b)}. Divideix ${a} entre ${b}.`,
+    explain:`Repartir ${a} entre ${b} és la fracció ${F(a,b)} = ${a} : ${b} = <b>${fmtDec(a/b)}</b>.`};}
+function s3_ofq(){const C=[
+  ()=>{const a=rnd(1,3);return {t:`🕐 Quants minuts són ${F(a,4)} d'hora?`,a,b:4,q:60,u:'minuts'};},
+  ()=>{const b=pick([2,4,5,10]),a=rnd(1,b-1);const [P]=people(1);return {t:`💶 ${Art(P)} té 20 € de paga i en gasta ${F(a,b)} al cine. Quants euros gasta?`,a,b,q:20,u:'€'};},
+  ()=>{const b=pick([2,4,5,10]),a=rnd(1,b-1),q=pick([100,200,400]),[P]=people(1);return {t:`🏃 ${Art(P)} ha de fer una cursa de ${q} m. Ja n'ha recorregut ${F(a,b)}. Quants metres ha recorregut?`,a,b,q,u:'m'};},
+  ()=>{const b=pick([2,3,4,6]),a=rnd(1,b-1),q=b*rnd(2,4);return {t:`🍪 Una capsa té ${q} galetes i ${F(a,b)} són de xocolata. Quantes galetes de xocolata hi ha?`,a,b,q,u:'galetes'};},
+  ()=>{const b=pick([2,3,4,5]),a=rnd(1,b-1),q=b*rnd(5,6);return {t:`🚶 A la classe hi ha ${q} alumnes i ${F(a,b)} vénen caminant. Quants alumnes vénen caminant?`,a,b,q,u:'alumnes'};},
+  ()=>{const b=pick([2,4,5,10]),a=rnd(1,b-1);return {t:`🥛 Un cartró de llet té 1000 ml. Si te'n beus ${F(a,b)}, quants ml t'has begut?`,a,b,q:1000,u:'ml'};},
+  ()=>{const b=pick([2,3,4]),a=rnd(1,b-1);return {t:`📱 El mòbil té 24 hores de bateria i en gastes ${F(a,b)} jugant. Quantes hores has jugat?`,a,b,q:24,u:'hores'};}];
+  const c=pick(C)(),r=c.a*c.q/c.b;
+  return {kind:'num',prompt:c.t,ans:r,hint:`Divideix ${c.q} entre ${c.b} i multiplica per ${c.a}.`,
+    explain:`${F(c.a,c.b)} de ${c.q}: es pot fer de dues maneres (dossier pàg. 6):<br>(${c.q} · ${c.a}) : ${c.b} = ${c.q*c.a} : ${c.b} = <b>${r}</b><br>(${c.q} : ${c.b}) · ${c.a} = ${c.q/c.b} · ${c.a} = <b>${r} ${c.u}</b>`};}
+
+/* ---------- SALA 4 · Pròpies o impròpies? (pàg. 7–8) ---------- */
+function s4_class(){const t=rnd(0,2);let n,d;
+  if(t===0){d=rnd(3,12);n=rnd(1,d-1);}else if(t===1){d=rnd(2,9);n=rnd(d+1,Math.min(2*d+3,3*d-1));if(n%d===0)n++;}else{d=rnd(2,12);n=d;}
+  const why=[`${n} &lt; ${d}: el numerador és més petit → <b>pròpia</b>. ${F(n,d)} = ${fmtDec(n/d)} &lt; 1`,`${n} &gt; ${d}: el numerador és més gran → <b>impròpia</b>. ${F(n,d)} = ${fmtDec(+(n/d).toFixed(3))} &gt; 1`,`${n} = ${d}: numerador i denominador iguals → <b>igual a la unitat</b>. ${F(n,d)} = 1`];
+  return {kind:'mc',prompt:`Quin tipus de fracció és ${F(n,d)}?`,options:['Pròpia (menys que 1)','Impròpia (més que 1)','Igual a la unitat'],correct:t,
+    hint:'Compara el numerador amb el denominador.',explain:why[t]+`<div class="mini">${piesSVG(d,n)}</div>`};}
+function s4_pick(){const want=Math.random()<.5?'pròpies':'impròpies';let items;
+  do{items=[];const seen=new Set();while(items.length<6){const d=rnd(2,9),n=rnd(1,2*d+2);if(n===d)continue;const k=n+'/'+d;if(seen.has(k))continue;seen.add(k);items.push([n,d]);}}
+  while(!items.some(([n,d])=>n<d)||!items.some(([n,d])=>n>d));
+  const set=items.map(([n,d],i)=>(want==='pròpies'?n<d:n>d)?i:-1).filter(i=>i>=0);
+  return {kind:'pick',items,want:set,prompt:`Toca <b>totes</b> les cartes amb fraccions <b>${want}</b>.`,hint:want==='pròpies'?'Pròpia: numerador MÉS PETIT que el denominador.':'Impròpia: numerador MÉS GRAN que el denominador.',
+    explain:`Són ${want}: ${set.map(i=>F(...items[i])).join(' ')}<br>${want==='pròpies'?'Numerador &lt; denominador → valen menys que 1.':'Numerador &gt; denominador → valen més que 1.'}`};}
+function s4_toMixed(){const d=rnd(2,8);let n;do{n=rnd(d+1,4*d-1);}while(n%d===0);const w=Math.floor(n/d),r=n%d;
+  return {kind:'mixed',prompt:`Escriu ${F(n,d)} com un <b>nombre mixt</b>.`,visual:piesSVG(d,n),ans:[w,r,d],hint:`Quantes vegades cap ${d} dins de ${n}? Això són les unitats senceres. El que sobra va a la fracció.`,
+    explain:`${n} : ${d} = ${w} i sobren ${r}.<br>${F(n,d)} = ${w>1?F(w*d,d)+' + ':F(d,d)+' + '}${F(r,d)} = ${w} + ${F(r,d)} = ${MIX(w,r,d)}`};}
+function s4_fromMixed(){const w=rnd(1,3),d=rnd(2,8),r=rnd(1,d-1),n=w*d+r;
+  return {kind:'frac',equiv:true,prompt:`Escriu el nombre mixt ${MIX(w,r,d)} com una fracció impròpia.`,ans:[n,d],visual:piesSVG(d,n),hint:`Cada unitat són ${d} parts. Quantes parts hi ha en total?`,
+    explain:`${w} unitat${w>1?'s':''} = ${F(w*d,d)}. Hi sumem ${F(r,d)}: ${F(w*d,d)} + ${F(r,d)} = <b>${F(n,d)}</b><br><span class="muted">Truc: ${w} · ${d} + ${r} = ${n}</span>`};}
+function s4_readPies(){const d=rnd(3,6),n=rnd(d+1,Math.min(3*d-1,2*d+2));
+  return {kind:'frac',equiv:true,prompt:'Cada cercle és <b>una unitat</b>. Quina fracció representa tota la part pintada?',visual:piesSVG(d,n),ans:[n,d],
+    hint:`Cada cercle té ${d} parts (denominador). Compta TOTES les parts pintades.`,explain:`Cada unitat té ${d} parts i n'hi ha ${n} de pintades: ${F(n,d)}, una fracció <b>impròpia</b> (més gran que 1).`};}
+function s4_paintImp(){const d=rnd(3,5),n=rnd(d+1,2*d-1),fig=pick(['bar','pie']);
+  return {kind:'paint',fig,d,cols:d,rows:1,units:2,target:n,prompt:`Pinta ${F(n,d)}. Cada figura és una unitat.`,hint:`Una unitat sencera són ${d} parts. En necessites ${n}!`,
+    explain:`${F(n,d)} = ${F(d,d)} + ${F(n-d,d)}: omplim una unitat sencera i en pintem ${n-d} més a la segona.<div class="mini">${fig==='pie'?piesSVG(d,n):barsSVG(d,n)}</div>`};}
+
+/* ---------- SALA 5 · La recta real (pàg. 9) ---------- */
+function s5_line(){const d=rnd(2,6),U=pick([1,2].concat(d<=4?[3]:[]));let n;do{n=rnd(1,U*d-1);}while(n%d===0&&Math.random()<.85);
+  return {kind:'line',d,U,target:n,prompt:`Situa ${F(n,d)} a la recta. Toca la marca correcta.`,hint:`Cada unitat està dividida en <b>${d}</b> parts. Compta ${n} marques des del 0.`,
+    explain:`Dividim cada unitat en ${d} parts i comptem <b>${n}</b> des del 0.${n>d?` Com que és impròpia, passa de l'1.`:' Com que és pròpia, queda entre 0 i 1.'}<div class="mini">${lineSVG(d,U,{mark:n})}</div>`};}
+function s5_lineRead(){const d=rnd(2,6),U=pick([1,2].concat(d<=4?[3]:[]));let n;do{n=rnd(1,U*d-1);}while(n%d===0);
+  return {kind:'frac',equiv:true,prompt:'Quina fracció assenyala la fletxa?',visual:lineSVG(d,U,{mark:n}),ans:[n,d],hint:'Compta en quantes parts es divideix cada unitat (denominador) i quantes n\'hi ha des del 0 fins a la fletxa (numerador).',
+    explain:`Cada unitat té ${d} parts i la fletxa és a ${n} parts del 0: <b>${F(n,d)}</b>${simpNote(n,d)}`};}
+function s5_between(){const d=rnd(2,8);let n;do{n=rnd(1,4*d-1);}while(n%d===0);const w=Math.floor(n/d);
+  return {kind:'mc',prompt:`Entre quins dos nombres naturals es troba ${F(n,d)}?`,options:['Entre 0 i 1','Entre 1 i 2','Entre 2 i 3','Entre 3 i 4'],correct:w,hint:'Fes la divisió o passa-la a nombre mixt.',
+    explain:`${F(n,d)} = ${n} : ${d} = ${fmtDec(+(n/d).toFixed(3))}, que està entre <b>${w} i ${w+1}</b>.${n<d?' És pròpia: entre 0 i 1.':''}`};}
+function s5_lineMixed(){const d=rnd(2,4),w=rnd(1,2),r=rnd(1,d-1),U=w+1,n=w*d+r;
+  return {kind:'line',d,U,target:n,prompt:`Situa el nombre mixt ${MIX(w,r,d)} a la recta.`,hint:`Primer avança ${w} unitat${w>1?'s':''} sencera${w>1?'s':''} i després ${r} parts més.`,
+    explain:`${MIX(w,r,d)} = ${F(n,d)}: passem ${w} unitat${w>1?'s':''} i comptem ${r} parts més.<div class="mini">${lineSVG(d,U,{mark:n})}</div>`};}
+
+/* ---------- SALA 6 · Bessones: equivalents (pàg. 10–11) ---------- */
+function eqBase(){let a,b,k;do{[a,b]=coprime(2,6,false);k=rnd(2,4);}while(b*k>24);return [a,b,k];}
+function s6_eqPaint(){const [a,b,k]=eqBase();
+  return {kind:'paint',fig:'rect',cols:b,rows:k,d:b*k,units:1,target:a*k,
+    ref:`<div class="eqref"><div class="eqlab">${F(a,b)}</div>${rectSVG(b,1,a)}</div><div class="cardlab">⬇️ Pinta aquí la mateixa quantitat (${F('?',b*k)})</div>`,
+    prompt:`Pinta a la figura de baix <b>la mateixa quantitat</b> que a la de dalt.`,hint:`Cada columna de dalt ara està partida en ${k} trossos. Pinta les mateixes columnes senceres!`,
+    explain:`<div class="eqpair"><div>${F(a,b)}${rectSVG(b,1,a)}</div><div>${F(a*k,b*k)}${rectSVG(b,k,a*k)}</div></div>Ocupen el mateix espai: són <b>equivalents</b>.<br>${F(a,b)} → ${F(a+' · '+k,b+' · '+k)} = ${F(a*k,b*k)} (hem <b>amplificat</b> per ${k}).`};}
+function s6_eqCheck(){const [a,b,k]=eqBase();const eq=Math.random()<.5;const d=b*k;let c=a*k;if(!eq){do{c=rnd(1,d-1);}while(c===a*k);}
+  return {kind:'mc',prompt:`Són equivalents ${F(a,b)} i ${F(c,d)}? Mira les figures.`,visual:`<div class="eqpair"><div>${F(a,b)}${rectSVG(b,1,a)}</div><div>${F(c,d)}${rectSVG(b,k,c)}</div></div>`,
+    options:['Sí, són equivalents','No, no són equivalents'],correct:eq?0:1,hint:'Ocupen la mateixa quantitat de figura? També pots multiplicar en creu.',
+    explain:`Multipliquem en creu: ${a} · ${d} = <b>${a*d}</b> i ${b} · ${c} = <b>${b*c}</b>. ${eq?'Surt el mateix → <b>són equivalents</b>.':'Surt diferent → <b>no</b> són equivalents.'}`};}
+function s6_missing(){const [a,b,k]=eqBase();
+  if(Math.random()<.65)return {kind:'num',prompt:`Completa perquè siguin equivalents: ${F(a,b)} = ${F('?',b*k)}`,visual:`<div class="eqpair"><div>${F(a,b)}${rectSVG(b,1,a)}</div><div>${F('?',b*k)}${rectSVG(b,k,0)}</div></div>`,
+    ans:a*k,hint:`${b} · ? = ${b*k}. Multiplica el numerador pel mateix nombre.`,explain:`${b} · <b>${k}</b> = ${b*k}, per tant ${a} · <b>${k}</b> = <b>${a*k}</b>.<br>${F(a,b)} = ${F(a*k,b*k)}<div class="mini">${rectSVG(b,k,a*k)}</div>`};
+  return {kind:'num',prompt:`Completa perquè siguin equivalents: ${F(a*k,b*k)} = ${F(a,'?')}`,ans:b,hint:`Per quin nombre has dividit ${a*k} per obtenir ${a}? Fes el mateix a baix.`,
+    explain:`${a*k} : <b>${k}</b> = ${a}, per tant ${b*k} : <b>${k}</b> = <b>${b}</b> (hem <b>simplificat</b>).`};}
+function s6_pick(){const [a,b]=coprime(2,7,false),k=rnd(2,5);
+  const cands=[[a+k,b+k],[k*a,b],[a,k*b],[k*a+1,k*b],[k*a,k*b+1],[a+1,b+1]].filter(([x,y])=>x*b!==a*y);
+  return mc(`Quina fracció és <b>equivalent</b> a ${F(a,b)}?`,F(k*a,k*b),uniqFr([k*a,k*b],cands),{hint:'Busca la que s\'obté multiplicant dalt i baix pel mateix nombre.',
+    explain:`${F(a,b)} = ${F(a+' · '+k,b+' · '+k)} = ${F(k*a,k*b)}. <br>⚠️ Sumar el mateix nombre a dalt i a baix <b>no</b> dona una fracció equivalent.${b*k<=24?`<div class="eqpair"><div>${rectSVG(b,1,a)}</div><div>${rectSVG(b,k,a*k)}</div></div>`:''}`});}
+function s6_simplify(){let a,b,k;do{[a,b]=coprime(2,6,false);k=rnd(2,4);}while(b*k>24);const n=a*k,d=b*k;
+  return {kind:'frac',prompt:`<b>Simplifica</b> fins que no es pugui més: ${F(n,d)}`,ans:[a,b],
+    check:(x,y)=>{if(x===a&&y===b)return {ok:true};if(x*d===n*y)return {ok:false,msg:`${F(x,y)} és equivalent, però encara es pot simplificar més!`};return {ok:false};},
+    hint:`Divideix ${n} i ${d} pel mateix nombre (prova 2, 3, 5...).`,
+    explain:`${F(n,d)} → ${F(n+' : '+k,d+' : '+k)} = <b>${F(a,b)}</b><div class="eqpair"><div>${rectSVG(b,k,n)}</div><div>${rectSVG(b,1,a)}</div></div>Mateixa quantitat, menys trossos.`};}
+
+/* ---------- SALA 7 · La partida de cartes (pàg. 11–12) ---------- */
+function s7_cards(){const N=rnd(4,5),asc=Math.random()<.5,v=rnd(0,2);let cards=[];const seen=new Set();
+  const add=(n,d)=>{const k=(n/d).toFixed(9);if(seen.has(k))return;seen.add(k);cards.push([n,d]);};
+  let g=0;const dd=rnd(6,12),nn=rnd(1,3);
+  while(cards.length<N&&g++<999){if(v===0)add(rnd(1,dd+1),dd);else if(v===1){const d=rnd(nn+1,12);add(nn,d);}else{const d=pick([2,3,4,5,6,8,10,12]);add(rnd(1,d),d);}}
+  const order=cards.map((c,i)=>i).sort((i,j)=>asc?cards[i][0]/cards[i][1]-cards[j][0]/cards[j][1]:cards[j][0]/cards[j][1]-cards[i][0]/cards[i][1]);
+  const sign=asc?'&lt;':'&gt;';let m=cards.reduce((a,[,d])=>lcm(a,d),1);
+  const how=v===0?'Tenen el <b>mateix denominador</b>: només cal comparar els numeradors.':v===1?'Tenen el <b>mateix numerador</b>: com més parts es fa la unitat, més petit és cada tros. És més gran la de denominador més petit.':
+    (m<=60?`Busquem fraccions equivalents amb el <b>mateix denominador</b> (${m}) i comparem numeradors:<br>${cards.map(([n,d])=>`${F(n,d)} = ${F(n*m/d,m)}`).join(' &nbsp; ')}`:'Les passem a decimal i les comparem.');
+  return {kind:'cards',cards,order,asc,prompt:`Ordena les cartes de <b>${asc?'més petita a més gran':'més gran a més petita'}</b>. Toca-les per ordre.`,hint:v===0?'Mateix denominador → mira els numeradors.':v===1?'Mateix numerador → com més gran el denominador, més petita la fracció.':'Busca un denominador comú, o fes les divisions.',
+    explain:`${how}<br>Ordre correcte: ${order.map(i=>F(...cards[i])).join(` ${sign} `)}`};}
+function s7_compare(){let a,b,c,d;const t=rnd(0,2);
+  if(t===0){b=d=rnd(4,10);a=rnd(1,b-1);do{c=rnd(1,d-1);}while(c===a);}
+  else if(t===1){a=c=rnd(1,4);b=rnd(a+1,10);do{d=rnd(c+1,10);}while(d===b);}
+  else{b=rnd(2,8);a=rnd(1,b-1);if(Math.random()<.3){const k=rnd(2,3);c=a*k;d=b*k;}else{d=rnd(2,10);c=rnd(1,d-1);}if(d===b&&c===a){d=b+1;c=rnd(1,d-1);}}
+  const L=a*d,R=c*b,ci=L>R?0:L<R?1:2;
+  const ex=t===0?'Mateix denominador: és més gran la de numerador més gran.':t===1?'Mateix numerador: com més trossos, més petits. És més gran la de denominador més petit.':`Multipliquem en creu: ${a} · ${d} = <b>${L}</b> i ${c} · ${b} = <b>${R}</b>.${ci===2?' Són iguals: són equivalents!':''}`;
+  return {kind:'mc',prompt:'Quin signe hi va? Fixa\'t en les barres.',visual:`<div class="cmp"><div class="cmp-row"><div class="cmp-f">${F(a,b)}</div>${barsSVG(b,a)}</div><div class="cmp-row"><div class="cmp-f">${F(c,d)}</div>${barsSVG(d,c)}</div></div>`,
+    options:[`${F(a,b)} &gt; ${F(c,d)}`,`${F(a,b)} &lt; ${F(c,d)}`,`${F(a,b)} = ${F(c,d)}`],correct:ci,hint:'Compara quanta barra taronja hi ha a cada fila.',explain:ex};}
+
+function s7_who(){const [P,Q]=shuffle(PEOPLE).slice(0,2);const W=pick([['de pizza','ha menjat'],['de la seva rajola de xocolata','ha menjat'],['del seu llibre','ha llegit'],['de la seva ampolla d\'aigua','ha begut']]);
+  let a,b,c,d;do{b=pick([2,3,4,5,6,8]);d=pick([2,3,4,5,6,8]);a=rnd(1,b-1);c=rnd(1,d-1);}while(b===d&&a===c);
+  const L=a*d,R=c*b,ci=L>R?0:L<R?1:2;const verb=W[1];
+  return {kind:'mc',prompt:`${Art(P)} ${verb} ${F(a,b)} ${W[0]} i ${art(Q)}, ${F(c,d)}. Qui n'${verb} més?`,
+    visual:`<div class="pies2"><div><div class="who">${P[0]}</div>${piesSVG(b,a)}</div><div><div class="who">${Q[0]}</div>${piesSVG(d,c)}</div></div>`,
+    options:[Art(P),Art(Q),P[1]==='f'&&Q[1]==='f'?'Totes dues igual':'Tots dos igual'],correct:ci,hint:'Mira els dibuixos, o busca fraccions amb el mateix denominador.',
+    explain:`Mateix denominador: ${F(a,b)} = ${F(a*lcm(b,d)/b,lcm(b,d))} i ${F(c,d)} = ${F(c*lcm(b,d)/d,lcm(b,d))}. ${ci===2?'Són iguals!':`N'${verb} més <b>${ci===0?art(P):art(Q)}</b>.`}`};}
+
+/* ---------- SALA 8 · Suma i resta (pàg. 13–14) ---------- */
+function opEx(a1,d1,a2,d2,plus){const op=plus?'+':'−';
+  if(d1===d2){const n=plus?a1+a2:a1-a2;return {n,d:d1,html:`Mateix denominador: ${plus?'se sumen':'es resten'} els numeradors i es manté el denominador.<br>${F(a1,d1)} ${op} ${F(a2,d2)} = ${F(a1+' '+op+' '+a2,d1)} = ${F(n,d1)}${simpNote(n,d1)}`};}
+  const m=lcm(d1,d2),e1=a1*m/d1,e2=a2*m/d2,n=plus?e1+e2:e1-e2;
+  return {n,d:m,html:`<b>1r</b> m.c.m.(${d1}, ${d2}) = ${m}<br><b>2n</b> Arreglem els numeradors: ${F(a1,d1)} = ${F(e1,m)} i ${F(a2,d2)} = ${F(e2,m)}<br><b>3r</b> ${plus?'Sumem':'Restem'}: ${F(e1,m)} ${op} ${F(e2,m)} = ${F(n,m)}<br><b>4t</b> Simplifiquem: ${simpNote(n,m)?simpNote(n,m).replace(/^ = /,''):'no es pot simplificar.'}`};}
+function s8_same(){const d=rnd(3,12),plus=Math.random()<.55;let a,b;if(plus){a=rnd(1,d-1);b=rnd(1,d-1);}else{a=rnd(2,d);b=rnd(1,a-1);}
+  const r=opEx(a,d,b,d,plus);
+  return {kind:'frac',equiv:true,prompt:`Calcula: ${F(a,d)} ${plus?'+':'−'} ${F(b,d)}`,ans:[r.n,r.d],hint:'Mateix denominador. Què fas amb els numeradors? I amb el denominador?',
+    explain:r.html+(r.n<=d?`<div class="mini">${barsSVG(d,r.n)}</div>`:'')+`⚠️ Mai no ${plus?'sumis':'restis'} els denominadors!`};}
+const DENS=[2,3,4,5,6,8,10,12];
+function s8_diff(){let d1,d2;do{d1=pick(DENS);d2=pick(DENS);}while(d1===d2||lcm(d1,d2)>30);
+  let a1=rnd(1,d1-1),a2=rnd(1,d2-1);const plus=Math.random()<.55;
+  if(!plus&&a1*d2===a2*d1)return s8_diff();
+  if(!plus&&a1*d2<a2*d1){[a1,d1,a2,d2]=[a2,d2,a1,d1];}
+  const r=opEx(a1,d1,a2,d2,plus);
+  return {kind:'frac',equiv:true,prompt:`Calcula: ${F(a1,d1)} ${plus?'+':'−'} ${F(a2,d2)}`,ans:[r.n,r.d],hint:`Primer el m.c.m. de ${d1} i ${d2}. Després arregla els numeradors.`,explain:r.html};}
+function s8_three(){const d=rnd(5,12);const a=rnd(1,d-2),b=rnd(1,d-1),c=rnd(1,d-1);const n=a+b+c;
+  return {kind:'frac',equiv:true,prompt:`Calcula: ${F(a,d)} + ${F(b,d)} + ${F(c,d)}`,ans:[n,d],hint:'Totes tenen el mateix denominador: suma els tres numeradors.',explain:`${F(a+' + '+b+' + '+c,d)} = ${F(n,d)}${simpNote(n,d)}`};}
+function pf(dens){const d=pick(dens);return [rnd(1,d-1),d];}
+function s8_daily(){const t=rnd(0,5);
+  if(t===0){let a,b,c;do{a=rnd(1,3);b=rnd(1,3);c=rnd(1,2);}while(a+b+c>7);const s=a+b+c,left=8-s;
+    const [A,B,C,D]=people(4);return {kind:'frac',equiv:true,prompt:`🍕 D'una pizza de 8 trossos, ${art(A)} en pren ${F(a,8)}, ${art(B)} ${F(b,8)} i ${art(C)} ${F(c,8)}. Quanta pizza queda per a ${art(D)}, que ha arribat tard?`,ans:[left,8],
+      hint:'Suma el que s\'han menjat i resta-ho de la pizza sencera, que és 8/8.',explain:`Han menjat ${F(a+' + '+b+' + '+c,8)} = ${F(s,8)}. Queda ${F(8,8)} − ${F(s,8)} = <b>${F(left,8)}</b>${simpNote(left,8)}<div class="mini">${piesSVG(8,left)}</div>`};}
+  let a1,d1,a2,d2;const G=cond=>{do{[a1,d1]=pf([2,3,4,6,8]);[a2,d2]=pf([2,3,4,6,8]);}while(!cond());};
+  if(t===1){G(()=>a1*d2+a2*d1<d1*d2);const r=opEx(a1,d1,a2,d2,true);
+    return {kind:'frac',equiv:true,prompt:`📚 ${Art(people(1)[0])} fa ${F(a1,d1)} dels deures abans de sopar i ${F(a2,d2)} després. Quina part dels deures ha fet?`,ans:[r.n,r.d],hint:'Has de sumar les dues parts.',explain:r.html};}
+  if(t===2){G(()=>a1*d2+a2*d1<d1*d2);const r=opEx(a1,d1,a2,d2,true);
+    return {kind:'frac',equiv:true,prompt:`💶 De la paga, gastes ${F(a1,d1)} al cine i ${F(a2,d2)} en berenar. Quina part de la paga has gastat?`,ans:[r.n,r.d],hint:'Suma les dues parts.',explain:r.html};}
+  if(t===3){G(()=>a1*d2>a2*d1);const r=opEx(a1,d1,a2,d2,false);
+    return {kind:'frac',equiv:true,prompt:`🔋 El mòbil tenia ${F(a1,d1)} de bateria. Després de mirar vídeos, en té ${F(a2,d2)}. Quina part de la bateria has gastat?`,ans:[r.n,r.d],hint:'Resta el que tens ara del que tenies.',explain:r.html};}
+  if(t===4){G(()=>a1*d2+a2*d1<d1*d2);const r=opEx(a1,d1,a2,d2,true),left=r.d-r.n;
+    return {kind:'frac',equiv:true,prompt:`💧 Tens una ampolla d'aigua plena. Te'n beus ${F(a1,d1)} al matí i ${F(a2,d2)} a la tarda. Quina part de l'ampolla queda?`,ans:[left,r.d],hint:'1r suma el que t\'has begut. 2n resta-ho de l\'ampolla sencera (1).',
+      explain:`${r.html}<br>Queda: 1 − ${F(r.n,r.d)} = ${F(r.d,r.d)} − ${F(r.n,r.d)} = <b>${F(left,r.d)}</b>${simpNote(left,r.d)}`};}
+  G(()=>d1!==d2);const r=opEx(a1,d1,a2,d2,true);
+  return {kind:'frac',equiv:true,prompt:`🧁 Una recepta de magdalenes demana ${F(a1,d1)} kg de farina i ${F(a2,d2)} kg de sucre. Quants kg pesen junts?`,ans:[r.n,r.d],hint:'Suma les dues quantitats.',explain:r.html};}
+function s8_int(){const b=rnd(2,8),a=rnd(1,b-1);const t=pick([`🎂 Del pastís ja se n'ha menjat ${F(a,b)}. Quina part en queda?`,`📖 Ja has llegit ${F(a,b)} del llibre. Quina part et queda per llegir?`,`Calcula: 1 − ${F(a,b)}`]);
+  return {kind:'frac',equiv:true,prompt:t,ans:[b-a,b],hint:`La unitat sencera és ${F(b,b)}.`,explain:`1 = ${F(b,b)}. ${F(b,b)} − ${F(a,b)} = <b>${F(b-a,b)}</b>${simpNote(b-a,b)}`};}
+
+/* ---------- SALA 9 · Producte i divisió (pàg. 14–15) ---------- */
+function s9_mul(){const a=rnd(1,7),b=rnd(2,9),c=rnd(1,7),d=rnd(2,9);
+  return {kind:'frac',equiv:true,prompt:`Calcula: ${F(a,b)} · ${F(c,d)}`,ans:[a*c,b*d],hint:'Producte en paral·lel: dalt per dalt i baix per baix.',explain:`Es multipliquen els numeradors entre si i els denominadors entre si:<br>${F(a+' · '+c,b+' · '+d)} = ${F(a*c,b*d)}${simpNote(a*c,b*d)}`};}
+function s9_div(){const a=rnd(1,7),b=rnd(2,9),c=rnd(1,7),d=rnd(2,9);
+  return {kind:'frac',equiv:true,prompt:`Calcula: ${F(a,b)} : ${F(c,d)}`,ans:[a*d,b*c],hint:'Divisió: es multiplica en CREU (fent una X).',explain:`Producte en creu: dalt ${a} · ${d}, baix ${b} · ${c}:<br>${F(a+' · '+d,b+' · '+c)} = ${F(a*d,b*c)}${simpNote(a*d,b*c)}`};}
+function s9_intOps(){const a=rnd(1,7),b=rnd(2,9),k=rnd(2,9),t=rnd(0,2);
+  if(t===0)return {kind:'frac',equiv:true,prompt:`Calcula: ${F(a,b)} · ${k}`,ans:[a*k,b],hint:`Escriu el ${k} com ${F(k,1)}.`,explain:`${F(a,b)} · ${F(k,1)} = ${F(a+' · '+k,b+' · 1')} = ${F(a*k,b)}${simpNote(a*k,b)}`};
+  if(t===1)return {kind:'frac',equiv:true,prompt:`Calcula: ${F(a,b)} : ${k}`,ans:[a,b*k],hint:`Escriu el ${k} com ${F(k,1)} i multiplica en creu.`,explain:`${F(a,b)} : ${F(k,1)} = ${F(a+' · 1',b+' · '+k)} = ${F(a,b*k)}${simpNote(a,b*k)}`};
+  return {kind:'frac',equiv:true,prompt:`Calcula: ${k} : ${F(a,b)}`,ans:[k*b,a],hint:`Escriu el ${k} com ${F(k,1)} i multiplica en creu.`,explain:`${F(k,1)} : ${F(a,b)} = ${F(k+' · '+b,'1 · '+a)} = ${F(k*b,a)}${simpNote(k*b,a)}`};}
+function s9_divInt(){const b=pick([2,3,4,5]),a=rnd(1,b-1),k=pick([2,3,4,5]);const cells=[...Array(a).keys()].map(c=>c*k);
+  const t=pick([`🍬 Volem repartir ${F(a,b)} d'una capsa de llaminadures entre ${k} amics. Quina part de la capsa li toca a cadascú?`,`🍕 Tens ${F(a,b)} de pizza i la reparteixes entre ${k} germans. Quina part de la pizza sencera toca a cadascú?`]);
+  return {kind:'frac',equiv:true,prompt:t,ans:[a,b*k],hint:`Dividir entre ${k} és com fer ${F(a,b)} : ${F(k,1)}.`,
+    explain:`${F(a,b)} : ${k} = ${F(a,b)} : ${F(k,1)} = ${F(a+' · 1',b+' · '+k)} = <b>${F(a,b*k)}</b>${simpNote(a,b*k)}<div class="eqpair"><div>${rectSVG(b,1,a)}</div><div>${rectSVG(b,k,cells)}</div></div>Cada columna pintada es parteix en ${k} trossos: a cada amic li toca una fila.`};}
+function s9_daily(){const t=rnd(0,3);
+  if(t===0){const [a,b]=pick([[1,2],[3,4],[2,3],[1,3]]),[c,d]=pick([[1,2],[1,3],[1,4],[2,3]]);
+    return {kind:'frac',equiv:true,prompt:`🍕 De la pizza en queda ${F(a,b)}. Te'n menges ${F(c,d)} d'aquest tros. Quina part de la pizza <b>sencera</b> t'has menjat?`,ans:[a*c,b*d],hint:'«La fracció d\'una fracció» es calcula multiplicant.',explain:`${F(c,d)} de ${F(a,b)} → ${F(c,d)} · ${F(a,b)} = ${F(c+' · '+a,d+' · '+b)} = <b>${F(a*c,b*d)}</b>${simpNote(a*c,b*d)}`};}
+  if(t===1){const k=pick([2,3,4,5]);let G;do{G=rnd(k+1,4*k);}while(G%k===0);const [a,b]=simp(G,k);
+    return {kind:'num',prompt:`🧃 Tens ${F(a,b)} litres de suc i omples gots de ${F(1,k)} de litre. Quants gots pots omplir?`,ans:G,hint:'Quantes vegades hi cap un got? → Divisió.',explain:`${F(a,b)} : ${F(1,k)} = ${F(a+' · '+k,b+' · 1')} = ${F(a*k,b)} = <b>${G} gots</b>`};}
+  if(t===2){const b=pick([3,4,5]),a=rnd(1,b-1),d=pick([2,3,4]),c=rnd(1,d-1);
+    return {kind:'frac',equiv:true,prompt:`🔵 En una bossa de bales, ${F(a,b)} són blaves, i ${F(c,d)} de les blaves són transparents. Quina fracció del total són blaves transparents?`,ans:[a*c,b*d],hint:'«de les blaves» → multiplica.',explain:`${F(c,d)} de ${F(a,b)} = ${F(c+' · '+a,d+' · '+b)} = <b>${F(a*c,b*d)}</b>${simpNote(a*c,b*d)}`};}
+  const b=pick([2,3,4]),a=rnd(1,b-1),k=pick([2,3]);
+  return {kind:'frac',equiv:true,prompt:`🥤 ${people(k).map(art).join(', ').replace(/, ([^,]*)$/,' i $1').replace(/^./,c=>c.toUpperCase())} van d'excursió i cadascú porta ${F(a,b)} de litre d'aigua. Quants litres porten entre tots?`,ans:[a*k,b],hint:`${k} vegades ${F(a,b)} → multiplica.`,explain:`${F(a,b)} · ${k} = ${F(a+' · '+k,b)} = <b>${F(a*k,b)}</b>${simpNote(a*k,b)}`};}
+
+/* =========================================================
+   OBJECTIUS I SALES (ordre del dossier)
+   ========================================================= */
+const OBJ=[
+  {t:'Objectiu 1',name:'Comprendre el concepte de fracció. Identificar-ne els termes',pg:'Dossier pàg. 3–6'},
+  {t:'Objectiu 2',name:'Tipus de fraccions. Representació en la recta real',pg:'Dossier pàg. 7–9'},
+  {t:'Objectiu 3',name:'Comprendre el significat de fracció equivalent',pg:'Dossier pàg. 10–12'},
+  {t:'Objectiu 4',name:'Realitzar operacions amb fraccions',pg:'Dossier pàg. 13–15'}];
+const ROOMS=[
+ {obj:0,icon:'🧀',name:'La capsa d\'en Joan',sub:'Què és una fracció',pg:'pàg. 3–4',gens:[s1_painted,s1_paint,s1_terms,s1_equal,s1_daily,s1_daily],
+  intro:'Primera porta precintada! Demostra\'m que saps què és una fracció. Com la capsa de formatgets d\'en Joan...',
+  tips:['Recorda: les parts han de ser IGUALS.','El denominador diu en quantes parts es divideix la unitat. El numerador, quantes n\'agafem.','Capsa de 8 formatgets, en Joan se\'n menja 3 → 3/8.'],
+  theory:`<p>Una <b>fracció</b> expressa parts d'un total. Té dos termes separats per la <b>ratlla de fracció</b>:</p>
+  <ul><li><b>Numerador</b> (a dalt): nombre de parts que <b>agafem</b> de la unitat.</li><li><b>Denominador</b> (a baix): nombre de parts <b>iguals</b> en què es divideix la unitat.</li></ul>
+  <div class="ex"><div>En Joan obre una capsa de formatgets que té 8 porcions i se'n menja 3: ${F(3,8)}.</div>${piesSVG(8,3)}</div>
+  <h4>Per representar una fracció</h4><ol><li>Escollim la figura (cercle, rectangle, quadrat...).</li><li>La dividim en tantes parts iguals com diu el denominador.</li><li>Pintem les parts que diu el numerador.</li></ol>`},
+ {obj:0,icon:'✍️',name:'Com s\'escriu?',sub:'Llegir i escriure fraccions',pg:'pàg. 3–5',gens:[s2_words,s2_words,s2_digits,s2_pic,s2_fix,s2_half],
+  intro:'Aquesta porta té un teclat. Només s\'obre si escrius les fraccions en català correcte. Res de «cuartos», eh! 😤',
+  tips:['Primer el numerador, després el denominador.','Més de 10: onzens, dotzens, tretzens...','Si el numerador és 1: singular (un terç). Si és més gran: plural (dos terços).','No et preocupis per les majúscules.'],
+  theory:`<p>Primer es llegeix el <b>numerador</b> (u, dos, tres...) i després el <b>denominador</b>:</p>
+  <div class="names">${[[2,'mitjos'],[3,'terços'],[4,'quarts'],[5,'cinquens'],[6,'sisens'],[7,'setens'],[8,'vuitens'],[9,'novens'],[10,'desens']].map(([d,t])=>`<div>${F('·',d)}<span>${t}</span></div>`).join('')}</div>
+  <p>Si el denominador és <b>més gran que 10</b>, es llegeix el nombre seguit del terme <b>«-è»</b>: onzens, dotzens, tretzens, catorzens... dinovens.</p>
+  <p>Exemples: ${F(3,7)} tres setens · ${F(6,9)} sis novens · ${F(8,11)} vuit onzens · ${F(5,10)} cinc desens.</p>
+  <p>Si el numerador és 1, el denominador va en singular: ${F(1,3)} un terç, ${F(1,5)} un cinquè, ${F(1,2)} un mig (la meitat).</p>`},
+ {obj:0,icon:'🍌',name:'Plàtans i metres',sub:'Fracció com a quocient i fracció d\'una quantitat',pg:'pàg. 5–6',gens:[s3_decimal,s3_share,s3_ofq,s3_ofq],
+  intro:'Els ximpanzés s\'han escapat amb el codi! Per recuperar-lo, has de dividir i calcular fraccions de quantitats.',
+  tips:['Una fracció també és una divisió: numerador entre denominador.','Fracció d\'una quantitat: divideix pel denominador i multiplica pel numerador.','Fes servir la coma per als decimals: 3,5'],
+  theory:`<h4>La fracció com a quocient</h4><p>Si dividim el numerador entre el denominador, obtenim un nombre decimal: el valor de la fracció.</p>
+  <div class="ex"><div>Repartim 7 plàtans entre 2 ximpanzés: ${F(7,2)} = 7 : 2 = <b>3,5</b> plàtans per a cadascun.</div></div>
+  <h4>Fracció d'una quantitat</h4><p>La Teresa ha de córrer 200 m i n'ha fet ${F(3,4)}. Quants metres ha recorregut? Dues maneres:</p>
+  <ul><li>(200 · 3) : 4 = 600 : 4 = <b>150 m</b></li><li>(200 : 4) · 3 = 50 · 3 = <b>150 m</b></li></ul>`},
+ {obj:1,icon:'🧪',name:'Pròpies o impròpies?',sub:'Tipus de fraccions i nombre mixt',pg:'pàg. 7–8',gens:[s4_class,s4_pick,s4_toMixed,s4_fromMixed,s4_readPies,s4_paintImp],
+  intro:'Laboratori de classificació! Algú ha barrejat totes les fraccions. Posa-hi ordre.',
+  tips:['Numerador més petit → pròpia. Igual → 1. Més gran → impròpia.','Nombre mixt = un nombre natural + una fracció.','11/8 = 8/8 + 3/8 = 1 + 3/8'],
+  theory:`<ul><li><b>Pròpies</b> (${F('a','b')} &lt; 1): el numerador és més petit que el denominador. ${F(3,8)} = 0,375</li>
+  <li><b>Iguals a la unitat</b> (${F('a','b')} = 1): numerador i denominador iguals. ${F(8,8)} = 1</li>
+  <li><b>Impròpies</b> (${F('a','b')} &gt; 1): el numerador és més gran. ${F(11,8)} = 1,375</li></ul>
+  <div class="ex"><div>En Joan es menja una capsa sencera (${F(8,8)}) i ${F(3,8)} d'una altra: ${F(11,8)} = ${F(8,8)} + ${F(3,8)} = 1 + ${F(3,8)} = ${MIX(1,3,8)}. Això és un <b>nombre mixt</b>.</div>${piesSVG(8,11)}</div>`},
+ {obj:1,icon:'📏',name:'La recta real',sub:'Representar fraccions a la recta',pg:'pàg. 9',gens:[s5_line,s5_lineRead,s5_between,s5_lineMixed,s5_line],
+  intro:'Aquesta porta té un làser que marca punts a la recta. Encerta on és cada fracció!',
+  tips:['Divideix cada unitat en tantes parts com diu el denominador.','Pròpies: entre 0 i 1. Impròpies: més enllà de l\'1.','Les unitats sempre a la mateixa distància.'],
+  theory:`<p>Per <b>representar fraccions a la recta</b>:</p><ol><li>Dibuixem una recta.</li><li>Fixem les unitats (0, 1, 2, 3...) a la mateixa distància.</li><li>Dividim cada unitat en tantes parts com indica el denominador i comptem les que indica el numerador.</li></ol>
+  <p>Aquí tens ${F(5,4)}:</p>${lineSVG(4,2,{mark:5})}
+  <p>Pròpia: entre 0 i 1 · Igual a la unitat: a l'1 · Impròpia: més gran que 1.</p>`},
+ {obj:2,icon:'👯',name:'Bessones',sub:'Fraccions equivalents, amb dibuixos',pg:'pàg. 10–11',gens:[s6_eqPaint,s6_eqCheck,s6_missing,s6_pick,s6_simplify,s6_eqPaint],
+  intro:'Aquí hi ha fraccions bessones: s\'escriuen diferent, però valen el mateix. Mira bé els dibuixos!',
+  tips:['Equivalent = val el mateix.','Per comprovar-ho: multiplica en creu.','Amplificar = multiplicar dalt i baix. Simplificar = dividir.'],
+  theory:`<p>Dues fraccions són <b>equivalents</b> si tenen el mateix valor i representen la mateixa quantitat.</p>
+  <div class="eqpair"><div>${F(2,5)} = 0,4${rectSVG(5,1,2)}</div><div>${F(6,15)} = 0,4${rectSVG(5,3,6)}</div></div>
+  <p>Per comprovar-ho, <b>multipliquem en creu</b>: 2 · 15 = 30 i 5 · 6 = 30 → són equivalents.</p>
+  <p>Si multipliquem o dividim numerador i denominador pel mateix nombre, obtenim una fracció equivalent:<br>
+  <b>amplificar</b>: ${F(2,5)} = ${F('2 · 3','5 · 3')} = ${F(6,15)} &nbsp; <b>simplificar</b>: ${F(6,15)} = ${F('6 : 3','15 : 3')} = ${F(2,5)}</p>`},
+ {obj:2,icon:'🃏',name:'La partida de cartes',sub:'Comparar i ordenar fraccions',pg:'pàg. 11–12',gens:[s7_cards,s7_cards,s7_compare,s7_who,s7_cards],
+  intro:'Et jugo una partida de cartes. Si les ordenes bé, guanyes la xifra. Si no... tornem a repartir! 🃏',
+  tips:['Mateix denominador? Mira els numeradors.','Si no, busca fraccions equivalents amb el mateix denominador.','També pots passar-les a decimal.'],
+  theory:`<p>En Jordi ha enganxat ${F(2,3)} dels cromos, l'Alícia ${F(1,2)} i en Lluc ${F(3,4)}. Qui n'ha enganxat més?</p>
+  <ol><li>Obtenim fraccions equivalents amb el <b>mateix denominador</b>: ${F(2,3)} = ${F(8,12)}, ${F(1,2)} = ${F(6,12)}, ${F(3,4)} = ${F(9,12)}</li>
+  <li>Comparem els numeradors: ${F(9,12)} &gt; ${F(8,12)} &gt; ${F(6,12)} → ${F(3,4)} &gt; ${F(2,3)} &gt; ${F(1,2)}</li></ol>
+  <p>En Lluc n'ha enganxat més; després en Jordi i, per acabar, l'Alícia.</p>`},
+ {obj:3,icon:'➕',name:'Suma i resta',sub:'Amb el mateix i diferent denominador',pg:'pàg. 13–14',gens:[s8_same,s8_diff,s8_three,s8_daily,s8_int,s8_daily],
+  intro:'Ja gairebé ets fora. Aquesta porta s\'obre sumant i restant. Consell de robot: MAI sumis denominadors! 🤖',
+  tips:['Mateix denominador: se sumen els numeradors i es manté el denominador.','Diferent: 1r m.c.m., 2n arreglar numeradors, 3r operar, 4t simplificar.','Simplifica sempre que es pugui.'],
+  theory:`<h4>Mateix denominador</h4><p>Se sumen o es resten els numeradors i es manté el denominador: ${F(5,8)} + ${F(2,8)} = ${F('5 + 2',8)} = ${F(7,8)}</p>
+  <h4>Diferent denominador: quatre passos</h4><ol><li>Calcular el m.c.m. dels denominadors.</li><li>Arreglar els numeradors (fraccions equivalents amb el mateix denominador).</li><li>Sumar o restar.</li><li>Simplificar sempre que es pugui.</li></ol>
+  <div class="ex"><div>${F(1,4)} + ${F(2,3)} → m.c.m.(4, 3) = 12 → ${F(3,12)} + ${F(8,12)} = ${F(11,12)}</div></div>`},
+ {obj:3,icon:'✖️',name:'Producte i divisió',sub:'Multiplicar i dividir fraccions',pg:'pàg. 14–15',gens:[s9_mul,s9_div,s9_intOps,s9_divInt,s9_daily],
+  intro:'Última porta! Multiplica en paral·lel, divideix en creu... i seràs lliure!',
+  tips:['Producte: en paral·lel (dalt per dalt, baix per baix).','Divisió: en creu.','«La fracció de» = multiplicar.'],
+  theory:`<h4>Producte</h4><p>Es multipliquen els numeradors entre si i els denominadors entre si (<b>en paral·lel</b>):<br>${F(4,5)} · ${F(2,3)} = ${F('4 · 2','5 · 3')} = ${F(8,15)}</p>
+  <h4>Divisió</h4><p>Es multipliquen <b>en creu</b> els termes de les fraccions:<br>${F(4,5)} : ${F(2,3)} = ${F('4 · 3','5 · 2')} = ${F(12,10)} = ${F(6,5)}</p>
+  <h4>Variants amb nombres</h4><p>${F(3,4)} · 5 = ${F('3 · 5','4 · 1')} = ${F(15,4)} &nbsp; · &nbsp; ${F(3,4)} : 5 = ${F('3 · 1','4 · 5')} = ${F(3,20)}</p><p class="muted">Els resultats s'han de simplificar sempre que es pugui.</p>`}
+];
+const NEED=4;
+const PRAISE=['Correcte! Els meus circuits aproven.','Bingo! Una passa més a prop de la sortida.','Perfecte! Ho has clavat.','Molt bé! Continua així.','Resposta validada.','Brutal! 🔥'];
+const RETRY=['Ui, aquesta no! Pensa-hi una mica més.','Gairebé! Revisa-ho amb calma.','No és correcte, però tens una segona oportunitat!','Compte! Mira-ho bé i torna-hi.'];
+const OOPS=['Gairebé! Mira com es fa i ho tornes a provar:','No passa res, és per aprendre. Fixa\'t:','Ups! Revisem-ho junts:','Aquesta no ha colat. Mira l\'explicació:'];
+
+/* =========================================================
+   ESTAT, SO, CONFETI
+   ========================================================= */
+const UKEY='escape-v2:u:';
+let S=null,cur=null;
+const userKey=(name,pin)=>UKEY+normTeam(name)+':'+pin;
+const digitsFor=name=>ROOMS.map((_,i)=>h32('dig|'+normTeam(name)+'|'+i)%10);
+function newState(name,pin,free){return {team:name,pin,free:!!free,mute:false,digits:digitsFor(name),rooms:ROOMS.map(()=>({done:false,correct:0,seen:false,err:0})),score:0,streak:0,best:0,ok:0,errors:0,hints:0,start:Date.now(),last:Date.now(),end:null,won:false};}
+function save(){if(!S)return;S.last=Date.now();try{localStorage.setItem(userKey(S.team,S.pin),JSON.stringify(S));}catch(e){}}
+function loadUser(name,pin){try{const v=localStorage.getItem(userKey(name,pin));return v?JSON.parse(v):null;}catch(e){return null;}}
+function otherPinExists(name,pin){try{const pre=UKEY+normTeam(name)+':';for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(pre)&&k!==pre+pin)return true;}}catch(e){}return false;}
+function clearSave(){if(S)try{localStorage.removeItem(userKey(S.team,S.pin));}catch(e){}}
+const FKEY='escape-v2-mode-lliure';
+const getFree=()=>{try{return localStorage.getItem(FKEY)==='1';}catch(e){return false;}};
+const setFree=v=>{try{v?localStorage.setItem(FKEY,'1'):localStorage.removeItem(FKEY);}catch(e){}};
+function resumeTime(s){if(!s.end&&s.last&&Date.now()-s.last>5*60e3)s.start+=Date.now()-s.last;return s;}
+const firstName=()=>S?esc(S.team.split(/\s+/)[0]):'';
+const unlocked=i=>S.free||i===0||S.rooms[i-1].done;
+const dots=k=>`<span class="dots" aria-label="${k} de ${NEED}">${Array.from({length:NEED},(_,i)=>`<i class="${i<k?'on':''}"></i>`).join('')}</span>`;
+const fmt=ms=>{const s=Math.floor(ms/1000),m=Math.floor(s/60);return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;};
+
+let AC=null;
+let MASTER=null;
+function ac(){try{if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();const comp=AC.createDynamicsCompressor();comp.threshold.value=-8;comp.ratio.value=4;comp.connect(AC.destination);MASTER=AC.createGain();MASTER.gain.value=1;MASTER.connect(comp);}
+  if(AC.state==='suspended')AC.resume();return AC;}catch(e){return null;}}
+function tone(f,t0,dur,type='triangle',vol=.18,f2){const a=ac();if(!a)return;const t=a.currentTime+t0,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.015);g.gain.setValueAtTime(vol,t+dur*.6);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(MASTER);o.start(t);o.stop(t+dur+.05);}
+const SFX={
+  ok(){tone(784,0,.14,'triangle',.45);tone(1175,.12,.28,'triangle',.45);tone(1568,.12,.28,'sine',.15);},   /* ding-ding ascendent */
+  err(){tone(415,0,.22,'square',.32);tone(415,0,.22,'triangle',.55);tone(311,.26,.45,'square',.32);tone(311,.26,.45,'triangle',.55);},  /* «oh-oh» fort i clar, descendent */
+  tap(){tone(660,0,.05,'square',.04);},
+  hint(){tone(988,0,.08,'sine',.1);tone(988,.1,.08,'sine',.1);},
+  unlock(){tone(180,0,.05,'square',.12);tone(120,.06,.06,'square',.12);[523,659,784,1047].forEach((f,i)=>tone(f,.2+i*.11,.18,'triangle',.18));},
+  win(){[523,659,784,1047,784,1047,1319].forEach((f,i)=>tone(f,i*.13,.22,'triangle',.18));},
+  lockFail(){tone(150,0,.12,'square',.1);tone(150,.16,.12,'square',.1);}};
+function sfx(n){if(S&&S.mute)return;try{SFX[n]();}catch(e){}}
+
+function confetti(n=170){const c=$('#confetti');let x=null;try{x=c.getContext('2d');}catch(e){}if(!x)return;c.width=innerWidth;c.height=innerHeight;
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cols=['#ff6a00','#ffa25c','#000000','#ff8a2b','#c94f00'];
+  const P=Array.from({length:n},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,vx:(Math.random()-.5)*4,vy:2+Math.random()*4,r:5+Math.random()*7,a:Math.random()*6,va:(Math.random()-.5)*.3,col:pick(cols)}));
+  let t=0;cancelAnimationFrame(confetti.raf);
+  (function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.col;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(++t<280)confetti.raf=requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height);})();}
+
+/* =========================================================
+   CODI DE PROGRÉS (continuar en un altre dispositiu + informe per al professor)
+   ========================================================= */
+const B32='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+const normTeam=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function h32(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
+const CSM=(1<<26)-1;
+function makeCode(){const secs=Math.round(((S.end||Date.now())-S.start)/1000);let n=0n;
+  const put=(v,b)=>{n=(n<<BigInt(b))|BigInt(Math.max(0,Math.min(Math.round(v)||0,2**b-1)));};
+  put(1,2);put(S.won?1:0,1);put(S.free?1:0,1);put(S.score,11);put(secs,14);put(S.hints,6);put(S.best,5);
+  S.rooms.forEach(r=>put(r.correct,3));S.rooms.forEach(r=>put(r.err||0,3));
+  n=(n<<26n)|BigInt(h32('v2p|'+normTeam(S.team)+'|'+n.toString())&CSM);
+  let s='';for(let i=0;i<24;i++){s=B32[Number(n&31n)]+s;n>>=5n;}return s.match(/.{4}/g).join('-');}
+function readCode(name,code){const c=String(code).toUpperCase().replace(/[^0-9A-Z]/g,'');if(c.length!==24)return null;
+  let n=0n;for(const ch of c){const i=B32.indexOf(ch);if(i<0)return null;n=(n<<5n)|BigInt(i);}
+  const cs=Number(n&BigInt(CSM));n>>=26n;if(cs!==(h32('v2p|'+normTeam(name)+'|'+n.toString())&CSM))return null;
+  const take=b=>{const v=Number(n&BigInt(2**b-1));n>>=BigInt(b);return v;};
+  const err=[],correct=[];for(let i=ROOMS.length-1;i>=0;i--)err[i]=take(3);for(let i=ROOMS.length-1;i>=0;i--)correct[i]=take(3);
+  const best=take(5),hints=take(6),secs=take(14),score=take(11),free=take(1),won=take(1),ver=take(2);
+  if(n!==0n||ver!==1||correct.some(c=>c>NEED))return null;
+  return {won:!!won,free:!!free,score,secs,hints,best,correct,err,rd:correct.filter(c=>c>=NEED).length,ok:correct.reduce((a,b)=>a+b,0),errors:err.reduce((a,b)=>a+b,0)};}
+function stateFromCode(name,pin,v){const s=newState(name,pin,v.free);
+  s.rooms.forEach((r,i)=>{r.correct=v.correct[i];r.done=v.correct[i]>=NEED;r.seen=r.correct>0||r.done;r.err=v.err[i];});
+  Object.assign(s,{score:v.score,hints:v.hints,best:v.best,ok:v.ok,errors:v.errors,won:v.won,start:Date.now()-v.secs*1000});if(v.won)s.end=Date.now();return s;}
+const PKEY='escape-fraccions-v2-alumnes';
+function loadRes(){try{return JSON.parse(localStorage.getItem(PKEY)||'[]');}catch(e){return [];}}
+function saveRes(r){try{localStorage.setItem(PKEY,JSON.stringify(r));}catch(e){}}
+
+/* =========================================================
+   PANTALLES
+   ========================================================= */
+const app=typeof document!=='undefined'?document.getElementById('app'):null;
+function show(html){app.innerHTML=html;window.scrollTo(0,0);updateHeader();}
+function updateHeader(){const st=$('#stats');if(!S){st.innerHTML='';return;}
+  st.innerHTML=`<span class="chip" title="Alumne">👤 <b>${firstName()}</b></span><span class="chip" title="Temps">⏱ <b id="clock">${fmt((S.end||Date.now())-S.start)}</b></span><span class="chip" title="Punts">⭐ <b>${S.score}</b></span><span class="chip" title="Ratxa">🔥 <b>${S.streak}</b></span><button class="chip" data-act="mute" aria-label="So">${S.mute?'🔇':'🔊'}</button><button class="chip" data-act="logout">Sortir</button>`;}
+
+function renderStart(){if(S)save();S=null;cur=null;wbClear();
+  show(`<section class="cover">
+  <div class="tape" aria-hidden="true"></div>
+  <div class="cover-in">
+   <div class="cover-grid"><h1>Operació Fracció<small>El laboratori precintat · Escape v2</small></h1>${padlock(false,'cover-lock')}</div>
+   ${botSay('wave',`Hola! Soc en FR-4C i he <b>precintat</b> el laboratori de matemàtiques. Hi ha <b>9 portes</b> amb cadenat, una per a cada part del teu dossier de fraccions. Cada cadenat amaga una xifra. Amb les 9 xifres, obriràs la sortida. Som-hi?`,90)}
+   <label class="field">Nom i cognom<input id="uname" maxlength="40" placeholder="Ex.: Salma Benali" autocomplete="off"></label>
+   <label class="field">Codi personal (4 xifres)<input id="upin" class="pin" maxlength="4" inputmode="numeric" placeholder="····" autocomplete="off"></label>
+   <p class="muted" style="margin:.2rem 0 0;font-size:.95rem">El codi personal te'l dona el professor. Amb el teu nom i el teu codi, continuaràs la teva partida quan tornis.</p>
+   <div id="restoreBox" hidden><label class="field">Codi de progrés<input id="ucode" maxlength="40" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off" style="text-transform:uppercase;letter-spacing:.06em"></label></div>
+   <div class="row"><button class="btn primary big" data-act="login">Entrar</button><button class="btn small" data-act="showrestore">🔁 Tinc un codi de progrés</button><button class="btn small ghost" data-act="soundtest">🔊 Prova el so</button></div>
+   <div id="stMsg"></div>
+   <div class="rules"><h3>Com funciona</h3><ul>
+    <li>Les 9 portes segueixen l'ordre del <b>dossier</b> (objectius 1 a 4). A cada porta has d'encertar <b>4 reptes</b>.</li>
+    <li>Encert: <b>+10</b>. Amb una ratxa de 3 o més 🔥: <b>+5 extra</b>. Pista 💡: <b>−3</b>.</li>
+    <li>Si falles, pots <b>tornar-ho a provar</b> un cop: el segon intent val <b>+5</b>. Si tornes a fallar, en FR-4C t'explica com es fa.</li>
+    <li>Tens una <b>pissarra ✏️</b> per fer càlculs (botó de baix a la dreta).</li>
+    <li>Apunta cada xifra a la llibreta: la necessitaràs a la porta de sortida!</li></ul></div>
+   <div class="sign"><span class="school">Matemàtiques · Ins Júlia Minguell, Badalona</span><span class="ai">Fet amb IA</span></div>
+   <p style="margin:.8rem 0 0"><button class="linkbtn" data-act="teacher">🧑‍🏫 Tauler del professor</button></p>
+  </div></section>`);}
+function login(){const name=$('#uname').value.trim().replace(/\s+/g,' '),pin=$('#upin').value.trim(),rb=$('#restoreBox'),code=rb.hidden?'':$('#ucode').value.trim();
+  const say=(m,t)=>{$('#stMsg').innerHTML=botSay(m,t,56,'small');};
+  if(normTeam(name).length<2){say('oops','Escriu el teu <b>nom i cognom</b>.');return;}
+  if(!/^\d{4}$/.test(pin)){say('oops','El codi personal ha de tenir <b>4 xifres</b>.');return;}
+  ac();
+  if(code){const v=readCode(name,code);if(!v){say('oops','Aquest codi de progrés no és vàlid per a aquest nom. Revisa\'l i escriu el nom exactament igual que la primera vegada.');sfx('err');return;}
+    S=stateFromCode(name,pin,v);S.free=getFree();save();sfx('unlock');renderMap(`Hola de nou, ${firstName()}! He recuperat la teva partida.`);return;}
+  const s=loadUser(name,pin);
+  if(s){S=resumeTime(s);S.free=getFree();save();sfx('ok');renderMap(`Hola de nou, ${firstName()}! Continuem on ho vas deixar.`);return;}
+  if(otherPinExists(name,pin)){say('think','En aquest dispositiu ja hi ha una partida amb aquest nom però amb <b>un altre codi personal</b>. Revisa el codi. Si de veritat vols començar de nou, torna a prémer «Entrar».');
+    if(login.warned!==name+pin){login.warned=name+pin;return;}}
+  S=newState(name,pin,getFree());save();sfx('unlock');renderMap();}
+
+function renderMap(greet){cur=null;const done=S.rooms.filter(r=>r.done).length,N=ROOMS.length,all=done===N;
+  const next=ROOMS.findIndex((r,i)=>!S.rooms[i].done&&unlocked(i));
+  const msg=greet||(done===0?`Benvingut/da, <b>${firstName()}</b>! Comença per la porta 1. Cada porta que obris desprecinta la següent.`:all?'Tens totes les xifres! Ves a la porta de sortida... si recordes el codi. 😏':pick([`Portes ${done} de ${N} xifres. Endavant, ${firstName()}!`,`${done} cadenats oberts. Em comences a preocupar... 😅`,`Bona feina! Queden ${N-done} portes.`]));
+  let html=`<section>${botSay(greet?'wave':all?'wow':done?'happy':'idle',msg)}${S.free?'<p class="legend">🔓 Mode lliure activat pel professor: totes les portes estan obertes.</p>':''}`;
+  OBJ.forEach((O,oi)=>{html+=`<div class="obj"><div class="obj-h"><h3>${O.t}</h3><span>${O.name}</span><span class="pg">📘 ${O.pg}</span></div><div class="grid">`;
+    ROOMS.forEach((R,i)=>{if(R.obj!==oi)return;const st=S.rooms[i],open=unlocked(i);
+      html+=`<button class="card ${st.done?'done':''} ${open?'':'locked'} ${i===next?'current':''}" ${open?`data-act="room" data-r="${i}"`:'disabled'}>
+      <div class="c-top"><span class="c-ic">${R.icon}</span>${padlock(st.done)}</div><div class="c-num">Porta ${i+1} · ${R.pg}</div>
+      <div class="c-name">${R.name}</div><div class="c-sub">${R.sub}</div>
+      <div class="c-st">${st.done?`Xifra <span class="digit-s">${S.digits[i]}</span>`:open?dots(st.correct):''}</div>
+      ${open?'':`<div class="tape tape-x" aria-hidden="true"></div><div class="tape tape-x b" aria-hidden="true"></div>`}</button>`;});
+    html+='</div></div>';});
+  html+=`<div class="obj"><div class="grid"><button class="card final ${all?'':'locked'}" ${all?'data-act="final"':'disabled'}>${padlock(false)}<div><div class="c-name">Porta de sortida</div><div class="c-sub">${all?'Introdueix el codi de 9 xifres per escapar.':'Obre les 9 portes per activar-la.'}</div></div>
+    ${all?'':`<div class="tape tape-x" aria-hidden="true"></div><div class="tape tape-x b" aria-hidden="true"></div>`}</button></div></div>
+  <div id="codeArea"></div><div class="row end"><button class="btn small" data-act="showcode">📤 El meu codi de progrés</button><button class="btn small ghost" data-act="reset">Reiniciar la meva partida</button></div></section>`;
+  show(html);}
+function showCode(){$('#codeArea').innerHTML=`<div class="codepanel">Codi de progrés de <b>${esc(S.team)}</b><br><span class="codebox" style="font-size:clamp(1.1rem,4.6vw,1.9rem)">${makeCode()}</span>
+  <p class="muted" style="margin:.3rem 0 0">Apunta'l! Serveix per <b>continuar en un altre dispositiu</b> (botó «Tinc un codi de progrés») i perquè el professor vegi com vas.</p></div>`;$('#codeArea').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function roomHead(i){const R=ROOMS[i];return `<div class="rhead"><button class="btn small" data-act="map">← Mapa</button><span class="rtitle">${R.icon} Porta ${i+1} · ${OBJ[R.obj].t}</span><span class="pgchip">📘 Dossier ${R.pg}</span></div>`;}
+function renderRoom(i){const R=ROOMS[i];cur={room:i,q:null,lastGen:null,answered:false,hint:false,sel:null,order:[]};
+  if(S.rooms[i].done){renderReveal(i);return;}
+  if(!S.rooms[i].seen){show(`<section class="room">${roomHead(i)}<h2>${R.name}</h2>${botSay('wave',R.intro)}
+    <div class="theory-card">${R.theory}</div><div class="row"><button class="btn primary big" data-act="go">Som-hi! Primer repte</button></div></section>`);return;}
+  nextQ();}
+function nextQ(){const R=ROOMS[cur.room];let g;do{g=pick(R.gens);}while(g===cur.lastGen&&new Set(R.gens).size>1);
+  cur.lastGen=g;cur.q=g();cur.tries=0;cur.answered=false;wbClear();cur.hint=false;cur.sel=null;cur.order=[];renderQ();}
+
+function paintFig(q){if(q.fig==='pie')return piesSVG(q.d,0,true,q.units);if(q.fig==='rect')return rectSVG(q.cols,q.rows,0,true);return barsSVG(q.d,0,true,q.units);}
+function cardHTML(i,act,extra=''){const [n,d]=cur.q.cards?cur.q.cards[i]:cur.q.items[i];return `<button class="pcard ${extra}" data-act="${act}" data-i="${i}" aria-label="${n} de ${d}">${F(n,d)}</button>`;}
+function drawCards(){const q=cur.q,N=q.cards.length,sign=q.asc?'&lt;':'&gt;';let s='';
+  for(let k=0;k<N;k++){if(k>0)s+=`<span class="sign-op">${sign}</span>`;s+=cur.order[k]!=null?cardHTML(cur.order[k],'cardback'):`<div class="slot">${k+1}</div>`;}
+  $('#slots').innerHTML=s;$('#deck').innerHTML=q.cards.map((c,i)=>cur.order.includes(i)?'':cardHTML(i,'cardpick')).join('')||'<span class="muted">Totes col·locades. Toca una carta de dalt per tornar-la.</span>';}
+
+function renderQ(){const i=cur.room,R=ROOMS[i],st=S.rooms[i],q=cur.q;let inner='';
+  const sub='<button class="btn primary" data-act="submit">Comprovar</button>';
+  if(q.kind==='mc')inner=`<div class="opts">${q.options.map((o,k)=>`<button class="opt" data-act="mc" data-i="${k}">${o}</button>`).join('')}</div>`;
+  else if(q.kind==='frac')inner=`<div class="ansrow"><div class="fracin"><input id="an" inputmode="numeric" autocomplete="off" aria-label="Numerador"><span class="fbar"></span><input id="ad" inputmode="numeric" autocomplete="off" aria-label="Denominador"></div>${sub}</div>`;
+  else if(q.kind==='num')inner=`<div class="ansrow"><input id="nn" class="numin" inputmode="numeric" autocomplete="off" aria-label="Resposta">${sub}</div>`;
+  else if(q.kind==='dec')inner=`<div class="ansrow"><input id="dd" class="numin" inputmode="decimal" autocomplete="off" aria-label="Nombre decimal" placeholder="0,0">${sub}</div>`;
+  else if(q.kind==='words')inner=`<div class="ansrow" style="flex-direction:column"><input id="ww" class="wordin" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Escriu en lletres" placeholder="Escriu aquí en lletres..."><div class="keys"><button class="key" data-act="ins" data-c="è">è</button><button class="key" data-act="ins" data-c="ç">ç</button><button class="key" data-act="ins" data-c="à">à</button></div>${sub}</div>`;
+  else if(q.kind==='mixed')inner=`<div class="ansrow"><div class="mixin"><input id="mw" class="mixw" inputmode="numeric" autocomplete="off" aria-label="Unitats senceres"><div class="fracin"><input id="an" inputmode="numeric" autocomplete="off" aria-label="Numerador"><span class="fbar"></span><input id="ad" inputmode="numeric" autocomplete="off" aria-label="Denominador"></div></div>${sub}</div>`;
+  else if(q.kind==='paint')inner=`${q.ref||''}<div class="visual" style="margin-top:0">${paintFig(q)}</div><div class="counter" id="cnt">Parts pintades: 0</div><div class="ansrow">${sub}</div>`;
+  else if(q.kind==='line')inner=`<div class="visual">${lineSVG(q.d,q.U)}</div><div class="counter" id="cnt">Toca una marca de la recta</div><div class="ansrow">${sub}</div>`;
+  else if(q.kind==='cards')inner=`<div class="cardlab">La teva fila</div><div class="slots" id="slots"></div><div class="cardlab">Les teves cartes</div><div class="deck" id="deck"></div><div class="ansrow">${sub}</div>`;
+  else if(q.kind==='pick')inner=`<div class="deck">${q.items.map((c,k)=>cardHTML(k,'pickt')).join('')}</div><div class="ansrow">${sub}</div>`;
+  show(`<section class="room">${roomHead(i)}
+  <div class="progress">${R.name} ${dots(st.correct)}</div>
+  <details class="theory"><summary>📘 Resum del dossier (${R.pg})</summary><div class="theory-card">${R.theory}</div></details>
+  <article class="qcard"><div class="qnum">Repte ${Math.min(st.correct+1,NEED)} de ${NEED}</div>
+  ${botSay(Math.random()<.5?'idle':'think',pick(R.tips),52,'small')}
+  <div class="prompt">${q.prompt}</div>${q.visual?`<div class="visual">${q.visual}</div>`:''}${inner}
+  <div id="hintBox"></div><div class="tools"><button class="btn small ghost" data-act="hint" id="hintBtn">💡 Pista (−3)</button></div><div id="fb"></div></article></section>`);
+  if(q.kind==='cards')drawCards();
+  const f=$('#ww')||$('#mw')||$('#an')||$('#nn')||$('#dd');if(f&&window.matchMedia('(pointer:fine)').matches)f.focus();}
+
+function flash(msg){$('#fb').innerHTML=`<div class="fb warn">${msg}</div>`;}
+function evaluate(q,ans){
+  if(q.kind==='mc')return {ok:ans===q.correct};
+  if(q.kind==='num')return {ok:ans===q.ans,msg:ans===q.ans?'':`La teva resposta: ${ans}`};
+  if(q.kind==='dec')return {ok:Math.abs(ans-q.ans)<1e-9,msg:Math.abs(ans-q.ans)<1e-9?'':`La teva resposta: ${fmtDec(ans)}`};
+  if(q.kind==='paint'||q.kind==='line')return {ok:ans===q.target};
+  if(q.kind==='words')return checkWords(q.n,q.d,ans);
+  if(q.kind==='cards'){const ok=ans.every((v,k)=>v===q.order[k]);return {ok};}
+  if(q.kind==='pick'){const a=[...ans].sort((x,y)=>x-y),b=[...q.want].sort((x,y)=>x-y);return {ok:a.length===b.length&&a.every((v,k)=>v===b[k])};}
+  if(q.kind==='mixed'){const [w,n,d]=ans,[W,N,D]=q.ans;if(w===W&&n*D===N*d&&n<d)return {ok:true,msg:(n!==N?`💡 Es pot simplificar: ${MIX(W,N,D)}`:'')};return {ok:false,msg:`La teva resposta: ${MIX(w,n,d)}`};}
+  const [x,y]=ans;if(q.check){const r=q.check(x,y);if(!r.ok&&!r.msg)r.msg=`La teva resposta: ${F(x,y)}`;return r;}
+  const [n,d]=q.ans;
+  if((x===n&&y===d)||(q.equiv&&x*d===n*y)){const [sx,sy]=simp(x,y);return {ok:true,msg:gcd(x,y)>1?`💡 Encara la pots simplificar: ${sy===1?sx:F(sx,sy)}`:''};}
+  return {ok:false,msg:`La teva resposta: ${F(x,y)}`};}
+const isInt=v=>/^\d+$/.test(v);
+function submit(val){if(!cur||cur.answered)return;const q=cur.q;let ans;
+  if(q.kind==='mc')ans=val;
+  else if(q.kind==='frac'||q.kind==='mixed'){const a=$('#an').value.trim(),b=$('#ad').value.trim();
+    if(q.kind==='mixed'){const w=$('#mw').value.trim();if(!isInt(w)){flash('Escriu les unitats senceres (el nombre gran de l\'esquerra).');return;}}
+    if(!isInt(a)){flash('Escriu un nombre al numerador (a dalt).');return;}
+    if(!isInt(b)){if(q.kind==='frac'&&b===''){}else{flash('Escriu un nombre al denominador (a baix).');return;}}
+    const y=b===''?1:parseInt(b,10);if(y===0){flash('El denominador no pot ser 0: no podem dividir en 0 parts!');return;}
+    ans=q.kind==='mixed'?[parseInt($('#mw').value,10),parseInt(a,10),y]:[parseInt(a,10),y];}
+  else if(q.kind==='num'){const a=$('#nn').value.trim();if(!isInt(a)){flash('Escriu un nombre enter.');return;}ans=parseInt(a,10);}
+  else if(q.kind==='dec'){const a=$('#dd').value.trim().replace(/\s/g,'');if(!/^\d+([.,]\d+)?$/.test(a)){flash('Escriu un nombre. Per als decimals, fes servir la coma: 3,5');return;}ans=parseFloat(a.replace(',','.'));}
+  else if(q.kind==='words'){const a=$('#ww').value.trim();if(!a){flash('Escriu la fracció en lletres.');return;}if(/\d/.test(a)){flash('Ho has d\'escriure amb <b>lletres</b>, no amb xifres. 😉');return;}ans=a;}
+  else if(q.kind==='paint'){ans=app.querySelectorAll('.interactive .seg.on').length;if(!ans){flash('Pinta alguna part tocant la figura.');return;}}
+  else if(q.kind==='line'){if(cur.sel==null){flash('Toca primer una marca de la recta.');return;}ans=cur.sel;}
+  else if(q.kind==='cards'){if(cur.order.length<q.cards.length){flash('Col·loca totes les cartes a la fila.');return;}ans=cur.order.slice();}
+  else if(q.kind==='pick'){ans=[...app.querySelectorAll('.pcard.sel')].map(e=>+e.dataset.i);if(!ans.length){flash('Toca almenys una carta.');return;}}
+  const res=evaluate(q,ans);
+  if(!res.ok&&!cur.tries){cur.tries=1;S.errors++;S.rooms[cur.room].err=(S.rooms[cur.room].err||0)+1;S.streak=0;save();updateHeader();sfx('err');
+    if(q.kind==='mc'){const o=app.querySelectorAll('.opt')[val];o.classList.add('wrong');o.disabled=true;}
+    $('#fb').innerHTML=`<div class="fb bad">${botSay('oops',pick(RETRY),60,'small')}${res.msg?`<p>${res.msg}</p>`:''}<p><b>Torna-ho a provar!</b> Si ara l'encertes, sumaràs <b>+5</b>.${cur.hint?'':' Si vols, fes servir la pista 💡.'}</p></div>`;
+    $('#fb').scrollIntoView({behavior:'smooth',block:'nearest'});return;}
+  cur.answered=true;
+  app.querySelectorAll('.qcard input,.qcard .opt,.qcard .key,[data-act="submit"],#hintBtn,.qcard .pcard').forEach(e=>e.disabled=true);
+  app.querySelectorAll('.qcard .interactive').forEach(e=>e.classList.remove('interactive'));
+  if(q.kind==='mc'){const o=app.querySelectorAll('.opt');o[q.correct].classList.add('right');if(!res.ok)o[val].classList.add('wrong');}
+  if(q.kind==='line'){const svg=app.querySelector('.qcard .visual svg'),x=+svg.dataset.x0+q.target*(+svg.dataset.step),m=svg.querySelector('.okmark');m.setAttribute('cx',x);m.style.display='';}
+  if(q.kind==='cards'){app.querySelectorAll('#slots .pcard').forEach((e,k)=>e.classList.add(+e.dataset.i===q.order[k]?'good':'badc'));}
+  if(q.kind==='pick'){app.querySelectorAll('.qcard .pcard').forEach(e=>{const i=+e.dataset.i,w=q.want.includes(i),s=e.classList.contains('sel');if(w)e.classList.add('good');else if(s)e.classList.add('badc');});}
+  const st=S.rooms[cur.room];let pts=0;
+  if(res.ok){S.ok++;S.streak++;S.best=Math.max(S.best,S.streak);pts=cur.tries?5:10+(S.streak>=3?5:0);S.score+=pts;st.correct++;sfx('ok');}
+  else{S.errors++;st.err=(st.err||0)+1;S.streak=0;sfx('err');}
+  const fin=st.correct>=NEED&&!st.done;if(fin)st.done=true;
+  save();updateHeader();
+  const say=res.ok?`${cur.tries?'Ara sí! Bona rectificació.':pick(PRAISE)} <span class="pts">+${pts}${pts>10?' 🔥':''}</span>`:pick(OOPS);
+  $('#fb').innerHTML=`<div class="fb ${res.ok?'ok':'bad'}">${botSay(res.ok?(fin?'wow':'happy'):'oops',say,60,'small')}
+    ${res.msg?`<p>${res.msg}</p>`:''}<div class="exp">${q.explain}</div>
+    <button class="btn primary" data-act="${fin?'unlock':'next'}">${fin?'Obrir el cadenat 🔓':'Següent repte'}</button></div>`;
+  app.querySelector('.progress .dots').outerHTML=dots(st.correct);
+  $('#fb').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function useHint(){if(!cur||cur.hint||cur.answered)return;cur.hint=true;S.hints++;S.score=Math.max(0,S.score-3);save();updateHeader();sfx('hint');
+  $('#hintBox').innerHTML=`<div class="hint">💡 ${cur.q.hint}</div>`;$('#hintBtn').disabled=true;}
+
+function renderReveal(i){const last=S.rooms.every(r=>r.done);
+  show(`<section class="reveal">${padlock(false,'biglock')}<h2>Porta ${i+1} oberta!</h2>
+  ${botSay('wow',last?'Increïble... Tens totes les xifres. Ara, a la porta de sortida!':`La xifra secreta de «${ROOMS[i].name}» és aquesta. Apunta-la a la llibreta!`,70)}
+  <div class="bigdigit pop">${S.digits[i]}</div>
+  <div class="row center"><button class="btn primary big" data-act="map">Tornar al mapa</button></div></section>`);
+  sfx('unlock');setTimeout(()=>{const l=app.querySelector('.biglock');if(l)l.classList.add('open');},60);confetti(90);}
+function renderFinal(){show(`<section class="reveal"><div class="rhead"><button class="btn small" data-act="map">← Mapa</button></div>
+  ${padlock(false,'biglock')}<h2>Porta de sortida</h2>
+  <div style="max-width:640px;margin:0 auto;text-align:left">${botSay('think','Introdueix les 9 xifres en l\'ordre de les portes (de la 1 a la 9). Si falles, pots tornar-ho a provar. Soc un robot, no un monstre.')}</div>
+  <div class="code" id="code">${ROOMS.map((R,i)=>`<label><span>${R.icon}</span><input class="cd" maxlength="1" inputmode="numeric" data-i="${i}" aria-label="Xifra de la porta ${i+1}"></label>`).join('')}</div>
+  <div id="cfb"></div><div class="row center"><button class="btn primary big" data-act="open">Obrir la porta 🔑</button></div></section>`);
+  const f=app.querySelector('.cd');if(f)f.focus();}
+function checkCode(){const v=[...app.querySelectorAll('.cd')].map(e=>e.value);
+  if(v.some(x=>!/^\d$/.test(x))){$('#cfb').innerHTML='<div class="fb warn">Falten xifres per omplir.</div>';return;}
+  if(v.every((x,i)=>+x===S.digits[i])){S.won=true;S.end=S.end||Date.now();save();renderWin();}
+  else{const c=$('#code');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');sfx('lockFail');
+    $('#cfb').innerHTML=botSay('oops','Codi incorrecte. Revisa les xifres al mapa i l\'ordre de les portes.',60,'small');}}
+function renderWin(){const acc=S.ok/((S.ok+S.errors)||1),stars=acc>=.85?3:acc>=.65?2:1;
+  const rank=stars===3?'Mestre de les fraccions':stars===2?'Expert en fraccions':'Aprenent de fraccions (i ja n\'hi ha per estar orgullós!)';
+  show(`<section class="reveal win">${padlock(true,'biglock open')}<h2>Has escapat!</h2><div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+  <p style="font-size:1.3rem"><b>${esc(S.team)}</b> · ${rank}</p>
+  <div style="max-width:640px;margin:0 auto;text-align:left">${botSay('happy',`M'has guanyat, ${firstName()}. Ho reconec. Ets un crack de les fraccions! 🧡`)}</div>
+  <div class="statgrid"><div>Punts<b>${S.score}</b></div><div>Temps<b>${fmt(S.end-S.start)}</b></div><div>Encerts<b>${S.ok}</b></div><div>Errors<b>${S.errors}</b></div><div>Millor ratxa<b>🔥 ${S.best}</b></div><div>Pistes<b>${S.hints}</b></div></div>
+  <div class="codepanel">Codi de progrés per al professor<br><span class="codebox" style="font-size:clamp(1.1rem,4.6vw,1.9rem)">${makeCode()}</span><p class="muted" style="margin:.3rem 0 0">Alumne: <b>${esc(S.team)}</b></p></div>
+  <div class="row center"><button class="btn primary big" data-act="logout">Sortir</button></div>
+  <p class="muted" style="margin-top:1.5rem">Matemàtiques · Ins Júlia Minguell, Badalona · Fet amb IA</p></section>`);
+  sfx('win');confetti(220);}
+
+/* ---------- tauler del professor ---------- */
+function sortRes(R){return R.sort((a,b)=>(b.won-a.won)||(b.rd-a.rd)||(b.score-a.score)||(a.secs-b.secs));}
+const heat=(e,open)=>`<span class="heat h${e===0?0:e<=2?1:e<=4?2:3} ${open?'open':''}">${e>=7?'7+':e}</span>`;
+function renderTeacher(msg=''){if(S)save();S=null;cur=null;const R=sortRes(loadRes());
+  const tot=ROOMS.map((_,k)=>R.reduce((a,r)=>a+r.err[k],0)),maxT=Math.max(0,...tot);
+  show(`<section class="room"><div class="rhead"><button class="btn small" data-act="home2">← Inici</button></div><h2>Tauler del professor</h2>
+  <p class="muted">Cada alumne et dona el seu nom i el <b>codi de progrés</b> (botó «El meu codi de progrés» del mapa, o la pantalla final). El codi va lligat al nom. Els resultats es desen només en aquest dispositiu.</p>
+  <details class="theory"><summary>⚙️ Opcions del professor</summary><div class="theory-card">
+    <label class="check" style="margin-top:0"><input type="checkbox" id="tfree" data-act="togglefree" ${getFree()?'checked':''}> <span><b>Mode lliure en aquest dispositiu:</b> totes les portes obertes des del principi, per treballar només una part del dossier.</span></label>
+    <p class="muted" style="font-size:.95rem;margin:.5rem 0 0">S'aplica a tots els alumnes que entrin en aquest ordinador o tauleta mentre estigui activat. Si el desactives, les portes tornen a obrir-se per ordre, i cap alumne perd el progrés.</p></div></details>
+  <div class="tform"><label>Nom i cognom<input id="tteam" autocomplete="off" placeholder="Com l'ha escrit l'alumne"></label><label>Codi de progrés<input id="tcode" autocomplete="off" placeholder="XXXX-XXXX-..." maxlength="40"></label><button class="btn primary" data-act="addres">Afegir</button></div>
+  <details class="theory"><summary>📋 Afegir-ne molts de cop (enganxar una llista)</summary><div class="theory-card">
+    <p>Una línia per alumne, amb el nom i el codi (per exemple, copiat d'un full de càlcul o d'un formulari del Classroom):</p>
+    <textarea class="bulk" id="bulk" placeholder="Salma Benali	7K2M-QX9P-...&#10;Andrei Popescu; 4HT8-..."></textarea>
+    <div class="row"><button class="btn primary small" data-act="bulkadd">Afegir la llista</button></div></div></details>
+  <div id="tmsg">${msg}</div>
+  ${R.length?`<div class="twrap"><table class="res"><thead><tr><th>#</th><th>Alumne</th><th>Estat</th><th>Portes</th><th>Punts</th><th>Temps</th><th>Errors</th><th>Pistes</th>${ROOMS.map((_,k)=>`<th title="${esc(ROOMS[k].name)}">P${k+1}</th>`).join('')}<th>S'encalla a</th><th></th></tr></thead><tbody>
+  ${R.map((r,i)=>{const mx=Math.max(...r.err),where=mx>0?r.err.indexOf(mx):-1;
+    return `<tr><td>${i+1}</td><td><b>${esc(r.team)}</b></td><td>${r.won?'🏆 Ha escapat':'⏳ En curs'}</td><td>${r.rd}/${ROOMS.length}</td><td>${r.score}</td><td>${fmt(r.secs*1000)}</td><td>${r.errors}</td><td>${r.hints}</td>${r.err.map((e,k)=>`<td>${heat(e,r.correct[k]>=NEED)}</td>`).join('')}<td>${where>=0?`P${where+1} · ${esc(ROOMS[where].name)}`:'—'}</td><td><button class="rm" data-act="delres" data-k="${esc(r.key)}" aria-label="Esborrar">✕</button></td></tr>`;}).join('')}
+  </tbody><tfoot><tr><td></td><td>Total classe</td><td colspan="6">${maxT>0?`Porta amb més errors: <b>P${tot.indexOf(maxT)+1} · ${esc(ROOMS[tot.indexOf(maxT)].name)}</b>`:''}</td>${tot.map(t=>`<td>${t}</td>`).join('')}<td colspan="2"></td></tr></tfoot></table></div>
+  <p class="legend">P1–P9: errors a cada porta (7+ vol dir 7 o més). Vora verda: porta oberta. Com més taronja, més errors.</p>
+  <div class="row"><button class="btn primary" data-act="xlsx">⬇️ Exportar a Excel</button><button class="btn small" data-act="copyres">📋 Copiar la taula</button><button class="btn small ghost" data-act="clearres">Esborrar-ho tot</button></div><div id="csvArea"></div>`
+  :`<div class="codepanel">Encara no hi ha cap alumne. Afegeix el primer amb el formulari de dalt.</div>`}</section>`);}
+function upsertRes(team,v){const key=normTeam(team),R=loadRes(),old=R.findIndex(r=>r.key===key);const row=Object.assign({key,team,at:Date.now()},v);
+  if(old>=0)R[old]=row;else R.push(row);saveRes(R);return old>=0;}
+function addRes(){const team=$('#tteam').value.trim().replace(/\s+/g,' '),code=$('#tcode').value.trim();
+  if(!team||!code){$('#tmsg').innerHTML='<div class="fb warn">Cal el nom i el codi de progrés.</div>';return;}
+  const v=readCode(team,code);
+  if(!v){$('#tmsg').innerHTML='<div class="fb bad" style="padding:.6rem 1rem">Codi no vàlid per a aquest nom. Comprova el codi i que el nom sigui el mateix que va escriure l\'alumne (majúscules i accents no importen).</div>';return;}
+  const was=upsertRes(team,v);
+  renderTeacher(`<div class="fb ok" style="padding:.6rem 1rem">✅ ${esc(team)}: ${v.won?'ha escapat!':v.rd+' de '+ROOMS.length+' portes'} · ${v.score} punts${was?' (resultat anterior actualitzat)':''}</div>`);}
+const CODE_RE=/([2-9A-HJ-NP-Z]{4}(?:-?[2-9A-HJ-NP-Z]{4}){5})["'\s]*$/i;
+function bulkAdd(){const lines=$('#bulk').value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);let ok=0;const bad=[];
+  lines.forEach(l=>{const m=l.match(CODE_RE);if(!m){bad.push(l);return;}const name=l.slice(0,m.index).replace(/[\t,;|"]+/g,' ').replace(/\s+/g,' ').trim();
+    const v=name&&readCode(name,m[1]);if(!v){bad.push(l);return;}upsertRes(name,v);ok++;});
+  renderTeacher(`<div class="fb ${bad.length?'warn':'ok'}" style="padding:.6rem 1rem">✅ Afegits o actualitzats: <b>${ok}</b>.${bad.length?`<br>No s'han pogut llegir (${bad.length}):<br>${bad.map(esc).join('<br>')}`:''}</div>`);}
+function resRows(R){return R.map((r,i)=>{const o={'Posició':i+1,'Alumne':r.team,'Estat':r.won?'Ha escapat':'En curs','Portes obertes':r.rd,'Punts':r.score,'Temps (min)':+(r.secs/60).toFixed(1),'Encerts':r.ok,'Errors':r.errors,'Pistes':r.hints,'Millor ratxa':r.best};
+  ROOMS.forEach((R2,k)=>{o[`P${k+1} errors`]=r.err[k];});ROOMS.forEach((R2,k)=>{o[`P${k+1} encerts`]=r.correct[k];});
+  const mx=Math.max(...r.err);o["S'encalla a"]=mx>0?`P${r.err.indexOf(mx)+1} ${ROOMS[r.err.indexOf(mx)].name}`:'';o['Codi afegit el']=new Date(r.at).toLocaleString('ca-ES');return o;});}
+function tmsg2(html){$('#csvArea').innerHTML=`<div class="fb warn" style="margin-top:.8rem">${html}</div>`;}
+function loadXLSX(){return new Promise((res,rej)=>{if(window.XLSX)return res(window.XLSX);const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=()=>window.XLSX?res(window.XLSX):rej();s.onerror=rej;document.head.appendChild(s);});}
+async function exportXlsx(){const R=sortRes(loadRes());if(!R.length)return;tmsg2('Preparant el fitxer d\'Excel...');
+  let dl=null;try{if(window.claude&&typeof window.claude.use==='function')dl=await window.claude.use('downloads');}catch(e){dl=null;}
+  if(!dl){tmsg2('La descàrrega directa no està disponible en aquesta vista. Fes servir <b>«Copiar la taula»</b> i enganxa-la a Excel.');return;}
+  let X;try{X=await loadXLSX();}catch(e){tmsg2('No s\'ha pogut carregar el generador d\'Excel (revisa la connexió). Pots fer servir «Copiar la taula».');return;}
+  const ws=X.utils.json_to_sheet(resRows(R));ws['!cols']=[{wch:8},{wch:26},{wch:12},{wch:9},{wch:8},{wch:10},{wch:9},{wch:8},{wch:8},{wch:11},...ROOMS.map(()=>({wch:10})),...ROOMS.map(()=>({wch:11})),{wch:30},{wch:18}];
+  const sum=ROOMS.map((R2,k)=>{const e=R.reduce((a,r)=>a+r.err[k],0);return {'Porta':`P${k+1}`,'Nom':R2.name,'Objectiu':OBJ[R2.obj].t,'Pàgines del dossier':R2.pg,"Alumnes que l'han oberta":R.filter(r=>r.correct[k]>=NEED).length,'Errors totals':e,"Mitjana d'errors per alumne":+(e/R.length).toFixed(2)};});
+  const ws2=X.utils.json_to_sheet(sum);ws2['!cols']=[{wch:7},{wch:24},{wch:12},{wch:18},{wch:24},{wch:13},{wch:26}];
+  const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Alumnes');X.utils.book_append_sheet(wb,ws2,'Per portes');
+  const buf=X.write(wb,{bookType:'xlsx',type:'array'});const dt=new Date().toISOString().slice(0,10);
+  try{await dl.save({filename:`Escape_v2_resultats_${dt}.xlsx`,data:new Blob([buf])});$('#csvArea').innerHTML='<div class="fb ok" style="padding:.6rem 1rem;margin-top:.8rem">✅ Fitxer d\'Excel preparat. Mira a la carpeta de descàrregues.</div>';}
+  catch(e){const c=e&&e.code;tmsg2(c==='declined'?'Descàrrega cancel·lada.':c==='rate_limited'?'Ja hi ha una descàrrega oberta. Espera un moment i torna-ho a provar.':'No s\'ha pogut descarregar en aquesta vista. Fes servir <b>«Copiar la taula»</b> i enganxa-la a Excel.');}}
+function copyRes(){const rows=resRows(sortRes(loadRes()));if(!rows.length)return;const keys=Object.keys(rows[0]);
+  const txt=[keys.join('\t'),...rows.map(o=>keys.map(k=>o[k]).join('\t'))].join('\n');
+  const fb=()=>{$('#csvArea').innerHTML=`<p class="muted">Selecciona el text, copia'l (Ctrl+C) i enganxa'l a Excel:</p><textarea class="csv" readonly>${esc(txt)}</textarea>`;const ta=app.querySelector('textarea.csv');ta.focus();ta.select();};
+  try{navigator.clipboard.writeText(txt).then(()=>{$('#csvArea').innerHTML='<div class="fb ok" style="padding:.6rem 1rem;margin-top:.8rem">Taula copiada. Enganxa-la a Excel.</div>';},fb);}catch(e){fb();}}
+
+/* ---------- pissarra ---------- */
+const WB={strokes:[],curS:null,tool:'ink',ctx:null,c:null,dpr:1};
+function wbInit(){const fab=document.createElement('button');fab.className='wb-fab';fab.dataset.wb='open';fab.innerHTML='✏️ Pissarra';document.body.appendChild(fab);
+  const p=document.createElement('div');p.className='wb';p.id='wb';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-label','Pissarra de càlculs');
+  p.innerHTML=`<div class="wb-bar"><span class="wb-title">✏️ Pissarra</span>
+   <button class="wb-tool on" data-wb="ink" title="Bolígraf negre" aria-label="Bolígraf negre"><span class="wb-dot" style="background:var(--ink)"></span></button>
+   <button class="wb-tool" data-wb="accent" title="Bolígraf taronja" aria-label="Bolígraf taronja"><span class="wb-dot" style="background:var(--accent)"></span></button>
+   <button class="wb-tool" data-wb="eraser" title="Goma" aria-label="Goma">🧽</button>
+   <button class="wb-tool" data-wb="undo" title="Desfer" aria-label="Desfer">↶</button>
+   <button class="wb-tool" data-wb="clear" title="Esborrar-ho tot" aria-label="Esborrar-ho tot">🗑️</button>
+   <button class="wb-tool" data-wb="close" title="Tancar" aria-label="Tancar">✕</button></div>
+   <div class="wb-q" id="wbq"></div><div class="wb-wrap" id="wbw"><canvas id="wbc"></canvas></div>
+   <div class="wb-foot muted">Esborrany: s'esborra sol quan canvies de repte.</div>`;
+  document.body.appendChild(p);WB.c=p.querySelector('canvas');WB.ctx=WB.c.getContext&&(()=>{try{return WB.c.getContext('2d');}catch(e){return null;}})();
+  document.body.addEventListener('click',e=>{const b=e.target.closest('[data-wb]');if(!b)return;const a=b.dataset.wb;
+    if(a==='open')wbOpen(true);else if(a==='close')wbOpen(false);
+    else if(a==='ink'||a==='accent'||a==='eraser'){WB.tool=a;p.querySelectorAll('[data-wb="ink"],[data-wb="accent"],[data-wb="eraser"]').forEach(x=>x.classList.toggle('on',x===b));}
+    else if(a==='undo'){WB.strokes.pop();wbDraw();}else if(a==='clear'){WB.strokes=[];wbDraw();}});
+  const pos=e=>{const r=WB.c.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];};
+  WB.c.addEventListener('pointerdown',e=>{e.preventDefault();try{WB.c.setPointerCapture(e.pointerId);}catch(_){}WB.curS={t:WB.tool,w:WB.tool==='eraser'?28:(e.pointerType==='pen'?2.5+2*(e.pressure||.5):3.5),p:[pos(e)]};WB.strokes.push(WB.curS);wbDraw();});
+  WB.c.addEventListener('pointermove',e=>{if(!WB.curS)return;e.preventDefault();const ev=e.getCoalescedEvents?e.getCoalescedEvents():[e];ev.forEach(x=>WB.curS.p.push(pos(x)));wbDraw(true);});
+  const end=()=>{WB.curS=null;};WB.c.addEventListener('pointerup',end);WB.c.addEventListener('pointercancel',end);WB.c.addEventListener('pointerleave',end);
+  window.addEventListener('resize',()=>{if(!p.hidden)wbSize();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!p.hidden)wbOpen(false);});}
+function wbOpen(on){const p=$('#wb');if(!p)return;p.hidden=!on;document.body.classList.toggle('wb-open',on);
+  if(on){$('#wbq').innerHTML=cur&&cur.q&&!cur.answered?cur.q.prompt:'';wbSize();}}
+function wbSize(){if(!WB.ctx)return;const r=$('#wbw').getBoundingClientRect();WB.dpr=window.devicePixelRatio||1;WB.c.width=Math.max(1,r.width*WB.dpr);WB.c.height=Math.max(1,r.height*WB.dpr);wbDraw();}
+function wbDraw(){const x=WB.ctx;if(!x)return;x.setTransform(WB.dpr,0,0,WB.dpr,0,0);x.clearRect(0,0,WB.c.width,WB.c.height);
+  const cs=getComputedStyle(document.documentElement),col={ink:cs.getPropertyValue('--ink').trim()||'#000',accent:cs.getPropertyValue('--accent').trim()||'#ff6a00'};
+  x.lineCap='round';x.lineJoin='round';
+  for(const s of WB.strokes){x.globalCompositeOperation=s.t==='eraser'?'destination-out':'source-over';x.strokeStyle=s.t==='eraser'?'#000':col[s.t];x.lineWidth=s.w;x.beginPath();
+    const [x0,y0]=s.p[0];x.moveTo(x0,y0);if(s.p.length===1)x.lineTo(x0+.1,y0+.1);for(let i=1;i<s.p.length;i++)x.lineTo(s.p[i][0],s.p[i][1]);x.stroke();}
+  x.globalCompositeOperation='source-over';}
+function wbClear(){WB.strokes=[];WB.curS=null;wbDraw();const q=$('#wbq');if(q)q.innerHTML=cur&&cur.q?cur.q.prompt:'';}
+
+/* =========================================================
+   ESDEVENIMENTS
+   ========================================================= */
+if(app){
+$('#brand').innerHTML=`${padlock(false,'')} Operació Fracció · v2`;
+wbInit();
+new MutationObserver(()=>typeAll(app)).observe(app,{childList:true,subtree:true});
+document.querySelector('.top').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;
+  if(b.dataset.act==='mute'){S.mute=!S.mute;save();updateHeader();}
+  if(b.dataset.act==='logout'){wbOpen(false);renderStart();}
+  if(b.dataset.act==='home'){if(S&&!S.won)renderMap();else renderStart();}});
+app.addEventListener('click',e=>{
+  const seg=e.target.closest('.qcard .interactive .seg');
+  if(seg&&cur&&!cur.answered&&cur.q.kind==='paint'){seg.classList.toggle('on');$('#cnt').textContent=`Parts pintades: ${app.querySelectorAll('.qcard .interactive .seg.on').length}`;sfx('tap');return;}
+  const hit=e.target.closest('.qcard .interactive .hit');
+  if(hit&&cur&&!cur.answered){const i=+hit.dataset.i,svg=hit.closest('svg'),x=+svg.dataset.x0+i*(+svg.dataset.step),m=svg.querySelector('.marker');
+    cur.sel=i;m.style.display='';m.setAttribute('transform',`translate(${x},40)`);const d=cur.q.d;$('#cnt').innerHTML=`Has marcat: ${i%d===0?i/d:F(i,d)}`;sfx('tap');return;}
+  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+  if(a==='login')login();
+  else if(a==='showrestore'){const r=$('#restoreBox');r.hidden=!r.hidden;if(!r.hidden)$('#ucode').focus();}
+  else if(a==='logout'){wbOpen(false);renderStart();}
+  else if(a==='soundtest'){const was=S;S=null;SFX.ok();setTimeout(()=>SFX.err(),700);S=was;$('#stMsg').innerHTML=botSay('happy','Has d\'haver sentit dos sons: <b>«ding-ding»</b> (encert) i <b>«oh-oh»</b> (error). Si no sents res, revisa el volum o que el navegador no tingui el so silenciat.',56,'small');}
+  else if(a==='map')renderMap();
+  else if(a==='room')renderRoom(+b.dataset.r);
+  else if(a==='go'){S.rooms[cur.room].seen=true;save();nextQ();}
+  else if(a==='mc')submit(+b.dataset.i);
+  else if(a==='submit')submit();
+  else if(a==='next')nextQ();
+  else if(a==='hint')useHint();
+  else if(a==='ins'){const w=$('#ww');if(w&&!w.disabled){const s=w.selectionStart??w.value.length;w.value=w.value.slice(0,s)+b.dataset.c+w.value.slice(w.selectionEnd??s);w.focus();w.setSelectionRange(s+1,s+1);}}
+  else if(a==='cardpick'){if(!cur.answered){cur.order.push(+b.dataset.i);sfx('tap');drawCards();}}
+  else if(a==='cardback'){if(!cur.answered){cur.order=cur.order.filter(x=>x!==+b.dataset.i);sfx('tap');drawCards();}}
+  else if(a==='pickt'){if(!cur.answered){b.classList.toggle('sel');sfx('tap');}}
+  else if(a==='unlock')renderReveal(cur.room);
+  else if(a==='final')renderFinal();
+  else if(a==='open')checkCode();
+  else if(a==='reset'){if(confirm('Segur que vols reiniciar la teva partida? Es perdrà tot el progrés.')){const n=S.team,p=S.pin,f=S.free;clearSave();S=newState(n,p,f);save();renderMap();}}
+  else if(a==='showcode')showCode();
+  else if(a==='teacher')renderTeacher();
+  else if(a==='home2')renderStart();
+  else if(a==='addres')addRes();
+  else if(a==='delres'){saveRes(loadRes().filter(r=>r.key!==b.dataset.k));renderTeacher();}
+  else if(a==='copyres')copyRes();
+  else if(a==='xlsx')exportXlsx();
+  else if(a==='bulkadd')bulkAdd();
+  else if(a==='togglefree'){setFree(b.checked);$('#tmsg').innerHTML=`<div class="fb ok" style="padding:.6rem 1rem">${b.checked?'🔓 Mode lliure activat en aquest dispositiu.':'🔒 Mode lliure desactivat: les portes s\'obren per ordre.'}</div>`;}
+  else if(a==='clearres'){if(confirm('Segur que voleu esborrar tots els resultats?')){saveRes([]);renderTeacher();}}
+});
+app.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const t=e.target;
+  if(t.matches('#mw')){e.preventDefault();$('#an').focus();return;}
+  if(t.matches('#an')&&$('#ad')&&$('#ad').value===''){e.preventDefault();$('#ad').focus();return;}
+  if(t.matches('#an,#ad,#nn,#dd,#ww')){e.preventDefault();submit();}
+  else if(t.matches('.cd')){e.preventDefault();checkCode();}
+  else if(t.matches('#tteam')){e.preventDefault();$('#tcode').focus();}
+  else if(t.matches('#tcode')){e.preventDefault();addRes();}
+  else if(t.matches('#uname')){e.preventDefault();$('#upin').focus();}
+  else if(t.matches('#upin,#ucode')){e.preventDefault();login();}});
+app.addEventListener('input',e=>{if(e.target.matches('.cd')){e.target.value=e.target.value.replace(/\D/g,'').slice(-1);
+  if(e.target.value){const n=app.querySelector(`.cd[data-i="${+e.target.dataset.i+1}"]`);if(n)n.focus();}}});
+setInterval(()=>{if(S&&!S.end){const c=$('#clock');if(c)c.textContent=fmt(Date.now()-S.start);}},1000);
+renderStart();
+}
+</script>
+</body>
+</html>
