@@ -1,0 +1,181 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Prediu l'Ou</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Work+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#eef5f6;
+    --surface:#ffffff;
+    --ink:#15303a;
+    --ink-muted:#4c6b73;
+    --line:rgba(21,48,58,.14);
+    --line-strong:rgba(21,48,58,.28);
+    --water:#1f7a8c;
+    --water-soft:rgba(31,122,140,.14);
+    --accent:#c97a2b;
+    --shadow: 0 1px 2px rgba(21,48,58,.06), 0 10px 28px rgba(21,48,58,.09);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0c2028; --surface:#123138; --ink:#e9f3f4; --ink-muted:#a6c2c8;
+      --line:rgba(233,243,244,.14); --line-strong:rgba(233,243,244,.28);
+      --water:#5fc3d6; --water-soft:rgba(95,195,214,.16); --accent:#eba85a;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c2028; --surface:#123138; --ink:#e9f3f4; --ink-muted:#a6c2c8;
+    --line:rgba(233,243,244,.14); --line-strong:rgba(233,243,244,.28);
+    --water:#5fc3d6; --water-soft:rgba(95,195,214,.16); --accent:#eba85a;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 32px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+    font-family:"Work Sans", ui-sans-serif, system-ui, sans-serif;
+    display:flex; justify-content:center;
+    padding:32px 16px 40px;
+  }
+  .wrap{width:100%; max-width:380px; display:flex; flex-direction:column; align-items:center; gap:22px;}
+
+  .eyebrow{
+    font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:600;
+    color:var(--water); text-align:center;
+  }
+
+  .panel{
+    width:100%; background:var(--surface); border:1px solid var(--line); border-radius:18px;
+    box-shadow:var(--shadow); padding:28px 26px 26px; display:flex; flex-direction:column;
+    align-items:center; gap:26px;
+  }
+
+  svg.beaker{width:100%; max-width:230px; height:auto;}
+
+  .control{width:100%; display:flex; flex-direction:column; gap:10px;}
+  input[type="range"]{
+    -webkit-appearance:none; appearance:none; width:100%; height:8px;
+    border-radius:999px; background:linear-gradient(90deg,var(--water-soft),var(--accent));
+    outline:none; border:1px solid var(--line);
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:26px; height:26px; border-radius:50%;
+    background:var(--surface); border:4px solid var(--accent); box-shadow:0 2px 6px rgba(21,48,58,.25);
+    cursor:pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:26px; height:26px; border-radius:50%;
+    background:var(--surface); border:4px solid var(--accent); box-shadow:0 2px 6px rgba(21,48,58,.25);
+    cursor:pointer;
+  }
+  .scale-labels{display:flex; justify-content:space-between; font-size:13px; color:var(--ink-muted); font-weight:500;}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+
+<div class="wrap">
+  <span class="eyebrow">Exploració prèvia · abans de començar</span>
+
+  <div class="panel">
+    <svg class="beaker" viewBox="0 0 200 320" role="img" aria-label="Recipient amb aigua i un ou">
+      <path d="M40 18 L40 288 Q40 300 52 300 L148 300 Q160 300 160 288 L160 18"
+            fill="none" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round"/>
+      <line x1="30" y1="18" x2="170" y2="18" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round"/>
+      <g stroke="var(--line-strong)" stroke-width="1.5">
+        <line x1="40" y1="80" x2="48" y2="80"/>
+        <line x1="40" y1="150" x2="48" y2="150"/>
+        <line x1="40" y1="220" x2="48" y2="220"/>
+      </g>
+      <clipPath id="glassClip">
+        <path d="M41 19 L41 287 Q41 298.5 52 298.5 L148 298.5 Q159 298.5 159 287 L159 19 Z"/>
+      </clipPath>
+      <g clip-path="url(#glassClip)">
+        <rect id="water" x="41" y="58" width="118" height="241" fill="var(--water)" fill-opacity="0.32"/>
+        <rect x="41" y="56" width="118" height="4" fill="var(--water)" fill-opacity="0.55"/>
+        <g id="salt-bed" opacity="0">
+          <rect x="41" y="290" width="118" height="9" fill="var(--accent)" fill-opacity=".55"/>
+          <circle cx="60" cy="292" r="2.4" fill="var(--accent)"/>
+          <circle cx="80" cy="294" r="2" fill="var(--accent)"/>
+          <circle cx="102" cy="291" r="2.6" fill="var(--accent)"/>
+          <circle cx="124" cy="294" r="2" fill="var(--accent)"/>
+          <circle cx="142" cy="292" r="2.3" fill="var(--accent)"/>
+        </g>
+      </g>
+      <g id="egg-group">
+        <ellipse id="egg" cx="100" cy="257" rx="19" ry="25" fill="#f4ead6" stroke="var(--line-strong)" stroke-width="1.5"/>
+        <ellipse id="eggShine" cx="94" cy="247" rx="6" ry="8" fill="#ffffff" fill-opacity=".55"/>
+      </g>
+    </svg>
+
+    <div class="control">
+      <input type="range" id="saltSlider" min="0" max="380" step="1" value="0" aria-label="Quantitat de sal a l'aigua">
+      <div class="scale-labels">
+        <span>Poca sal</span>
+        <span>Molta sal</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const K = 0.00057;
+  const SALT_MAX = 360;
+  const EGG_DENSITY = 1.080;
+
+  const saltSlider = document.getElementById('saltSlider');
+  const eggEl = document.getElementById('egg');
+  const eggShine = document.getElementById('eggShine');
+  const waterRect = document.getElementById('water');
+  const saltBed = document.getElementById('salt-bed');
+
+  const SURFACE_Y = 58;
+  const BOTTOM_Y = 289;
+  const EGG_HALF = 25;
+  const REST_Y = BOTTOM_Y - EGG_HALF + 3;
+  const FLOAT_Y = SURFACE_Y - EGG_HALF + 0.82*EGG_HALF*2;
+  const SPREAD = 0.055;
+
+  let currentCy = null;
+  let targetCy = null;
+  let rafId = null;
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function paintEgg(cy){
+    eggEl.setAttribute('cy', cy);
+    eggShine.setAttribute('cy', cy - 10);
+  }
+
+  function stepEgg(){
+    if (reduceMotion || Math.abs(targetCy - currentCy) < 0.05){
+      currentCy = targetCy;
+      paintEgg(currentCy);
+      rafId = null;
+      return;
+    }
+    currentCy += (targetCy - currentCy) * 0.18;
+    paintEgg(currentCy);
+    rafId = requestAnimationFrame(stepEgg);
+  }
+
+  function render(){
+    const saltGL = Number(saltSlider.value);
+    const s = Math.min(saltGL, SALT_MAX);
+    const wd = 1.000 + K * s;
+    const diff = wd - EGG_DENSITY;
+
+    saltBed.setAttribute('opacity', saltGL >= SALT_MAX ? '1' : '0');
+    waterRect.setAttribute('fill-opacity', (0.28 + s/360*0.22).toFixed(3));
+
+    const v = 0.5 * (1 + Math.tanh(diff / SPREAD));
+    targetCy = REST_Y + v * (FLOAT_Y - REST_Y);
+    if (currentCy === null) currentCy = targetCy;
+    if (rafId === null) rafId = requestAnimationFrame(stepEgg);
+  }
+
+  saltSlider.addEventListener('input', render);
+  render();
+})();
+</script>
+
+</body></html>

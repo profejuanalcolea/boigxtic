@@ -37,10 +37,12 @@ const APPS = [
   { titol: "Tectònica de plaques",   materia: "bigica1",  nivell: "", desc: "Mapa de plaques, límits i contextos tectònics.", url: "https://profejuanalcolea.github.io/TECTONICPLATE/" },
   { titol: "Els terratrèmols",       materia: "bigica1",  nivell: "", desc: "Magnitud i intensitat.", url: "biogeo/terratremols/" },
   { titol: "Viatge a l'interior de la Terra", materia: "bigica1", nivell: "", desc: "Explorador: mètodes d'estudi, ones sísmiques i capes de la Terra.", url: "biogeo/interior-terra/" },
+  { titol: "Prediu l'Ou",            materia: "bigica1",  nivell: "", desc: "Prediccions abans de la pràctica de l'ou a la salmorra.", url: "biogeo/prediu-ou/" },
 
   { titol: "L'hora i el Sol",        materia: "biogeo4",  nivell: "", desc: "Fusos horaris, terminador i canvi d'hora.", url: "" },
   { titol: "Mitosi amb Tradescantia",materia: "biogeo4",  nivell: "", desc: "Pràctica de laboratori.", url: "" },
 
+  { titol: "Missió Mart",            materia: "steam",    nivell: "4t ESO", desc: "Exercicis de la missió amb la Laika: mode alumne i mode professorat.", url: "steam/missio-mart/" },
   { titol: "On aterrem? (Mart)",     materia: "steam",    nivell: "4t ESO", desc: "Missió a Mart: on aterrar segons la geomorfologia.", url: "" },
 
   { titol: "Pizzeria Tres Quarts",   materia: "mates",    nivell: "", desc: "Com s'escriuen les fraccions en català, amb en FR-4C.", url: "mates/pizzeria/" },

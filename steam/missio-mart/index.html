@@ -1,0 +1,1988 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Missió Mart V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<style>
+/* Escenari fix 16:9 (1600×900) escalat a la pantalla. Tema clar únic, pensat per projectar. */
+:root{
+  --bg:#FFFFFF; --ink:#141414; --or:#FF6A13; --ord:#C24A00; --tint:#FFE8D8; --line:#E4E1DD; --mid:#6E6862; --soft:#F4F3F1;
+  --fd:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --fb:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);margin:0}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:50% 50%;
+  font-family:var(--fb);font-size:30px;line-height:1.28;background:var(--bg);overflow:hidden}
+button{font-family:var(--fb);cursor:pointer;color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:4px solid var(--or);outline-offset:3px}
+b,strong{font-weight:700}
+.or{color:var(--ord)}
+sub{font-size:.62em}
+
+/* ---------- menú superior ---------- */
+#top{position:absolute;left:0;right:0;top:0;height:112px;z-index:6;background:var(--bg);border-bottom:4px solid var(--ink)}
+#tabs{height:60px;display:flex;align-items:stretch;gap:8px;padding:8px 22px 0}
+#brand{display:flex;align-items:center;gap:10px;font:800 26px/1 var(--fd);letter-spacing:-.02em;padding:0 14px 6px 0;border:0;background:none}
+#brand svg{width:40px;height:40px}
+.tab{border:3px solid var(--ink);border-bottom:0;border-radius:14px 14px 0 0;background:var(--bg);font:700 21px/1 var(--fb);padding:0 18px;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.tab i{font-style:normal;font:800 22px/1 var(--fd);width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center}
+.tab.on{background:var(--or)}
+.tab.on i{background:var(--ink)}
+.tab.end{margin-left:auto}
+#chips{height:48px;display:flex;align-items:center;gap:10px;padding:0 22px;background:var(--soft);border-top:3px solid var(--ink)}
+#chips .lab{font:700 17px var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-right:4px}
+.chip{border:3px solid var(--ink);background:var(--bg);border-radius:999px;padding:3px 16px;font:700 20px/1.2 var(--fb);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.chip .d{width:14px;height:14px;border-radius:50%;border:2.5px solid var(--ink);background:#fff}
+.chip .d.m{background:var(--tint)}
+.chip .d.r{background:var(--or)}
+.chip.on{background:var(--ink);color:#fff}
+.chip.on .d{border-color:#fff}
+.chip.skip{opacity:.45;text-decoration:line-through}
+.chip.done::after{content:"✓";color:var(--ord);font-weight:800}
+.chip.on.done::after{color:var(--or)}
+.legend{margin-left:auto;display:flex;gap:16px;font-size:17px;color:var(--mid);align-items:center}
+.legend span{display:flex;gap:6px;align-items:center}
+.legend .d{width:14px;height:14px;border-radius:50%;border:2.5px solid var(--ink);background:#fff;display:block}
+.legend .d.m{background:var(--tint)}.legend .d.r{background:var(--or)}
+
+/* ---------- diapositives ---------- */
+.slide{position:absolute;left:0;right:0;top:112px;bottom:84px;padding:20px 64px 54px;display:flex;flex-direction:column;gap:16px;
+  opacity:0;visibility:hidden;transform:translateX(60px);
+  transition:opacity .4s ease, transform .55s cubic-bezier(.2,.8,.2,1), visibility 0s linear .55s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .4s ease, transform .55s cubic-bezier(.2,.8,.2,1)}
+.slide:not(.active) *{animation-play-state:paused!important}
+.hd{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.kick{font:700 21px/1 var(--fb);letter-spacing:.16em;text-transform:uppercase;color:var(--ord);display:flex;align-items:center;gap:12px}
+.kick::before{content:"";width:16px;height:16px;background:var(--or);border-radius:50%}
+h1,h2,h3{margin:0}
+h2{font:800 54px/1 var(--fd);letter-spacing:-.025em}
+.lv{font:700 18px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;border:3px solid var(--ink);border-radius:10px;padding:7px 12px;white-space:nowrap}
+.lv.b{background:#fff}.lv.m{background:var(--tint)}.lv.r{background:var(--or)}.lv.x{background:var(--ink);color:#fff}
+.lv.r{animation:flame 1.6s ease-in-out infinite}
+@keyframes flame{50%{box-shadow:0 0 0 5px rgba(255,106,19,.35)}}
+
+/* exercici: 2 columnes */
+.ex{display:grid;grid-template-columns:1fr 1fr;gap:40px;flex:1;min-height:0}
+.lcol{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0}
+.enun{font-size:25px;line-height:1.3;border-left:8px solid var(--or);padding:4px 0 4px 16px;margin:0}
+.vis{flex:1;min-height:0;display:flex;flex-direction:column;align-items:stretch;justify-content:center;position:relative}
+.vis>svg{width:100%;height:100%;overflow:visible;min-height:0}
+.rcol{min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:10px;padding:2px 6px 10px 2px;scroll-behavior:smooth}
+.rcol::-webkit-scrollbar{display:none}
+.part{display:flex;flex-direction:column;gap:8px}
+.pq{display:flex;gap:12px;align-items:flex-start;font-weight:700;font-size:26px;line-height:1.25}
+.pq .n{flex:none;width:40px;height:40px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:800 24px/1 var(--fd)}
+.st{display:grid;grid-template-columns:136px 1fr;gap:12px;align-items:center;font-size:26px;line-height:1.3}
+.st .k{font:700 15px/1 var(--fb);letter-spacing:.12em;text-transform:uppercase;border:3px solid var(--ink);border-radius:8px;padding:6px 8px;text-align:center}
+.st.td .k{background:#fff}
+.st.tf .k{background:var(--ink);color:#fff}
+.st.tc .k{background:var(--tint)}
+.st.tn .k{border-style:dashed;color:var(--mid)}
+.st.tr .k{background:var(--or)}
+.st.tq .k{background:#fff;border-style:dashed}
+.st.tq .v b{background:var(--tint);border:2px solid var(--ink);border-radius:8px;padding:0 8px}
+.st.tm .k{background:var(--tint)}
+.st.ts .k{background:#fff;border-color:var(--or);color:var(--ord)}
+.st.ts .v{color:var(--ord);font-weight:700}
+.st.tz .k{background:var(--or)}
+.st.tz .v{font:800 30px var(--fd)}
+.kn{background:var(--tint);border-radius:8px;padding:0 6px;box-shadow:0 0 0 2px var(--or)}
+.f.on .kn{animation:blinkk 1s ease-in-out 5}
+@keyframes blinkk{50%{background:var(--or);box-shadow:0 0 0 5px var(--or)}}
+.unk{border:3px dashed var(--ink);border-radius:8px;padding:0 6px}
+.f.on .unk.bl{animation:blinku 1s ease-in-out 6}
+@keyframes blinku{50%{background:var(--or);border-color:var(--or)}}
+.aj{font:700 17px var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--mid);display:flex;gap:8px;align-items:center}
+.aj b{font:800 22px var(--fd);letter-spacing:.08em;color:var(--or)}
+.aj b i{font-style:normal;color:var(--line)}
+#laika.sosb .ant{animation:sosb .25s linear 6}
+@keyframes sosb{50%{opacity:.1}}
+.st.ty .k{background:var(--ink);color:#fff}
+.st.ty .v{border:3px dashed var(--ink);border-radius:12px;padding:6px 14px;font-weight:700}
+.scl{display:flex;flex-direction:column;gap:8px}
+.scl .note{font-size:22px;font-weight:700;color:var(--ord)}
+.scl .okk{font:800 22px var(--fd);color:var(--ink);background:var(--tint);border-radius:8px;padding:2px 10px;align-self:flex-start}
+.sc{display:flex;align-items:center;gap:10px}
+.sc .u{font:800 24px var(--fd);border:3px solid var(--ink);border-radius:10px;padding:0 12px;background:#fff;color:var(--ink)}
+.sc .ar{position:relative;width:170px;height:30px;border-bottom:4px solid var(--ink)}
+.sc .ar::after{content:"";position:absolute;right:-4px;bottom:-11px;border:9px solid transparent;border-left:14px solid var(--ink);border-right:0}
+.sc .ar b{position:absolute;left:0;right:0;top:-2px;text-align:center;font:800 19px var(--fd);color:var(--ord)}
+.sc .ar i{position:absolute;left:0;bottom:-10px;width:16px;height:16px;border-radius:50%;background:var(--or);border:2px solid var(--ink)}
+.f.on .sc .ar i{animation:travel 1.5s ease-in-out 3}
+@keyframes travel{from{left:0}to{left:calc(100% - 16px)}}
+mark.mk{background:none;color:inherit;border-radius:6px;transition:background .4s, box-shadow .4s}
+mark.mk.on{background:var(--or);box-shadow:0 0 0 3px var(--or)}
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:36px;flex:1;min-height:0}
+.sig table{width:100%;border-collapse:collapse;font-size:27px}
+.sig th{font:700 17px var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--mid);text-align:left;padding:6px 12px;border-bottom:4px solid var(--ink)}
+.sig td{padding:11px 12px;border-bottom:3px solid var(--line)}
+.sig td:last-child{font:800 30px var(--fd)}
+.sig .cv{display:flex;flex-direction:column;gap:12px}
+.sig .cv .like{font-size:25px}
+.st.tr .v{border:3px solid var(--ink);border-radius:12px;padding:6px 14px;background:var(--tint);font-weight:700;box-shadow:5px 5px 0 var(--or)}
+.st.tf .v{font-weight:700}
+.st.tn .v{color:var(--mid);font-style:italic}
+.part.min{gap:2px;opacity:.75}
+.part.min .st:not(.tr){display:none}
+.part.min .pq{font-size:20px;color:var(--mid)}
+.part.min .pq .n{width:30px;height:30px;font-size:18px;background:var(--mid)}
+.part.min .st.tr{font-size:21px;grid-template-columns:136px 1fr}
+.part.min .st.tr .v{box-shadow:none;padding:3px 12px}
+.part.min .st.tr .k{padding:4px 8px;font-size:13px}
+.hl{background:var(--or);padding:0 6px;border-radius:6px}
+.big{font:800 1.15em var(--fd)}
+
+/* fragments */
+.f{opacity:0;transform:translateY(16px);transition:opacity .4s ease, transform .4s ease}
+.f.on{opacity:1;transform:none}
+.f.hid{display:none}
+
+/* teoria */
+.th{display:grid;grid-template-columns:1.08fr 1fr;gap:44px;flex:1;min-height:0}
+.tcol{display:flex;flex-direction:column;gap:12px;min-height:0;font-size:26px;overflow-y:auto;scrollbar-width:none;padding:2px 10px 12px 2px;position:relative}
+.tcol::-webkit-scrollbar{display:none}
+.tcol p{margin:0}
+.fbox{border:4px solid var(--ink);border-radius:18px;padding:12px 20px;font:800 34px/1.25 var(--fd);display:block;box-shadow:7px 7px 0 var(--or);align-self:flex-start}
+.fbox small{display:block;margin-bottom:4px;font:700 17px var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--mid)}
+.fboxes{display:flex;flex-wrap:wrap;gap:16px}
+.fboxes .fbox{font-size:27px;padding:10px 16px}
+.like{border:3px solid var(--ink);border-radius:16px;padding:10px 16px;font-size:23px;display:flex;gap:16px;align-items:baseline}
+.like>span{font:700 17px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ord);white-space:nowrap}
+.like.warn{border-style:dashed}
+.ctrls{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center;font-size:22px}
+.ctrls label{display:flex;align-items:center;gap:10px;font-weight:700}
+.ctrls output{font:800 24px var(--fd);min-width:4.2em;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:190px;height:10px;background:var(--line);border-radius:6px;border:2px solid var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--or);border:3px solid var(--ink);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--or);border:3px solid var(--ink);cursor:pointer}
+.act{border:3px solid var(--ink);background:var(--bg);border-radius:14px;padding:8px 18px;font-size:22px;font-weight:700;box-shadow:4px 4px 0 var(--ink);transition:transform .1s, box-shadow .1s}
+.act:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.act.main{background:var(--or)}
+
+/* svg */
+svg text{font-family:var(--fb);fill:var(--ink)}
+.lab{font-size:22px;font-weight:700}
+.sub{font-size:18px;fill:var(--mid)}
+.tk{font-size:17px;fill:var(--mid)}
+.ax{stroke:var(--ink);stroke-width:3;fill:none}
+.gr{stroke:var(--line);stroke-width:1.5}
+.ln{fill:none;stroke:var(--or);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.ln.k{stroke:var(--ink)}
+.ln.thin{stroke-width:4}
+.ln.ghost{stroke:var(--line);stroke-width:4}
+.dash{stroke-dasharray:8 8}
+.ro rect{fill:#fff;stroke:var(--ink);stroke-width:3}
+.ro text.v{font:800 26px var(--fd);fill:var(--ink)}
+.ro text.l{font:700 16px var(--fb);letter-spacing:.04em;fill:var(--mid)}
+.flame,.retro{opacity:0;transition:opacity .2s}
+.burn .flame,.brake .retro{opacity:1}
+.flick{animation:flick .12s linear infinite alternate;transform-box:fill-box;transform-origin:100% 50%}
+@keyframes flick{to{transform:scaleX(.7)}}
+.pulse{animation:pulse 1.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{50%{transform:scale(1.25)}}
+.tw{animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.2}50%{opacity:1}}
+.pop{animation:popin .45s cubic-bezier(.3,1.5,.5,1) both;transform-box:fill-box;transform-origin:center}
+@keyframes popin{from{transform:scale(.2);opacity:0}}
+.shake{animation:shk .5s}
+@keyframes shk{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+/* portada */
+.cover{justify-content:center;gap:20px;padding-left:96px}
+.cover h1{font:800 150px/.86 var(--fd);letter-spacing:-.045em}
+.cover h1 em{font-style:normal;color:var(--or)}
+.cover .lead{font-size:38px;color:var(--mid);margin:0;max-width:20ch}
+.keys{display:flex;gap:22px;flex-wrap:wrap;font-size:21px;color:var(--mid);max-width:880px}
+.keys kbd{font:700 19px var(--fb);border:2px solid var(--ink);border-bottom-width:5px;border-radius:8px;padding:1px 9px;color:var(--ink);margin-right:5px}
+.bigbtn{align-self:flex-start;display:flex;align-items:center;gap:14px;border:4px solid var(--ink);background:var(--or);border-radius:18px;padding:14px 28px;font:800 32px var(--fd);box-shadow:8px 8px 0 var(--ink);transition:transform .15s, box-shadow .15s}
+.bigbtn:active{transform:translate(4px,4px);box-shadow:4px 4px 0 var(--ink)}
+.bigbtn.w{background:#fff}
+.speclink{align-self:flex-start;margin-top:10px;border:2px solid var(--ink);background:#fff;border-radius:10px;padding:4px 12px;font:700 18px var(--fb,inherit);color:var(--ink);cursor:pointer}
+.speclink:hover{background:var(--or)}
+.bigbtn.sm{font-size:24px;padding:10px 18px;box-shadow:6px 6px 0 var(--ink)}
+.btns{display:flex;gap:22px}
+.cvart{position:absolute;right:40px;top:0;bottom:30px;width:640px;pointer-events:none}
+.cvart svg{width:100%;height:100%;overflow:visible}
+
+/* mapa */
+.mapg{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;flex:1;min-height:0}
+.mcard{border:4px solid var(--ink);border-radius:24px;background:#fff;padding:18px;display:flex;flex-direction:column;gap:10px;text-align:left;font-size:22px;box-shadow:6px 6px 0 var(--ink);transition:transform .15s}
+.mcard:hover{transform:translateY(-4px)}
+.mcard .no{font:800 60px/1 var(--fd);color:var(--or);-webkit-text-stroke:2px var(--ink)}
+.mcard h3{font:800 32px/1 var(--fd)}
+.mcard .ic{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.mcard .ic svg{width:100%;height:100%;max-height:190px}
+.mcard .ls{display:flex;gap:6px;flex-wrap:wrap}
+.mcard .ls span{width:20px;height:20px;border-radius:50%;border:2.5px solid var(--ink)}
+
+/* formulari */
+.fg{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;flex:1;min-height:0}
+.fc{border:3px solid var(--ink);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.fc h3{font:800 28px/1 var(--fd)}
+.fc .tag{align-self:flex-start;font:700 15px/1 var(--fb);letter-spacing:.14em;text-transform:uppercase;background:var(--or);padding:6px 10px;border-radius:8px;border:2px solid var(--ink)}
+.fc .fm{font:800 25px/1.25 var(--fd);border-bottom:2px solid var(--line);padding-bottom:8px}
+.fc .fm:last-child{border:0}
+.fc .nt{font-size:18px;color:var(--mid)}
+
+/* final */
+.endw{display:grid;grid-template-columns:1fr 1fr;gap:40px;flex:1;align-items:center}
+.endw h2{font-size:92px}
+.homage{border:3px dashed var(--ink);border-radius:20px;padding:18px 22px;font-size:25px;display:flex;flex-direction:column;gap:8px}
+.homage b.t{font:800 30px var(--fd)}
+
+/* ---------- barra inferior ---------- */
+#bar{position:absolute;left:0;right:0;bottom:0;height:84px;display:flex;align-items:center;gap:12px;padding:0 24px;z-index:6;border-top:3px solid var(--ink);background:var(--bg)}
+.nb{height:56px;min-width:56px;border:3px solid var(--ink);border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;font:700 20px var(--fb)}
+.nb svg{width:26px;height:26px}
+.nb.sq{padding:0}
+.nb.on{background:var(--or)}
+.nb.skp{background:var(--ink);color:#fff}
+.nb.off{opacity:.4}
+#count{font:800 24px var(--fd);min-width:84px;text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+#stp{display:flex;gap:5px;align-items:center;margin:0 6px}
+#stp i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);display:block}
+#stp i.on{background:var(--or)}
+#prog{position:absolute;left:0;bottom:0;height:7px;background:var(--or);transition:width .5s ease;z-index:7}
+
+/* ---------- Laika ---------- */
+#laika{position:absolute;right:20px;bottom:4px;width:116px;z-index:9;cursor:pointer;transition:width .8s cubic-bezier(.3,1.3,.5,1), right .8s cubic-bezier(.3,1.3,.5,1), bottom .8s cubic-bezier(.3,1.3,.5,1)}
+#laika svg{width:100%;display:block;overflow:visible}
+#laika .all,#laika .tail,#laika .earL,#laika .earR,#laika .eyes,#laika .spir,#laika .fl,#laika .woof,#laika .tear,#laika .ant{transform-box:fill-box}
+#laika .all{animation:float 3.4s ease-in-out infinite;transform-origin:center}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-2deg)}}
+#laika .tail{transform-origin:0% 100%;animation:wag 1.2s ease-in-out infinite}
+@keyframes wag{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(18deg)}}
+#laika .eyes{transform-origin:center;animation:blink 4.4s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+#laika .ant{animation:tw 1.6s ease-in-out infinite}
+#laika .spir,#laika .fl,#laika .woof,#laika .tear{opacity:0}
+#laika.happy .all{animation:hop .8s cubic-bezier(.3,1.6,.5,1)}
+#laika.happy .tail{animation:wag .22s linear infinite}
+@keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-30px) rotate(-6deg)}100%{transform:translateY(0)}}
+#laika.bark .woof{animation:woof 1s ease-out}
+@keyframes woof{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}80%{opacity:1}100%{opacity:0;transform:scale(1)}}
+#laika.bark .all{animation:barkj .5s 2}
+@keyframes barkj{50%{transform:translateY(-6px) scale(1.04)}}
+#laika.sad .earL{transform:rotate(-38deg);transform-origin:100% 100%;transition:transform .3s}
+#laika.sad .earR{transform:rotate(38deg);transform-origin:0% 100%;transition:transform .3s}
+#laika.sad .tail{animation:none;transform:rotate(40deg)}
+#laika.sad .tear{opacity:1;animation:tear 1.4s ease-in}
+@keyframes tear{to{transform:translateY(10px);opacity:0}}
+#laika.dizzy .eyes{opacity:0}
+#laika.dizzy .spir{opacity:1;animation:spin .8s linear infinite;transform-origin:center}
+#laika.dizzy .all{animation:wob .6s ease-in-out 4}
+@keyframes wob{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+#laika.thrust .fl{opacity:1}
+#laika.thrust .all{animation:rise 2s ease-in-out}
+@keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-60px)}}
+#laika.spinny .all{animation:spin 1.4s cubic-bezier(.5,0,.3,1)}
+#stage.big #laika{width:360px;right:120px;bottom:170px}
+#bubble{position:absolute;right:150px;bottom:96px;max-width:620px;z-index:10;background:var(--bg);border:3px solid var(--ink);
+  border-radius:20px;padding:12px 20px;font-size:24px;line-height:1.3;box-shadow:7px 7px 0 var(--or);
+  opacity:0;transform:scale(.7);transform-origin:100% 100%;pointer-events:none;transition:opacity .3s, transform .4s cubic-bezier(.3,1.5,.5,1)}
+#bubble.show{opacity:1;transform:none}
+#bubble::after{content:"";position:absolute;right:-15px;bottom:28px;width:22px;height:22px;background:var(--bg);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(-45deg)}
+#bubble .who{display:inline-block;font:700 16px var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ord);margin-right:10px}
+#stage.big #bubble{right:90px;bottom:600px;max-width:440px;transform-origin:50% 100%}
+#stage.big #bubble .who{display:block;margin-bottom:4px}
+#stage.big #bubble::after{right:auto;left:60%;bottom:-15px;transform:rotate(45deg)}
+
+/* ---------- calculadora ---------- */
+#calc{position:absolute;right:40px;top:130px;width:400px;z-index:20;background:var(--bg);border:4px solid var(--ink);border-radius:22px;box-shadow:10px 10px 0 var(--ink);padding:12px;display:none;flex-direction:column;gap:10px}
+#calc.open{display:flex}
+#calc .bar2{display:flex;align-items:center;gap:10px;cursor:grab;font:800 22px var(--fd);user-select:none}
+#calc .bar2 span{flex:1}
+#calc .x,.tbtn{border:3px solid var(--ink);background:#fff;border-radius:10px;width:42px;height:42px;font:800 22px var(--fd);padding:0}
+#cdisp{border:3px solid var(--ink);border-radius:12px;padding:8px 12px;background:var(--soft);min-height:96px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;gap:2px;overflow:hidden}
+#cexp{font:700 22px var(--fb);color:var(--mid);word-break:break-all;text-align:right;min-height:28px}
+#cres{font:800 40px/1.1 var(--fd);font-variant-numeric:tabular-nums;white-space:nowrap}
+#cres.err{color:var(--ord);font-size:26px}
+#ckeys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#ckeys button{height:56px;border:3px solid var(--ink);border-radius:12px;background:#fff;font:800 26px var(--fd);box-shadow:3px 3px 0 var(--ink);padding:0}
+#ckeys button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+#ckeys button.op{background:var(--tint)}
+#ckeys button.eq{background:var(--or)}
+#ckeys button.fn{background:var(--soft);font-size:22px}
+#ckeys button.cl{background:var(--ink);color:#fff}
+
+/* ---------- esborrany ---------- */
+#draft{position:absolute;inset:0;z-index:18;display:none}
+#draft.open{display:block}
+#draft canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+#draft.paper canvas{background:rgba(255,255,255,.97)}
+#draft.glass canvas{background:rgba(255,255,255,.08)}
+#dtools{position:absolute;left:50%;top:18px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;background:var(--bg);border:4px solid var(--ink);border-radius:18px;padding:8px 12px;box-shadow:7px 7px 0 var(--ink);z-index:2;font:700 18px var(--fb)}
+#dtools .tbtn{width:auto;min-width:46px;height:46px;padding:0 12px;font:700 18px var(--fb)}
+#dtools .tbtn.on{background:var(--or)}
+#dtools .sw{width:40px;height:40px;border-radius:50%;border:3px solid var(--ink);padding:0}
+#dtools .sw.on{outline:4px solid var(--or);outline-offset:2px}
+#dtools .sep{width:2px;height:34px;background:var(--line)}
+
+/* ---------- lupa i compte enrere (alumnes) ---------- */
+#slides{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+#stage.lupa #slides{cursor:zoom-in}
+#stage.lupa.zoomed #slides{cursor:zoom-out}
+#lupabar{position:absolute;left:50%;top:122px;transform:translateX(-50%);z-index:7;display:none;gap:8px;align-items:center;background:var(--bg);border:3px solid var(--ink);border-radius:14px;padding:6px 10px;box-shadow:5px 5px 0 var(--ink);font:700 18px var(--fb)}
+#stage.lupa #lupabar{display:flex}
+#lupabar .tbtn,#timer .tbtn{border:3px solid var(--ink);background:#fff;border-radius:10px;height:42px;padding:0 12px;font:700 18px var(--fb)}
+#lupabar .tbtn.on,#timer .tbtn.on{background:var(--or)}
+#timer{position:absolute;left:40px;top:130px;width:360px;z-index:20;background:var(--bg);border:4px solid var(--ink);border-radius:22px;box-shadow:10px 10px 0 var(--ink);padding:12px;display:none;flex-direction:column;gap:10px}
+#timer.open{display:flex}
+#timer .bar2{display:flex;align-items:center;gap:10px;cursor:grab;font:800 22px var(--fd);user-select:none}
+#timer .bar2 span{flex:1}
+#tdisp{font:800 92px/1 var(--fd);text-align:center;font-variant-numeric:tabular-nums;border:3px solid var(--ink);border-radius:14px;background:var(--soft);padding:10px 0}
+#timer.warn #tdisp{background:var(--or);animation:tblink .5s steps(2) infinite}
+#timer.end #tdisp{background:var(--or);animation:tblink .3s steps(2) 10}
+@keyframes tblink{50%{background:#fff}}
+.trow{display:flex;gap:8px}
+#tpre .tbtn{font-size:16px;padding:0 4px;white-space:nowrap}
+#lupabar .tbtn{min-width:58px}
+.trow .tbtn{flex:1}
+#timer .tbtn.big{background:var(--or);font-size:20px}
+#bTime.run{background:var(--tint)}
+#bTime.warn{background:var(--or)}
+/* ---------- modes (professorat, superajuda) ---------- */
+#profbadge{position:absolute;right:22px;top:12px;z-index:8;display:none;align-items:center;gap:10px;background:var(--or);border:3px solid var(--ink);border-radius:12px;padding:6px 14px;font:800 22px/1 var(--fd);letter-spacing:.08em;box-shadow:4px 4px 0 var(--ink)}
+#profbadge small{font:700 15px var(--fb);letter-spacing:0;opacity:.8}
+#stage.prof #profbadge{display:flex}
+#stage.prof .tab.end{margin-right:236px}
+#stage.prof .tab.end .endl{display:none}
+#brand{white-space:nowrap}
+#stage .tab.end{position:relative}
+#stage.sos .tab.end::before{content:'';position:absolute;left:-30px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:#E10600;box-shadow:0 0 0 3px #fff,0 0 10px 3px rgba(225,6,0,.7);animation:sosdot 1s ease-in-out infinite}
+@keyframes sosdot{50%{opacity:.35}}
+/* separadors: el · només vol dir multiplicar */
+.pc{display:block}
+.st.tq .pc{display:inline-block;margin:0 22px 0 0}
+.st.td .pc,.st.tm .pc,.like .pc{display:inline-block;border:2px solid currentColor;border-radius:10px;padding:0 10px;margin:3px 10px 3px 0;white-space:nowrap}
+.like .pc{font-size:.9em;padding:0 8px;margin:2px 6px 2px 0;line-height:1.3}
+.st.tr .pc+.pc,.st.tf .pc+.pc,.st.tc .pc+.pc,.st.tz .pc+.pc{margin-top:4px}
+#laika.sosOn .ant{fill:#FFD400;animation:sosglow 1s ease-in-out infinite;filter:drop-shadow(0 0 4px #FF6A13) drop-shadow(0 0 9px #FFB000)}
+@keyframes sosglow{50%{opacity:.55}}
+.modal{position:absolute;inset:0;z-index:30;background:rgba(20,20,20,.45);display:none;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.mbox{position:relative;background:var(--bg);border:4px solid var(--ink);border-radius:24px;box-shadow:10px 10px 0 var(--or);padding:30px 40px;min-width:560px;max-width:820px;display:flex;flex-direction:column;gap:16px}
+.mbox h3{font:800 40px/1.05 var(--fd)}
+.mbox p{margin:0;font-size:26px}
+.mbox .x{position:absolute;right:16px;top:16px;border:3px solid var(--ink);background:#fff;border-radius:10px;width:46px;height:46px;font:800 24px var(--fd)}
+.mbox .tag2{align-self:flex-start;font:700 17px var(--fb);letter-spacing:.14em;text-transform:uppercase;background:var(--or);border:2px solid var(--ink);border-radius:8px;padding:6px 10px}
+#pwdots{display:flex;gap:14px;justify-content:center;margin:6px 0}
+#pwdots i{width:34px;height:34px;border-radius:50%;border:3px solid var(--ink);background:#fff;display:block}
+#pwdots i.on{background:var(--ink)}
+#pwin{position:absolute;opacity:0;width:1px;height:1px;left:50%;top:50%}
+#pwmsg{min-height:34px;font-size:22px;font-weight:700;color:var(--ord);text-align:center}
+.mbox .row2{display:flex;gap:14px;justify-content:center}
+#idlewarn{position:absolute;left:50%;top:126px;transform:translateX(-50%);z-index:25;display:none;gap:16px;align-items:center;background:var(--bg);border:3px solid var(--ink);border-radius:14px;padding:10px 16px;box-shadow:6px 6px 0 var(--or);font:700 22px var(--fb)}
+#idlewarn.open{display:flex}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important}}
+</style>
+
+<div id="stage">
+  <div id="top">
+    <div id="tabs"></div>
+    <div id="chips"></div>
+  </div>
+  <div id="slides"></div>
+  <div id="lupabar"><span>🔍 Clica on vulguis ampliar</span><button class="tbtn" data-z="1.5" type="button">1,5×</button><button class="tbtn on" data-z="2" type="button">2×</button><button class="tbtn" id="lupaoff" type="button" aria-label="Tanca la lupa">✕</button></div>
+  <div id="timer" role="dialog" aria-label="Compte enrere"><div class="bar2" id="tdrag"><span>⏱️ Compte enrere</span><button class="x" id="tclose" type="button" aria-label="Tanca">✕</button></div><div id="tdisp">05:00</div><div class="trow" id="tpre"><button class="tbtn" data-m="1" type="button">1 min</button><button class="tbtn" data-m="3" type="button">3 min</button><button class="tbtn on" data-m="5" type="button">5 min</button><button class="tbtn" data-m="10" type="button">10 min</button></div><div class="trow"><button class="tbtn" id="tminus" type="button">− 1 min</button><button class="tbtn" id="tplus" type="button">+ 1 min</button></div><div class="trow"><button class="tbtn big" id="tgo" type="button">▶ Comença</button><button class="tbtn" id="treset" type="button">↺ Reinicia</button></div></div>
+  <div id="bar">
+    <button class="nb sq" id="prev" type="button" aria-label="Enrere"><svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <span id="count">1 / 1</span>
+    <button class="nb sq" id="next" type="button" aria-label="Endavant"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div id="stp" aria-hidden="true"></div>
+    <button class="nb skp" id="skip" type="button" title="Salta a l'exercici següent (S)">Salta l'exercici <svg viewBox="0 0 24 24"><path d="M4 5l9 7-9 7zM13 5l7 7-7 7" fill="currentColor"/></svg></button>
+    <button class="nb" id="bCalc" type="button" title="Calculadora (C)"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="7" y="5" width="10" height="4" fill="currentColor"/><circle cx="8.5" cy="13" r="1.3" fill="currentColor"/><circle cx="12" cy="13" r="1.3" fill="currentColor"/><circle cx="15.5" cy="13" r="1.3" fill="currentColor"/><circle cx="8.5" cy="17.5" r="1.3" fill="currentColor"/><circle cx="12" cy="17.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="17.5" r="1.3" fill="currentColor"/></svg>Calculadora</button>
+    <button class="nb" id="bDraft" type="button" title="Esborrany (E)"><svg viewBox="0 0 24 24"><path d="M4 20l1-5L16 4l4 4L9 19z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 6l4 4" stroke="currentColor" stroke-width="2.4"/></svg>Esborrany</button>
+    <span style="flex:1"></span>
+    <button class="nb sq" id="snd" type="button" aria-label="So (M)"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="sndw" d="M16 8.5c1.5 1 1.5 6 0 7M18.5 6c3 2.5 3 9.5 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path id="sndx" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="display:none"/></svg></button>
+    <button class="nb sq" id="fs" type="button" aria-label="Pantalla completa (F)"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <span style="width:118px"></span>
+  </div>
+  <div id="prog"></div>
+
+  <div id="calc" role="dialog" aria-label="Calculadora">
+    <div class="bar2" id="cdrag"><span>🧮 Calculadora</span><button class="x" id="cclose" type="button" aria-label="Tanca">✕</button></div>
+    <div id="cdisp"><div id="cexp"></div><div id="cres">0</div></div>
+    <div id="ckeys"></div>
+  </div>
+
+  <div id="draft" class="paper">
+    <canvas id="dcv" width="1600" height="900"></canvas>
+    <div id="dtools">
+      ✏️ Esborrany
+      <span class="sep"></span>
+      <button class="sw on" data-c="#141414" style="background:#141414" type="button" aria-label="Negre"></button>
+      <button class="sw" data-c="#FF6A13" style="background:#FF6A13" type="button" aria-label="Taronja"></button>
+      <button class="sw" data-c="#D7262B" style="background:#D7262B" type="button" aria-label="Vermell"></button>
+      <button class="tbtn" id="dthin" type="button">Fi</button>
+      <button class="tbtn on" id="dthick" type="button">Gruixut</button>
+      <button class="tbtn" id="deraser" type="button">Goma</button>
+      <span class="sep"></span>
+      <button class="tbtn" id="dmode" type="button">Transparent</button>
+      <button class="tbtn" id="dclear" type="button">Esborra-ho tot</button>
+      <button class="tbtn" id="dclose" type="button" aria-label="Tanca">✕</button>
+    </div>
+  </div>
+
+  <button id="profbadge" type="button" title="Torna al mode alumne">PROFESSORAT <small>✕ sortir</small></button>
+  <div class="modal" id="pwbox" role="dialog" aria-label="Mode professorat"><div class="mbox" style="align-items:center;text-align:center">
+    <button class="x" type="button" data-close aria-label="Tanca">✕</button>
+    <h3>🔒 Mode professorat</h3><p>Escriu la contrasenya amb el teclat.</p>
+    <div id="pwdots"><i></i><i></i><i></i><i></i></div><input id="pwin" type="password" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="Contrasenya">
+    <div id="pwmsg"></div>
+    <div class="row2"><button class="act main" type="button" id="pwok">Entra</button><button class="act" type="button" data-close>Cancel·la</button></div></div></div>
+  <div class="modal" id="specbox" role="dialog" aria-label="Crèdits"><div class="mbox">
+    <button class="x" type="button" data-close aria-label="Tanca">✕</button>
+    <span class="tag2">Crèdits</span>
+    <h3>MISSIÓ A MART V2 · STEAM</h3>
+    <p>Mode professorat, mode alumne i superajuda integrats.</p>
+    <p><b>Institut Júlia Minguell</b> · Badalona</p></div></div>
+  <div id="idlewarn" role="status">Mode professorat: sortida en 1 minut per inactivitat <button class="act main" type="button" id="idleok">Continua</button></div>
+  <div id="bubble" role="status"><span class="who">Laika</span><span id="btxt"></span></div>
+  <div id="laika" title="Laika"></div>
+</div>
+<script>
+(function(){
+let MODE='alumne';
+"use strict";
+/* =================== utilitats =================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage');
+// espais fins (no trencables) als milers: "450 000" → "450 000"
+const nb=s=>String(s).replace(/(\d) (?=\d{3}(?!\d))/g,'$1 ').replace(/(\d) (?=\d{3}(?!\d))/g,'$1 ');
+function fmt(v,dec=0){
+  const neg=v<0;v=Math.abs(v);let s=v.toFixed(dec);let [i,d]=s.split('.');
+  if(i.length>3)i=i.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+  return (neg?'−':'')+i+(d?','+d:'');
+}
+
+/* =================== so =================== */
+let AC=null,muted=(MODE==='alumne');
+function ac(){if(muted)return null;try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();}catch(e){AC=null}return AC}
+function tone(f,dur,type='sine',vol=.12,when=0,f2){const c=ac();if(!c)return;const t=c.currentTime+when;const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.05)}
+let NBUF=null;
+function noise(dur,vol=.2,when=0,ftype='bandpass',freq=800,q=1,f2){const c=ac();if(!c)return;if(!NBUF){NBUF=c.createBuffer(1,c.sampleRate*2,c.sampleRate);const d=NBUF.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  const t=c.currentTime+when;const s=c.createBufferSource();s.buffer=NBUF;const fl=c.createBiquadFilter();fl.type=ftype;fl.frequency.setValueAtTime(freq,t);if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+dur);fl.Q.value=q;
+  const g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(fl).connect(g).connect(c.destination);s.start(t);s.stop(t+dur+.05)}
+const SFX={
+  step(){tone(700,.06,'sine',.04)},
+  res(){tone(1047,.16,'sine',.1);tone(1568,.3,'sine',.09,.1)},
+  tab(){tone(520,.05,'square',.03)},
+  bark(){[0,.2].forEach(w=>{noise(.1,.35,w,'bandpass',650,2.5);tone(420,.11,'square',.035,w,230)})},
+  whine(){tone(950,.55,'sine',.06,0,560)},
+  whoosh(){noise(.45,.12,0,'bandpass',300,1.2,2400)},
+  thrust(d=1.5){noise(d,.22,0,'lowpass',500,.8,250)},
+  beep(){[0,.12,.24].forEach(w=>tone(1250,.07,'sine',.07,w))},
+  alarm(){for(let i=0;i<4;i++){tone(880,.15,'square',.05,i*.32);tone(620,.15,'square',.05,i*.32+.16)}},
+  boom(){noise(.9,.5,0,'lowpass',400,.7,60);tone(110,.7,'sine',.25,0,35)},
+  pop(){tone(620,.08,'triangle',.08,0,940)},
+  ok(){tone(784,.12,'triangle',.09);tone(1175,.25,'triangle',.09,.1)},
+  bad(){tone(330,.25,'square',.05);tone(247,.4,'square',.05,.22)},
+  repte(){[523,659,784,1047].forEach((f,i)=>tone(f,.16,'triangle',.08,i*.1))},
+  spin(){tone(300,1.2,'sine',.05,0,900)},
+  fanfare(){[523,659,784,1047,784,1047].forEach((f,i)=>tone(f,i===5?.6:.15,'triangle',.08,i*.13))}
+};
+function sfx(n,...a){if(muted)return;try{SFX[n]&&SFX[n](...a)}catch(e){}}
+
+/* =================== Laika =================== */
+function laikaSVG(){return `<svg viewBox="0 0 120 150" aria-hidden="true"><g class="all">
+ <g class="fl"><path class="flick" d="M23 114 L29 140 L35 114Z" fill="#FF6A13" stroke="#141414" stroke-width="2"/><path class="flick" d="M26 114 L29 128 L32 114Z" fill="#FFE8D8"/></g>
+ <rect x="20" y="80" width="16" height="36" rx="5" fill="#141414"/><rect x="23" y="86" width="10" height="6" rx="2" fill="#FF6A13"/>
+ <g class="tail"><path d="M86 112 q18 -4 20 -26" fill="none" stroke="#141414" stroke-width="10" stroke-linecap="round"/><path d="M86 112 q18 -4 20 -26" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+ <path d="M32 98 q0 -16 28 -16 q28 0 28 16 v20 q0 10 -10 10 h-36 q-10 0 -10 -10z" fill="#141414"/>
+ <rect x="32" y="104" width="56" height="6" fill="#FF6A13"/>
+ <circle cx="60" cy="96" r="6" fill="#fff" stroke="#FF6A13" stroke-width="2.5"/><ellipse cx="60" cy="96" rx="10" ry="3" fill="none" stroke="#FF6A13" stroke-width="1.8" transform="rotate(-20 60 96)"/>
+ <ellipse cx="42" cy="130" rx="8" ry="5" fill="#fff" stroke="#141414" stroke-width="2.5"/><ellipse cx="78" cy="130" rx="8" ry="5" fill="#fff" stroke="#141414" stroke-width="2.5"/>
+ <rect x="44" y="78" width="32" height="7" rx="3" fill="#FF6A13" stroke="#141414" stroke-width="2"/>
+ <g class="earL"><path d="M42 42 L39 20 L55 34Z" fill="#141414"/><path d="M43 37 L41 25 L50 33Z" fill="#FFE8D8"/></g>
+ <g class="earR"><path d="M78 42 L81 20 L65 34Z" fill="#141414"/><path d="M77 37 L79 25 L70 33Z" fill="#FFE8D8"/></g>
+ <ellipse cx="60" cy="52" rx="22" ry="20" fill="#fff" stroke="#141414" stroke-width="3"/>
+ <path d="M44 40 q8 -10 16 -8 q-4 8 -2 16 q-10 2 -14 -8z" fill="#FFE8D8"/>
+ <ellipse cx="60" cy="61" rx="11" ry="8" fill="#fff" stroke="#141414" stroke-width="2.5"/>
+ <ellipse cx="60" cy="56.5" rx="4.6" ry="3.3" fill="#141414"/>
+ <path d="M54 63.5 q6 5 12 0" fill="none" stroke="#141414" stroke-width="2.2" stroke-linecap="round"/>
+ <g class="eyes"><circle cx="51" cy="48" r="3.8" fill="#141414"/><circle cx="69" cy="48" r="3.8" fill="#141414"/><circle cx="52.3" cy="46.7" r="1.2" fill="#fff"/><circle cx="70.3" cy="46.7" r="1.2" fill="#fff"/></g>
+ <g class="spir"><path d="M51 48 m-4 0 a4 4 0 1 1 4 4 a2.5 2.5 0 1 1 -2 -3" fill="none" stroke="#141414" stroke-width="1.8"/><path d="M69 48 m-4 0 a4 4 0 1 1 4 4 a2.5 2.5 0 1 1 -2 -3" fill="none" stroke="#141414" stroke-width="1.8"/></g>
+ <path class="tear" d="M47 54 q-2 4 0 6 q2 -2 0 -6z" fill="#7FB7E8"/>
+ <circle cx="60" cy="50" r="37" fill="rgba(255,255,255,.12)" stroke="#141414" stroke-width="3.5"/>
+ <path d="M34 36 q8 -14 24 -17" fill="none" stroke="#E4E1DD" stroke-width="5" stroke-linecap="round"/>
+ <line x1="60" y1="13" x2="60" y2="3" stroke="#141414" stroke-width="3"/><circle class="ant" cx="60" cy="2" r="4.5" fill="#FF6A13" stroke="#141414" stroke-width="2"/>
+ <g class="woof"><path d="M88 6 h30 a6 6 0 0 1 6 6 v14 a6 6 0 0 1 -6 6 h-20 l-8 7 l1 -7 h-3 a6 6 0 0 1 -6 -6 v-14 a6 6 0 0 1 6 -6z" fill="#FF6A13" stroke="#141414" stroke-width="2.5"/><text x="103" y="25" text-anchor="middle" style="font:800 13px var(--fd);fill:#141414">BUP!</text></g>
+</g></svg>`}
+const laikaEl=$('#laika');laikaEl.innerHTML=laikaSVG();
+let lkT=null;
+function laika(mood,ms=1400){laikaEl.classList.remove('happy','bark','sad','dizzy','thrust','spinny');void laikaEl.offsetWidth;laikaEl.classList.add(mood);clearTimeout(lkT);lkT=setTimeout(()=>laikaEl.classList.remove(mood),ms)}
+const bubble=$('#bubble'),btxt=$('#btxt');let bT=null;
+function say(t,ms=7000){btxt.innerHTML=nb(t);bubble.classList.add('show');clearTimeout(bT);bT=setTimeout(()=>bubble.classList.remove('show'),ms)}
+const PRAISE=['Bup! Molt bé!','Guau! Ho tenim!','Missió acomplerta!','Bup bup!','Perfecte, tripulació!','Això és física de veritat!'];
+function laikaTrick(){const d=SL[cur];const r=Math.random();
+  if(r<.33){laika('bark',1100);sfx('bark')}else if(r<.66){laika('spinny',1500);sfx('spin')}else{laika('thrust',2000);sfx('thrust',1.6)}
+  if(d&&d.tip)say(d.tip)}
+
+/* =================== animació =================== */
+let RUN=[],FAST=false;
+function tween(ms,fn,done){if(FAST){fn(1);done&&done();return}const t0=performance.now();let id;const tick=now=>{const p=Math.max(0,Math.min(1,(now-t0)/ms));fn(p);if(p<1)id=requestAnimationFrame(tick);else done&&done()};id=requestAnimationFrame(tick);RUN.push(()=>cancelAnimationFrame(id))}
+function later(ms,fn){if(FAST){fn();return}const id=setTimeout(fn,ms);RUN.push(()=>clearTimeout(id))}
+function loop(fn){let id,t0=performance.now(),last=t0;const tick=now=>{fn((now-t0)/1000,(now-last)/1000);last=now;id=requestAnimationFrame(tick)};id=requestAnimationFrame(tick);RUN.push(()=>cancelAnimationFrame(id))}
+function stopAll(){RUN.forEach(f=>{try{f()}catch(e){}});RUN=[]}
+const ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+
+/* =================== diapositives =================== */
+const SECS=[
+  {n:1,short:'MRU',name:'Moviment rectilini uniforme'},
+  {n:2,short:'MRUA',name:'Llançaments i frenades'},
+  {n:3,short:'Caiguda lliure',name:'Caiguda lliure a altres mons'},
+  {n:4,short:'MCU',name:'Òrbites i gravetat simulada'},
+  {n:5,short:'Missió integral',name:'Acoblament i maniobres'}];
+const SL=[];
+function slide(d){SL.push(d);return d}
+const LV={b:['b','Bàsic'],m:['m','Intermedi'],r:['r','🔥 Repte'],x:['x','Exemple resolt']};
+const SEP=h=>typeof h==='string'&&h.includes('¦')?h.split('¦').map(x=>`<span class="pc">${x.trim()}</span>`).join(''):h;
+const KL={d:'Dades',f:'Fórmula',c:'Càlcul',n:'Fixa-t’hi',r:'Resultat',q:'Pista',m:'Les dades',s:'Unitats SI',h:'Resultat',z:'Substitueix',y:'Ara tu!'};
+
+function buildSlide(d,i){
+  const s=document.createElement('section');s.className='slide'+(d.cls?' '+d.cls:'');s.dataset.i=i;
+  if(d.type==='ex'){
+    const lv=LV[d.lvl];
+    let r='';(d.parts||[]).forEach((p,pi)=>{
+      r+=`<div class="part" data-p="${pi}">`;
+      if(p.q)r+=`<div class="pq f"${p.act?` data-act="${p.act}"`:''}><span class="n">${p.l||'·'}</span><span>${p.q}</span></div>`;
+      p.s.forEach(([t,h,a,mk])=>{h=SEP(h);r+=`<div class="st t${t==='h'?'r':t} f"${a?` data-act="${a}"`:''}${mk!=null?` data-mark="${mk}"`:''}${t==='q'?' data-hide="1"':''}><span class="k">${KL[t]}</span><span class="v">${h}</span></div>`});
+      r+='</div>'});
+    s.innerHTML=`<div class="hd"><span class="kick">${d.kick}</span></div>
+      <div class="hd" style="margin-top:-6px"><h2>${d.title}</h2>${lv?`<span class="lv ${lv[0]}">${lv[1]}</span>`:''}${d.help?`<span class="aj">Ajuda <b>${'●'.repeat(d.help)}<i>${'○'.repeat(4-d.help)}</i></b></span>`:''}</div>
+      <div class="ex"><div class="lcol">${d.enun?`<p class="enun">${d.enun}</p>`:''}<div class="vis"></div></div><div class="rcol" style="position:relative">${r}</div></div>`;
+  }else if(d.type==='th'){
+    const r=(d.right||[]).map(x=>{const [h,a]=Array.isArray(x)?x:[x];return `<div class="f"${a?` data-act="${a}"`:''}>${h}</div>`}).join('');
+    s.innerHTML=`<div class="hd"><span class="kick">${d.kick}</span></div><h2 style="margin-top:-6px">${d.title}</h2>
+      <div class="th"><div class="vis"></div><div class="tcol">${r}</div></div>`;
+  }else{s.innerHTML=d.html}
+  // espais als milers
+  $$('.enun,.v,.pq,.tcol,.like,.fbox,.fm',s).forEach(e=>{if(!e.querySelector('svg,input'))e.innerHTML=nb(e.innerHTML)});
+  return s;
+}
+
+/* =================== navegació =================== */
+const box=$('#slides');let cur=0,k=0,FR=[],API={};const STATUS={};
+function buildAll(){
+  SL.forEach((d,i)=>{
+    if(MODE==='alumne'&&d.type==='ex'&&d.lvl!=='x'){
+      const h=helpOf(d),mk=lv=>{const c=Object.assign({},d,{help:h});studentify(c,lv);return buildSlide(c,i)};
+      d.elN=mk(h);if(h<4){d.elS=mk(4);d.tip=HELPTIP[h]}d.el=d.elN;
+      const v=d.vis;d.vis=el=>{const api=v?v(el)||{}:{};api.youturn=()=>{laika('bark',1100);sfx('bark')};return api};
+    }else d.el=buildSlide(d,i);
+    box.appendChild(d.el)});
+}
+function init(){
+  defineSlides();buildAll();buildTabs();
+  let start=0;try{const h=parseInt(location.hash.slice(1));if(h>0&&h<=SL.length)start=h-1}catch(e){}
+  go(start);
+}
+function go(n,back,keep){
+  if(n<0||n>=SL.length)return;
+  const old=SL[cur];
+  if(old&&old!==SL[n]){if(FR.length&&k>=FR.length)STATUS[cur]='done'}
+  saveDraft();
+  stopAll();HIDEON=false;HID.clear();
+  if(old)old.el.classList.remove('active');
+  if(old&&!keep&&old.sos){old.el.replaceWith(old.elN);old.el=old.elN;old.sos=false}
+  laikaEl.classList.toggle('sosOn',!!SL[n].sos);stage.classList.toggle('sos',!!SL[n].sos);
+  cur=n;const d=SL[n];
+  d.el.classList.add('active');
+  FR=$$('.f',d.el);FR.forEach(f=>f.classList.remove('on'));k=0;
+  const rc=$('.rcol',d.el);if(rc)rc.scrollTop=0;
+  const v=$('.vis',d.el);API={};
+  if(v&&d.vis){v.innerHTML='';API=d.vis(v)||{}}
+  if(d.onEnter)d.onEnter(d.el);
+  applyParts();
+  stage.classList.toggle('big',!!d.big);lupaReset();
+  if(back&&FR.length){FAST=true;try{while(k<FR.length)reveal(k,true)}finally{FAST=false}}
+  updUI();
+  try{history.replaceState(null,'','#'+(n+1))}catch(e){}
+  bubble.classList.remove('show');
+  if(d.tip&&!back){clearTimeout(bT);const t=d.tip;later(700,()=>say(t))}
+  if(d.lvl==='r'&&!back){later(300,()=>{sfx('repte');laika('bark',1100)})}
+  loadDraft();
+}
+function reveal(i,silent){
+  const f=FR[i];if(!f)return;f.classList.add('on');k=i+1;applyParts();
+  if(MODE==='alumne'){if(f.dataset.hide)HIDEON=true;if(f.classList.contains('tr')){HIDEON=false;unhideAll()}
+    if(f.dataset.mark!=null)$$(`mark.mk[data-p="${f.dataset.mark}"]`,SL[cur].el).forEach(m=>m.classList.add('on'))}
+  const a=f.dataset.act;if(a)a.split(',').forEach(n=>{if(API[n]){try{API[n]()}catch(e){console.error(e)}}});
+  if(!silent){
+    if(f.classList.contains('tr')){sfx('res');if(Math.random()<.5)laika('happy',900)}else sfx('step');
+    const rc=f.closest('.rcol,.tcol');if(rc){const tgt=f.offsetTop+f.offsetHeight-rc.clientHeight+14;if(tgt>rc.scrollTop)rc.scrollTop=tgt}
+  }
+}
+function applyParts(){
+  const ps=$$('.part',SL[cur].el);
+  ps.forEach((p,i)=>{const nx=ps[i+1];const h=nx&&nx.querySelector('.f');p.classList.toggle('min',!!(h&&h.classList.contains('on')))});
+}
+function next(){if(k<FR.length){reveal(k);updUI()}else if(cur<SL.length-1)go(cur+1)}
+function prev(){if(k>0){k--;FR[k].classList.remove('on');if(FR[k].dataset.mark!=null)$$(`mark.mk[data-p="${FR[k].dataset.mark}"]`,SL[cur].el).forEach(m=>m.classList.remove('on'));applyParts();updUI()}else if(cur>0)go(cur-1,true)}
+function skip(){if(cur>=SL.length-1)return;const d=SL[cur];if(d.type==='ex'&&!(FR.length&&k>=FR.length))STATUS[cur]='skip';sfx('whoosh');go(cur+1)}
+
+/* =================== menú =================== */
+function buildTabs(){
+  const firstOf=s=>SL.findIndex(d=>d.sec===s);
+  const mapI=SL.findIndex(d=>d.id==='mapa');const endI=SL.findIndex(d=>d.id==='formulari');
+  let h=`<button id="brand" type="button" data-go="${mapI}" title="Mapa de la missió"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#FF6A13" stroke="#141414" stroke-width="3"/><ellipse cx="20" cy="20" rx="19" ry="6" fill="none" stroke="#141414" stroke-width="2.5" transform="rotate(-20 20 20)"/></svg>Missió Mart</button>`;
+  SECS.forEach(s=>{h+=`<button class="tab" type="button" data-sec="${s.n}" data-go="${firstOf(s.n)}"><i>${s.n}</i>${s.short}</button>`});
+  h+=`<button class="tab end" type="button" data-go="${endI}" data-sec="9">🏁<span class="endl"> Fórmules i final</span></button>`;
+  $('#tabs').innerHTML=h;
+  if(buildTabs.done)return;buildTabs.done=1;
+  let bT2=null;
+  $('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;
+    if(b.id==='brand'){b.blur();if(e.detail>=2){clearTimeout(bT2);if(e.target.closest('svg')&&MODE==='alumne')pwOpen();else go(+b.dataset.go);return}
+      clearTimeout(bT2);bT2=setTimeout(()=>{sfx('tab');go(+b.dataset.go)},300);return}
+    sfx('tab');go(+b.dataset.go)});
+  $('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){sfx('tab');go(+b.dataset.go)}});
+}
+function updUI(){
+  const d=SL[cur];const sec=d.sec||(d.id==='formulari'||d.id==='final'?9:0);
+  $$('.tab').forEach(t=>t.classList.toggle('on',+t.dataset.sec===sec));
+  let h='';
+  if(d.sec){
+    h=`<span class="lab">${SECS[d.sec-1].name}</span>`;
+    SL.forEach((s,i)=>{if(s.sec!==d.sec)return;const st=STATUS[i]||'';const dot=s.lvl&&s.lvl!=='x'?`<span class="d ${s.lvl}"></span>`:'';
+      h+=`<button class="chip ${i===cur?'on':''} ${st}" type="button" data-go="${i}">${dot}${s.chip}</button>`});
+    h+=`<span class="legend"><span><span class="d"></span>bàsic</span><span><span class="d m"></span>intermedi</span><span><span class="d r"></span>repte</span></span>`;
+  }else{
+    h=`<span class="lab">Tria una secció al menú</span>`+SL.map((s,i)=>(s.id==='mapa'||s.id==='si'||s.id==='formulari'||s.id==='final'||s.id==='portada')?`<button class="chip ${i===cur?'on':''}" type="button" data-go="${i}">${s.chip}</button>`:'').join('');
+  }
+  $('#chips').innerHTML=h;
+  $('#count').textContent=(cur+1)+' / '+SL.length;
+  $('#prev').classList.toggle('off',cur===0&&k===0);
+  $('#next').classList.toggle('off',cur===SL.length-1&&k>=FR.length);
+  $('#prog').style.width=((cur+(FR.length?k/FR.length:1))/SL.length*100)+'%';
+  const st=$('#stp');
+  if(FR.length&&FR.length<=10)st.innerHTML=FR.map((_,i)=>`<i class="${i<k?'on':''}"></i>`).join('');
+  else st.innerHTML=FR.length?`<b style="font:800 20px var(--fd)">${k}/${FR.length}</b>`:'';
+  $('#skip').style.visibility=cur<SL.length-1&&d.type==='ex'?'visible':'hidden';
+}
+
+/* =================== escala, pantalla completa, so =================== */
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+function fsToggle(){const d=document;try{if(!d.fullscreenElement)(d.documentElement.requestFullscreen||d.documentElement.webkitRequestFullscreen).call(d.documentElement);else (d.exitFullscreen||d.webkitExitFullscreen).call(d)}catch(e){}}
+function sndShow(){$('#sndw').style.display=muted?'none':'';$('#sndx').style.display=muted?'':'none'}
+function sndToggle(){muted=!muted;sndShow();if(!muted)sfx('ok')}
+$('#next').onclick=next;$('#prev').onclick=prev;$('#skip').onclick=skip;$('#fs').onclick=fsToggle;$('#snd').onclick=sndToggle;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-fs]');if(b)fsToggle();const g=e.target.closest('[data-goto]');if(g){const i=SL.findIndex(d=>d.id===g.dataset.goto);if(i>=0){sfx('tab');go(i)}}});
+/* =================== calculadora =================== */
+const calc=$('#calc');let cexp='',cans=null,cjust=false;
+const KEYS=[['C','cl'],['(','fn'],[')','fn'],['⌫','fn'],['÷','op'],
+  ['7'],['8'],['9'],['×','op'],['x²','fn'],
+  ['4'],['5'],['6'],['−','op'],['√','fn'],
+  ['1'],['2'],['3'],['+','op'],['xʸ','fn'],
+  ['0'],[','],['×10ⁿ','fn'],['π','fn'],['=','eq']];
+$('#ckeys').style.gridTemplateColumns='repeat(5,1fr)';
+$('#ckeys').innerHTML=KEYS.map(([t,c])=>`<button type="button" class="${c||''}" data-k="${t}">${t}</button>`).join('');
+$('#ckeys').addEventListener('click',e=>{const b=e.target.closest('button');if(b){cpress(b.dataset.k);b.blur()}});
+function craw(v){return String(+v.toPrecision(12)).replace('.',',').replace('e+','E').replace('e','E').replace(/-/g,'−')}
+function cpress(key){
+  sfx('tab');
+  const isOp=['+','−','×','÷','^','²'].includes(key)||key==='x²'||key==='xʸ';
+  if(cjust){if(isOp&&cans!=null)cexp=craw(cans);else if(key!=='='&&key!=='⌫')cexp='';cjust=false}
+  switch(key){
+    case 'C':cexp='';break;
+    case '⌫':cexp=cexp.slice(0,-1);break;
+    case 'x²':cexp+='²';break;
+    case 'xʸ':cexp+='^';break;
+    case '√':cexp+='√(';break;
+    case '×10ⁿ':cexp+='E';break;
+    case '=':{const v=ceval(cexp);if(v!=null){cans=v;cjust=true;showRes(v,true)}else{$('#cres').textContent='Revisa l’operació';$('#cres').classList.add('err')}$('#cexp').textContent=cshow(cexp);return}
+    default:cexp+=key;
+  }
+  $('#cexp').textContent=cshow(cexp)||' ';
+  const v=cexp?ceval(cexp):null;
+  $('#cres').classList.remove('err');$('#cres').style.opacity=v!=null?.45:1;$('#cres').innerHTML=v!=null?cfmt(v):(cexp?'…':'0');
+}
+function cshow(x){return x.replace(/E/g,'·10^')}
+function showRes(v){const r=$('#cres');r.classList.remove('err');r.style.opacity=1;r.innerHTML=cfmt(v);r.animate([{transform:'scale(1.12)'},{transform:'none'}],{duration:250})}
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+function cfmt(v){
+  if(!isFinite(v))return 'Error';
+  if(v===0)return '0';
+  const a=Math.abs(v);
+  if(a>=1e9||a<1e-4){const e=Math.floor(Math.log10(a));let m=v/Math.pow(10,e);m=+m.toPrecision(5);
+    return String(m).replace('.',',').replace('-','−')+' · 10'+String(e).split('').map(c=>SUP[c]).join('')}
+  let s=String(+v.toPrecision(10));if(s.includes('.')){const [i,d]=s.split('.');s=i+'.'+d.slice(0,6)}
+  s=String(+s);return fmt(+s,(s.split('.')[1]||'').length)}
+function ceval(src){
+  const s=src.replace(/\s/g,'');let i=0;
+  const peek=()=>s[i];
+  function num(){let m=s.slice(i).match(/^(\d+([.,]\d*)?|[.,]\d+)(E[−-]?\d+)?/);if(!m)return null;i+=m[0].length;return parseFloat(m[0].replace(',','.').replace('−','-'))}
+  function primary(){
+    const c=peek();
+    if(c==='('){i++;const v=expr();if(peek()===')')i++;return v}
+    if(c==='π'){i++;return Math.PI}
+    if(c==='√'){i++;const v=power();if(v<0)throw 0;return Math.sqrt(v)}
+    const n=num();if(n==null)throw 0;return n}
+  function post(){let v=primary();while(peek()==='²'){i++;v=v*v}return v}
+  function power(){let v=post();if(peek()==='^'){i++;const e=unary();v=Math.pow(v,e)}return v}
+  function unary(){if(peek()==='−'||peek()==='-'){i++;return -unary()}if(peek()==='+'){i++;return unary()}return power()}
+  function term(){let v=unary();for(;;){const c=peek();
+    if(c==='×'||c==='*'){i++;v*=unary()}else if(c==='÷'||c==='/'){i++;v/=unary()}
+    else if(c&&/[\d(π√]/.test(c)){v*=unary()}else break}return v}
+  function expr(){let v=term();for(;;){const c=peek();if(c==='+'){i++;v+=term()}else if(c==='−'||c==='-'){i++;v-=term()}else break}return v}
+  try{if(!s)return null;const v=expr();if(i<s.length)return null;return isFinite(v)?v:null}catch(e){return null}
+}
+function calcToggle(open){const o=open!=null?open:!calc.classList.contains('open');calc.classList.toggle('open',o);$('#bCalc').classList.toggle('on',o);sfx(o?'pop':'tab')}
+$('#bCalc').onclick=()=>calcToggle();$('#cclose').onclick=()=>calcToggle(false);
+(function(){let dr=null;const h=$('#cdrag');
+  h.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const r=stage.getBoundingClientRect(),sc=r.width/1600;dr={x:e.clientX,y:e.clientY,l:calc.offsetLeft,t:calc.offsetTop,sc};h.setPointerCapture(e.pointerId)});
+  h.addEventListener('pointermove',e=>{if(!dr)return;const l=Math.max(0,Math.min(1600-calc.offsetWidth,dr.l+(e.clientX-dr.x)/dr.sc)),t=Math.max(0,Math.min(900-120,dr.t+(e.clientY-dr.y)/dr.sc));calc.style.left=l+'px';calc.style.top=t+'px';calc.style.right='auto'});
+  h.addEventListener('pointerup',()=>dr=null)})();
+function calcKey(e){
+  const m={'Enter':'=','=':'=','Backspace':'⌫','Delete':'C','*':'×','x':'×','/':'÷',':':'÷','-':'−','+':'+','^':'xʸ','(':'(',')':')',',':',','.':',','p':'π','r':'√','E':'×10ⁿ'};
+  let k=null;if(/^[0-9]$/.test(e.key))k=e.key;else if(m[e.key])k=m[e.key];
+  if(!k)return false;e.preventDefault();cpress(k);
+  const b=$(`#ckeys [data-k="${CSS.escape(k)}"]`);if(b)b.animate([{background:'#FF6A13'},{}],{duration:200});return true}
+
+/* =================== esborrany =================== */
+const draft=$('#draft'),dcv=$('#dcv'),dctx=dcv.getContext('2d');const DR={};let dDirty=false,dCol='#141414',dW=7,dErase=false;
+function draftToggle(open){const o=open!=null?open:!draft.classList.contains('open');if(!o)saveDraft();draft.classList.toggle('open',o);$('#bDraft').classList.toggle('on',o);if(o)loadDraft();sfx(o?'pop':'tab')}
+function saveDraft(){if(dDirty){DR[cur]=dcv.toDataURL();dDirty=false}}
+function loadDraft(){dctx.clearRect(0,0,1600,900);if(DR[cur]){const im=new Image();const c=cur;im.onload=()=>{if(c===cur)dctx.drawImage(im,0,0)};im.src=DR[cur]}}
+$('#bDraft').onclick=()=>draftToggle();$('#dclose').onclick=()=>draftToggle(false);
+$('#dclear').onclick=()=>{dctx.clearRect(0,0,1600,900);delete DR[cur];dDirty=false;sfx('whoosh')};
+$('#dmode').onclick=()=>{const g=draft.classList.toggle('glass');draft.classList.toggle('paper',!g);$('#dmode').textContent=g?'Full blanc':'Transparent'};
+$$('#dtools .sw').forEach(b=>b.onclick=()=>{$$('#dtools .sw').forEach(x=>x.classList.remove('on'));b.classList.add('on');dCol=b.dataset.c;dErase=false;$('#deraser').classList.remove('on')});
+$('#dthin').onclick=()=>{dW=3.5;$('#dthin').classList.add('on');$('#dthick').classList.remove('on')};
+$('#dthick').onclick=()=>{dW=7;$('#dthick').classList.add('on');$('#dthin').classList.remove('on')};
+$('#deraser').onclick=()=>{dErase=!dErase;$('#deraser').classList.toggle('on',dErase)};
+(function(){let last=null;
+  const P=e=>{const r=dcv.getBoundingClientRect();return [(e.clientX-r.left)*1600/r.width,(e.clientY-r.top)*900/r.height]};
+  dcv.addEventListener('pointerdown',e=>{last=P(e);dcv.setPointerCapture(e.pointerId);dot(last,e)});
+  dcv.addEventListener('pointermove',e=>{if(!last)return;const p=P(e);seg(last,p,e);last=p});
+  ['pointerup','pointercancel'].forEach(t=>dcv.addEventListener(t,()=>last=null));
+  function style(e){dctx.globalCompositeOperation=dErase?'destination-out':'source-over';dctx.strokeStyle=dCol;dctx.fillStyle=dCol;dctx.lineCap='round';dctx.lineJoin='round';
+    const pr=e.pressure&&e.pointerType==='pen'?.5+e.pressure:1;dctx.lineWidth=dErase?46:dW*pr}
+  function dot(p,e){style(e);dctx.beginPath();dctx.arc(p[0],p[1],dctx.lineWidth/2,0,Math.PI*2);dctx.fill();dDirty=true}
+  function seg(a,b,e){style(e);dctx.beginPath();dctx.moveTo(a[0],a[1]);dctx.lineTo(b[0],b[1]);dctx.stroke();dDirty=true}
+})();
+
+/* =================== teclat =================== */
+document.addEventListener('keydown',e=>{
+  const t=e.target;
+  if(t&&t.id==='pwin')return;
+  if(t&&t.tagName==='INPUT'&&t.type==='range'&&/Arrow/.test(e.key))return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(calc.classList.contains('open')&&calcKey(e))return;
+  const key=e.key;
+  if(['ArrowRight','PageDown',' ','Enter','ArrowDown'].includes(key)){e.preventDefault();next()}
+  else if(['ArrowLeft','PageUp','ArrowUp','Backspace'].includes(key)){e.preventDefault();prev()}
+  else if(key==='s'||key==='S')skip();
+  else if(key==='c'||key==='C')calcToggle();
+  else if(key==='e'||key==='E')draftToggle();
+  else if(key==='m'||key==='M')sndToggle();
+  else if(key==='f'||key==='F')fsToggle();
+  else if(key==='Home')go(0);
+  else if(key==='Escape'){calcToggle(false);if(draft.classList.contains('open'))draftToggle(false)}
+});
+
+/* =================== lupa i compte enrere (només alumnes) =================== */
+let LZ=2,lupaOn=false,zoomed=false,TIMER_RUN=()=>false;
+function lupaReset(){zoomed=false;stage.classList.remove('zoomed');const sl=$('#slides');if(sl)sl.style.transform=''}
+function lupaToggle(o){lupaOn=o!=null?o:!lupaOn;stage.classList.toggle('lupa',lupaOn);const b=$('#bLupa');if(b)b.classList.toggle('on',lupaOn);if(!lupaOn)lupaReset();sfx('tab')}
+{
+  const bar=$('#bar'),ref=$('#bDraft');
+  const bt=H('button',{class:'nb',id:'bTime',type:'button',title:'Compte enrere (T)'},null,'<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 9v4l3 2M9 2h6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span id="bTimeL">Temps</span>');
+  const bl=H('button',{class:'nb',id:'bLupa',type:'button',title:'Lupa (L)'},null,'<svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M15 15l6 6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>Lupa');
+  ref.after(bt);bt.after(bl);
+  bl.onclick=()=>{lupaToggle();bl.blur()};$('#lupaoff').onclick=()=>lupaToggle(false);
+  $$('#lupabar [data-z]').forEach(b=>b.onclick=()=>{LZ=+b.dataset.z;$$('#lupabar [data-z]').forEach(x=>x.classList.toggle('on',x===b));if(zoomed){const sl=$('#slides');sl.style.transform=`scale(${LZ})`}});
+  $('#slides').addEventListener('click',e=>{if(!lupaOn)return;e.preventDefault();e.stopPropagation();const sl=$('#slides');
+    if(zoomed){lupaReset();return}
+    const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)*1600/r.width,y=(e.clientY-r.top)*900/r.height;
+    sl.style.transformOrigin=`${x}px ${y}px`;sl.style.transform=`scale(${LZ})`;zoomed=true;stage.classList.add('zoomed');sfx('pop')},true);
+  // compte enrere
+  const tm=$('#timer');let tot=300,rem=300,run=false,endAt=0,iv=null;TIMER_RUN=()=>run;
+  const mmss=v=>{v=Math.max(0,Math.ceil(v));return String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0')};
+  function draw(){$('#tdisp').textContent=mmss(rem);$('#tgo').textContent=run?'⏸ Pausa':(rem<tot&&rem>0?'▶ Continua':'▶ Comença');
+    const w=run&&rem<=10;tm.classList.toggle('warn',w);bt.classList.toggle('run',run);bt.classList.toggle('warn',w);$('#bTimeL').textContent=run||rem<tot?mmss(rem):'Temps'}
+  function tick(){rem=(endAt-Date.now())/1000;if(rem<=0){rem=0;run=false;clearInterval(iv);draw();tm.classList.add('open','end');setTimeout(()=>tm.classList.remove('end'),3200);laika('bark',1400);sfx('alarm');say('S’ha acabat el temps! Bup!',4000);return}draw()}
+  function setT0(s){run=false;clearInterval(iv);tot=rem=Math.max(60,Math.min(5940,s));draw()}
+  $('#tgo').onclick=()=>{if(run){run=false;clearInterval(iv);rem=(endAt-Date.now())/1000}else{if(rem<=0)rem=tot;run=true;endAt=Date.now()+rem*1000;clearInterval(iv);iv=setInterval(tick,250)}sfx('tab');draw()};
+  $('#treset').onclick=()=>{setT0(tot);sfx('tab')};
+  $$('#tpre [data-m]').forEach(b=>b.onclick=()=>{$$('#tpre [data-m]').forEach(x=>x.classList.toggle('on',x===b));setT0(+b.dataset.m*60);sfx('tab')});
+  $('#tplus').onclick=()=>{if(run){endAt+=60000;tot+=60;tick()}else setT0(tot+60)};
+  $('#tminus').onclick=()=>{if(run){if(rem>61){endAt-=60000;tick()}}else setT0(tot-60)};
+  const tToggle=o=>{const v=o!=null?o:!tm.classList.contains('open');tm.classList.toggle('open',v);sfx(v?'pop':'tab')};
+  bt.onclick=()=>{tToggle();bt.blur()};$('#tclose').onclick=()=>tToggle(false);
+  (function(){let dr=null;const h=$('#tdrag');
+    h.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const r=stage.getBoundingClientRect(),sc=r.width/1600;dr={x:e.clientX,y:e.clientY,l:tm.offsetLeft,t:tm.offsetTop,sc};h.setPointerCapture(e.pointerId)});
+    h.addEventListener('pointermove',e=>{if(!dr)return;tm.style.left=Math.max(0,Math.min(1600-tm.offsetWidth,dr.l+(e.clientX-dr.x)/dr.sc))+'px';tm.style.top=Math.max(0,Math.min(780,dr.t+(e.clientY-dr.y)/dr.sc))+'px'});
+    h.addEventListener('pointerup',()=>dr=null)})();
+  document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='pwin')return;if(e.ctrlKey||e.metaKey||e.altKey)return;if(calc.classList.contains('open')&&/^[0-9]$/.test(e.key))return;
+    if(e.key==='t'||e.key==='T'){tToggle()}else if(e.key==='l'||e.key==='L'){lupaToggle()}else if(e.key==='Escape'){if(lupaOn)lupaToggle(false);tToggle(false)}});
+  draw();
+}
+/* =================== peces de dibuix =================== */
+const NS='http://www.w3.org/2000/svg';
+let HIDEON=false;const HID=new Map();
+const mask=s=>nb(String(s)).replace(/[−-]?\d[\d\u202F.,]*(\s?·\s?10[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+)?/g,'?');
+function setTxt(el,t){t=nb(t);if(HIDEON){HID.set(el,t);el.textContent=mask(t)}else{HID.delete(el);el.textContent=t}}
+function unhideAll(){HID.forEach((t,el)=>{el.textContent=t;el.removeAttribute('textLength');
+  const r=el.previousElementSibling;if(r&&r.tagName==='rect'&&el.parentNode.classList.contains('pop')){try{const bb=el.getBBox();r.setAttribute('x',bb.x-12);r.setAttribute('width',bb.width+24)}catch(e){}}});HID.clear()}
+function E(tag,a={},p,txt){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null){if(HIDEON&&(tag==='text'||tag==='tspan')&&/\d/.test(txt)){HID.set(e,nb(txt));e.textContent=mask(txt)}else e.textContent=txt}if(p)p.appendChild(e);return e}
+function H(tag,a={},p,html){const e=document.createElement(tag);for(const k in a)e.setAttribute(k,a[k]);if(html!=null)e.innerHTML=html;if(p)p.appendChild(e);return e}
+function svgIn(el,w,h){return E('svg',{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:'xMidYMid meet'},el)}
+function G(p,a={}){return E('g',a,p)}
+const PD=pts=>pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ');
+function setT(g,x,y,r=0,s=1){g.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${r}) scale(${s})`)}
+
+/* eixos d'una gràfica */
+function axes(p,o){
+  const {x,y,w,h}=o,[a,b]=o.xr,[c,d]=o.yr;
+  const X=v=>x+(v-a)/(b-a)*w,Y=v=>y+h-(v-c)/(d-c)*h;
+  const g=G(p);
+  (o.yt||[]).forEach(v=>{E('line',{x1:x,x2:x+w,y1:Y(v),y2:Y(v),class:'gr'},g);E('text',{x:x-10,y:Y(v)+6,'text-anchor':'end',class:'tk'},g,o.fy?o.fy(v):fmt(v))});
+  (o.xt||[]).forEach(v=>{E('line',{x1:X(v),x2:X(v),y1:y,y2:y+h,class:'gr'},g);E('text',{x:X(v),y:Y(c<0?0:c)+(c<0?24:26),'text-anchor':'middle',class:'tk'},g,o.fx?o.fx(v):fmt(v))});
+  const y0=Y(c<0?0:c);
+  E('path',{d:`M${x} ${y0} H${x+w+16}`,class:'ax'},g);E('path',{d:`M${x+w+16} ${y0-7} L${x+w+28} ${y0} L${x+w+16} ${y0+7}Z`,fill:'#141414'},g);
+  E('path',{d:`M${x} ${y+h} V${y-16}`,class:'ax'},g);E('path',{d:`M${x-7} ${y-16} L${x} ${y-28} L${x+7} ${y-16}Z`,fill:'#141414'},g);
+  if(o.xl)E('text',{x:x+w+28,y:y0+(c<0?50:54),'text-anchor':'end',class:'lab',style:'font-size:20px'},g,o.xl);
+  if(o.yl)E('text',{x:x+12,y:y-18,class:'lab',style:'font-size:20px'},g,o.yl);
+  return {g,X,Y};
+}
+function drawPath(path,ms,done){let L=0;try{L=path.getTotalLength()}catch(e){}if(!L){done&&done();return}path.style.strokeDasharray=L;path.style.strokeDashoffset=L;tween(ms,p=>path.style.strokeDashoffset=L*(1-p),()=>{path.style.strokeDasharray='';done&&done()})}
+/* indicador numèric */
+function readout(p,x,y,label,w=170){const g=G(p,{class:'ro',transform:`translate(${x} ${y})`});E('rect',{x:0,y:0,width:w,height:62,rx:12},g);E('text',{x:14,y:20,class:'l'},g,label);const v=E('text',{x:14,y:50,class:'v'},g,'—');
+  return t=>{v.removeAttribute('textLength');setTxt(v,t);try{if(v.getComputedTextLength()>w-26){v.setAttribute('textLength',w-26);v.setAttribute('lengthAdjust','spacingAndGlyphs')}}catch(e){}}}
+function boxLabel(p,x,y,t,fill='#FF6A13',size=22){const g=G(p,{class:'pop'});const tx=E('text',{x,y,'text-anchor':'middle',style:`font:800 ${size}px var(--fd)`},g,nb(t));
+  requestAnimationFrame(()=>{try{const bb=tx.getBBox();const r=E('rect',{x:bb.x-12,y:bb.y-6,width:bb.width+24,height:bb.height+12,rx:10,fill,stroke:'#141414','stroke-width':3});g.insertBefore(r,tx)}catch(e){}});return g}
+function arrow(p,x1,y1,x2,y2,col='#141414',w=4){const g=G(p);const a=Math.atan2(y2-y1,x2-x1),hl=14;E('line',{x1,y1,x2:x2-Math.cos(a)*hl*.8,y2:y2-Math.sin(a)*hl*.8,stroke:col,'stroke-width':w,'stroke-linecap':'round'},g);
+  E('path',{d:`M${x2} ${y2} L${x2-hl*Math.cos(a-.45)} ${y2-hl*Math.sin(a-.45)} L${x2-hl*Math.cos(a+.45)} ${y2-hl*Math.sin(a+.45)}Z`,fill:col},g);return g}
+function dimLine(p,x1,x2,y,t,o={}){const g=G(p,{class:'pop'});E('line',{x1,x2,y1:y,y2:y,stroke:o.col||'#141414','stroke-width':3},g);[x1,x2].forEach(x=>E('line',{x1:x,x2:x,y1:y-10,y2:y+10,stroke:o.col||'#141414','stroke-width':3},g));
+  if(t)E('text',{x:(x1+x2)/2,y:y+(o.below?32:-12),'text-anchor':'middle',class:'lab',style:o.style||''},g,nb(t));return g}
+
+/* nau espacial (mira a la dreta) */
+function ship(p,o={}){const g=G(p);const s=G(g,{transform:`scale(${o.flip?-1:1} 1)`});
+  E('path',{d:'M-30 -14 L-44 -26 L-34 -26 L-18 -14Z M-30 14 L-44 26 L-34 26 L-18 14Z',fill:o.fin||'#FF6A13',stroke:'#141414','stroke-width':2.5},s);
+  const fl=G(s,{class:'flame'});E('path',{class:'flick',d:'M-34 -8 L-66 0 L-34 8Z',fill:'#FF6A13',stroke:'#141414','stroke-width':2},fl);E('path',{class:'flick',d:'M-34 -4 L-52 0 L-34 4Z',fill:'#FFE8D8'},fl);
+  const rt=G(s,{class:'retro'});E('path',{class:'flick',d:'M30 -18 L52 -24 L36 -11Z M30 18 L52 24 L36 11Z',fill:'#FF6A13',stroke:'#141414','stroke-width':2},rt);
+  E('path',{d:'M-36 -14 H10 Q34 -14 44 0 Q34 14 10 14 H-36Z',fill:o.body||'#fff',stroke:'#141414','stroke-width':3},s);
+  E('circle',{cx:14,cy:0,r:6,fill:'#FFE8D8',stroke:'#141414','stroke-width':2.5},s);
+  E('rect',{x:-36,y:-14,width:8,height:28,fill:'#141414'},s);
+  if(o.name)E('text',{x:0,y:o.nameY||-34,'text-anchor':'middle',class:'lab',style:'font-size:20px'},g,o.name);
+  return g}
+/* coet vertical (mira amunt) */
+function rocket(p,o={}){const g=G(p);
+  const fl=G(g,{class:'flame'});E('path',{class:'flick',d:'M-9 30 L0 66 L9 30Z',fill:'#FF6A13',stroke:'#141414','stroke-width':2},fl);E('path',{class:'flick',d:'M-5 30 L0 50 L5 30Z',fill:'#FFE8D8'},fl);
+  E('path',{d:'M-12 14 L-24 32 L-12 30Z M12 14 L24 32 L12 30Z',fill:'#FF6A13',stroke:'#141414','stroke-width':2.5},g);
+  E('path',{d:'M-12 30 V-6 Q-12 -30 0 -40 Q12 -30 12 -6 V30Z',fill:'#fff',stroke:'#141414','stroke-width':3},g);
+  E('circle',{cx:0,cy:-8,r:5,fill:'#FFE8D8',stroke:'#141414','stroke-width':2.5},g);
+  E('rect',{x:-12,y:22,width:24,height:8,fill:'#141414'},g);return g}
+/* astres */
+function planet(p,x,y,r,kind){const g=G(p,{transform:`translate(${x} ${y})`});
+  const F={terra:'#fff',lluna:'#E4E1DD',mart:'#FF6A13',jupiter:'#FFE8D8',europa:'#F4F3F1',x:'#FFE8D8'}[kind]||'#fff';
+  E('circle',{r,fill:F,stroke:'#141414','stroke-width':Math.max(2.5,r/22)},g);
+  const cl=G(g);E('clipPath',{id:'cp'+(++planet.n)},g).appendChild(E('circle',{r}));cl.setAttribute('clip-path',`url(#cp${planet.n})`);
+  if(kind==='terra'){[[-.4,-.3,.42,.3],[.35,.2,.3,.42],[-.1,.55,.25,.15],[.5,-.5,.2,.14]].forEach(([a,b,c,d])=>E('ellipse',{cx:a*r,cy:b*r,rx:c*r,ry:d*r,fill:'#FF6A13',opacity:.85},cl))}
+  if(kind==='lluna'||kind==='mart'||kind==='europa'){[[-.35,-.3,.18],[.3,.25,.22],[.2,-.45,.1],[-.3,.45,.12]].forEach(([a,b,c])=>E('circle',{cx:a*r,cy:b*r,r:c*r,fill:'none',stroke:'#141414','stroke-width':Math.max(1.5,r/40),opacity:.45},cl))}
+  if(kind==='europa'){[[-1,-.2,1,.4],[-1,.3,1,-.1]].forEach(([a,b,c,d])=>E('path',{d:`M${a*r} ${b*r} L${c*r} ${d*r}`,stroke:'#C24A00','stroke-width':Math.max(1.5,r/30)},cl))}
+  if(kind==='jupiter'||kind==='x'){[-.5,-.15,.25,.6].forEach((b,i)=>E('rect',{x:-r,y:b*r,width:2*r,height:.16*r,fill:i%2?'#FF6A13':'#C24A00',opacity:.7},cl))}
+  return g}
+planet.n=0;
+function stars(p,w,h,n=40,seed=3){let s=seed;const r=()=>{s=(s*16807)%2147483647;return s/2147483647};const g=G(p);for(let i=0;i<n;i++){E('circle',{cx:r()*w,cy:r()*h,r:1+r()*2.2,fill:'#141414',class:i%3?'':'tw',opacity:.35+r()*.4,style:`animation-delay:-${(r()*2.4).toFixed(1)}s`},g)}return g}
+function station(p,x,y,s=1){const g=G(p,{transform:`translate(${x} ${y}) scale(${s})`});
+  E('rect',{x:-70,y:-10,width:140,height:20,rx:4,fill:'#fff',stroke:'#141414','stroke-width':3},g);
+  [-1,1].forEach(k=>{E('rect',{x:k>0?36:-66,y:-56,width:30,height:36,fill:'#FFE8D8',stroke:'#141414','stroke-width':2.5},g);E('rect',{x:k>0?36:-66,y:20,width:30,height:36,fill:'#FFE8D8',stroke:'#141414','stroke-width':2.5},g)});
+  E('rect',{x:-24,y:-22,width:48,height:44,rx:10,fill:'#FF6A13',stroke:'#141414','stroke-width':3},g);E('circle',{cx:0,cy:0,r:8,fill:'#fff',stroke:'#141414','stroke-width':2.5},g);return g}
+function asteroid(p,x,y,s=1){const g=G(p,{transform:`translate(${x} ${y}) scale(${s})`});E('path',{d:'M-30 -6 L-22 -28 L4 -34 L26 -20 L32 4 L20 28 L-6 32 L-28 20Z',fill:'#6E6862',stroke:'#141414','stroke-width':3},g);
+  [[-10,-12,7],[12,8,9],[-12,14,5]].forEach(([a,b,c])=>E('circle',{cx:a,cy:b,r:c,fill:'none',stroke:'#141414','stroke-width':2},g));return g}
+function ball(p,r=12,fill='#FF6A13'){const g=G(p);E('circle',{r,fill,stroke:'#141414','stroke-width':3},g);return g}
+function capsule(p,s=1){const g=G(p,{transform:`scale(${s})`});const in_=G(g);E('path',{d:'M-16 12 L-10 -14 Q0 -20 10 -14 L16 12Z',fill:'#fff',stroke:'#141414','stroke-width':3},in_);E('rect',{x:-18,y:10,width:36,height:8,rx:3,fill:'#FF6A13',stroke:'#141414','stroke-width':2.5},in_);return g}
+function boom(p,x,y){const g=G(p,{transform:`translate(${x} ${y})`});const st=G(g,{class:'pop'});let d='';for(let i=0;i<16;i++){const a=i/16*Math.PI*2,r=i%2?26:60;d+=(i?'L':'M')+(Math.cos(a)*r).toFixed(1)+' '+(Math.sin(a)*r).toFixed(1)}E('path',{d:d+'Z',fill:'#FF6A13',stroke:'#141414','stroke-width':3},st);E('text',{x:0,y:9,'text-anchor':'middle',style:'font:800 26px var(--fd)'},st,'XOC!');return g}
+/* controls HTML sota una simulació */
+function ctrls(el){return H('div',{class:'ctrls'},el)}
+function slider(c,lab,min,max,step,val,fmtf,on){const L=H('label',{},c,`${lab} `);const i=H('input',{type:'range',min,max,step,value:val},L);const o=H('output',{},L,fmtf(+val));i.addEventListener('input',()=>{o.textContent=fmtf(+i.value);on&&on(+i.value)});return i}
+function button(c,t,cls,fn){const b=H('button',{type:'button',class:'act '+(cls||'')},c,t);b.addEventListener('click',e=>{fn();b.blur()});return b}
+
+function suspense(p,x,y,txt){const g=G(p,{class:'pop'});const o=G(g,{transform:`translate(${x} ${y-62})`});const q=G(o,{class:'pulse'});
+  E('circle',{r:30,fill:'#FF6A13',stroke:'#141414','stroke-width':3},q);E('text',{y:13,'text-anchor':'middle',style:'font:800 38px var(--fd)'},q,'?');
+  boxLabel(g,x,y,txt,'#fff',20);sfx('beep');laika('bark',1100);return g}
+function defineSlides(){
+/* =================== PORTADA =================== */
+slide({id:'portada',chip:'Portada',big:true,cls:'cover',
+  tip:MODE==='alumne'?'Hola! Sóc la Laika. T’aniré donant pistes, però els càlculs els fas tu. Bup!':'Hola! Sóc la Laika. Avui viatjarem per l’espai amb la física del moviment. Bup!',
+  html:`<div class="cvart vis"></div>
+  <div class="kick">Física i Química · 4t d'ESO · Projecte STEAM Mart</div>
+  <h1>Missió <em>Mart</em></h1>
+  <p class="lead">Cinemàtica interplanetària: MRU, MRUA, caiguda lliure i MCU</p>
+  <div class="btns"><button class="bigbtn" type="button" data-goto="mapa">Comença la missió →</button><button class="bigbtn w" type="button" data-fs>⛶ Pantalla completa</button></div>
+  <div class="keys"><span><kbd>→</kbd><kbd>espai</kbd>pas següent</span><span><kbd>←</kbd>enrere</span><span><kbd>S</kbd>salta l'exercici</span><span><kbd>C</kbd>calculadora</span><span><kbd>E</kbd>esborrany</span><span><kbd>T</kbd>compte enrere</span><span><kbd>L</kbd>lupa</span><span><kbd>M</kbd>so</span><span><kbd>F</kbd>pantalla completa</span></div>
+  <button class="speclink" type="button" data-specs>ℹ️ Crèdits</button>`,
+  vis(el){const s=svgIn(el,640,700);stars(s,640,700,60,7);
+    E('ellipse',{cx:330,cy:330,rx:300,ry:110,fill:'none',stroke:'#141414','stroke-width':2,'stroke-dasharray':'6 10',transform:'rotate(-18 330 330)'},s);
+    planet(s,520,150,62,'mart');planet(s,120,520,44,'terra');planet(s,560,560,26,'lluna');
+    const sh=ship(s,{});sh.classList.add('burn');
+    loop(t=>{const a=t*.45;const x=330+300*Math.cos(a),y=330+110*Math.sin(a);const rx=x*Math.cos(-.314)-0,ry=0;
+      const cx=330,cy=330,c=Math.cos(-18*Math.PI/180),sn=Math.sin(-18*Math.PI/180);const dx=300*Math.cos(a),dy=110*Math.sin(a);
+      const X=cx+dx*c-dy*sn,Y=cy+dx*sn+dy*c;const vx=-300*Math.sin(a),vy=110*Math.cos(a);const ang=Math.atan2(vx*sn+vy*c,vx*c-vy*sn)*180/Math.PI;setT(sh,X,Y,ang,.9)});
+  }});
+
+/* =================== MAPA =================== */
+slide({id:'mapa',chip:'Mapa',
+  tip:'Tria una secció amb el menú de dalt. Cada exercici té el seu nivell: bàsic, intermedi o 🔥 repte.',
+  html:`<div class="hd"><span class="kick">La ruta</span></div><h2 style="margin-top:-6px">Mapa de la missió</h2>
+  <div class="mapg">${SECS.map(s=>`<button class="mcard" type="button" data-goto="s${s.n}"><span class="no">${s.n}</span><h3>${s.short}</h3><span>${s.name}</span><span class="ic" data-ic="${s.n}"></span><span class="ls">${(s.n===5?['b','m','r']:['b','m','m','r']).map(l=>`<span style="background:${l==='b'?'#fff':l==='m'?'#FFE8D8':'#FF6A13'}"></span>`).join('')}</span></button>`).join('')}</div>
+  <div class="ctrls" style="font-size:22px;gap:26px;color:var(--mid)"><b style="color:var(--ink)">Nivells dels exercicis:</b>
+   <span class="lv b">Bàsic</span><span class="lv m">Intermedi</span><span class="lv r" style="animation:none">🔥 Repte</span></div>`,
+  onEnter(el){if(el.dataset.ok)return;el.dataset.ok=1;
+    $$('[data-ic]',el).forEach(c=>{const n=+c.dataset.ic;const s=svgIn(c,220,170);
+      if(n===1){for(let i=0;i<5;i++)E('circle',{cx:20+i*34,cy:85,r:6,fill:i===4?'#FF6A13':'#E4E1DD',stroke:'#141414','stroke-width':2},s);setT(ship(s,{}),180,85,0,.8)}
+      if(n===2){[0,6,18,36,60,92].forEach((d,i)=>E('circle',{cx:20+d*1.6,cy:150-d*1.4,r:5,fill:'#E4E1DD',stroke:'#141414','stroke-width':2},s));const r=rocket(s);r.classList.add('burn');setT(r,180,40,45,.85)}
+      if(n===3){E('path',{d:'M10 160 Q110 120 210 160',fill:'#FF6A13',stroke:'#141414','stroke-width':3},s);E('path',{d:'M110 140 V40',stroke:'#141414','stroke-width':2.5,'stroke-dasharray':'5 7'},s);arrow(s,140,60,140,120,'#141414',3);const b=ball(s,12);setT(b,110,40)}
+      if(n===4){planet(s,110,85,30,'terra');E('circle',{cx:110,cy:85,r:66,fill:'none',stroke:'#141414','stroke-width':2.5,'stroke-dasharray':'6 8'},s);const b=ball(s,9);setT(b,176,85)}
+      if(n===5){station(s,150,85,.75);const sh=ship(s,{});sh.classList.add('brake');setT(sh,45,85,0,.8)}
+    })}});
+
+/* =================== SI (només alumnes) =================== */
+if(MODE==='alumne')slide({id:'si',chip:'SI',
+  tip:'Abans de fer servir una fórmula, passa totes les dades a unitats del SI!',
+  html:`<div class="hd"><span class="kick">Abans de despegar</span></div><h2 style="margin-top:-6px">El Sistema Internacional (SI)</h2>
+  <div class="sig"><div class="f"><table><thead><tr><th>Magnitud</th><th>Unitat SI</th></tr></thead><tbody>
+    <tr><td>Longitud, distància</td><td>m</td></tr><tr><td>Temps</td><td>s</td></tr><tr><td>Velocitat</td><td>m/s</td></tr>
+    <tr><td>Acceleració</td><td>m/s²</td></tr><tr><td>Angle</td><td>rad</td></tr><tr><td>Velocitat angular</td><td>rad/s</td></tr></tbody></table></div>
+   <div class="cv">
+    <div class="like f"><span>Distància</span><div>1 km = 10³ m = 1 000 m</div></div>
+    <div class="like f"><span>Temps</span><div>1 min = 60 s · 1 h = 3 600 s · 1 dia = 86 400 s</div></div>
+    <div class="like f"><span>Velocitat</span><div>km/h → m/s: <b>÷ 3,6</b> &nbsp;·&nbsp; m/s → km/h: <b>× 3,6</b></div></div>
+    <div class="like f"><span>Girs</span><div>rpm → rad/s: <b>× 2π / 60</b> (1 volta = 2π rad)</div></div>
+    <div class="like warn f"><span>Notació científica</span><div>450 000 000 m = <b>4,5 · 10⁸ m</b></div></div>
+   </div></div>`});
+/* =================== SECCIÓ 1 · MRU =================== */
+slide({id:'s1',sec:1,type:'th',chip:'Teoria',kick:'Secció 1 · Moviment rectilini uniforme',title:'MRU a l’espai profund',
+  tip:'A l’espai no hi ha aire que et freni. Si apagues els motors… continues per sempre!',
+  right:[
+    `<p>A l'espai profund no hi ha fregament. Si la nau <b>apaga els motors</b>, continua <b>en línia recta i a velocitat constant</b> (1a llei de Newton).</p>`,
+    `<div class="fbox"><small>Equació del MRU</small>x = x₀ + v · t</div>`,
+    `<div class="fbox"><small>Velocitat</small>v = Δx / Δt</div>`,
+    [`<div class="like"><span>Gràfica x-t</span><div>És una <b>recta</b>. Com més inclinada, <b>més velocitat</b>. On talla l'eix vertical hi ha x₀.</div></div>`,'demo'],
+    `<div class="like warn"><span>Unitats SI</span><div><span class="pc">1 km = 10³ m</span><span class="pc">1 h = 3 600 s</span><span class="pc">1 dia = 86 400 s</span><span class="pc">de km/h a m/s: ÷ 3,6</span></div></div>`],
+  vis(el){
+    const s=svgIn(el,740,440);
+    const TX=v=>60+v/400*640;
+    E('line',{x1:40,x2:710,y1:70,y2:70,stroke:'#141414','stroke-width':3},s);
+    for(let v=0;v<=400;v+=100){E('line',{x1:TX(v),x2:TX(v),y1:62,y2:78,stroke:'#141414','stroke-width':3},s);E('text',{x:TX(v),y:102,'text-anchor':'middle',class:'tk'},s,v+' km')}
+    const sh=ship(s,{});setT(sh,TX(0),40,0,.75);
+    const A=axes(s,{x:80,y:150,w:600,h:250,xr:[0,10],yr:[0,400],xt:[0,2,4,6,8,10],yt:[0,100,200,300,400],xl:'t (s)',yl:'x (km)'});
+    const info=E('text',{x:700,y:140,'text-anchor':'end',class:'lab'},s,'');
+    const c=ctrls(el);let V=20,X0=0;
+    slider(c,'v',0,40,5,20,v=>v+' km/s',v=>V=v);slider(c,'x₀',0,100,20,0,v=>v+' km',v=>X0=v);
+    let runs=[],busy=false;
+    function run(v=V,x0=X0,done){if(busy)return;busy=true;runs.forEach(p=>p.classList.add('ghost'));
+      const p=E('path',{class:'ln'},A.g);runs.push(p);sh.classList.add('burn');setTimeout(()=>sh.classList.remove('burn'),300);sfx('whoosh');
+      const tl=E('text',{class:'lab',style:'font-size:19px'},A.g,'');
+      tween(3200,q=>{const t=10*q;let x=x0+v*t;let tt=t;if(x>400){tt=(400-x0)/v;x=400}
+        const pts=[];for(let i=0;i<=40;i++){const ti=tt*i/40;pts.push([A.X(ti),A.Y(x0+v*ti)])}p.setAttribute('d',PD(pts));
+        setT(sh,TX(x),40,0,.75);info.textContent=`t = ${fmt(tt,1)} s   x = ${fmt(x)} km`;
+        tl.setAttribute('x',A.X(tt)+8);tl.setAttribute('y',A.Y(x)-8);tl.textContent=`v = ${v} km/s`},
+        ()=>{busy=false;done&&done()})}
+    button(c,'▶ Engega','main',()=>run());
+    button(c,'↺ Esborra','',()=>{runs.forEach(p=>p.remove());$$('text',A.g).forEach(t=>{if(/v =/.test(t.textContent))t.remove()});runs=[];setT(sh,TX(0),40,0,.75);info.textContent=''});
+    return {demo(){run(10,0,()=>later(300,()=>run(30,0)))}};
+  }});
+
+slide({sec:1,type:'ex',lvl:'x',chip:'Exemple',kick:'Secció 1 · Exemple resolt',title:'La sonda Voyager 1',
+  tip:'La Voyager 1 es va llançar el 1977 i encara viatja! És l’objecte humà més llunyà.',
+  enun:'La Voyager 1 viatja pel medi interestel·lar a <b>17 km/s</b> constants. Quina distància recorre en <b>5 dies</b>?',
+  parts:[{l:'?',q:'Distància recorreguda en 5 dies',s:[
+    ['d','v = 17 km/s = <b>17 000 m/s</b><br>t = 5 · 24 · 3 600 s = <b>432 000 s</b>'],
+    ['f','Δx = v · t'],
+    ['c','Δx = 17 000 m/s · 432 000 s'],
+    ['r','Δx = 7,344 · 10⁹ m ≈ <b>7,34 milions de km</b>','go']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,130,26,5);
+    const sh=ship(s,{name:'Voyager 1'});setT(sh,70,80,0,.8);
+    const A=axes(s,{x:90,y:180,w:540,h:200,xr:[0,5],yr:[0,8],xt:[0,1,2,3,4,5],yt:[0,2,4,6,8],xl:'t (dies)',yl:'x (milions de km)'});
+    const p=E('path',{class:'ln'},A.g);
+    const rt=readout(s,500,14,'temps',200),rx=readout(s,280,14,'distància',210);rt('0 dies');rx('0 km');
+    return {go(){sfx('whoosh');sh.classList.add('burn');later(400,()=>sh.classList.remove('burn'));
+      tween(3500,q=>{const d=5*q,x=7.344*q;p.setAttribute('d',PD([[A.X(0),A.Y(0)],[A.X(d),A.Y(x)]]));setT(sh,70+580*q,80,0,.8);rt(fmt(d,1)+' dies');rx(fmt(x,2)+' M km')},
+      ()=>{boxLabel(s,A.X(5)-60,A.Y(7.344)-20,'7,34 milions de km')})}};
+  }});
+
+slide({sec:1,type:'ex',lvl:'b',chip:'Ex 1',kick:'Secció 1 · Exercici 1',title:'La sonda Hermes',
+  tip:'Pista: abans de dividir, passa-ho tot a unitats del SI (metres i segons).',
+  enun:'La sonda Hermes viatja en línia recta d’una base lunar a un telescopi orbital a <b>450 000 km</b>, a velocitat constant de <b>12 500 m/s</b>.',
+  parts:[
+    {l:'a',q:'Converteix la distància a metres (notació científica).',s:[
+      ['d','Δx = 450 000 km · 1 km = 10³ m'],
+      ['c','450 000 · 10³ m = 450 000 000 m'],
+      ['r','Δx = <b>4,5 · 10⁸ m</b>','dist']]},
+    {l:'b',q:'Quant de temps triga a arribar? (en hores i en dies)',s:[
+      ['d','Δx = 4,5 · 10⁸ m¦v = 12 500 m/s'],
+      ['f','v = Δx / t &nbsp;→&nbsp; t = Δx / v'],
+      ['c','t = 4,5 · 10⁸ m ÷ 12 500 m/s = <b>36 000 s</b>','go'],
+      ['c','36 000 s ÷ 3 600 = 10 h ¦ 10 h ÷ 24 ≈ 0,417 dies'],
+      ['r','t = 36 000 s = <b>10 h ≈ 0,417 dies</b>']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,36,9);
+    planet(s,110,330,80,'lluna');E('path',{d:'M84 254 a26 22 0 0 1 52 0z',fill:'#fff',stroke:'#141414','stroke-width':3},s);E('rect',{x:80,y:252,width:60,height:8,fill:'#FF6A13',stroke:'#141414','stroke-width':2},s);
+    const tg=G(s,{transform:'translate(630 120)'});E('rect',{x:-50,y:-12,width:30,height:24,fill:'#FFE8D8',stroke:'#141414','stroke-width':2.5},tg);E('rect',{x:20,y:-12,width:30,height:24,fill:'#FFE8D8',stroke:'#141414','stroke-width':2.5},tg);E('rect',{x:-20,y:-24,width:40,height:48,rx:6,fill:'#fff',stroke:'#141414','stroke-width':3},tg);E('path',{d:'M-14 -24 L-22 -46 L22 -46 L14 -24Z',fill:'#FF6A13',stroke:'#141414','stroke-width':3},tg);
+    E('text',{x:630,y:190,'text-anchor':'middle',class:'sub'},s,'telescopi orbital');E('text',{x:40,y:205,class:'sub'},s,'base lunar');
+    E('path',{d:'M150 230 L570 130',stroke:'#141414','stroke-width':2.5,'stroke-dasharray':'6 9'},s);
+    const sh=ship(s,{});setT(sh,160,226,-13,.7);
+    const rt=readout(s,250,330,'temps',220);rt('0 s');
+    return {dist(){dimLine(s,150,600,60,'450 000 km = 4,5 · 10⁸ m')},
+      go(){sfx('whoosh');sh.classList.add('burn');tween(3500,q=>{setT(sh,160+400*q,226-95*q,-13,.7);const t=36000*q;rt(fmt(t)+' s')},()=>{sh.classList.remove('burn');rt('36 000 s = 10 h');sfx('ok')})}};
+  }});
+
+slide({sec:1,type:'ex',lvl:'m',chip:'Ex 2',kick:'Secció 1 · Exercici 2',title:'Les sondes Alfa i Beta',
+  tip:'A la gràfica x-t, el pendent de la recta és la velocitat.',
+  enun:'El centre de control rep la telemetria de dues sondes que es mouen sobre el mateix eix. La gràfica mostra la posició de cadascuna.',
+  parts:[
+    {l:'a',q:'Posició inicial (x₀) de cada sonda.',s:[
+      ['n','Mirem on talla cada recta l’eix vertical (t = 0).','x0'],
+      ['r','Alfa: <b>x₀ = 0 km</b>¦Beta: <b>x₀ = 40 000 km</b>']]},
+    {l:'b',q:'Velocitat de cada sonda, en km/h i en m/s.',s:[
+      ['f','v = Δx / Δt','slope'],
+      ['c','Alfa: v = (120 000 − 0) km ÷ 4 h = 30 000 km/h'],
+      ['c','Beta: v = (120 000 − 40 000) km ÷ 4 h = 20 000 km/h'],
+      ['c','De km/h a m/s, dividim per 3,6'],
+      ['r','Alfa: <b>30 000 km/h ≈ 8 333,3 m/s</b><br>Beta: <b>20 000 km/h ≈ 5 555,6 m/s</b>']]},
+    {l:'c',q:'Què vol dir el punt d’intersecció a t = 4 h?',s:[
+      ['n','Al mateix instant, les dues sondes tenen la mateixa posició.','meet'],
+      ['r','Es troben a <b>x = 120 000 km</b>: l’Alfa atrapa i avança la Beta.']]}],
+  vis(el){const s=svgIn(el,720,420);
+    const TX=v=>120+v/120000*540;E('line',{x1:110,x2:670,y1:36,y2:36,stroke:'#141414','stroke-width':3},s);
+    const pa=G(s),pb=G(s);E('circle',{r:10,fill:'#FF6A13',stroke:'#141414','stroke-width':2.5},pa);E('circle',{r:10,fill:'#141414'},pb);setT(pa,TX(0),36);setT(pb,TX(40000),36);
+    E('text',{x:40,y:42,class:'sub'},s,'sondes');
+    const A=axes(s,{x:120,y:100,w:440,h:270,xr:[0,4],yr:[0,120000],xt:[0,1,2,3,4],yt:[0,20000,40000,60000,80000,100000,120000],xl:'t (h)',yl:'x (km)'});
+    const la=E('path',{class:'ln',d:PD([[A.X(0),A.Y(0)],[A.X(4),A.Y(120000)]])},A.g),lb=E('path',{class:'ln k',d:PD([[A.X(0),A.Y(40000)],[A.X(4),A.Y(120000)]])},A.g);
+    drawPath(la,1000);drawPath(lb,1000);
+    E('circle',{cx:A.X(4),cy:A.Y(120000),r:8,fill:'#FF6A13',stroke:'#141414','stroke-width':2.5},A.g);
+    const lg=G(s,{transform:'translate(600 240)'});E('line',{x1:0,x2:34,y1:0,y2:0,class:'ln'},lg);E('text',{x:44,y:7,class:'lab'},lg,'Alfa');E('line',{x1:0,x2:34,y1:34,y2:34,class:'ln k'},lg);E('text',{x:44,y:41,class:'lab'},lg,'Beta');
+    return {
+      x0(){[[0,'x₀ = 0'],[40000,'x₀ = 40 000 km']].forEach(([v,t],i)=>{E('circle',{cx:A.X(0),cy:A.Y(v),r:14,fill:'none',stroke:'#FF6A13','stroke-width':5,class:'pulse'},A.g);boxLabel(s,A.X(0)+(i?150:80),A.Y(v)-(i?30:22),t,i?'#fff':'#FFE8D8',19)})},
+      slope(){const g=G(A.g,{class:'pop'});E('path',{d:PD([[A.X(0),A.Y(0)],[A.X(1),A.Y(0)],[A.X(1),A.Y(30000)]]),fill:'none',stroke:'#C24A00','stroke-width':3,'stroke-dasharray':'7 6'},g);
+        E('text',{x:A.X(1)+8,y:A.Y(15000)+6,class:'lab',style:'font-size:18px;fill:#C24A00'},g,'30 000 km en 1 h');
+        E('path',{d:PD([[A.X(2),A.Y(80000)],[A.X(3),A.Y(80000)],[A.X(3),A.Y(100000)]]),fill:'none',stroke:'#141414','stroke-width':3,'stroke-dasharray':'7 6'},g);
+        E('text',{x:A.X(3)+8,y:A.Y(90000)+6,class:'lab',style:'font-size:18px'},g,'20 000 km en 1 h')},
+      meet(){const cu=E('line',{y1:A.Y(0),y2:A.Y(120000),stroke:'#141414','stroke-width':2,'stroke-dasharray':'4 6'},A.g);const da=E('circle',{r:8,fill:'#FF6A13',stroke:'#141414','stroke-width':2},A.g),db=E('circle',{r:8,fill:'#141414'},A.g);
+        sfx('whoosh');tween(3000,q=>{const t=4*q,xa=30000*t,xb=40000+20000*t;cu.setAttribute('x1',A.X(t));cu.setAttribute('x2',A.X(t));da.setAttribute('cx',A.X(t));da.setAttribute('cy',A.Y(xa));db.setAttribute('cx',A.X(t));db.setAttribute('cy',A.Y(xb));setT(pa,TX(xa),36);setT(pb,TX(xb),36)},
+        ()=>{sfx('ok');E('circle',{cx:A.X(4),cy:A.Y(120000),r:18,fill:'none',stroke:'#FF6A13','stroke-width':5,class:'pulse'},A.g);boxLabel(s,A.X(2.6),A.Y(118000)-30,'Es troben! t = 4 h',' #FF6A13',20)})}};
+  }});
+
+slide({sec:1,type:'ex',lvl:'m',chip:'Ex 3',kick:'Secció 1 · Exercici 3',title:'Missatges a Mart',
+  tip:'Per això els vehicles de Mart han de saber conduir sols: les ordres arriben amb molt de retard.',
+  enun:'Els senyals de ràdio viatgen a <b>c = 3,0 · 10⁸ m/s</b>. La distància Terra–Mart és de <b>2,25 · 10¹¹ m</b> (225 milions de km).',
+  parts:[
+    {l:'a',q:'Retard d’una ordre de Houston fins al Perseverance (només anada).',s:[
+      ['d','Δx = 2,25 · 10¹¹ m¦c = 3,0 · 10⁸ m/s'],
+      ['f','t = Δx / c'],
+      ['c','t = 2,25 · 10¹¹ ÷ 3,0 · 10⁸ = 750 s'],
+      ['r','t = <b>750 s = 12,5 min</b> (12 min 30 s)','go']]},
+    {l:'b',q:'Temps total d’espera fins a rebre la confirmació.',s:[
+      ['n','El senyal ha d’anar i tornar: el doble de temps.'],
+      ['c','t = 2 · 750 s = 1 500 s','back'],
+      ['r','t<sub>total</sub> = <b>1 500 s = 25 minuts</b>']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,40,4);
+    planet(s,100,220,70,'terra');planet(s,630,220,46,'mart');
+    const rv=G(s,{transform:'translate(630 166)'});E('rect',{x:-16,y:-12,width:32,height:14,rx:3,fill:'#fff',stroke:'#141414','stroke-width':2.5},rv);[-10,0,10].forEach(x=>E('circle',{cx:x,cy:4,r:4,fill:'#141414'},rv));E('line',{x1:8,y1:-12,x2:12,y2:-24,stroke:'#141414','stroke-width':2.5},rv);
+    E('text',{x:100,y:320,'text-anchor':'middle',class:'lab'},s,'Terra');E('text',{x:630,y:300,'text-anchor':'middle',class:'lab'},s,'Mart');
+    E('line',{x1:170,x2:580,y1:220,y2:220,stroke:'#141414','stroke-width':2,'stroke-dasharray':'4 10'},s);
+    dimLine(s,100,630,380,'2,25 · 10¹¹ m');
+    const sig=G(s);[0,12,24].forEach(d=>E('path',{d:`M${d} -16 q10 16 0 32`,fill:'none',stroke:'#FF6A13','stroke-width':5,'stroke-linecap':'round'},sig));sig.style.opacity=0;
+    const rt=readout(s,270,40,'temps del senyal',200);rt('0 s');
+    function send(a,b,t0,t1,flip,done){sig.style.opacity=1;sfx('beep');tween(3000,q=>{setT(sig,a+(b-a)*q,220,flip?180:0);rt(fmt(t0+(t1-t0)*q)+' s')},()=>{sig.style.opacity=0;sfx('beep');done&&done()})}
+    return {go(){send(170,580,0,750,false,()=>boxLabel(s,600,110,'750 s = 12,5 min'))},
+      back(){send(580,170,750,1500,true,()=>boxLabel(s,150,110,'1 500 s = 25 min'))}};
+  }});
+
+slide({sec:1,type:'ex',lvl:'r',chip:'Ex 4',kick:'Secció 1 · Exercici 4',title:'Trobada espacial',
+  tip:'Repte! Quan dues naus es creuen, tenen la mateixa posició al mateix instant.',
+  enun:'Dues naus en sentits oposats, separades <b>1 800 000 km</b>. La <b>Kavout</b> va cap a l’est a <b>15 km/s</b> i la <b>Drac</b> cap a l’oest a <b>25 km/s</b>.',
+  parts:[
+    {l:'a',q:'Equació x(t) de cada nau (origen: la Kavout).',s:[
+      ['d','Kavout: x₀ = 0, v = +15 km/s<br>Drac: x₀ = 1 800 000 km, v = −25 km/s'],
+      ['f','x(t) = x₀ + v · t'],
+      ['r','x₁ = <b>15 · t</b> ¦ x₂ = <b>1 800 000 − 25 · t</b><br><span style="font-weight:400;font-size:.85em">(x en km, t en s)</span>']]},
+    {l:'b',q:'En quin instant es creuen?',s:[
+      ['f','Es creuen quan x₁ = x₂'],
+      ['c','15 · t = 1 800 000 − 25 · t &nbsp;→&nbsp; 40 · t = 1 800 000'],
+      ['r','t = <b>45 000 s = 12 h 30 min</b>','go']]},
+    {l:'c',q:'A quina distància de la posició inicial de la Kavout?',s:[
+      ['c','x = 15 km/s · 45 000 s'],
+      ['r','x = <b>675 000 km</b>','mark']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,30,11);
+    const TX=v=>50+v/1800000*620;
+    E('line',{x1:40,x2:680,y1:230,y2:230,stroke:'#141414','stroke-width':3},s);
+    for(let v=0;v<=1800000;v+=300000){E('line',{x1:TX(v),x2:TX(v),y1:222,y2:238,stroke:'#141414','stroke-width':3},s);E('text',{x:TX(v),y:262,'text-anchor':'middle',class:'tk',style:'font-size:15px'},s,fmt(v/1000)+' mil')}
+    E('text',{x:670,y:290,'text-anchor':'end',class:'sub'},s,'posició (km)');
+    const k=ship(s,{name:'Kavout'}),d=ship(s,{name:'Drac',flip:true,fin:'#141414'});setT(k,TX(0),170,0,.75);setT(d,TX(1800000),330,0,.75);
+    E('text',{x:TX(0)+60,y:130,class:'sub'},s,'15 km/s →');E('text',{x:TX(1800000)-60,y:392,'text-anchor':'end',class:'sub'},s,'← 25 km/s');
+    const rt=readout(s,270,20,'temps',220);rt('0 s');
+    return {go(){sfx('whoosh');k.classList.add('burn');d.classList.add('burn');
+      tween(4000,q=>{const t=45000*q;setT(k,TX(15*t),170,0,.75);setT(d,TX(1800000-25*t),330,0,.75);rt(fmt(t)+' s')},
+      ()=>{k.classList.remove('burn');d.classList.remove('burn');sfx('ok');E('line',{x1:TX(675000),x2:TX(675000),y1:130,y2:370,stroke:'#FF6A13','stroke-width':4,'stroke-dasharray':'8 6',class:'pop'},s);boxLabel(s,TX(675000),112,'Es creuen!')})},
+      mark(){dimLine(s,TX(0),TX(675000),405,'675 000 km')}};
+  }});
+/* =================== SECCIÓ 2 · MRUA =================== */
+function lander(p){const g=G(p);const fl=G(g,{class:'flame'});E('path',{class:'flick',d:'M-10 24 L0 56 L10 24Z',fill:'#FF6A13',stroke:'#141414','stroke-width':2},fl);
+  E('path',{d:'M-22 20 L-34 40 M22 20 L34 40 M-40 40 h12 M28 40 h12',stroke:'#141414','stroke-width':3.5,'stroke-linecap':'round'},g);
+  E('path',{d:'M-24 22 L-18 -6 H18 L24 22Z',fill:'#FFE8D8',stroke:'#141414','stroke-width':3},g);
+  E('path',{d:'M-16 -6 L-12 -26 Q0 -34 12 -26 L16 -6Z',fill:'#fff',stroke:'#141414','stroke-width':3},g);E('circle',{cx:0,cy:-16,r:5,fill:'#FF6A13',stroke:'#141414','stroke-width':2},g);return g}
+
+slide({id:'s2',sec:2,type:'th',chip:'Teoria',kick:'Secció 2 · Moviment rectilini uniformement accelerat',title:'MRUA: accelerar i frenar',
+  tip:'Si encens els motors cap enrere (retrocoets), la nau frena. Prova-ho amb una acceleració negativa!',
+  right:[
+    `<p>Quan els motors fan una força constant, la nau té <b>acceleració constant</b>: la velocitat canvia el mateix cada segon.</p>`,
+    `<div class="fboxes"><div class="fbox"><small>Velocitat</small>v = v₀ + a · t</div><div class="fbox"><small>Posició</small>x = x₀ + v₀ · t + ½ · a · t²</div><div class="fbox"><small>Sense temps</small>v² = v₀² + 2 · a · Δx</div></div>`,
+    [`<div class="like"><span>Accelera o frena?</span><div><b>a</b> i <b>v</b> amb el mateix signe → <b>accelera</b>. Signe contrari → <b>frena</b> (retrocoets).</div></div>`,'demo'],
+    `<div class="like warn"><span>Gràfica v-t</span><div>És una recta inclinada. El <b>pendent</b> és l'acceleració i l'<b>àrea</b> de sota és el desplaçament Δx.</div></div>`],
+  vis(el){const s=svgIn(el,740,450);
+    const TX=v=>60+(v+200)/600*640;
+    E('line',{x1:40,x2:710,y1:62,y2:62,stroke:'#141414','stroke-width':3},s);
+    for(let v=-200;v<=400;v+=100){E('line',{x1:TX(v),x2:TX(v),y1:55,y2:69,stroke:'#141414','stroke-width':3},s);E('text',{x:TX(v),y:92,'text-anchor':'middle',class:'tk'},s,v+' m')}
+    const sh=ship(s,{});setT(sh,TX(0),32,0,.7);
+    const A=axes(s,{x:70,y:175,w:260,h:210,xr:[0,10],yr:[-20,60],xt:[0,5,10],yt:[-20,0,20,40,60],xl:'t (s)',yl:'v (m/s)'});
+    const B=axes(s,{x:440,y:175,w:260,h:210,xr:[0,10],yr:[-200,400],xt:[0,5,10],yt:[-200,0,200,400],xl:'t (s)',yl:'x (m)'});
+    const info=E('text',{x:390,y:130,'text-anchor':'middle',class:'lab',style:'font-size:20px'},s,'');
+    const c=ctrls(el);let Aa=2,V0=0;
+    slider(c,'a',-4,4,1,2,v=>(v>0?'+':'')+v+' m/s²',v=>Aa=v);slider(c,'v₀',0,20,5,0,v=>v+' m/s',v=>V0=v);
+    let busy=false,old=[];
+    function run(a=Aa,v0=V0,done){if(busy)return;busy=true;old.forEach(p=>p.classList.add('ghost'));
+      const pv=E('path',{class:'ln'},A.g),px=E('path',{class:'ln k thin'},B.g);old.push(pv,px);
+      sh.classList.toggle('burn',a>0);sh.classList.toggle('brake',a<0);if(a)sfx('thrust',3);
+      tween(3500,q=>{let T=10*q;const xs=t=>v0*t+.5*a*t*t;
+        const pts=[],ptx=[];for(let i=0;i<=40;i++){const t=T*i/40;pts.push([A.X(t),A.Y(Math.max(-20,Math.min(60,v0+a*t)))]);ptx.push([B.X(t),B.Y(Math.max(-200,Math.min(400,xs(t))))])}
+        pv.setAttribute('d',PD(pts));px.setAttribute('d',PD(ptx));const x=Math.max(-200,Math.min(400,xs(T)));setT(sh,TX(x),32,0,.7);
+        info.textContent=`t = ${fmt(T,1)} s   v = ${fmt(v0+a*T,1)} m/s   x = ${fmt(x)} m`},
+        ()=>{sh.classList.remove('burn','brake');busy=false;done&&done()})}
+    button(c,'▶ Engega','main',()=>run());
+    button(c,'↺ Esborra','',()=>{old.forEach(p=>p.remove());old=[];setT(sh,TX(0),32,0,.7);info.textContent=''});
+    return {demo(){run(4,0,()=>later(300,()=>run(-4,20)))}};
+  }});
+
+slide({sec:2,type:'ex',lvl:'x',chip:'Exemple',kick:'Secció 2 · Exemple resolt',title:'Aterratge a la Lluna',
+  tip:'Si no ens donen el temps, fem servir v² = v₀² + 2 · a · Δx.',
+  enun:'Un mòdul lunar baixa a <b>80 m/s</b>. A <b>500 m</b> d’alçada encén els retrocoets per aturar-se just en tocar el sòl (v = 0).',
+  parts:[{l:'?',q:'Quina acceleració de frenada necessita?',s:[
+    ['d','v₀ = 80 m/s¦v = 0¦Δx = 500 m'],
+    ['f','v² = v₀² + 2 · a · Δx'],
+    ['c','0² = 80² + 2 · a · 500 &nbsp;→&nbsp; 0 = 6 400 + 1 000 · a'],
+    ['r','a = −6 400 / 1 000 = <b>−6,4 m/s²</b><br><span style="font-weight:400;font-size:.85em">(mòdul 6,4 m/s², en sentit contrari al moviment)</span>','go']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,300,30,13);
+    E('rect',{x:0,y:380,width:720,height:40,fill:'#E4E1DD',stroke:'#141414','stroke-width':3},s);
+    E('line',{x1:90,x2:90,y1:40,y2:380,stroke:'#141414','stroke-width':3},s);[0,100,200,300,400,500].forEach(h=>{const y=380-h/500*320;E('line',{x1:82,x2:98,y1:y,y2:y,stroke:'#141414','stroke-width':3},s);E('text',{x:74,y:y+6,'text-anchor':'end',class:'tk'},s,h+' m')});
+    const L=lander(s);setT(L,300,60-2,0,1.2);
+    const rh=readout(s,470,60,'alçada',190),rv=readout(s,470,140,'velocitat',190);rh('500 m');rv('80 m/s ↓');
+    return {go(){L.classList.add('burn');sfx('thrust',3.5);tween(3800,q=>{const t=12.5*q,h=500-80*t+3.2*t*t,v=80-6.4*t;setT(L,300,380-38-h/500*320,0,1.2);rh(fmt(Math.max(0,h))+' m');rv(fmt(Math.max(0,v),1)+' m/s ↓')},
+      ()=>{L.classList.remove('burn');sfx('ok');boxLabel(s,300,250,'v = 0 just a terra!')})}};
+  }});
+
+slide({sec:2,type:'ex',lvl:'b',chip:'Ex 1',kick:'Secció 2 · Exercici 1',title:'Coet de plasma',
+  tip:'Del repòs vol dir v₀ = 0. Per passar de m/s a km/h, multiplica per 3,6.',
+  enun:'Un coet arrenca <b>del repòs</b> (v₀ = 0) i els motors de plasma li donen una acceleració constant de <b>18 m/s²</b> durant <b>40 s</b>.',
+  parts:[
+    {l:'a',q:'Quina velocitat final assoleix? (m/s i km/h)',s:[
+      ['d','v₀ = 0¦a = 18 m/s²¦t = 40 s'],
+      ['f','v = v₀ + a · t'],
+      ['c','v = 0 + 18 · 40 = 720 m/s ¦ 720 · 3,6 = 2 592 km/h','go'],
+      ['r','v = <b>720 m/s = 2 592 km/h</b>']]},
+    {l:'b',q:'Quina distància recorre durant la propulsió?',s:[
+      ['f','Δx = v₀ · t + ½ · a · t²'],
+      ['c','Δx = ½ · 18 · 40² = 9 · 1 600'],
+      ['r','Δx = <b>14 400 m = 14,4 km</b>','area']]}],
+  vis(el){const s=svgIn(el,720,420);
+    const TX=v=>60+v/14400*560;E('line',{x1:40,x2:640,y1:70,y2:70,stroke:'#141414','stroke-width':3},s);
+    [0,3600,7200,10800,14400].forEach(v=>{E('line',{x1:TX(v),x2:TX(v),y1:63,y2:77,stroke:'#141414','stroke-width':3},s);E('text',{x:TX(v),y:98,'text-anchor':'middle',class:'tk'},s,fmt(v)+' m')});
+    const sh=ship(s,{});setT(sh,TX(0),40,0,.7);
+    const A=axes(s,{x:90,y:160,w:420,h:210,xr:[0,40],yr:[0,800],xt:[0,10,20,30,40],yt:[0,200,400,600,800],xl:'t (s)',yl:'v (m/s)'});
+    const p=E('path',{class:'ln'},A.g);
+    const rt=readout(s,570,170,'temps',130),rv=readout(s,570,250,'velocitat',130);rt('0 s');rv('0 m/s');
+    return {go(){sh.classList.add('burn');sfx('thrust',3.5);tween(3600,q=>{const t=40*q;p.setAttribute('d',PD([[A.X(0),A.Y(0)],[A.X(t),A.Y(18*t)]]));setT(sh,TX(9*t*t),40,0,.7);rt(fmt(t)+' s');rv(fmt(18*t)+' m/s')},()=>{sh.classList.remove('burn')})},
+      area(){E('path',{d:PD([[A.X(0),A.Y(0)],[A.X(40),A.Y(720)],[A.X(40),A.Y(0)]])+'Z',fill:'#FFE8D8',stroke:'none',class:'pop'},A.g).parentNode.insertBefore(A.g.lastChild,A.g.firstChild);
+        boxLabel(s,A.X(28),A.Y(140),'àrea = Δx = 14 400 m','#fff',20)}};
+  }});
+
+slide({sec:2,type:'ex',lvl:'m',chip:'Ex 2',kick:'Secció 2 · Exercici 2',title:'Acoblament a l’estació',
+  tip:'Recorda: quan la nau frena, l’acceleració té el signe contrari a la velocitat.',
+  enun:'Una llançadora s’acosta a una estació orbital a <b>240 m/s</b>. Activa els retrocoets, que li donen una acceleració constant de <b>−4,0 m/s²</b>.',
+  parts:[
+    {l:'a',q:'Quant de temps triga a baixar fins a 20 m/s?',s:[
+      ['d','v₀ = 240 m/s¦v = 20 m/s¦a = −4,0 m/s²'],
+      ['f','v = v₀ + a · t'],
+      ['c','20 = 240 − 4 · t &nbsp;→&nbsp; 4 · t = 220'],
+      ['r','t = <b>55 s</b>','go']]},
+    {l:'b',q:'Quina distància recorre durant la frenada?',s:[
+      ['f','v² = v₀² + 2 · a · Δx'],
+      ['c','20² = 240² + 2 · (−4) · Δx &nbsp;→&nbsp; 400 = 57 600 − 8 · Δx'],
+      ['r','Δx = 57 200 / 8 = <b>7 150 m</b>','area']]}],
+  vis(el){const s=svgIn(el,720,420);
+    const TX=v=>50+v/7150*520;station(s,650,64,.55);
+    E('line',{x1:40,x2:600,y1:64,y2:64,stroke:'#141414','stroke-width':2,'stroke-dasharray':'5 9'},s);
+    const sh=ship(s,{});setT(sh,TX(0),64,0,.7);
+    const A=axes(s,{x:90,y:150,w:420,h:220,xr:[0,60],yr:[0,250],xt:[0,10,20,30,40,50,60],yt:[0,50,100,150,200,250],xl:'t (s)',yl:'v (m/s)'});
+    const p=E('path',{class:'ln'},A.g);
+    const rt=readout(s,570,170,'temps',130),rv=readout(s,570,250,'velocitat',130);rt('0 s');rv('240 m/s');
+    return {go(){sh.classList.add('brake');sfx('thrust',3.5);tween(3600,q=>{const t=55*q;p.setAttribute('d',PD([[A.X(0),A.Y(240)],[A.X(t),A.Y(240-4*t)]]));setT(sh,TX(240*t-2*t*t),64,0,.7);rt(fmt(t)+' s');rv(fmt(240-4*t)+' m/s')},()=>{sh.classList.remove('brake');sfx('ok')})},
+      area(){const a=E('path',{d:PD([[A.X(0),A.Y(0)],[A.X(0),A.Y(240)],[A.X(55),A.Y(20)],[A.X(55),A.Y(0)]])+'Z',fill:'#FFE8D8',class:'pop'});A.g.insertBefore(a,A.g.firstChild);
+        boxLabel(s,A.X(22),A.Y(70),'àrea = Δx = 7 150 m','#fff',20)}};
+  }});
+
+slide({sec:2,type:'ex',lvl:'m',chip:'Ex 3',kick:'Secció 2 · Exercici 3',title:'Prova de maniobra',
+  tip:'A la gràfica v-t: el pendent és l’acceleració i l’àrea és la distància.',
+  enun:'La gràfica mostra la velocitat d’una nau sonda durant una prova en tres fases. Completa la taula: tipus de moviment, acceleració i distància.',
+  parts:[
+    {l:'1',q:'Fase 1 (de 0 a 10 s)',act:'f1',s:[
+      ['n','La velocitat puja de 0 a 50 m/s: accelera.'],
+      ['c','a = (50 − 0) / 10 ¦ Δx = ½ · 5 · 10² (àrea del triangle)'],
+      ['r','MRUA accelerat¦<b>a = +5,0 m/s²</b>¦<b>Δx = 250 m</b>']]},
+    {l:'2',q:'Fase 2 (de 10 a 30 s)',act:'f2',s:[
+      ['n','La velocitat no canvia: 50 m/s tota l’estona.'],
+      ['c','a = 0 ¦ Δx = 50 · 20 (àrea del rectangle)'],
+      ['r','MRU¦<b>a = 0</b>¦<b>Δx = 1 000 m</b>']]},
+    {l:'3',q:'Fase 3 (de 30 a 40 s)',act:'f3',s:[
+      ['n','La velocitat baixa de 50 a 0 m/s: frena.'],
+      ['c','a = (0 − 50) / 10 ¦ Δx = 50 · 10 − ½ · 5 · 10²'],
+      ['r','MRUA frenat¦<b>a = −5,0 m/s²</b>¦<b>Δx = 250 m</b>']]},
+    {l:'+',q:'Extra: distància total de la prova',s:[
+      ['r','250 + 1 000 + 250 = <b>1 500 m</b>','total']]}],
+  vis(el){const s=svgIn(el,720,420);
+    const A=axes(s,{x:90,y:50,w:560,h:300,xr:[0,40],yr:[0,60],xt:[0,10,20,30,40],yt:[0,10,20,30,40,50,60],xl:'t (s)',yl:'v (m/s)'});
+    [10,30].forEach(t=>E('line',{x1:A.X(t),x2:A.X(t),y1:A.Y(0),y2:A.Y(50),stroke:'#141414','stroke-width':2,'stroke-dasharray':'5 6'},A.g));
+    const L=E('path',{class:'ln',d:PD([[A.X(0),A.Y(0)],[A.X(10),A.Y(50)],[A.X(30),A.Y(50)],[A.X(40),A.Y(0)]])},A.g);drawPath(L,1200);
+    const ar=G(A.g);A.g.insertBefore(ar,A.g.children[1]);
+    function fase(poly,fill,lx,t1,t2){E('path',{d:PD(poly.map(([t,v])=>[A.X(t),A.Y(v)]))+'Z',fill,class:'pop'},ar);
+      const g=G(s,{class:'pop'});E('text',{x:A.X(lx),y:A.Y(lx<10||lx>30?18:32),'text-anchor':'middle',style:'font:800 21px var(--fd)'},g,t1);E('text',{x:A.X(lx),y:A.Y(lx<10||lx>30?18:32)+28,'text-anchor':'middle',class:'lab',style:'font-size:20px'},g,nb(t2))}
+    return {f1(){fase([[0,0],[10,50],[10,0]],'#FFE8D8',7.4,'a = +5','Δx = 250 m')},
+      f2(){fase([[10,0],[10,50],[30,50],[30,0]],'#FFD2B3',20,'a = 0','Δx = 1 000 m')},
+      f3(){fase([[30,0],[30,50],[40,0]],'#FFE8D8',32.6,'a = −5','Δx = 250 m')},
+      total(){boxLabel(s,A.X(20),A.Y(57),'Total: 1 500 m')}};
+  }});
+
+slide({sec:2,type:'ex',lvl:'r',chip:'Ex 4',kick:'Secció 2 · Exercici 4',title:'Alerta: asteroide!',
+  tip:'Repte! Durant el temps de reacció la nau encara no frena: és un MRU.',
+  enun:'Una nau va a <b>300 m/s</b> i el radar detecta un asteroide quiet a <b>1 500 m</b>. Els ordinadors tarden <b>1,0 s</b> a reaccionar (velocitat constant). Després, els retrocoets frenen amb <b>−32 m/s²</b>.',
+  parts:[
+    {l:'a',q:'Quina distància recorre durant el temps de reacció?',s:[
+      ['n','Encara no frena: MRU.'],
+      ['c','Δx = v · t = 300 m/s · 1,0 s'],
+      ['r','Δx<sub>reacció</sub> = <b>300 m</b>','react']]},
+    {l:'b',q:'Quina és la distància de frenada fins a aturar-se?',s:[
+      ['d','v₀ = 300 m/s¦v = 0¦a = −32 m/s²'],
+      ['f','v² = v₀² + 2 · a · Δx'],
+      ['c','0 = 300² + 2 · (−32) · Δx &nbsp;→&nbsp; Δx = 90 000 / 64'],
+      ['r','Δx<sub>frenada</sub> = <b>1 406,25 m</b>','brake']]},
+    {l:'c',q:'S’atura abans de xocar? Justifica-ho.',s:[
+      ['c','Δx<sub>total</sub> = 300 + 1 406,25 = 1 706,25 m'],
+      ['c','1 706,25 m &gt; 1 500 m'],
+      ['r','<b>NO!</b> Xoca amb l’asteroide: li falten <b>206,25 m</b> per aturar-se.','crash']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,30,21);
+    const TX=v=>50+v/1800*630;
+    E('line',{x1:40,x2:700,y1:200,y2:200,stroke:'#141414','stroke-width':3},s);
+    for(let v=0;v<=1800;v+=300){E('line',{x1:TX(v),x2:TX(v),y1:193,y2:207,stroke:'#141414','stroke-width':3},s);E('text',{x:TX(v),y:232,'text-anchor':'middle',class:'tk'},s,fmt(v)+' m')}
+    const ast=asteroid(s,TX(1500),160,1.1);E('text',{x:TX(1500),y:110,'text-anchor':'middle',class:'lab'},s,'asteroide');
+    const sh=ship(s,{});setT(sh,TX(0),160,0,.7);
+    const rv=readout(s,40,20,'velocitat',170),rx=readout(s,230,20,'posició',170);rv('300 m/s');rx('0 m');
+    let pos=0;
+    return {
+      react(){const g=G(s,{class:'pop'});E('rect',{x:TX(0),y:262,width:TX(300)-TX(0),height:20,fill:'#141414'},g);E('text',{x:(TX(0)+TX(300))/2,y:304,'text-anchor':'middle',class:'lab',style:'font-size:19px'},g,'reacció 300 m');
+        tween(1000,q=>{pos=300*q;setT(sh,TX(pos),160,0,.7);rx(fmt(pos)+' m')})},
+      brake(){if(MODE==='alumne'){const g=G(s,{class:'pop'});E('rect',{x:TX(300),y:262,width:TX(1150)-TX(300),height:20,fill:'none',stroke:'#FF6A13','stroke-width':4,'stroke-dasharray':'10 8'},g);E('text',{x:TX(1150)+14,y:280,style:'font:800 28px var(--fd);fill:#C24A00'},g,'?');E('text',{x:(TX(300)+TX(1150))/2,y:304,'text-anchor':'middle',class:'lab',style:'font-size:19px'},g,'frenada: ? m');return}const g=G(s,{class:'pop'});E('rect',{x:TX(300),y:262,width:TX(1706.25)-TX(300),height:20,fill:'#FF6A13',stroke:'#141414','stroke-width':2.5},g);E('text',{x:(TX(300)+TX(1706.25))/2,y:304,'text-anchor':'middle',class:'lab',style:'font-size:19px'},g,nb('frenada 1 406 m'));
+        E('line',{x1:TX(1500),x2:TX(1500),y1:120,y2:330,stroke:'#141414','stroke-width':3,'stroke-dasharray':'6 6'},g)},
+      crash(){if(MODE==='alumne'){const T=(300-Math.sqrt(300*300-4*16*850))/32;sh.classList.add('brake');sfx('thrust',2.4);tween(2600,q=>{const t=T*q;const x=300+300*t-16*t*t;setT(sh,TX(x),160,0,.7);rv(fmt(300-32*t)+' m/s');rx(fmt(x)+' m')},()=>{sh.classList.remove('brake');E('text',{x:(TX(1150)+TX(1500))/2,y:172,'text-anchor':'middle',class:'pulse',style:'font:800 44px var(--fd);fill:#D7262B'},s,'?');suspense(s,360,372,'S’aturarà a temps o xocarà?')});return}const T=(300-Math.sqrt(300*300-4*16*1200))/32;sh.classList.add('brake');sfx('thrust',3);
+        tween(3200,q=>{const t=T*q;const x=300+300*t-16*t*t;setT(sh,TX(x),160,0,.7);rv(fmt(300-32*t)+' m/s');rx(fmt(x)+' m')},
+        ()=>{sh.classList.remove('brake');boom(s,TX(1500)-10,160);sfx('boom');later(300,()=>sfx('alarm'));ast.classList.add('shake');laika('sad',2200);
+          dimLine(s,TX(1500),TX(1706.25),360,'falten 206 m',{style:'fill:#C24A00'})})}};
+  }});
+/* =================== SECCIÓ 3 · CAIGUDA LLIURE =================== */
+const GV={terra:9.8,lluna:1.62,mart:3.71,jupiter:24.79,europa:1.31};
+const GNAME={terra:'Terra',lluna:'Lluna',mart:'Mart',jupiter:'Júpiter',europa:'Europa'};
+const GFILL={terra:'#FFE8D8',lluna:'#E4E1DD',mart:'#FF6A13',jupiter:'#FFD2B3',europa:'#F4F3F1'};
+function column(s,o){
+  const w=o.w||150,x=o.x;const Yh=h=>o.y0-h/o.H*(o.y0-o.y1);const g=G(s);
+  E('rect',{x:x-w/2,y:o.y0,width:w,height:22,rx:4,fill:GFILL[o.kind],stroke:'#141414','stroke-width':3},g);
+  E('text',{x,y:o.y0+50,'text-anchor':'middle',class:'lab'},g,GNAME[o.kind]);
+  if(!o.nog)E('text',{x,y:o.y0+74,'text-anchor':'middle',class:'sub'},g,nb('g = '+fmt(GV[o.kind],2)+' m/s²'));
+  const obj=o.obj?o.obj(g):ball(g,11);const r=o.r||11;setT(obj,x,Yh(o.h0||0)-r);
+  const api={g,Yh,obj,
+    fly(v0,ms,done){const gv=GV[o.kind],T=2*v0/gv;let hm=0;tween(ms,q=>{const t=T*q,h=Math.max(0,v0*t-gv*t*t/2);hm=Math.max(hm,h);setT(obj,x,Yh(h)-r)},()=>{done&&done(T,v0*v0/(2*gv))})},
+    fall(h0,ms,done,onStep){const gv=GV[o.kind],T=Math.sqrt(2*h0/gv);tween(ms,q=>{const t=T*q,h=h0-gv*t*t/2;setT(obj,x,Yh(h)-r);onStep&&onStep(t,gv*t)},()=>{done&&done(T,gv*T)})},
+    mark(h,txt,side=1){const m=G(s,{class:'pop'});E('line',{x1:x-w/2,x2:x+w/2,y1:Yh(h),y2:Yh(h),stroke:'#141414','stroke-width':2.5,'stroke-dasharray':'6 6'},m);
+      E('text',{x:x+(side>0?w/2+8:-w/2-8),y:Yh(h)+7,'text-anchor':side>0?'start':'end',style:'font:800 20px var(--fd)'},m,nb(txt));return m}};
+  return api}
+function ruler(s,x,y0,y1,H,step,unit='m'){const g=G(s);E('line',{x1:x,x2:x,y1:y0,y2:y1,stroke:'#141414','stroke-width':3},g);
+  for(let h=0;h<=H+1e-9;h+=step){const y=y0-h/H*(y0-y1);E('line',{x1:x-8,x2:x+8,y1:y,y2:y,stroke:'#141414','stroke-width':3},g);E('text',{x:x-14,y:y+6,'text-anchor':'end',class:'tk'},g,fmt(h)+' '+unit)}return g}
+
+slide({id:'s3',sec:3,type:'th',chip:'Teoria',kick:'Secció 3 · Caiguda lliure i llançament vertical',title:'Llança a quatre mons',
+  tip:'A la Lluna podries llançar una pilota sis vegades més amunt que a la Terra!',
+  right:[
+    `<p>Quan només actua la gravetat, el cos fa un <b>MRUA</b> amb acceleració <b>−g</b> (positiu cap amunt).</p>`,
+    `<div class="fboxes"><div class="fbox"><small>Velocitat</small>v = v₀ − g · t</div><div class="fbox"><small>Alçada</small>y = y₀ + v₀ · t − ½ · g · t²</div><div class="fbox"><small>Sense temps</small>v² = v₀² − 2 · g · Δy</div></div>`,
+    [`<div class="like"><span>Gravetat (m/s²)</span><div><span class="pc">Terra <b>9,80</b></span><span class="pc">Lluna <b>1,62</b></span><span class="pc">Mart <b>3,71</b></span><span class="pc">Júpiter <b>24,79</b></span></div></div>`,'demo'],
+    `<div class="like warn"><span>Sense aire</span><div>Tots els cossos cauen igual, <b>pesin el que pesin</b>. Al punt més alt, <b>v = 0</b>.</div></div>`],
+  vis(el){const s=svgIn(el,740,450);
+    const K=['terra','lluna','mart','jupiter'];let V=15;let cols=[];
+    function build(){s.innerHTML='';const H=Math.max(10,V*V/(2*1.62))*1.08;cols=K.map((k,i)=>column(s,{x:110+i*175,y0:350,y1:30,H,kind:k,w:140}));return H}
+    build();
+    const c=ctrls(el);slider(c,'v₀',5,25,1,15,v=>v+' m/s',v=>{V=v;build()});
+    let busy=false;
+    function launch(){if(busy)return;busy=true;build();sfx('pop');const k=320;
+      let n=0;cols.forEach((c,i)=>{const T=2*V/GV[K[i]];c.fly(V,T*k,(T,h)=>{c.mark(h,fmt(h,1)+' m');E('text',{x:110+i*175,y:28+(i%2)*0,'text-anchor':'middle',class:'sub',style:'font-size:17px'},s,nb('vol: '+fmt(T,1)+' s'));sfx('pop');if(++n===4)busy=false})})}
+    button(c,'▶ Llança!','main',launch);
+    return {demo:launch};
+  }});
+
+slide({sec:3,type:'ex',lvl:'x',chip:'Exemple',kick:'Secció 3 · Exemple resolt',title:'Un sensor a la Lluna',
+  tip:'Al punt més alt la velocitat és zero: aquesta és la clau!',
+  enun:'Un astronauta llança verticalment cap amunt un sensor geològic a la Lluna amb una velocitat inicial de <b>16,2 m/s</b>.',
+  parts:[{l:'?',q:'Quina alçada màxima assoleix?',s:[
+    ['n','Al punt més alt la velocitat és v = 0.'],
+    ['f','v² = v₀² − 2 · g · Δy'],
+    ['c','0 = 16,2² − 2 · 1,62 · y<sub>màx</sub> &nbsp;→&nbsp; 0 = 262,44 − 3,24 · y<sub>màx</sub>'],
+    ['r','y<sub>màx</sub> = 262,44 / 3,24 = <b>81 m</b>','moon'],
+    ['n','A la Terra el mateix llançament només arribaria a 16,2² / (2 · 9,8) ≈ 13,4 m','earth']]}],
+  vis(el){const s=svgIn(el,720,420);ruler(s,110,350,40,90,15);
+    const L=column(s,{x:300,y0:350,y1:40,H:90,kind:'lluna',w:170}),T=column(s,{x:540,y0:350,y1:40,H:90,kind:'terra',w:170});
+    return {moon(){sfx('pop');L.fly(16.2,3200,(t,h)=>{L.mark(h,'81 m');sfx('ok')})},earth(){sfx('pop');T.fly(16.2,3200*1.62/9.8*1.6,(t,h)=>{T.mark(h,'13,4 m');sfx('ok')})}};
+  }});
+
+function drone(p){const g=G(p);E('rect',{x:-30,y:-8,width:60,height:16,rx:6,fill:'#fff',stroke:'#141414','stroke-width':3},g);
+  [-1,1].forEach(k=>{E('line',{x1:k*30,x2:k*46,y1:0,y2:-10,stroke:'#141414','stroke-width':3},g);const r=E('ellipse',{cx:k*46,cy:-14,rx:20,ry:4,fill:'#FF6A13',stroke:'#141414','stroke-width':2},g)});
+  E('circle',{cx:0,cy:0,r:4,fill:'#FF6A13'},g);return g}
+
+slide({sec:3,type:'ex',lvl:'b',chip:'Ex 1',kick:'Secció 3 · Exercici 1',title:'Mostres des d’un dron',
+  tip:'Si es «deixa caure», la velocitat inicial és zero.',
+  enun:'Un dron d’exploració, quiet a <b>180 m</b> sobre Mart (g = 3,71 m/s²), deixa caure una càpsula amb mostres (v₀ = 0).',
+  parts:[
+    {l:'a',q:'Quant de temps triga a tocar terra?',s:[
+      ['d','h = 180 m¦v₀ = 0¦g = 3,71 m/s²'],
+      ['f','h = ½ · g · t²'],
+      ['c','180 = ½ · 3,71 · t² &nbsp;→&nbsp; t² = 360 / 3,71 ≈ 97,03'],
+      ['r','t = √97,03 ≈ <b>9,85 s</b>','drop']]},
+    {l:'b',q:'Amb quina velocitat impacta? (m/s i km/h)',s:[
+      ['f','v = g · t'],
+      ['c','v = 3,71 · 9,85 ≈ 36,54 m/s ¦ 36,54 · 3,6'],
+      ['r','v ≈ <b>36,54 m/s ≈ 131,5 km/h</b>']]}],
+  vis(el){const s=svgIn(el,720,420);ruler(s,110,370,50,180,30);
+    E('rect',{x:140,y:370,width:440,height:26,fill:'#FF6A13',stroke:'#141414','stroke-width':3},s);
+    const d=drone(s);setT(d,330,40);
+    const C=column(s,{x:330,y0:370,y1:50,H:180,kind:'mart',w:0,nog:true,h0:180-2,obj:g=>capsule(g,.9),r:12});
+    const rt=readout(s,500,60,'temps',180),rv=readout(s,500,140,'velocitat',180);rt('0 s');rv('0 m/s');
+    return {drop(){sfx('whoosh');C.fall(180,3600,(T,v)=>{sfx('boom');rt(fmt(T,2)+' s');rv(fmt(v,1)+' m/s');boxLabel(s,330,320,'Impacte!')},(t,v)=>{rt(fmt(t,1)+' s');rv(fmt(v,1)+' m/s')})}};
+  }});
+
+function cannon(p){const g=G(p);E('rect',{x:-10,y:-40,width:20,height:44,rx:4,fill:'#141414'},g);E('rect',{x:-22,y:0,width:44,height:14,rx:5,fill:'#FF6A13',stroke:'#141414','stroke-width':2.5},g);return g}
+slide({sec:3,type:'ex',lvl:'m',chip:'Ex 2',kick:'Secció 3 · Exercici 2',title:'Un canó a la Terra i a la Lluna',
+  tip:'Temps de vol = temps de pujada + temps de baixada (i són iguals!).',
+  enun:'Un canó d’aire comprimit dispara un projectil verticalment cap amunt amb <b>v₀ = 40 m/s</b>.',
+  parts:[
+    {l:'a',q:'Alçada màxima i temps total de vol a la Terra (g = 9,8 m/s²).',s:[
+      ['f','y<sub>màx</sub> = v₀² / (2 · g) ¦ t<sub>pujada</sub> = v₀ / g'],
+      ['c','y<sub>màx</sub> = 40² / (2 · 9,8) = 1 600 / 19,6 ¦ t<sub>p</sub> = 40 / 9,8 = 4,08 s'],
+      ['r','y<sub>màx</sub> = <b>81,63 m</b>¦t<sub>vol</sub> = 2 · 4,08 = <b>8,16 s</b>','earth']]},
+    {l:'b',q:'Alçada màxima i temps total de vol a la Lluna (g = 1,62 m/s²).',s:[
+      ['c','y<sub>màx</sub> = 1 600 / 3,24 ¦ t<sub>p</sub> = 40 / 1,62 = 24,69 s'],
+      ['r','y<sub>màx</sub> = <b>493,83 m</b>¦t<sub>vol</sub> = <b>49,38 s</b>','moon']]},
+    {l:'c',q:'Quantes vegades és més alta la trajectòria a la Lluna?',s:[
+      ['c','493,83 / 81,63'],
+      ['r','≈ <b>6,05 vegades</b> (igual que 9,8 / 1,62)','compare']]}],
+  vis(el){const s=svgIn(el,720,420);ruler(s,100,350,30,520,100);
+    const T=column(s,{x:280,y0:350,y1:30,H:520,kind:'terra',w:170}),L=column(s,{x:540,y0:350,y1:30,H:520,kind:'lluna',w:170});
+    [280,540].forEach(x=>{const c=cannon(s);setT(c,x-50,334)});
+    const k=110;
+    return {earth(){sfx('boom');T.fly(40,8.16*k*1.5,(t,h)=>{T.mark(h,'81,6 m',1);sfx('pop')})},
+      moon(){sfx('boom');L.fly(40,49.38*k,(t,h)=>{L.mark(h,'493,8 m',-1);sfx('pop')})},
+      compare(){const g=G(s,{class:'pop'});arrow(g,410,T.Yh(81.63),410,L.Yh(493.83),'#FF6A13',5);boxLabel(s,410,L.Yh(290),'× 6')}};
+  }});
+
+slide({sec:3,type:'ex',lvl:'m',chip:'Ex 3',kick:'Secció 3 · Exercici 3',title:'L’amortidor marcià',
+  tip:'Compte: el mateix amortidor no serveix igual a tots els planetes!',
+  enun:'Un amortidor de descens per a Mart aguanta un impacte de, com a màxim, <b>15 m/s</b> sense que es facin malbé els instruments.',
+  parts:[
+    {l:'a',q:'Des de quina alçada màxima es pot deixar caure a Mart?',s:[
+      ['d','v = 15 m/s¦v₀ = 0¦g = 3,71 m/s²'],
+      ['f','v² = 2 · g · h'],
+      ['c','15² = 2 · 3,71 · h &nbsp;→&nbsp; 225 = 7,42 · h'],
+      ['r','h ≈ <b>30,32 m</b>','mars']]},
+    {l:'b',q:'I si es deixa caure des de la mateixa alçada a la Terra?',s:[
+      ['f','v = √(2 · g · h)'],
+      ['c','v = √(2 · 9,8 · 30,32) = √594,27'],
+      ['r','v ≈ <b>24,38 m/s</b> &gt; 15 m/s → <b>NO</b> ho suporta','earth']]}],
+  vis(el){const s=svgIn(el,720,420);ruler(s,110,350,40,40,10);
+    const opts=g=>capsule(g,1);
+    const M=column(s,{x:300,y0:350,y1:40,H:40,kind:'mart',w:170,h0:30.32,obj:opts,r:16}),T=column(s,{x:540,y0:350,y1:40,H:40,kind:'terra',w:170,h0:30.32,obj:opts,r:16});
+    [300,540].forEach(x=>{const m=G(s);E('line',{x1:x-85,x2:x+85,y1:M.Yh(30.32),y2:M.Yh(30.32),stroke:'#141414','stroke-width':2,'stroke-dasharray':'6 6'},m)});
+    E('text',{x:420,y:M.Yh(30.32)-34,'text-anchor':'middle',class:'sub'},s,'30,32 m');
+    return {mars(){sfx('whoosh');M.fall(30.32,2600,(t,v)=>{sfx('ok');boxLabel(s,300,250,'✔ 15 m/s')})},
+      earth(){if(MODE==='alumne'){sfx('whoosh');tween(1700,q=>{const h=30.32-(30.32-1.6)*q*q;setT(T.obj,540,T.Yh(h)-16)},()=>{boxLabel(s,540,250,'v = ? m/s','#fff',20);suspense(s,420,140,'Aguantarà l’impacte?')});return}sfx('whoosh');T.fall(30.32,2600*Math.sqrt(3.71/9.8),(t,v)=>{sfx('boom');T.obj.classList.add('shake');laika('sad',2000);boxLabel(s,540,250,'✖ 24,4 m/s')})}};
+  }});
+
+slide({sec:3,type:'ex',lvl:'r',chip:'Ex 4',kick:'Secció 3 · Exercici 4',title:'Coet de rescat a Europa',
+  tip:'Repte! Divideix el viatge en fases: motor encès, pujada lliure i caiguda.',
+  enun:'A Europa (lluna de Júpiter, <b>g = 1,31 m/s²</b>) un coet s’enlaira del repòs amb una acceleració neta cap amunt de <b>4,69 m/s²</b> durant <b>8,0 s</b>. Llavors s’acaba el combustible.',
+  parts:[
+    {l:'a',q:'Alçada i velocitat quan s’acaba el combustible.',s:[
+      ['f','v = a · t ¦ h = ½ · a · t²'],
+      ['c','v = 4,69 · 8 ¦ h = ½ · 4,69 · 64'],
+      ['r','v = <b>37,52 m/s</b>¦h = <b>150,08 m</b>','burn']]},
+    {l:'b',q:'Quina alçada màxima total assoleix?',s:[
+      ['n','Sense motor només actua la gravetat d’Europa (−1,31 m/s²).'],
+      ['f','0 = v₀² − 2 · g · Δh'],
+      ['c','Δh = 37,52² / (2 · 1,31) = 1 407,75 / 2,62 = 537,31 m'],
+      ['r','h<sub>màx</sub> = 150,08 + 537,31 = <b>687,39 m</b>','coast']]},
+    {l:'c',q:'Temps total des de l’enlairament fins que torna a terra.',s:[
+      ['c','Pujada lliure: t₂ = 37,52 / 1,31 = 28,64 s → és dalt a 8 + 28,64 = 36,64 s'],
+      ['c','Caiguda: t<sub>c</sub> = √(2 · 687,39 / 1,31) = 32,40 s'],
+      ['r','t<sub>total</sub> = 36,64 + 32,40 ≈ <b>69,04 s</b>','fall']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,240,360,16,31);
+    const C=column(s,{x:130,y0:360,y1:30,H:760,kind:'europa',w:150,nog:true,obj:g=>rocket(g),r:32});
+    const A=axes(s,{x:310,y:40,w:350,h:320,xr:[0,70],yr:[0,700],xt:[0,10,20,30,40,50,60,70],yt:[0,100,200,300,400,500,600,700],xl:'t (s)',yl:'y (m)'});
+    const p=E('path',{class:'ln'},A.g);let tc=0;
+    const y=t=>t<=8?2.345*t*t:t<=36.64?150.08+37.52*(t-8)-.655*(t-8)*(t-8):Math.max(0,687.39-.655*(t-36.64)*(t-36.64));
+    function draw(){const pts=[];for(let i=0;i<=140;i++){const t=tc*i/140;pts.push([A.X(t),A.Y(y(t))])}p.setAttribute('d',PD(pts));setT(C.obj,130,C.Yh(y(tc))-32)}
+    function phase(t0,t1,ms,done){if(tc<t0){tc=t0;draw()}tween(ms,q=>{tc=Math.max(tc,t0+(t1-t0)*q);draw()},done)}
+    function pt(t,txt,dx=0,dy=-16){E('circle',{cx:A.X(t),cy:A.Y(y(t)),r:7,fill:'#FF6A13',stroke:'#141414','stroke-width':2.5,class:'pop'},A.g);const l=E('text',{x:A.X(t)+dx,y:A.Y(y(t))+dy,'text-anchor':'middle',style:'font:800 19px var(--fd)',class:'pop'},A.g,nb(txt))}
+    return {burn(){C.obj.classList.add('burn');sfx('thrust',1.8);phase(0,8,1600,()=>{C.obj.classList.remove('burn');pt(8,'8 s: 150 m',48,0)})},
+      coast(){sfx('whoosh');phase(8,36.64,2600,()=>pt(36.64,'36,6 s: 687 m'))},
+      fall(){phase(36.64,69.04,2600,()=>{sfx('boom');pt(69.04,'69 s',-6,-14)})}};
+  }});
+/* =================== SECCIÓ 4 · MCU =================== */
+function wheel(s,cx,cy){
+  const root=G(s,{transform:`translate(${cx} ${cy})`});const rot=G(root);let R=150;
+  function draw(r){R=r;rot.innerHTML='';
+    for(let i=0;i<6;i++){const a=i*Math.PI/3;E('line',{x1:0,y1:0,x2:Math.cos(a)*(R-14),y2:Math.sin(a)*(R-14),stroke:'#141414','stroke-width':5},rot)}
+    E('circle',{r:R,fill:'none',stroke:'#141414','stroke-width':30},rot);E('circle',{r:R,fill:'none',stroke:'#FFE8D8','stroke-width':22},rot);
+    for(let i=0;i<12;i++){const a=i*Math.PI/6+.26;E('rect',{x:Math.cos(a)*R-5,y:Math.sin(a)*R-5,width:10,height:10,fill:'#FF6A13',stroke:'#141414','stroke-width':1.5},rot)}
+    E('circle',{r:22,fill:'#fff',stroke:'#141414','stroke-width':4},rot);E('circle',{r:7,fill:'#FF6A13'},rot);
+    const p=G(rot,{transform:`translate(0 ${R-16})`});
+    E('circle',{cx:0,cy:-24,r:11,fill:'#fff',stroke:'#141414','stroke-width':3},p);E('path',{d:'M-9 -14 h18 v14 h-18z',fill:'#141414'},p);
+    E('path',{d:'M-8 -30 l-3 -10 l7 6z M8 -30 l3 -10 l-7 6z',fill:'#141414'},p);
+    api.av=arrow(p,0,-6,-80,-6,'#FF6A13',5);api.aa=arrow(p,0,-40,0,-100,'#141414',5);
+    api.lv=E('text',{x:-84,y:-16,'text-anchor':'end',style:'font:800 22px var(--fd);fill:#C24A00'},p,'v');api.la=E('text',{x:10,y:-90,style:'font:800 22px var(--fd)'},p,'a');E('tspan',{dy:6,style:'font-size:15px'},api.la,'c');
+    api.arrows(api.showA)}
+  let ang=0,om=0;
+  const api={root,set R(v){draw(v)},spin(w){om=w},arrows(o){api.showA=o;[api.av,api.aa,api.lv,api.la].forEach(e=>e&&(e.style.opacity=o?1:0))},showA:true};
+  draw(R);loop((t,dt)=>{ang+=om*dt;rot.setAttribute('transform',`rotate(${ang*180/Math.PI})`)});
+  return api}
+
+slide({id:'s4',sec:4,type:'th',chip:'Teoria',kick:'Secció 4 · Moviment circular uniforme',title:'Girar per sentir pes',
+  tip:'Una estació que gira et «enganxa» a terra: és la gravetat artificial de les pel·lícules!',
+  right:[
+    `<p>Trajectòria <b>circular</b> i rapidesa <b>constant</b>. Però la direcció de la velocitat canvia contínuament.</p>`,
+    `<div class="fboxes"><div class="fbox"><small>Velocitat angular</small>ω = 2π / T = 2π · f</div><div class="fbox"><small>Velocitat lineal</small>v = ω · R</div><div class="fbox"><small>Acceleració centrípeta</small>a<sub>c</sub> = v² / R = ω² · R</div></div>`,
+    [`<div class="like"><span>Cap al centre</span><div>L'acceleració centrípeta apunta <b>cap al centre</b>. A una estació que gira la sents com un pes: <b>gravetat artificial</b>.</div></div>`,'earthg'],
+    `<div class="like warn"><span>Unitats</span><div><span class="pc">ω: rad/s</span><span class="pc">T: s</span><span class="pc">f: Hz</span><span class="pc">rpm → rad/s: × 2π/60</span></div></div>`],
+  vis(el){const s=svgIn(el,740,450);stars(s,740,450,30,41);
+    const W=wheel(s,240,225);let w=.2,R=100;
+    const rT=readout(s,500,30,'període T',210),rv=readout(s,500,110,'velocitat v',210),ra=readout(s,500,190,'acceleració centrípeta',210),rg=readout(s,500,270,'gravetat artificial',210);
+    const gbar=G(s,{transform:'translate(500 352)'});E('rect',{x:0,y:0,width:210,height:26,rx:8,fill:'#fff',stroke:'#141414','stroke-width':3},gbar);const gf=E('rect',{x:3,y:3,width:0,height:20,rx:5,fill:'#FF6A13'},gbar);
+    [0,1,2].forEach(k=>{E('line',{x1:3+k*102,x2:3+k*102,y1:-4,y2:30,stroke:'#141414','stroke-width':2},gbar);E('text',{x:3+k*102,y:52,'text-anchor':'middle',class:'tk'},gbar,k+' g')});
+    function upd(){W.R=60+R*.6;W.spin(w);const T=w>0?2*Math.PI/w:Infinity,v=w*R,a=w*w*R;rT(w>0?fmt(T,1)+' s':'—');rv(fmt(v,1)+' m/s');ra(fmt(a,2)+' m/s²');rg(fmt(a/9.8,2)+' g');gf.setAttribute('width',Math.min(204,a/9.8*102))}
+    const c=ctrls(el);const sw=slider(c,'ω',0,.6,.01,.2,v=>fmt(v,2)+' rad/s',v=>{w=v;upd()});const sr=slider(c,'R',20,200,10,100,v=>v+' m',v=>{R=v;upd()});
+    upd();
+    return {earthg(){w=.31;R=100;sw.value=.31;sr.value=100;sw.dispatchEvent(new Event('input'));sr.dispatchEvent(new Event('input'));upd();sfx('spin')}};
+  }});
+
+slide({sec:4,type:'ex',lvl:'x',chip:'Exemple',kick:'Secció 4 · Exemple resolt',title:'Estació amb gravetat artificial',
+  tip:'Si l’estació gira prou de pressa, els astronautes caminen per la vora com si fossin a la Terra.',
+  enun:'Una estació espacial toroïdal té un radi <b>R = 100 m</b>. A quina velocitat angular ha de girar perquè a la vora exterior se simuli la gravetat terrestre (<b>a<sub>c</sub> = 9,8 m/s²</b>)?',
+  parts:[{l:'?',q:'Velocitat angular ω i període de gir T',s:[
+    ['d','R = 100 m¦a<sub>c</sub> = 9,8 m/s²'],
+    ['f','a<sub>c</sub> = ω² · R &nbsp;→&nbsp; ω = √(a<sub>c</sub> / R)'],
+    ['c','ω = √(9,8 / 100) = √0,098'],
+    ['r','ω ≈ <b>0,313 rad/s</b>','spin'],
+    ['c','T = 2π / ω = 2 · 3,1416 / 0,313'],
+    ['r','T ≈ <b>20 s</b>: una volta cada 20 segons','period']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,30,43);const W=wheel(s,260,210);W.R=170;W.spin(0);
+    const rT=readout(s,520,40,'ω',180),rv=readout(s,520,120,'període',180);rT('?');rv('?');
+    return {spin(){W.spin(.313);rT('0,313 rad/s');sfx('spin')},period(){rv('≈ 20 s');boxLabel(s,600,250,'= 1 g')}};
+  }});
+
+function iss(p){const g=G(p);E('rect',{x:-26,y:-4,width:52,height:8,fill:'#fff',stroke:'#141414','stroke-width':2},g);[-1,1].forEach(k=>E('rect',{x:k>0?14:-26,y:-18,width:12,height:36,fill:'#FFE8D8',stroke:'#141414','stroke-width':2},g));E('rect',{x:-8,y:-8,width:16,height:16,rx:3,fill:'#FF6A13',stroke:'#141414','stroke-width':2},g);return g}
+function orbitAnim(s,cx,cy,r,period,obj,a0=-Math.PI/2){let a=a0,run=true;const api={get a(){return a},stop(){run=false},go(){run=true}};loop((t,dt)=>{if(run)a+=dt*2*Math.PI/period;setT(obj,cx+r*Math.cos(a),cy+r*Math.sin(a),a*180/Math.PI+90)});return api}
+
+slide({sec:4,type:'ex',lvl:'b',chip:'Ex 1',kick:'Secció 4 · Exercici 1',title:'L’Estació Espacial Internacional',
+  tip:'L’EEI fa unes 16 voltes a la Terra cada dia!',
+  enun:'L’EEI orbita a 400 km sobre la superfície. El radi de l’òrbita és <b>R = 6 770 km = 6,77 · 10⁶ m</b> i fa una volta cada <b>92 min (5 520 s)</b>.',
+  parts:[
+    {l:'a',q:'Velocitat angular ω (rad/s).',s:[
+      ['f','ω = 2π / T'],
+      ['c','ω = 2 · 3,1416 / 5 520 s'],
+      ['r','ω ≈ <b>1,138 · 10⁻³ rad/s</b>','w']]},
+    {l:'b',q:'Velocitat orbital lineal v (m/s i km/h).',s:[
+      ['f','v = ω · R'],
+      ['c','v = 1,138 · 10⁻³ · 6,77 · 10⁶'],
+      ['r','v ≈ <b>7 704,3 m/s ≈ 27 735,5 km/h</b>','speed']]},
+    {l:'c',q:'Acceleració centrípeta de l’estació.',s:[
+      ['f','a<sub>c</sub> = v² / R'],
+      ['c','a<sub>c</sub> = 7 704,3² / 6,77 · 10⁶'],
+      ['r','a<sub>c</sub> ≈ <b>8,77 m/s²</b>','acc'],
+      ['n','Gairebé la g de la Terra! Els astronautes suren perquè cauen contínuament al voltant de la Terra.']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,30,47);
+    const cx=250,cy=210,R=190,Rt=R*6370/6770;planet(s,cx,cy,Rt,'terra');
+    E('circle',{cx,cy,r:R,fill:'none',stroke:'#141414','stroke-width':2.5,'stroke-dasharray':'6 8'},s);
+    dimLine(s,cx+Rt,cx+R+1,cy-6,'',{});E('text',{x:cx+R+12,y:cy-14,class:'lab',style:'font-size:18px'},s,'400 km');
+    const st=iss(s);const O=orbitAnim(s,cx,cy,R,8,st);
+    const vec=G(s);
+    const rw=readout(s,500,40,'ω',200),rv=readout(s,500,120,'v',200),ra=readout(s,500,200,'a centrípeta',200);rw('?');rv('?');ra('?');
+    E('text',{x:600,y:300,'text-anchor':'middle',class:'sub'},s,'1 volta = 92 min');E('text',{x:600,y:324,'text-anchor':'middle',class:'sub'},s,'(animació accelerada)');
+    let showV=false,showA=false;loop(()=>{vec.innerHTML='';const a=O.a,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);if(showV)arrow(vec,x,y,x-70*Math.sin(a),y+70*Math.cos(a),'#FF6A13',5);if(showA)arrow(vec,x,y,x-70*Math.cos(a),y-70*Math.sin(a),'#141414',5)});
+    return {w(){rw('1,138·10⁻³ rad/s')},speed(){rv('7 704 m/s');showV=true},acc(){ra('8,77 m/s²');showA=true}};
+  }});
+
+slide({sec:4,type:'ex',lvl:'m',chip:'Ex 2',kick:'Secció 4 · Exercici 2',title:'La centrifugadora d’astronautes',
+  tip:'Per entrenar l’enlairament, els astronautes giren en una centrifugadora. Quin mareig!',
+  enun:'Una centrifugadora humana té una cabina a l’extrem d’un braç de <b>8,0 m</b> de radi, que gira a <b>30 rpm</b> (revolucions per minut).',
+  parts:[
+    {l:'a',q:'Converteix 30 rpm a rad/s.',s:[
+      ['n','1 volta = 2π rad · 1 min = 60 s'],
+      ['c','ω = 30 · 2π / 60'],
+      ['r','ω = π ≈ <b>3,142 rad/s</b>','spin']]},
+    {l:'b',q:'Velocitat lineal de l’astronauta.',s:[
+      ['f','v = ω · R'],
+      ['c','v = 3,142 · 8,0'],
+      ['r','v ≈ <b>25,13 m/s</b>','v']]},
+    {l:'c',q:'Acceleració centrípeta. Quantes vegades g representa?',s:[
+      ['f','a<sub>c</sub> = ω² · R'],
+      ['c','a<sub>c</sub> = 3,142² · 8,0 ≈ 78,96 m/s² ¦ 78,96 / 9,8'],
+      ['r','a<sub>c</sub> ≈ <b>78,96 m/s² ≈ 8,06 g</b>','dizzy']]}],
+  vis(el){const s=svgIn(el,720,420);
+    const cx=230,cy=220,L=165;E('circle',{cx,cy,r:L,fill:'none',stroke:'#E4E1DD','stroke-width':3,'stroke-dasharray':'8 8'},s);
+    const rot=G(s);E('rect',{x:-6,y:-12,width:L,height:24,rx:6,fill:'#141414'},rot);
+    const cab=G(rot,{transform:`translate(${L} 0)`});E('circle',{r:38,fill:'#fff',stroke:'#141414','stroke-width':4},cab);E('circle',{r:30,fill:'#FFE8D8'},cab);
+    E('circle',{cx:-8,cy:-4,r:3.5,fill:'#141414'},cab);E('circle',{cx:8,cy:-4,r:3.5,fill:'#141414'},cab);E('ellipse',{cx:0,cy:6,rx:4,ry:3,fill:'#141414'},cab);E('path',{d:'M-20 -14 l-6 -14 l12 8z M20 -14 l6 -14 l-12 8z',fill:'#141414'},cab);
+    E('circle',{cx,cy,r:30,fill:'#FF6A13',stroke:'#141414','stroke-width':4},s);dimLine(s,cx,cx+L,cy+70,'R = 8,0 m');
+    let w=0,ang=0;loop((t,dt)=>{ang+=w*dt;rot.setAttribute('transform',`translate(${cx} ${cy}) rotate(${ang*180/Math.PI})`)});
+    const rw=readout(s,480,30,'ω',190),rv=readout(s,480,110,'v',190);rw('30 rpm');rv('?');
+    const gm=G(s,{transform:'translate(480 200)'});E('text',{x:0,y:0,class:'lab',style:'font-size:18px'},gm,'ACCELERACIÓ (en g)');E('rect',{x:0,y:14,width:190,height:30,rx:8,fill:'#fff',stroke:'#141414','stroke-width':3},gm);const gf=E('rect',{x:3,y:17,width:0,height:24,rx:5,fill:'#FF6A13'},gm);
+    for(let k=0;k<=10;k+=2){const x=3+k*18.4;E('line',{x1:x,x2:x,y1:44,y2:52,stroke:'#141414','stroke-width':2},gm);E('text',{x,y:72,'text-anchor':'middle',class:'tk'},gm,k)}
+    const gt=E('text',{x:95,y:110,'text-anchor':'middle',style:'font:800 34px var(--fd)'},gm,'');
+    return {spin(){w=Math.PI;rw('π ≈ 3,142 rad/s');sfx('spin')},v(){rv('25,13 m/s')},
+      dizzy(){tween(1500,q=>{gf.setAttribute('width',8.06*18.4*q);setTxt(gt,fmt(8.06*q,2)+' g')});laika('dizzy',3000);sfx('whine')}};
+  }});
+
+function sat(p){const g=G(p);E('rect',{x:-30,y:-6,width:20,height:12,fill:'#FFE8D8',stroke:'#141414','stroke-width':2},g);E('rect',{x:10,y:-6,width:20,height:12,fill:'#FFE8D8',stroke:'#141414','stroke-width':2},g);E('rect',{x:-10,y:-10,width:20,height:20,rx:3,fill:'#fff',stroke:'#141414','stroke-width':2.5},g);E('line',{x1:0,y1:10,x2:0,y2:20,stroke:'#141414','stroke-width':2.5},g);return g}
+
+slide({sec:4,type:'ex',lvl:'m',chip:'Ex 3',kick:'Secció 4 · Exercici 3',title:'Satèl·lit d’un planeta desconegut',
+  tip:'Recorda passar les hores a segons abans d’operar: 1 h = 3 600 s.',
+  enun:'Un satèl·lit de comunicacions fa una òrbita circular al voltant d’un planeta desconegut, amb un període <b>T = 12 h</b> i una velocitat constant de <b>4 500 m/s</b>.',
+  parts:[
+    {l:'a',q:'Velocitat angular del satèl·lit (rad/s).',s:[
+      ['d','T = 12 h = 12 · 3 600 = 43 200 s'],
+      ['f','ω = 2π / T'],
+      ['c','ω = 2π / 43 200'],
+      ['r','ω ≈ <b>1,454 · 10⁻⁴ rad/s</b>','w']]},
+    {l:'b',q:'Radi de l’òrbita (km).',s:[
+      ['f','v = ω · R &nbsp;→&nbsp; R = v / ω'],
+      ['c','R = 4 500 / 1,454 · 10⁻⁴'],
+      ['r','R ≈ <b>3,095 · 10⁷ m = 30 950 km</b>','radius']]},
+    {l:'c',q:'Freqüència (Hz) i acceleració centrípeta.',s:[
+      ['f','f = 1 / T ¦ a<sub>c</sub> = v · ω'],
+      ['c','f = 1 / 43 200 ¦ a<sub>c</sub> = 4 500 · 1,454 · 10⁻⁴'],
+      ['r','f ≈ <b>2,31 · 10⁻⁵ Hz</b>¦a<sub>c</sub> ≈ <b>0,654 m/s²</b>','f']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,34,53);const cx=240,cy=210,R=175;
+    planet(s,cx,cy,70,'x');E('text',{x:cx,y:cy+100,'text-anchor':'middle',class:'sub'},s,'planeta desconegut');
+    E('circle',{cx,cy,r:R,fill:'none',stroke:'#141414','stroke-width':2.5,'stroke-dasharray':'6 8'},s);
+    const st=sat(s);const O=orbitAnim(s,cx,cy,R,8,st);
+    const rw=readout(s,490,30,'ω',200),rr=readout(s,490,110,'R',200),rf=readout(s,490,190,'f',200),ra=readout(s,490,270,'a centrípeta',200);[rw,rr,rf,ra].forEach(f=>f('?'));
+    E('text',{x:590,y:370,'text-anchor':'middle',class:'sub'},s,'1 volta = 12 h (accelerat)');
+    return {w(){rw('1,454·10⁻⁴ rad/s')},radius(){rr('30 950 km');const a=O.a;const g=G(s,{class:'pop'});arrow(g,cx,cy,cx+R*Math.cos(a),cy+R*Math.sin(a),'#FF6A13',4);E('text',{x:cx+R*.5*Math.cos(a)+10,y:cy+R*.5*Math.sin(a)-10,style:'font:800 26px var(--fd);fill:#C24A00'},g,'R')},
+      f(){rf('2,31·10⁻⁵ Hz');ra('0,654 m/s²')}};
+  }});
+
+slide({sec:4,type:'ex',lvl:'r',chip:'Ex 4',kick:'Secció 4 · Exercici 4',title:'Sincronització geoestacionària',
+  tip:'Repte! Un satèl·lit geoestacionari sempre «veu» el mateix lloc de la Terra.',
+  enun:'Un satèl·lit geoestacionari ha d’estar sempre sobre el mateix punt de l’equador: el seu període ha de ser el de rotació de la Terra, <b>T = 24 h = 86 400 s</b>.',
+  parts:[
+    {l:'a',q:'Velocitat angular ω per mantenir la sincronització.',s:[
+      ['f','ω = 2π / T'],
+      ['c','ω = 2π / 86 400 s'],
+      ['r','ω ≈ <b>7,272 · 10⁻⁵ rad/s</b>','sync']]},
+    {l:'b',q:'Radi de l’òrbita si a<sub>c</sub> = 0,223 m/s².',s:[
+      ['f','a<sub>c</sub> = ω² · R &nbsp;→&nbsp; R = a<sub>c</sub> / ω²'],
+      ['c','R = 0,223 / (7,272 · 10⁻⁵)² = 0,223 / 5,288 · 10⁻⁹'],
+      ['r','R ≈ <b>4,217 · 10⁷ m = 42 170 km</b>','radius']]},
+    {l:'c',q:'A quina alçada sobre la superfície? (R<sub>T</sub> = 6 370 km)',s:[
+      ['f','h = R − R<sub>T</sub>'],
+      ['c','h = 42 170 km − 6 370 km'],
+      ['r','h ≈ <b>35 800 km</b>','height']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,40,59);const cx=260,cy=210,R=195,Rt=R*6370/42170;
+    E('circle',{cx,cy,r:R,fill:'none',stroke:'#141414','stroke-width':2.5,'stroke-dasharray':'6 8'},s);
+    const er=G(s);planet(er,0,0,Rt,'terra');const mk=E('circle',{cx:Rt,cy:0,r:5,fill:'#141414'},er);
+    const ln=E('line',{stroke:'#FF6A13','stroke-width':3,'stroke-dasharray':'5 6'},s);const st=sat(s);
+    let a=0,w=0;loop((t,dt)=>{a+=w*dt;er.setAttribute('transform',`translate(${cx} ${cy}) rotate(${a*180/Math.PI})`);const x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);setT(st,x,y,a*180/Math.PI+90);ln.setAttribute('x1',cx+Rt*Math.cos(a));ln.setAttribute('y1',cy+Rt*Math.sin(a));ln.setAttribute('x2',x);ln.setAttribute('y2',y)});
+    const rw=readout(s,500,30,'ω',200);rw('?');E('text',{x:600,y:120,'text-anchor':'middle',class:'sub'},s,'1 volta = 24 h (accelerat)');
+    return {sync(){w=2*Math.PI/7;rw('7,272·10⁻⁵ rad/s');sfx('spin')},
+      radius(){const g=G(s,{class:'pop'});E('line',{x1:cx,y1:cy,x2:cx,y2:cy+R,stroke:'#141414','stroke-width':4},g);E('text',{x:cx+10,y:cy+R*.62,style:'font:800 22px var(--fd)'},g,nb('R = 42 170 km'))},
+      height(){const g=G(s,{class:'pop'});E('line',{x1:cx,y1:cy,x2:cx-Rt,y2:cy,stroke:'#C24A00','stroke-width':5},g);E('line',{x1:cx-Rt,y1:cy,x2:cx-R,y2:cy,stroke:'#FF6A13','stroke-width':8},g);
+        E('text',{x:cx-(R+Rt)/2,y:cy-14,'text-anchor':'middle',style:'font:800 22px var(--fd)'},g,nb('h ≈ 35 800 km'));E('text',{x:cx-Rt/2,y:cy+30,'text-anchor':'middle',style:'font:700 16px var(--fb)'},g,'R');E('text',{x:cx-Rt/2+10,y:cy+34,style:'font:700 11px var(--fb)'},g,'T')}};
+  }});
+/* =================== SECCIÓ 5 · MISSIÓ INTEGRAL =================== */
+slide({id:'s5',sec:5,type:'th',chip:'Teoria',kick:'Secció 5 · Missió integral',title:'Una missió, diverses fases',
+  tip:'El truc de les missions espacials: el final d’una fase és l’inici de la següent!',
+  right:[
+    `<p>Les missions reals combinen <b>diversos moviments</b>. Per resoldre-les dividim el viatge en <b>fases</b>.</p>`,
+    [`<div class="like"><span>Fase 1</span><div><b>Enlairament:</b> MRUA amb a &gt; 0 fins a la velocitat de creuer.</div></div>`,'p1'],
+    [`<div class="like"><span>Fase 2</span><div><b>Creuer o òrbita d'espera:</b> MRU o MCU.</div></div>`,'p2'],
+    [`<div class="like"><span>Fase 3</span><div><b>Frenada i acoblament:</b> MRUA amb a &lt; 0 fins a igualar la velocitat de l'objectiu.</div></div>`,'p3'],
+    [`<div class="fbox" style="font-size:27px"><small>Estratègia</small>La velocitat i la posició <span class="or">finals</span> d'una fase són les <span class="or">inicials</span> de la següent!</div>`,'link']],
+  vis(el){const s=svgIn(el,740,450);
+    const A=axes(s,{x:80,y:90,w:600,h:260,xr:[0,10],yr:[0,10],xl:'t',yl:'v'});
+    const P=[[0,0],[3,8],[7,8],[10,0]];
+    const sh=[ship(s,{}),ship(s,{}),ship(s,{})];sh[0].classList.add('burn');sh[2].classList.add('brake');sh.forEach(x=>x.style.opacity=0);
+    const names=['Fase 1 · MRUA (a > 0)','Fase 2 · MRU','Fase 3 · MRUA (a < 0)'];
+    function seg(i){const p=E('path',{class:'ln',d:PD([P[i],P[i+1]].map(([t,v])=>[A.X(t),A.Y(v)]))},A.g);drawPath(p,900);sfx('whoosh');
+      const mx=(P[i][0]+P[i+1][0])/2;setT(sh[i],A.X(mx),A.Y(9.6),0,.7);sh[i].style.opacity=1;sh[i].classList.add('pop');
+      E('rect',{x:A.X(P[i][0])+3,y:A.Y(0)+34,width:A.X(P[i+1][0])-A.X(P[i][0])-6,height:30,rx:8,fill:['#FFE8D8','#fff','#FFD2B3'][i],stroke:'#141414','stroke-width':2.5,class:'pop'},s);
+      E('text',{x:A.X(mx),y:A.Y(0)+56,'text-anchor':'middle',class:'lab pop',style:'font-size:17px'},s,names[i])}
+    return {p1(){seg(0)},p2(){seg(1)},p3(){seg(2)},
+      link(){[P[1],P[2]].forEach(([t,v])=>E('circle',{cx:A.X(t),cy:A.Y(v),r:16,fill:'none',stroke:'#FF6A13','stroke-width':5,class:'pulse'},A.g));sfx('ok')}};
+  }});
+
+slide({sec:5,type:'ex',lvl:'b',chip:'Ex 1',kick:'Secció 5 · Exercici 1',title:'Subministraments amb la Caelum',
+  tip:'Fes servir la velocitat final de la fase A com a velocitat inicial de la fase B.',
+  enun:'La nau Caelum fa l’aproximació final a l’estació (<b>1 200 m</b> en total) en 3 fases. <b>A:</b> del repòs, a = +0,5 m/s² durant 20 s. <b>B:</b> velocitat constant durant 80 s. <b>C:</b> frena fins a aturar-se davant la comporta.',
+  parts:[
+    {l:'a',q:'Velocitat màxima i distància de la fase A.',s:[
+      ['f','v = a · t ¦ Δx = ½ · a · t²'],
+      ['c','v = 0,5 · 20 ¦ Δx<sub>A</sub> = ½ · 0,5 · 20² = ½ · 0,5 · 400'],
+      ['r','v = <b>10 m/s</b>¦Δx<sub>A</sub> = <b>100 m</b>','A']]},
+    {l:'b',q:'Distància de la fase B.',s:[
+      ['n','La velocitat final de la fase A (10 m/s) és la de la fase B.'],
+      ['f','Δx = v · t'],
+      ['c','Δx<sub>B</sub> = 10 · 80'],
+      ['r','Δx<sub>B</sub> = <b>800 m</b>','B']]},
+    {l:'c',q:'Distància de la fase C i acceleració de frenada.',s:[
+      ['c','Δx<sub>C</sub> = 1 200 − (100 + 800) = 300 m'],
+      ['f','v² = v₀² + 2 · a · Δx'],
+      ['c','0 = 10² + 2 · a · 300'],
+      ['r','Δx<sub>C</sub> = <b>300 m</b>¦a = −100 / 600 ≈ <b>−0,167 m/s²</b>','C']]}],
+  vis(el){const s=svgIn(el,720,420);
+    const TX=v=>50+v/1200*560;station(s,665,70,.5);
+    E('line',{x1:40,x2:620,y1:70,y2:70,stroke:'#141414','stroke-width':3},s);
+    [0,100,900,1200].forEach(v=>{E('line',{x1:TX(v),x2:TX(v),y1:62,y2:78,stroke:'#141414','stroke-width':3},s);if(v!==100)E('text',{x:TX(v),y:102,'text-anchor':'middle',class:'tk'},s,fmt(v)+' m')});
+    const sh=ship(s,{});setT(sh,TX(0),40,0,.6);
+    const A=axes(s,{x:90,y:170,w:520,h:180,xr:[0,160],yr:[0,12],xt:[0,20,100,160],yt:[0,5,10],xl:'t (s)',yl:'v (m/s)'});
+    const p=E('path',{class:'ln'},A.g);let tc=0;
+    const v=t=>t<=20?.5*t:t<=100?10:Math.max(0,10-(t-100)/6),x=t=>t<=20?.25*t*t:t<=100?100+10*(t-20):900+10*(t-100)-(t-100)*(t-100)/12;
+    function draw(){const pts=[];for(let i=0;i<=160;i++){const t=tc*i/160;pts.push([A.X(t),A.Y(v(t))])}p.setAttribute('d',PD(pts));setT(sh,TX(x(tc)),40,0,.6)}
+    function ph(t0,t1,ms,cls,lab,a,b,done){if(tc<t0){tc=t0;draw()}if(cls)sh.classList.add(cls);if(cls)sfx('thrust',ms/1000);tween(ms,q=>{tc=Math.max(tc,t0+(t1-t0)*q);draw()},()=>{sh.classList.remove('burn','brake');
+      const g=G(s,{class:'pop'});E('rect',{x:TX(a),y:74,width:TX(b)-TX(a),height:9,fill:['#FF6A13','#141414','#FFD2B3'][lab],stroke:'#141414','stroke-width':1.5},g);E('text',{x:(TX(a)+TX(b))/2+(lab===0?20:0),y:130,'text-anchor':'middle',class:'lab',style:'font-size:18px'},g,['A: 100 m','B: 800 m','C: 300 m'][lab]);done&&done()})}
+    return {A(){ph(0,20,1800,'burn',0,0,100)},B(){ph(20,100,2600,null,1,100,900)},C(){ph(100,160,2600,'brake',2,900,1200,()=>{sfx('ok');boxLabel(s,360,30,'Acoblada!')})}};
+  }});
+
+slide({sec:5,type:'ex',lvl:'m',chip:'Ex 2',kick:'Secció 5 · Exercici 2',title:'Persecució en òrbita lunar',
+  tip:'Si dos mòduls van gairebé a la mateixa velocitat, el que compta és la velocitat relativa.',
+  enun:'Dos mòduls giren en la mateixa òrbita lunar (<b>R = 1 837 km</b>) a <b>v = 1 630 m/s</b>. El mòdul Àliga va <b>50 km</b> darrere de l’Odissea. Després accelera <b>0,2 m/s²</b> durant <b>50 s</b>.',
+  parts:[
+    {l:'a',q:'Període orbital T (en minuts).',s:[
+      ['f','T = 2π · R / v'],
+      ['c','T = 2 · 3,1416 · 1 837 000 m / 1 630 m/s'],
+      ['r','T ≈ <b>7 081 s ≈ 118 min</b>','T']]},
+    {l:'b',q:'Nova velocitat de l’Àliga després d’accelerar.',s:[
+      ['f','v = v₀ + a · t'],
+      ['c','v = 1 630 + 0,2 · 50'],
+      ['r','v = <b>1 640 m/s</b>','boost']]},
+    {l:'c',q:'Velocitat relativa i temps per recuperar els 50 km.',s:[
+      ['c','v<sub>rel</sub> = 1 640 − 1 630 = 10 m/s'],
+      ['f','t = Δx / v<sub>rel</sub>'],
+      ['c','t = 50 000 m / 10 m/s'],
+      ['r','t = <b>5 000 s</b> (1 h 23 min 20 s)','chase']]}],
+  vis(el){const s=svgIn(el,720,420);stars(s,720,420,34,61);const cx=250,cy=210,R=175;
+    planet(s,cx,cy,130,'lluna');E('circle',{cx,cy,r:R,fill:'none',stroke:'#141414','stroke-width':2.5,'stroke-dasharray':'6 8'},s);
+    const arc=E('path',{fill:'none',stroke:'#FF6A13','stroke-width':6,'stroke-linecap':'round'},s);const at=E('text',{class:'lab',style:'font-size:18px','text-anchor':'middle'},s,'50 km');
+    const od=ship(s,{body:'#FFE8D8'}),al=ship(s,{});
+    const lo=E('text',{class:'lab',style:'font-size:18px','text-anchor':'middle'},s,'Odissea'),la=E('text',{class:'lab',style:'font-size:18px','text-anchor':'middle'},s,'Àliga');
+    let a=-1.2,gap=.55;
+    loop((t,dt)=>{a+=dt*.25;const pos=(ang,obj,lab,off)=>{const x=cx+R*Math.cos(ang),y=cy+R*Math.sin(ang);setT(obj,x,y,ang*180/Math.PI+90,.5);lab.setAttribute('x',cx+(R+46)*Math.cos(ang));lab.setAttribute('y',cy+(R+46)*Math.sin(ang)+6)};
+      pos(a,od,lo);pos(a-gap,al,la);
+      if(gap>.02){const a1=a-gap+.06,a2=a-.06;arc.setAttribute('d',`M${cx+(R-24)*Math.cos(a1)} ${cy+(R-24)*Math.sin(a1)} A${R-24} ${R-24} 0 0 1 ${cx+(R-24)*Math.cos(a2)} ${cy+(R-24)*Math.sin(a2)}`);const m=a-gap/2;at.setAttribute('x',cx+(R-52)*Math.cos(m));at.setAttribute('y',cy+(R-52)*Math.sin(m)+6)}else{arc.setAttribute('d','');at.textContent=''}});
+    E('text',{x:20,y:24,class:'sub'},s,'(distàncies no a escala)');
+    const rT=readout(s,500,40,'període T',190),rv=readout(s,500,120,'v Àliga',190),rr=readout(s,500,200,'v relativa',190);rT('?');rv('1 630 m/s');rr('0 m/s');
+    return {T(){rT('≈ 118 min')},boost(){al.classList.add('burn');sfx('thrust',1.5);tween(1500,q=>rv(fmt(1630+10*q)+' m/s'),()=>{al.classList.remove('burn');rr('10 m/s')})},
+      chase(){rr('10 m/s');const g0=gap;tween(3500,q=>{gap=Math.max(0.0,g0*(1-q))},()=>{gap=0;sfx('ok');boxLabel(s,600,320,'Atrapada!')})}};
+  }});
+
+slide({sec:5,type:'ex',lvl:'r',chip:'Ex 3',kick:'Secció 5 · Exercici 3',title:'Frenar gastant poc combustible',
+  tip:'Repte! Frenar fort gasta més per segon… però dura menys. Qui guanya?',
+  enun:'La nau de retorn ha de frenar de <b>120 m/s</b> a 0. <b>Opció 1:</b> a = −2,0 m/s², gasta 5 kg/s. <b>Opció 2:</b> a = −6,0 m/s², gasta 18 kg/s.',
+  parts:[
+    {l:'a',q:'Temps de frenada de cada opció.',s:[
+      ['f','t = |Δv| / |a|'],
+      ['c','t₁ = 120 / 2 ¦ t₂ = 120 / 6'],
+      ['r','t₁ = <b>60 s</b>¦t₂ = <b>20 s</b>','time']]},
+    {l:'b',q:'Distància de frenada de cada opció.',s:[
+      ['f','Δx = v₀² / (2 · |a|)'],
+      ['c','Δx₁ = 14 400 / 4 ¦ Δx₂ = 14 400 / 12'],
+      ['r','Δx₁ = <b>3 600 m</b>¦Δx₂ = <b>1 200 m</b>','dist']]},
+    {l:'c',q:'Combustible gastat. Quina opció és més eficient?',s:[
+      ['f','m = t · consum'],
+      ['c','m₁ = 60 · 5 ¦ m₂ = 20 · 18'],
+      ['r','m₁ = <b>300 kg</b>¦m₂ = <b>360 kg</b>','fuel'],
+      ['r','L’<b>opció 1</b> és més eficient: estalvia <b>60 kg</b> (però necessita més distància).','win']]}],
+  vis(el){const s=svgIn(el,720,420);
+    const TX=v=>60+v/3600*420;const L=[{y:100,a:2,n:'Opció 1'},{y:270,a:6,n:'Opció 2'}];
+    L.forEach(o=>{E('text',{x:20,y:o.y-58,class:'lab'},s,o.n);E('line',{x1:40,x2:500,y1:o.y+30,y2:o.y+30,stroke:'#141414','stroke-width':3},s);
+      [0,1200,2400,3600].forEach(v=>{E('line',{x1:TX(v),x2:TX(v),y1:o.y+23,y2:o.y+37,stroke:'#141414','stroke-width':3},s);E('text',{x:TX(v),y:o.y+60,'text-anchor':'middle',class:'tk'},s,fmt(v)+' m')});
+      o.sh=ship(s,{});setT(o.sh,TX(0),o.y,0,.6);
+      const t=G(s,{transform:`translate(${o===L[0]?560:640} 190)`});E('rect',{x:-28,y:-120,width:56,height:200,rx:12,fill:'#fff',stroke:'#141414','stroke-width':3},t);o.f=E('rect',{x:-24,y:76,width:48,height:0,rx:8,fill:'#FF6A13'},t);
+      E('text',{x:0,y:108,'text-anchor':'middle',class:'lab',style:'font-size:18px'},t,o.n.replace('Opció ','Op. '));o.ft=E('text',{x:0,y:-132,'text-anchor':'middle',style:'font:800 20px var(--fd)'},t,'')});
+    E('text',{x:600,y:40,'text-anchor':'middle',class:'sub'},s,'combustible');
+    return {time(){boxLabel(s,420,L[0].y-50,'t₁ = 60 s');boxLabel(s,420,L[1].y-50,'t₂ = 20 s')},
+      dist(){L.forEach(o=>o.sh.classList.add('brake'));sfx('thrust',4);const T=[60,20];
+        L.forEach((o,i)=>tween(T[i]*75,q=>{const t=T[i]*q;setT(o.sh,TX(120*t-o.a*t*t/2),o.y,0,.6)},()=>{o.sh.classList.remove('brake');dimLine(s,TX(0),TX(i?1200:3600),o.y+82,i?'1 200 m':'3 600 m',{below:true})}))},
+      fuel(){if(MODE==='alumne'){L.forEach(o=>setTxt(o.ft,'0 kg'));suspense(s,300,400,'Quina opció gasta menys combustible?');return}const M=[300,360];L.forEach((o,i)=>tween(1600,q=>{const m=M[i]*q;o.f.setAttribute('height',m/400*192);o.f.setAttribute('y',76-m/400*192+0);setTxt(o.ft,fmt(m)+' kg')}))},
+      win(){if(MODE==='alumne')return;boxLabel(s,560,330,'✔ més eficient','#FF6A13',19);laika('happy',1200)}};
+  }});
+/* =================== FORMULARI I FINAL =================== */
+slide({id:'formulari',chip:'Fórmules',
+  tip:'Totes les fórmules de la missió en una sola pantalla. Ideal per repassar!',
+  html:`<div class="hd"><span class="kick">Resum</span></div><h2 style="margin-top:-6px">Les fórmules de la missió</h2>
+  <div class="fg">
+   <div class="fc f"><span class="tag">1 · MRU</span><h3>Velocitat constant</h3><div class="fm">x = x₀ + v · t</div><div class="fm">v = Δx / Δt</div><div class="nt">Gràfica x-t: una recta. El pendent és la velocitat.</div></div>
+   <div class="fc f"><span class="tag">2 · MRUA</span><h3>Accelerar i frenar</h3><div class="fm">v = v₀ + a · t</div><div class="fm">x = x₀ + v₀·t + ½·a·t²</div><div class="fm">v² = v₀² + 2·a·Δx</div><div class="nt">Si a i v tenen signes contraris, la nau frena.</div></div>
+   <div class="fc f"><span class="tag">3 · Caiguda</span><h3>Gravetat</h3><div class="fm">v = v₀ − g · t</div><div class="fm">y = y₀ + v₀·t − ½·g·t²</div><div class="fm">v² = v₀² − 2·g·Δy</div><div class="nt">Al punt més alt, v = 0.</div></div>
+   <div class="fc f"><span class="tag">4 · MCU</span><h3>Girar</h3><div class="fm">ω = 2π / T = 2π · f</div><div class="fm">v = ω · R</div><div class="fm">a<sub>c</sub> = v²/R = ω²·R</div><div class="nt">rpm → rad/s: × 2π / 60</div></div>
+   <div class="fc f"><span class="tag">5 · Fases</span><h3>Missió</h3><div class="fm">final d'una fase = inici de la següent</div><div class="fm">Δx = àrea sota v-t</div><div class="fm">v<sub>rel</sub> = v₁ − v₂</div><div class="nt">Passa sempre a unitats del SI: m, s, m/s.</div></div>
+  </div>`});
+
+slide({id:'final',chip:'Final',big:true,
+  tip:'Gràcies per viatjar amb mi, tripulació! Fins a la propera missió. Bup bup!',
+  html:`<div class="endw"><div style="display:flex;flex-direction:column;gap:22px">
+    <div class="kick">Fi de la missió</div><h2>Missió complerta!</h2>
+    <div class="like f"><span>Hem après</span><div>A descriure moviments a l'espai: <b>MRU, MRUA, caiguda lliure i MCU</b>, i a combinar-los per fases.</div></div>
+    <div class="homage f"><b class="t">Qui era la Laika?</b>
+      <span>La Laika real era una gossa del carrer de Moscou. El <b>3 de novembre de 1957</b> va ser el primer ésser viu a orbitar la Terra, a bord de l'<b>Sputnik 2</b>.</span>
+      <span>No va poder tornar, però la seva missió va obrir el camí als vols espacials humans. Aquesta mascota és el nostre petit <b>homenatge</b>.</span></div>
+  </div><div></div></div>`});
+}
+/* =================== VERSIÓ ALUMNES: pistes =================== */
+// Per a cada exercici (secció.número) i cada apartat:
+// sym: símbols que cal fer servir · mark: dades a marcar a l'enunciat · val: dades amb valor
+// f: fórmula (si no, la del professor) · si: consell d'unitats
+const RA='resultat de l’apartat';
+const HINTS={
+ '1.1':[
+  {sym:['Δx'],mark:['450 000 km'],f:'1 km = 10³ m',val:'Δx = 450 000 km &nbsp;→&nbsp; <span class="hl">Δx = ? m</span>',si:'Notació científica: a · 10ⁿ, amb 1 ≤ a &lt; 10.'},
+  {sym:['Δx','v','t'],mark:['12 500 m/s'],val:'Δx = 4,5 · 10⁸ m¦v = 12 500 m/s¦<span class="hl">t = ?</span>',si:'Amb metres i m/s, el temps surt en segons. Després: ÷ 3 600 per a hores i ÷ 24 per a dies.'}],
+ '1.2':[
+  {sym:['x₀ Alfa','x₀ Beta'],f:'x₀ = la posició quan t = 0',val:'Llegeix-ho a la gràfica, on cada recta talla l’eix vertical.'},
+  {sym:['Δx','Δt','v'],val:'Alfa: Δx = 120 000 − 0 km, Δt = 4 h<br>Beta: Δx = 120 000 − 40 000 km, Δt = 4 h',si:'De km/h a m/s: divideix per 3,6.'},
+  {sym:['t','x'],f:'Al punt de tall: x<sub>Alfa</sub> = x<sub>Beta</sub>',val:'Mira la gràfica a t = 4 h.'}],
+ '1.3':[
+  {sym:['Δx','c','t'],mark:['3,0 · 10⁸ m/s','2,25 · 10¹¹ m'],val:'Δx = 2,25 · 10¹¹ m¦c = 3,0 · 10⁸ m/s¦<span class="hl">t = ?</span>',si:'Ja és tot en SI (m i m/s): el temps surt en segons. Per passar a minuts, ÷ 60.'},
+  {sym:['t<sub>anada</sub>','t<sub>total</sub>'],f:'t<sub>total</sub> = 2 · t<sub>anada</sub>',val:'t<sub>anada</sub> = '+RA+' a'}],
+ '1.4':[
+  {sym:['x₀','v'],mark:['1 800 000 km','15 km/s','25 km/s'],val:'Kavout: x₀ = 0, v = +15 km/s<br>Drac: x₀ = 1 800 000 km, v = −25 km/s',si:'Compte amb el signe: la Drac va cap a l’oest, la seva v és negativa. Aquí pots treballar en km i s.'},
+  {sym:['x₁','x₂','t'],val:'x₁ = 15 · t¦x₂ = 1 800 000 − 25 · t'},
+  {sym:['v','t','x'],f:'x = v · t',val:'v = 15 km/s¦t = '+RA+' b'}],
+ '2.1':[
+  {sym:['v₀','a','t','v'],mark:['del repòs','18 m/s²','40 s'],si:'De m/s a km/h: multiplica per 3,6.'},
+  {sym:['v₀','a','t','Δx'],val:'v₀ = 0¦a = 18 m/s²¦t = 40 s¦<span class="hl">Δx = ?</span>'}],
+ '2.2':[
+  {sym:['v₀','v','a','t'],mark:['240 m/s','−4,0 m/s²'],si:'La nau frena: l’acceleració és negativa.'},
+  {sym:['v₀','v','a','Δx'],val:'v₀ = 240 m/s¦v = 20 m/s¦a = −4,0 m/s²¦<span class="hl">Δx = ?</span>'}],
+ '2.3':[
+  {sym:['a','Δx'],f:'a = Δv / Δt ¦ Δx = àrea sota la gràfica',val:'La v passa de 0 a 50 m/s en 10 s.'},
+  {sym:['a','Δx'],f:'a = Δv / Δt ¦ Δx = àrea sota la gràfica',val:'La v es manté a 50 m/s durant 20 s.'},
+  {sym:['a','Δx'],f:'a = Δv / Δt ¦ Δx = àrea sota la gràfica',val:'La v passa de 50 a 0 m/s en 10 s.'},
+  {sym:['Δx total'],f:'Δx total = Δx₁ + Δx₂ + Δx₃',val:'Les distàncies de les tres fases.'}],
+ '2.4':[
+  {sym:['v','t','Δx'],mark:['300 m/s','1,0 s'],f:'Δx = v · t (MRU)',val:'v = 300 m/s¦t = 1,0 s'},
+  {sym:['v₀','v','a','Δx'],mark:['−32 m/s²']},
+  {sym:['Δx<sub>total</sub>'],mark:['1 500 m'],f:'Δx<sub>total</sub> = Δx<sub>reacció</sub> + Δx<sub>frenada</sub>',val:'Fes servir els resultats dels apartats a i b i compara amb 1 500 m.'}],
+ '3.1':[
+  {sym:['h','v₀','g','t'],mark:['180 m','3,71 m/s²']},
+  {sym:['g','t','v'],val:'g = 3,71 m/s²¦t = '+RA+' a',si:'De m/s a km/h: multiplica per 3,6.'}],
+ '3.2':[
+  {sym:['v₀','g','y<sub>màx</sub>','t<sub>vol</sub>'],mark:['v₀ = 40 m/s'],val:'v₀ = 40 m/s¦g = 9,8 m/s²',si:'El temps de vol és el doble del temps de pujada.'},
+  {sym:['v₀','g','y<sub>màx</sub>','t<sub>vol</sub>'],f:'y<sub>màx</sub> = v₀² / (2 · g) ¦ t<sub>pujada</sub> = v₀ / g',val:'v₀ = 40 m/s¦g = 1,62 m/s²'},
+  {sym:['y<sub>Lluna</sub>','y<sub>Terra</sub>'],f:'vegades = y<sub>Lluna</sub> / y<sub>Terra</sub>',val:'Les alçades dels apartats a i b.'}],
+ '3.3':[
+  {sym:['v','v₀','g','h'],mark:['15 m/s']},
+  {sym:['g','h','v'],val:'g = 9,8 m/s²¦h = '+RA+' a'}],
+ '3.4':[
+  {sym:['a','t','v','h'],mark:['g = 1,31 m/s²','4,69 m/s²','8,0 s'],val:'v₀ = 0¦a = 4,69 m/s²¦t = 8,0 s'},
+  {sym:['v₀','g','Δh','h<sub>màx</sub>'],f:'0 = v₀² − 2 · g · Δh ¦ h<sub>màx</sub> = h + Δh',val:'v₀ i h = resultats de l’apartat a¦g = 1,31 m/s²'},
+  {sym:['t₂','t<sub>c</sub>','t<sub>total</sub>'],f:'t₂ = v₀ / g ¦ h<sub>màx</sub> = ½ · g · t<sub>c</sub>² ¦ t<sub>total</sub> = 8 + t₂ + t<sub>c</sub>',val:'v₀ = 37,52 m/s¦h<sub>màx</sub> = 687,39 m¦g = 1,31 m/s²'}],
+ '4.1':[
+  {sym:['T','ω'],mark:['5 520 s'],val:'T = 5 520 s',si:'El període en segons, no en minuts.'},
+  {sym:['ω','R','v'],mark:['6,77 · 10⁶ m'],val:'ω = '+RA+' a¦R = 6,77 · 10⁶ m',si:'El radi en metres! De m/s a km/h: × 3,6.'},
+  {sym:['v','R','a<sub>c</sub>'],val:'v = '+RA+' b¦R = 6,77 · 10⁶ m'}],
+ '4.2':[
+  {sym:['rpm','ω'],mark:['30 rpm'],f:'ω = rpm · 2π / 60',val:'30 rpm',si:'1 volta = 2π rad i 1 min = 60 s.'},
+  {sym:['ω','R','v'],mark:['8,0 m'],val:'ω = '+RA+' a¦R = 8,0 m'},
+  {sym:['ω','R','a<sub>c</sub>'],f:'a<sub>c</sub> = ω² · R ¦ nombre de g = a<sub>c</sub> / 9,8',val:'ω = '+RA+' a¦R = 8,0 m'}],
+ '4.3':[
+  {sym:['T','ω'],mark:['T = 12 h'],val:'T = 12 h = <span class="hl">? s</span>',si:'Passa les hores a segons: × 3 600.'},
+  {sym:['v','ω','R'],mark:['4 500 m/s'],val:'v = 4 500 m/s¦ω = '+RA+' a',si:'R surt en metres. Per passar a km: ÷ 1 000.'},
+  {sym:['T','f','a<sub>c</sub>'],val:'T = 43 200 s¦v = 4 500 m/s¦ω = '+RA+' a'}],
+ '4.4':[
+  {sym:['T','ω'],mark:['T = 24 h = 86 400 s'],val:'T = 86 400 s'},
+  {sym:['a<sub>c</sub>','ω','R'],val:'a<sub>c</sub> = 0,223 m/s²¦ω = '+RA+' a',si:'R surt en metres. Per passar a km: ÷ 1 000.'},
+  {sym:['R','R<sub>T</sub>','h'],val:'R = '+RA+' b¦R<sub>T</sub> = 6 370 km',si:'Per restar, posa les dues distàncies en les mateixes unitats (km).'}],
+ '5.1':[
+  {sym:['a','t','v','Δx<sub>A</sub>'],mark:['a = +0,5 m/s² durant 20 s'],val:'v₀ = 0¦a = 0,5 m/s²¦t = 20 s'},
+  {sym:['v','t','Δx<sub>B</sub>'],mark:['80 s'],val:'v = la velocitat final de la fase A¦t = 80 s'},
+  {sym:['Δx<sub>C</sub>','v₀','v','a'],mark:['1 200 m'],f:'Δx<sub>C</sub> = 1 200 − Δx<sub>A</sub> − Δx<sub>B</sub> ¦ v² = v₀² + 2 · a · Δx',val:'Δx total = 1 200 m¦v₀ = 10 m/s¦v = 0'}],
+ '5.2':[
+  {sym:['R','v','T'],mark:['R = 1 837 km','v = 1 630 m/s'],val:'R = 1 837 km = <span class="hl">? m</span>¦v = 1 630 m/s',si:'El radi en metres! El període surt en segons: ÷ 60 per tenir minuts.'},
+  {sym:['v₀','a','t','v'],mark:['0,2 m/s²','50 s'],val:'v₀ = 1 630 m/s¦a = 0,2 m/s²¦t = 50 s'},
+  {sym:['v<sub>rel</sub>','Δx','t'],mark:['50 km'],f:'v<sub>rel</sub> = v<sub>Àliga</sub> − v<sub>Odissea</sub> ¦ t = Δx / v<sub>rel</sub>',val:'v<sub>Àliga</sub> = '+RA+' b¦v<sub>Odissea</sub> = 1 630 m/s¦Δx = 50 km',si:'50 km = 50 000 m.'}],
+ '5.3':[
+  {sym:['Δv','a','t'],mark:['120 m/s','a = −2,0 m/s²','a = −6,0 m/s²'],val:'Δv = 120 m/s¦a₁ = −2,0 m/s²¦a₂ = −6,0 m/s²',si:'Al temps, fes servir els valors sense signe (|a|).'},
+  {sym:['v₀','a','Δx'],val:'v₀ = 120 m/s¦|a₁| = 2,0 m/s²¦|a₂| = 6,0 m/s²'},
+  {sym:['t','consum','m'],mark:['5 kg/s','18 kg/s'],val:'t₁ i t₂ = resultats de l’apartat a¦consums: 5 kg/s i 18 kg/s'}]
+};
+// Pistes extra: [unitats SI, fórmula amb on substituir, què has d'obtenir]
+// unitats: llista de [de, a, operació] i/o 'ok' · substitució: [conegut] {incògnita} · obtenir: unitat, o '!' + text lliure
+const OK='ok',X=(a,b,c)=>[a,b,c];
+const EXTRA={
+ '1.1':[[[X('km','m','× 1 000')],'{Δx} = [Δx<sub>km</sub>] · 10³','metres, en notació científica (a · 10ⁿ)'],
+        [[OK,X('s','h','÷ 3 600'),X('h','dies','÷ 24')],'{t} = [Δx] / [v]','segons, hores i dies']],
+ '1.2':[[null,null,'km'],
+        [[X('km/h','m/s','÷ 3,6')],'{v} = [Δx] / [Δt]','km/h i m/s'],
+        [null,null,'!Explica amb paraules què passa en aquest punt de la gràfica.']],
+ '1.3':[[[OK,X('s','min','÷ 60')],'{t} = [Δx] / [c]','segons i minuts'],
+        [[X('s','min','÷ 60')],'{t<sub>total</sub>} = 2 · [t<sub>anada</sub>]','segons i minuts']],
+ '1.4':[[[OK],'{x} = [x₀] + [v] · t','!Escriu les dues equacions: x₁(t) i x₂(t), amb x en km i t en s.'],
+        [[X('s','h','÷ 3 600')],'[15] · {t} = [1 800 000] − [25] · {t}','segons (i després en hores i minuts)'],
+        [[OK],'{x} = [v] · [t]','km']],
+ '2.1':[[[OK,X('m/s','km/h','× 3,6')],'{v} = [v₀] + [a] · [t]','m/s i km/h'],
+        [[OK,X('m','km','÷ 1 000')],'{Δx} = [v₀] · [t] + ½ · [a] · [t]²','metres i km']],
+ '2.2':[[[OK],'[v] = [v₀] + [a] · {t}','segons'],
+        [[OK],'[v]² = [v₀]² + 2 · [a] · {Δx}','metres']],
+ '2.3':[[[OK],'{a} = [Δv] / [Δt] ¦ {Δx} = àrea','!Tipus de moviment, acceleració (m/s²) i distància (m).'],
+        [[OK],'{a} = [Δv] / [Δt] ¦ {Δx} = àrea','!Tipus de moviment, acceleració (m/s²) i distància (m).'],
+        [[OK],'{a} = [Δv] / [Δt] ¦ {Δx} = àrea','!Tipus de moviment, acceleració (m/s²) i distància (m).'],
+        [null,'{Δx<sub>total</sub>} = [Δx₁] + [Δx₂] + [Δx₃]','metres']],
+ '2.4':[[[OK],'{Δx} = [v] · [t]','metres'],
+        [[OK],'0 = [v₀]² + 2 · [a] · {Δx}','metres'],
+        [null,'{Δx<sub>total</sub>} = [Δx<sub>reacció</sub>] + [Δx<sub>frenada</sub>]','!Compara Δx<sub>total</sub> amb la distància a l’asteroide: <b>s’atura o xoca?</b>']],
+ '3.1':[[[OK],'[h] = ½ · [g] · {t}²','segons'],
+        [[OK,X('m/s','km/h','× 3,6')],'{v} = [g] · [t]','m/s i km/h']],
+ '3.2':[[[OK],'{y<sub>màx</sub>} = [v₀]² / (2 · [g]) ¦ {t<sub>p</sub>} = [v₀] / [g]','metres i segons'],
+        [[OK],'{y<sub>màx</sub>} = [v₀]² / (2 · [g]) ¦ {t<sub>p</sub>} = [v₀] / [g]','metres i segons'],
+        [null,'{vegades} = [y<sub>Lluna</sub>] / [y<sub>Terra</sub>]','!Un nombre sense unitats: quantes vegades és més alta?']],
+ '3.3':[[[OK],'[v]² = 2 · [g] · {h}','metres'],
+        [[OK],'{v} = √(2 · [g] · [h])','!Calcula v (m/s) i compara-la amb el límit de l’amortidor: <b>aguantarà?</b>']],
+ '3.4':[[[OK],'{v} = [a] · [t] ¦ {h} = ½ · [a] · [t]²','m/s i metres'],
+        [[OK],'0 = [v₀]² − 2 · [g] · {Δh}','metres'],
+        [[OK],'{t₂} = [v₀] / [g] ¦ [h<sub>màx</sub>] = ½ · [g] · {t<sub>c</sub>}²','segons']],
+ '4.1':[[[OK],'{ω} = 2π / [T]','rad/s'],
+        [[X('km','m','× 1 000'),X('m/s','km/h','× 3,6')],'{v} = [ω] · [R]','m/s i km/h'],
+        [[OK],'{a<sub>c</sub>} = [v]² / [R]','m/s²']],
+ '4.2':[[[X('rpm','rad/s','× 2π / 60')],'{ω} = [rpm] · 2π / 60','rad/s'],
+        [[OK],'{v} = [ω] · [R]','m/s'],
+        [[OK],'{a<sub>c</sub>} = [ω]² · [R]','m/s² i en «vegades g»']],
+ '4.3':[[[X('h','s','× 3 600')],'{ω} = 2π / [T]','rad/s'],
+        [[X('m','km','÷ 1 000')],'[v] = [ω] · {R}','metres i km'],
+        [[OK],'{f} = 1 / [T] ¦ {a<sub>c</sub>} = [v] · [ω]','Hz i m/s²']],
+ '4.4':[[[OK],'{ω} = 2π / [T]','rad/s'],
+        [[X('m','km','÷ 1 000')],'[a<sub>c</sub>] = [ω]² · {R}','metres i km'],
+        [[OK],'{h} = [R] − [R<sub>T</sub>]','km']],
+ '5.1':[[[OK],'{v} = [a] · [t] ¦ {Δx<sub>A</sub>} = ½ · [a] · [t]²','m/s i metres'],
+        [[OK],'{Δx<sub>B</sub>} = [v] · [t]','metres'],
+        [[OK],'0 = [v₀]² + 2 · {a} · [Δx<sub>C</sub>]','metres i m/s²']],
+ '5.2':[[[X('km','m','× 1 000'),X('s','min','÷ 60')],'{T} = 2π · [R] / [v]','segons i minuts'],
+        [[OK],'{v} = [v₀] + [a] · [t]','m/s'],
+        [[X('km','m','× 1 000'),X('s','h','÷ 3 600')],'{v<sub>rel</sub>} = [v<sub>Àliga</sub>] − [v<sub>Odissea</sub>] ¦ {t} = [Δx] / v<sub>rel</sub>','segons (i en hores i minuts)']],
+ '5.3':[[[OK],'{t} = [|Δv|] / [|a|]','segons, per a cada opció'],
+        [[OK],'{Δx} = [v₀]² / (2 · [|a|])','metres, per a cada opció'],
+        [null,'{m} = [t] · [consum]','!Calcula m₁ i m₂ (kg): <b>quina opció gasta menys?</b>']]
+};
+function sclHTML(conv,note){
+  let h='<div class="scl">';
+  (conv||[]).forEach(c=>{if(c===OK)h+='<span class="okk">✔ Les dades ja són en unitats del SI</span>';
+    else h+=`<div class="sc"><span class="u">${c[0]}</span><span class="ar"><b>${c[2]}</b><i></i></span><span class="u">${c[1]}</span></div>`});
+  if(note)h+=`<span class="note">${note}</span>`;
+  return h+'</div>'}
+const subHTML=t=>t.replace(/\[([^\]]+)\]/g,'<span class="kn">$1</span>').replace(/\{([^}]+)\}/g,'<span class="unk">$1</span>');
+const SIU=new Set(['m','s','m/s','m/s²','rad/s','rad','kg','Hz']);
+const HELPTIP={3:'Aquest cop t’ajudo una mica menys. Fixa’t bé en les unitats!',2:'Ara els valors els busques tu. Tu pots!',1:'Repte! Només et dono les pistes justes. Endavant, astronauta!'};
+function helpOf(d){const n=+String(d.chip).replace('Ex ','');if(n===1)return 4;if(d.sec===5)return n===2?3:1;return n===2?3:n===3?2:1}
+// lv: 4 ajuda completa · 3 · 2 · 1 (repte)
+function studentify(d,lv){
+  const key=d.sec+'.'+String(d.chip).replace('Ex ','');const HH=HINTS[key],XX=EXTRA[key]||[];if(!HH)return;
+  let enun=d.enun||'';
+  d.parts=d.parts.map((p,pi)=>{const h=HH[pi]||{},[conv,sb,un]=XX[pi]||[];
+    const acts=[p.act,...p.s.map(x=>x[2])].filter(Boolean);
+    if(lv>=2)(h.mark||[]).forEach(m=>{const i=enun.indexOf(m);if(i>=0)enun=enun.slice(0,i)+`<mark class="mk" data-p="${pi}">${m}</mark>`+enun.slice(i+m.length)});
+    const fs=h.f?[h.f]:p.s.filter(x=>x[0]==='f').map(x=>x[1]);
+    const ds=h.val||(p.s.find(x=>x[0]==='d')||[])[1]||'';
+    const s=[['q',(h.sym||[]).map(x=>`<b>${x}</b> = ?`).join(' ¦ '),acts.join(',')]];
+    if(lv>=3){if(ds||(h.mark||[]).length)s.push(['m',ds||'Busca-les a l’enunciat.',null,pi])}
+    else if(lv===2&&(h.mark||[]).length)s.push(['m','Busca els valors a l’enunciat: són els que es marquen en taronja.',null,pi]);
+    if(conv||h.si){
+      if(lv===4)s.push(['s',sclHTML(conv,h.si?'📏 '+h.si:'')]);
+      else if(lv===3){const bad=[...new Set((conv||[]).filter(c=>c!==OK&&!SIU.has(c[0])).map(c=>c[0]))];
+        s.push(['s','Estan totes les dades en unitats del SI? '+(bad.length?'Quina has de canviar? '+bad.map(u=>`<span class="kn">${u}</span>`).join(' '):'Comprova-ho abans de calcular.')])}
+      else s.push(['s','📏 Recorda: passa-ho tot al SI abans de calcular.'])}
+    if(lv>=3){fs.forEach(f=>s.push(['f',f]));if(sb)s.push(['z',lv===4?subHTML(sb):subHTML1(sb)])}
+    else{if(sb)s.push(['f',subHTML1(sb)]);else fs.forEach(f=>s.push(['f',f]))}
+    let tu;
+    if(lv>=3)tu=(un?(un[0]==='!'?un.slice(1):`El resultat sortirà en <b>${un}</b>.`):'')+' <span style="font-weight:400">Fes el càlcul al dossier 🧮</span>';
+    else tu='Ara et toca a tu! <span style="font-weight:400">Fes el càlcul al dossier 🧮</span>';
+    s.push(['y',tu,'youturn']);
+    return {l:p.l,q:p.q,s}});
+  d.enun=enun;
+}
+// només la incògnita parpelleja
+const subHTML1=t=>t.replace(/\[([^\]]+)\]/g,'$1').replace(/\{([^}]+)\}/g,'<span class="unk bl">$1</span>');
+function sosToggle(){const d=SL[cur];if(!d||!d.elS)return;
+  const on=!d.sos,nw=on?d.elS:d.elN;d.el.classList.remove('active');d.el.replaceWith(nw);d.el=nw;d.sos=on;
+  go(cur,false,true);sfx(on?'pop':'tab')}
+/* =================== MODES: professorat, alumne, superajuda =================== */
+const PW_H='yhvr2a';            // codificació de la contrasenya
+const IDLE_MS=30*60*1000, WARN_MS=29*60*1000;
+const ph=s=>{let h=5381;for(const c of s)h=((h*33)^c.charCodeAt(0))>>>0;return h.toString(36)};
+function setMode(m){
+  const d=SL[cur];const key=d?(d.id||d.sec+'|'+d.chip):null;
+  stopAll();MODE=m;muted=(m==='alumne');sndShow();
+  SL.length=0;box.innerHTML='';for(const k in STATUS)delete STATUS[k];for(const k in DR)delete DR[k];
+  defineSlides();buildAll();buildTabs();
+  let n=SL.findIndex(s=>(s.id||s.sec+'|'+s.chip)===key);if(n<0)n=0;
+  cur=0;FR=[];k=0;stage.classList.toggle('prof',m==='profe');laikaEl.classList.remove('sosOn');stage.classList.remove('sos');
+  lastAct=Date.now();warnOff();go(n);
+}
+/* contrasenya */
+const pwbox=$('#pwbox'),pwin=$('#pwin');let fails=0,lockUntil=0,lockT=null;
+function pwDots(){const n=Math.max(4,pwin.value.length);$('#pwdots').innerHTML=Array.from({length:n},(_,i)=>`<i class="${i<pwin.value.length?'on':''}"></i>`).join('')}
+function pwOpen(){if(MODE==='profe')return;pwbox.classList.add('open');pwin.value='';pwDots();pwState();setTimeout(()=>pwin.focus(),30);sfx('pop')}
+function pwClose(){pwbox.classList.remove('open');pwin.blur();pwin.value=''}
+function pwState(){const left=Math.ceil((lockUntil-Date.now())/1000);
+  if(left>0){pwin.disabled=true;$('#pwmsg').textContent=`Massa intents. Espera ${left} s.`;clearTimeout(lockT);lockT=setTimeout(pwState,500)}
+  else{if(pwin.disabled){pwin.disabled=false;fails=0;$('#pwmsg').textContent='';if(pwbox.classList.contains('open'))pwin.focus()}}}
+function pwTry(){if(pwin.disabled)return;const v=pwin.value;if(!v)return;
+  if(ph(v)===PW_H){pwClose();fails=0;sfx('fanfare');setMode('profe');return}
+  fails++;pwin.value='';pwDots();sfx('bad');$('#pwdots').animate([{transform:'translateX(-10px)'},{transform:'translateX(10px)'},{transform:'none'}],{duration:300});
+  if(fails>=3){lockUntil=Date.now()+60000;pwState()}else $('#pwmsg').textContent=(3-fails===1?'Contrasenya incorrecta. Queda 1 intent.':`Contrasenya incorrecta. Queden ${3-fails} intents.`)}
+pwin.addEventListener('input',()=>{pwin.value=pwin.value.replace(/\D/g,'');pwDots();if(pwin.value.length===4)pwTry()});
+pwin.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();pwTry()}else if(e.key==='Escape'){e.preventDefault();pwClose()}});
+$('#pwok').onclick=pwTry;
+pwbox.addEventListener('click',e=>{if(e.target===pwbox||e.target.closest('[data-close]'))pwClose();else if(!pwin.disabled)pwin.focus()});
+/* especificacions */
+const specbox=$('#specbox');
+document.addEventListener('click',e=>{if(e.target.closest('[data-specs]')){specbox.classList.add('open');sfx('pop')}});
+specbox.addEventListener('click',e=>{if(e.target===specbox||e.target.closest('[data-close]'))specbox.classList.remove('open')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&specbox.classList.contains('open'))specbox.classList.remove('open')},true);
+/* sortir del mode professorat */
+$('#profbadge').onclick=()=>{$('#profbadge').blur();setMode('alumne')};
+/* inactivitat */
+let lastAct=Date.now();const warn=$('#idlewarn');
+function warnOff(){warn.classList.remove('open')}
+['keydown','pointerdown','pointermove','wheel'].forEach(t=>document.addEventListener(t,()=>{lastAct=Date.now();if(warn.classList.contains('open'))warnOff()},{passive:true,capture:true}));
+$('#idleok').onclick=()=>{lastAct=Date.now();warnOff()};
+setInterval(()=>{if(MODE!=='profe')return;if(TIMER_RUN())lastAct=Date.now();const idle=Date.now()-lastAct;
+  if(idle>=IDLE_MS){warnOff();setMode('alumne')}else if(idle>=WARN_MS&&!warn.classList.contains('open')){warn.classList.add('open');sfx('beep')}},2000);
+/* Laika: un clic = gràcia · doble clic = superajuda (només alumnes) */
+let lkClk=null;
+laikaEl.addEventListener('click',e=>{
+  if(e.detail>=2){clearTimeout(lkClk);if(MODE==='alumne'&&SL[cur]&&SL[cur].elS){sosToggle();laikaEl.classList.toggle('sosOn',!!SL[cur].sos);stage.classList.toggle('sos',!!SL[cur].sos)}return}
+  clearTimeout(lkClk);lkClk=setTimeout(laikaTrick,300)});
+sndShow();
+init();
+})();
+</script>
+
+</body></html>
