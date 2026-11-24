@@ -50,7 +50,7 @@ const APPS = [
 
   { titol: "Els orgànuls cel·lulars",materia: "biogeo4",  nivell: "", desc: "Presentació interactiva amb l'Ammo: dibuixos animats i sons.", url: "biogeo4/organuls/" },
   { titol: "Detectius del microscopi", materia: "biogeo4", nivell: "", desc: "Activitat 1.3: nucli, mitocondri i bacteri al microscopi electrònic.", url: "biogeo4/organuls-detectius/" },
-  { titol: "L'hora i el Sol",        materia: "biogeo4",  nivell: "", desc: "Fusos, terminador sobre la península, models horaris i repte final.", url: "biogeo4/hora-sol/" },
+  { titol: "L'hora i el Sol",        materia: "biogeo4",  nivell: "", estat: "beta", desc: "Fusos, terminador sobre la península, models horaris i repte final.", url: "biogeo4/hora-sol/" },
 
   { titol: "Missió Mart",            materia: "steam",    nivell: "4t ESO", desc: "Exercicis de la missió amb la Laika: mode alumne i mode professorat.", url: "steam/missio-mart/" },
   { titol: "Terraformació",          materia: "steam",    nivell: "4t ESO", desc: "Canviem Mart o ens adaptem? (V2)", url: "steam/terraformacio/" },
