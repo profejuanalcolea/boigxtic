@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dominó Tres Quarts · Fraccions equivalents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--surface:#ffffff;--ink:#000000;--muted:#545454;--line:#d4d4d4;--slot:#efefef;
+  --accent:#ff6a00;--accent-soft:#ffe3cc;--tile:#fffdf6;--tomato:#d7392b;--cheese:#ffc94a;--crust:#b8651f;--basil:#2e9d4a;
+  --ok:#1f8a44;--ko:#c62828;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#000000;--surface:#151515;--ink:#ffffff;--muted:#b5b5b5;--line:#3a3a3a;--slot:#2a2a2a;--accent-soft:#3d1f08;}}
+:root[data-theme="dark"]{--bg:#000000;--surface:#151515;--ink:#ffffff;--muted:#b5b5b5;--line:#3a3a3a;--slot:#2a2a2a;--accent-soft:#3d1f08;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Atkinson Hyperlegible',Verdana,system-ui,sans-serif;font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+main{max-width:760px;margin:0 auto;padding:.6rem .6rem 5.5rem}
+.hide{display:none!important}
+h1,h2,.disp{font-family:'Bricolage Grotesque','Arial Black',sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.02}
+.btn{border:3px solid var(--ink);background:var(--surface);color:var(--ink);padding:.6rem 1rem;border-radius:14px;box-shadow:3px 3px 0 var(--ink);font-weight:700}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.primary{background:var(--accent);color:#000}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ---------- fracció ---------- */
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.02;font-weight:800;font-family:'Bricolage Grotesque',sans-serif}
+.fr>span:first-child{border-bottom:.09em solid currentColor;padding:0 .18em .04em}
+.fr>span:last-child{padding:.04em .18em 0}
+
+/* ---------- portada ---------- */
+.start{text-align:center;padding-top:.6rem}
+.start h1{font-size:clamp(2.6rem,11vw,4.6rem);margin:.2rem 0 .3rem}
+.start h1 small{display:block;font-size:.38em;color:var(--accent);-webkit-text-stroke:0;letter-spacing:0}
+.cloth{background-color:#fff;background-image:linear-gradient(90deg,rgba(215,57,43,.55) 50%,transparent 50%),linear-gradient(rgba(215,57,43,.55) 50%,transparent 50%);background-size:44px 44px;border:4px solid #000;border-radius:20px}
+.hero{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:.4rem;padding:1rem .5rem .2rem;margin:.6rem 0 1rem;box-shadow:6px 6px 0 var(--ink);overflow:hidden}
+.hero .rb{width:24%;max-width:130px}.hero .sv{width:34%;max-width:190px}
+.hero .dom{width:26%;max-width:150px;align-self:center}
+.hero svg{display:block;width:100%;height:auto;overflow:visible}
+.rules{text-align:left;margin:0 auto 1rem;max-width:34rem;display:grid;gap:.5rem}
+.rules p{margin:0;padding:.55rem .8rem;border:3px solid var(--ink);border-radius:12px;background:var(--surface)}
+.rules b{color:var(--accent)}
+.namebox{display:flex;flex-direction:column;gap:.5rem;align-items:center;margin:1rem auto;max-width:24rem}
+.namebox label{font-weight:700}
+.namebox input{width:100%;font:inherit;font-size:1.3rem;padding:.6rem .8rem;border:3px solid var(--ink);border-radius:12px;background:var(--surface);color:var(--ink);text-align:center}
+.namebox .err{color:var(--ko);font-weight:700;min-height:1.3em;margin:0}
+.big{font-size:1.35rem;padding:.8rem 1.6rem}
+.sig{margin-top:1.4rem;padding-top:.6rem;border-top:3px solid var(--ink);font-weight:700;font-size:.95rem}
+.toggles{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.6rem}
+
+/* ---------- capçalera de joc ---------- */
+.top{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem}
+.top .plat{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.3rem;margin-right:auto}
+.chip{border:3px solid var(--ink);border-radius:999px;padding:.12rem .6rem;font-weight:700;background:var(--surface);white-space:nowrap}
+.chip.bump{animation:bump .45s}
+@keyframes bump{40%{transform:scale(1.3)}}
+.ico{border:3px solid var(--ink);background:var(--surface);border-radius:12px;width:2.5rem;height:2.5rem;padding:0;font-size:1.15rem}
+.ico[aria-pressed="false"]{opacity:.45}
+
+/* ---------- taula ---------- */
+.table{position:relative;padding:.55rem;overflow:hidden;box-shadow:5px 5px 0 var(--ink);color:#000}
+.who{display:flex;align-items:center;gap:.5rem}
+.av{flex:0 0 auto;width:62px;height:62px;border:3px solid #000;border-radius:50%;background:#fff;overflow:hidden;display:grid;place-items:center}
+.av svg{width:100%;height:100%;display:block}
+.av.rob svg{width:88%;height:88%}
+.bubble{flex:1;background:#fff;color:#000;border:3px solid #000;border-radius:14px;padding:.45rem .7rem;font-weight:700;font-size:1rem;min-height:3.1rem;display:flex;align-items:center;position:relative}
+.bubble::before{content:"";position:absolute;left:-11px;top:50%;margin-top:-8px;border:8px solid transparent;border-right-color:#000;border-left:0}
+.bubble .fr{font-size:.95em;margin:0 .1em}
+.backs{display:flex;align-items:center;gap:2px;background:#fff;border:3px solid #000;border-radius:10px;padding:.25rem .4rem;font-weight:800}
+.backs i{width:9px;height:17px;background:#000;border-radius:2px;display:block}
+.backs b{margin-left:.25rem}
+.thinking .stache{transform-box:fill-box;transform-origin:center;animation:stache .25s ease-in-out infinite alternate}
+@keyframes stache{from{transform:rotate(-6deg) scaleX(1.05)}to{transform:rotate(6deg) scaleX(.95)}}
+
+.board{display:grid;grid-template-columns:1fr auto 1fr;gap:.5rem;align-items:center;margin:.6rem 0}
+.end{position:relative;background:var(--tile);color:#000;border:4px solid #000;border-radius:14px;padding:.35rem .35rem .25rem;display:flex;flex-direction:column;align-items:center;gap:.1rem;box-shadow:3px 3px 0 #000;min-height:128px;justify-content:center}
+.end .lab{font-size:.8rem;font-weight:700;color:#444}
+.end .hf{font-size:40px;width:96px;height:96px}
+.end.target{border-color:var(--accent);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,106,0,.45),3px 3px 0 #000}}
+.mid{display:flex;flex-direction:column;align-items:center;gap:.35rem;width:92px}
+.pou{position:relative;width:88px}
+.pou svg{width:100%;display:block}
+.pou b{position:absolute;right:-4px;top:-6px;background:var(--accent);color:#000;border:3px solid #000;border-radius:999px;min-width:1.9rem;text-align:center;font-size:.95rem}
+.deco{width:70px;text-align:center;font-size:.72rem;font-weight:700;background:#fff;border:2px solid #000;border-radius:10px;padding:.15rem}
+.deco svg{width:54px;height:54px;display:block;margin:0 auto}
+
+.chainwrap{background:rgba(255,255,255,.88);border:3px solid #000;border-radius:12px;padding:.35rem}
+.chainlab{font-size:.78rem;font-weight:700;margin:0 0 .2rem .2rem;color:#333}
+.chain{display:flex;align-items:center;gap:4px;overflow-x:auto;padding:.2rem .1rem .45rem;scroll-behavior:smooth;min-height:70px}
+.ct{flex:0 0 auto;display:flex;background:var(--tile);border:3px solid #000;border-radius:8px}
+.ct .hf{font-size:18px;width:52px;height:52px}
+.ct .hf+.hf{border-left:2px solid #000}
+.ct.dbl{flex-direction:column}
+.ct.dbl .hf+.hf{border-left:0;border-top:2px solid #000}
+.ct.bad{border-color:var(--ko);border-style:dashed}
+.ct.new{animation:drop .45s cubic-bezier(.2,1.5,.4,1)}
+@keyframes drop{from{transform:translateY(-26px) scale(1.2);opacity:.2}}
+
+.cat{position:absolute;bottom:4px;left:-80px;font-size:44px;z-index:5;pointer-events:none;display:none}
+.cat.go{display:block;animation:catwalk 3.2s linear forwards}
+@keyframes catwalk{from{left:-80px}to{left:105%}}
+.cat span{font-size:.5em;position:relative;left:-10px;top:-6px}
+
+/* ---------- robot i mà ---------- */
+.robrow{margin:.7rem 0 .5rem;position:relative}
+.robrow .av{background:#fff;position:relative;overflow:visible}
+.zap{animation:zap .08s linear 10}
+@keyframes zap{50%{transform:translate(2px,-1px)}}
+.smoke{position:absolute;left:18px;top:-18px;font-size:22px;pointer-events:none;animation:smoke 1.4s ease-out forwards}
+@keyframes smoke{to{transform:translateY(-34px) scale(1.6);opacity:0}}
+.handlab{display:flex;justify-content:space-between;align-items:baseline;margin:.4rem .1rem .3rem;font-weight:700}
+.handlab small{color:var(--muted);font-weight:400;font-size:.9rem}
+.hand{display:flex;flex-wrap:wrap;gap:.55rem;justify-content:center;min-height:170px}
+.tile{background:var(--tile);color:#000;border:4px solid #000;border-radius:14px;padding:0;display:flex;flex-direction:column;align-items:center;box-shadow:3px 3px 0 var(--ink);transition:transform .15s}
+.tile .hf{font-size:27px;width:76px;height:76px}
+.tile .hf+.hf{border-top:3px solid #000}
+.tile.sel{transform:translateY(-10px);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent),3px 3px 0 var(--ink)}
+.tile.hint{animation:hint 1s ease-in-out infinite}
+@keyframes hint{50%{box-shadow:0 0 0 7px #ffc94a,3px 3px 0 var(--ink)}}
+.tile.bounce{animation:bounce .45s}
+@keyframes bounce{20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(5px)}}
+.tile.new{animation:drop .45s cubic-bezier(.2,1.5,.4,1)}
+.hand.off .tile{opacity:.55}
+
+.hf{display:flex;align-items:center;justify-content:center;text-align:center;padding:3px;overflow:hidden}
+.hf.w{font-size:.66em!important;letter-spacing:-.01em;font-weight:700;line-height:1.08;hyphens:none;word-break:normal}
+.ct .hf.w{font-size:10px!important}
+.hf.pz svg{width:100%;height:100%;display:block}
+.sl{fill:#eee;stroke:#000;stroke-width:1.6;stroke-dasharray:3 3}
+.sl.on{fill:var(--cheese);stroke:var(--crust);stroke-width:2.4;stroke-dasharray:none}
+.pep{fill:var(--tomato);stroke:#8f1f16;stroke-width:1}
+.plate{fill:#fff;stroke:#000;stroke-width:2.5}
+
+.actions{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bg);border-top:3px solid var(--ink);padding:.5rem .6rem calc(.5rem + env(safe-area-inset-bottom,0px));display:flex;gap:.45rem;justify-content:center}
+.actions .btn{flex:1 1 0;max-width:15rem;padding:.55rem .4rem;font-size:1rem}
+#bCheat:not(:disabled){background:var(--ink);color:var(--bg);animation:wig 2s ease-in-out infinite}
+@keyframes wig{0%,85%,100%{transform:none}90%{transform:rotate(-3deg)}95%{transform:rotate(3deg)}}
+
+/* ---------- pantalles de resultat ---------- */
+.res{text-align:center;padding-top:.6rem}
+.res h2{font-size:clamp(2rem,8vw,3rem);margin:.3rem 0}
+.stars{font-size:3rem;letter-spacing:.2rem;margin:.2rem 0}
+.stars .off{opacity:.18;filter:grayscale(1)}
+.res .sv{width:150px;margin:0 auto}
+.res .sv svg{width:100%;height:auto;display:block;overflow:visible}
+.quote{display:inline-block;border:3px solid var(--ink);border-radius:14px;padding:.5rem .9rem;font-weight:700;background:var(--surface);margin:.4rem 0 1rem}
+table.stats{margin:0 auto 1.2rem;border-collapse:collapse;min-width:min(100%,24rem)}
+table.stats td,table.stats th{border-bottom:2px solid var(--line);padding:.4rem .6rem;text-align:left}
+table.stats td:last-child,table.stats th:last-child{text-align:right;font-weight:800;white-space:nowrap}
+.diploma{border:5px solid var(--ink);border-radius:18px;padding:1.2rem 1rem;background:var(--surface);box-shadow:6px 6px 0 var(--accent);margin-bottom:1rem}
+.diploma .kind{font-size:1rem;font-weight:700;color:var(--muted);margin:0}
+.diploma .nm{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(2rem,9vw,3.2rem);margin:.2rem 0;color:var(--accent);-webkit-text-stroke:1px var(--ink)}
+.diploma .stars{font-size:clamp(1.3rem,6.5vw,2.2rem);letter-spacing:0}
+.diploma .when{color:var(--muted);font-size:.95rem}
+.forteacher{font-weight:700;margin:.2rem 0 1rem}
+
+/* ---------- personatges ---------- */
+.bob{animation:bob 2.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5%)}}
+.eyes{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.m-happy .bob{animation:hop .5s ease-out 2,bob 2.8s ease-in-out 1s infinite}
+@keyframes hop{40%{transform:translateY(-6%)}}
+.m-shock .bob{animation:shake .12s linear 8,bob 2.8s ease-in-out 1s infinite}
+@keyframes shake{0%,100%{transform:translateX(0)}50%{transform:translateX(2%)}}
+.m-wave .armR{transform-box:view-box;transform-origin:72px 88px;animation:wave .45s ease-in-out 6 alternate}
+@keyframes wave{from{transform:rotate(-18deg)}to{transform:rotate(22deg)}}
+
+@media (min-width:640px){
+  .tile .hf{width:88px;height:88px;font-size:31px}
+  .end .hf{width:112px;height:112px;font-size:46px}
+  .av{width:74px;height:74px}
+  .mid{width:110px}.pou{width:100px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.cat.go{display:none}}
+</style>
+</head>
+<body>
+<main>
+
+<!-- PORTADA -->
+<section id="scrStart" class="start">
+  <h1>Dominó Tres Quarts<small>fraccions equivalents</small></h1>
+  <div class="hero cloth" aria-hidden="true">
+    <div class="rb" id="heroRob"></div>
+    <div class="dom" id="heroTile"></div>
+    <div class="sv" id="heroSalv"></div>
+  </div>
+  <div class="rules">
+    <p>🁫 Enganxa fitxes <b>equivalents</b>: el <span class="fr"><span>1</span><span>2</span></span> va amb el <span class="fr"><span>2</span><span>4</span></span>, però no amb un altre <span class="fr"><span>1</span><span>2</span></span></p>
+    <p>🍝 Si cap fitxa no encaixa, <b>roba del plat</b> d'espaguetis.</p>
+    <p>🕵️ Compte amb en Don Salvatore: de vegades <b>fa trampa</b>. Enxampa'l!</p>
+    <p>🍽️ Tres plats: antipasto, primo i secondo. Cada un és més difícil.</p>
+  </div>
+  <div class="namebox">
+    <label for="name">Com et dius?</label>
+    <input id="name" maxlength="24" autocomplete="off" placeholder="El teu nom">
+    <p class="err" id="nameErr" role="alert"></p>
+    <button class="btn primary big" id="bStart">Seure a la taula</button>
+  </div>
+  <div class="toggles">
+    <button class="btn" id="bTest">🔊 Prova el so</button>
+  </div>
+  <div class="sig">Matemàtiques · Ins Júlia Minguell, Badalona · Fet amb IA</div>
+</section>
+
+<!-- JOC -->
+<section id="scrGame" class="hide">
+  <div class="top">
+    <div class="plat" id="platName">🥗 Antipasto</div>
+    <span class="chip" id="cCheese" title="Formatge">🧀 0</span>
+    <span class="chip" id="cMeat" title="Mandonguilles per demanar pistes">🧆 3</span>
+    <button class="ico" id="bSnd" aria-pressed="true" aria-label="So">🔊</button>
+    <button class="ico" id="bMus" aria-pressed="true" aria-label="Música">🎵</button>
+  </div>
+
+  <div class="table cloth" id="table">
+    <div class="who" id="salvRow">
+      <div class="av" id="salvAv"></div>
+      <div class="bubble" id="salvSay" aria-live="polite">Benvenuto! Juguem?</div>
+      <div class="backs" id="salvBacks" aria-label="Fitxes d'en Salvatore"></div>
+    </div>
+    <div class="board">
+      <button class="end" id="endL"></button>
+      <div class="mid">
+        <div class="pou" id="pou" aria-hidden="true"></div>
+        <div class="deco" id="deco"></div>
+      </div>
+      <button class="end" id="endR"></button>
+    </div>
+    <div class="chainwrap">
+      <p class="chainlab">La filera de fitxes</p>
+      <div class="chain" id="chain"></div>
+    </div>
+    <div class="cat" id="cat" aria-hidden="true">🐈<span>🍕</span></div>
+  </div>
+
+  <div class="who robrow">
+    <div class="av rob" id="robAv"></div>
+    <div class="bubble" id="robSay" aria-live="polite">Tria una fitxa i toca l'extrem on vols posar-la.</div>
+  </div>
+
+  <div class="handlab"><span>Les teves fitxes</span><small id="turnLab">Et toca a tu</small></div>
+  <div class="hand" id="hand"></div>
+</section>
+
+<!-- FI DE PLAT -->
+<section id="scrRound" class="res hide"></section>
+
+<!-- DIPLOMA -->
+<section id="scrEnd" class="res hide"></section>
+
+</main>
+
+<div class="actions hide" id="actions">
+  <button class="btn" id="bDraw">🍝 Roba del plat</button>
+  <button class="btn" id="bHint">🧆 Pista</button>
+  <button class="btn" id="bCheat" disabled>🕵️ Trampa!</button>
+</div>
+
+<script>
+/* =========================================================
+   UTILITATS
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const F=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* Noms de les fraccions en català */
+const NUM=['zero','un','dos','tres','quatre','cinc','sis','set','vuit','nou','deu','onze','dotze','tretze','catorze','quinze','setze','disset','divuit','dinou','vint','vint-i-un','vint-i-dos','vint-i-tres','vint-i-quatre'];
+const SING={2:'mig',3:'terç',4:'quart',5:'cinquè',6:'sisè',7:'setè',8:'vuitè',9:'novè',10:'desè',11:'onzè',12:'dotzè',13:'tretzè',14:'catorzè',15:'quinzè',16:'setzè',17:'dissetè',18:'divuitè',19:'dinovè',20:'vintè',21:'vint-i-unè',22:'vint-i-dosè',23:'vint-i-tresè',24:'vint-i-quatrè'};
+const PLUR={2:'mitjos',3:'terços',4:'quarts',5:'cinquens',6:'sisens',7:'setens',8:'vuitens',9:'novens',10:'desens',11:'onzens',12:'dotzens',13:'tretzens',14:'catorzens',15:'quinzens',16:'setzens',17:'dissetens',18:'divuitens',19:'dinovens',20:'vintens',21:'vint-i-unens',22:'vint-i-dosens',23:'vint-i-tresens',24:'vint-i-quatrens'};
+const words=(n,d)=>NUM[n]+' '+(n===1?SING[d]:PLUR[d]);
+
+const eq=(a,b)=>a.n*b.d===b.n*a.d;
+const same=(a,b)=>a.n===b.n&&a.d===b.d;
+const val=h=>h.n/h.d;
+const fits=(h,end)=>eq(h,end)&&!same(h,end);
+const cross=(a,b)=>`${a.n}·${b.d} = ${a.n*b.d} i ${a.d}·${b.n} = ${a.d*b.n}`;
+const ft=h=>F(h.n,h.d);
+
+/* Pizza per a les fitxes */
+function pizzaSVG(d,n){const cx=50,cy=50,r=40;let s=`<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" class="plate"/>`;
+  for(let i=0;i<d;i++){const a0=-Math.PI/2+2*Math.PI*i/d,a1=-Math.PI/2+2*Math.PI*(i+1)/d,on=i<n;
+    const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    s+=`<path d="M${cx},${cy} L${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 0 1 ${x1.toFixed(1)},${y1.toFixed(1)} Z" class="sl ${on?'on':''}"/>`;
+    if(on&&d<=8){const am=(a0+a1)/2;s+=`<circle cx="${(cx+r*.6*Math.cos(am)).toFixed(1)}" cy="${(cy+r*.6*Math.sin(am)).toFixed(1)}" r="${d<=4?6:4}" class="pep"/>`;}}
+  return s+'</svg>';}
+function halfHTML(h){
+  if(h.rep==='pz')return `<span class="hf pz">${pizzaSVG(h.d,h.n)}</span>`;
+  if(h.rep==='w')return `<span class="hf w">${words(h.n,h.d)}</span>`;
+  return `<span class="hf nm">${ft(h)}</span>`;}
+const halfLabel=h=>(h.rep==='pz'?'pizza de ':'')+words(h.n,h.d);
+
+/* Plat d'espaguetis (el pou) */
+const POU=`<svg viewBox="0 0 120 80"><ellipse cx="60" cy="50" rx="56" ry="24" fill="#fff" stroke="#000" stroke-width="4"/><ellipse cx="60" cy="46" rx="40" ry="14" fill="#f3d27a" stroke="#000" stroke-width="3"/>
+<path d="M30 46 q8 -12 16 0 t16 0 t16 0 t14 -2 M34 40 q8 10 16 0 t16 0 t16 0 M40 52 q8 -8 16 0 t16 0 t14 0" fill="none" stroke="#c9a23a" stroke-width="3" stroke-linecap="round"/>
+<circle cx="50" cy="40" r="6" fill="#d7392b" stroke="#000" stroke-width="2"/><circle cx="70" cy="44" r="6" fill="#d7392b" stroke="#000" stroke-width="2"/><path d="M84 30 l18 -26" stroke="#000" stroke-width="4" stroke-linecap="round"/></svg>`;
+
+/* =========================================================
+   PERSONATGES (els mateixos del vídeo i la pizzeria)
+   ========================================================= */
+function robotSVG(mood='idle',chef=false){let eyes,mouth;
+  if(mood==='happy'){eyes=`<path d="M31 45 q7 -9 14 0" fill="none" stroke="#ff6a00" stroke-width="4" stroke-linecap="round"/><path d="M55 45 q7 -9 14 0" fill="none" stroke="#ff6a00" stroke-width="4" stroke-linecap="round"/>`;mouth=`<path d="M40 59 q10 8 20 0" fill="none" stroke="#ff6a00" stroke-width="4" stroke-linecap="round"/>`;}
+  else if(mood==='think'){eyes=`<circle cx="40" cy="41" r="5" fill="#ff6a00"/><circle cx="64" cy="41" r="5" fill="#ff6a00"/>`;mouth=`<path d="M43 60 h14" stroke="#ff6a00" stroke-width="4" stroke-linecap="round"/>`;}
+  else if(mood==='oops'){eyes=`<circle cx="38" cy="44" r="4.5" fill="#ff6a00"/><circle cx="62" cy="44" r="4.5" fill="#ff6a00"/><path d="M31 35 l11 3 M69 35 l-11 3" stroke="#ff6a00" stroke-width="4" stroke-linecap="round"/>`;mouth=`<path d="M40 62 q5 -4 10 0 t10 0" fill="none" stroke="#ff6a00" stroke-width="4" stroke-linecap="round"/>`;}
+  else if(mood==='wow'){eyes=`<circle cx="38" cy="44" r="7" fill="#ff6a00"/><circle cx="62" cy="44" r="7" fill="#ff6a00"/>`;mouth=`<circle cx="50" cy="61" r="4.5" fill="none" stroke="#ff6a00" stroke-width="4"/>`;}
+  else{eyes=`<circle cx="38" cy="44" r="5.5" fill="#ff6a00"/><circle cx="62" cy="44" r="5.5" fill="#ff6a00"/>`;mouth=`<path d="M42 60 q8 4 16 0" fill="none" stroke="#ff6a00" stroke-width="4" stroke-linecap="round"/>`;}
+  const armR=mood==='wave'||mood==='happy'?`<path d="M72 88 L86 70" fill="none" stroke="#000" stroke-width="6" stroke-linecap="round"/><circle cx="87" cy="68" r="5" fill="#ff6a00" stroke="#000" stroke-width="3"/>`:`<path d="M72 88 L84 100" fill="none" stroke="#000" stroke-width="6" stroke-linecap="round"/><circle cx="85" cy="101" r="5" fill="#ff6a00" stroke="#000" stroke-width="3"/>`;
+  const armL=mood==='happy'?`<path d="M28 88 L14 70" fill="none" stroke="#000" stroke-width="6" stroke-linecap="round"/><circle cx="13" cy="68" r="5" fill="#ff6a00" stroke="#000" stroke-width="3"/>`:`<path d="M28 88 L16 100" fill="none" stroke="#000" stroke-width="6" stroke-linecap="round"/><circle cx="15" cy="101" r="5" fill="#ff6a00" stroke="#000" stroke-width="3"/>`;
+  const body=chef?`<rect x="30" y="80" width="40" height="30" rx="8" fill="#fff" stroke="#000" stroke-width="4"/><line x1="32" y1="89" x2="68" y2="89" stroke="#000" stroke-width="4"/><line x1="31" y1="97" x2="69" y2="97" stroke="#000" stroke-width="4"/><line x1="32" y1="105" x2="68" y2="105" stroke="#000" stroke-width="4"/><path d="M38 79 L62 79 L50 92 Z" fill="#ff6a00" stroke="#000" stroke-width="3" stroke-linejoin="round"/>`
+    :`<rect x="30" y="82" width="40" height="26" rx="8" fill="#ff6a00" stroke="#000" stroke-width="4"/><text x="50" y="100" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-weight="800" font-size="11">FR-4C</text>`;
+  const top=chef?`<g class="hatpop"><path d="M24 22 L76 22 L76 12 C88 10 88 -12 72 -10 C70 -22 54 -24 50 -14 C46 -24 30 -22 28 -10 C12 -12 12 10 24 12 Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linejoin="round"/><rect x="24" y="14" width="17.3" height="6" fill="#2e9d4a"/><rect x="41.3" y="14" width="17.4" height="6" fill="#fff"/><rect x="58.7" y="14" width="17.3" height="6" fill="#d7392b"/></g>`
+    :`<line x1="50" y1="8" x2="50" y2="20" stroke="#000" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="6" r="6" fill="#ff6a00" stroke="#000" stroke-width="3"/>`;
+  return `<svg viewBox="-12 -26 130 144" class="m-${mood}"><g class="bob">${armL}<g class="armR">${armR}</g>${body}
+  <rect x="6" y="36" width="10" height="20" rx="4" fill="#fff" stroke="#000" stroke-width="4"/><rect x="84" y="36" width="10" height="20" rx="4" fill="#fff" stroke="#000" stroke-width="4"/>
+  <rect x="14" y="20" width="72" height="58" rx="16" fill="#fff" stroke="#000" stroke-width="4"/><rect x="22" y="28" width="56" height="42" rx="10" fill="#000"/>
+  <g class="eyes">${eyes}</g>${chef?'<path d="M36 54 q7 -6 14 0 q7 -6 14 0 q-7 4 -14 0 q-7 4 -14 0z" fill="#ff6a00"/>':''}<g class="mouth">${mouth}</g>${top}</g></svg>`;}
+function salvSVG(mood='idle',vb){const skin='#f2c9a0';
+  let eyes=`<circle cx="95" cy="106" r="5" fill="#000"/><circle cx="125" cy="106" r="5" fill="#000"/>`,brows=`<path d="M84 94 q11 -7 22 0 M114 94 q11 -7 22 0" fill="none" stroke="#000" stroke-width="6" stroke-linecap="round"/>`,mouth=`<ellipse cx="110" cy="146" rx="9" ry="5" fill="#8f1f16"/>`,face=skin;
+  let armL=`<path d="M58 190 L36 262" stroke="#000" stroke-width="26" stroke-linecap="round"/><path d="M58 190 L36 262" stroke="#fff" stroke-width="19" stroke-linecap="round"/><circle cx="35" cy="266" r="12" fill="${skin}" stroke="#000" stroke-width="4"/>`;
+  let armR=`<path d="M162 190 L184 262" stroke="#000" stroke-width="26" stroke-linecap="round"/><path d="M162 190 L184 262" stroke="#fff" stroke-width="19" stroke-linecap="round"/><circle cx="185" cy="266" r="12" fill="${skin}" stroke="#000" stroke-width="4"/>`;
+  if(mood==='happy'){eyes=`<path d="M88 108 q7 -8 14 0 M118 108 q7 -8 14 0" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>`;mouth=`<path d="M97 142 q13 14 26 0 z" fill="#8f1f16" stroke="#000" stroke-width="3"/>`;}
+  if(mood==='shock'){face='#f5a38a';brows=`<path d="M84 86 q11 -9 22 -2 M114 84 q11 -7 22 2" fill="none" stroke="#000" stroke-width="6" stroke-linecap="round"/>`;eyes=`<circle cx="95" cy="106" r="7" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="95" cy="106" r="3" fill="#000"/><circle cx="125" cy="106" r="7" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="125" cy="106" r="3" fill="#000"/>`;mouth=`<ellipse cx="110" cy="150" rx="9" ry="12" fill="#8f1f16" stroke="#000" stroke-width="3"/>`;
+    armL=`<path d="M58 190 L44 110" stroke="#000" stroke-width="26" stroke-linecap="round"/><path d="M58 190 L44 110" stroke="#fff" stroke-width="19" stroke-linecap="round"/><circle cx="44" cy="104" r="12" fill="${skin}" stroke="#000" stroke-width="4"/>`;
+    armR=`<path d="M162 190 L176 110" stroke="#000" stroke-width="26" stroke-linecap="round"/><path d="M162 190 L176 110" stroke="#fff" stroke-width="19" stroke-linecap="round"/><circle cx="176" cy="104" r="12" fill="${skin}" stroke="#000" stroke-width="4"/>`;}
+  if(mood==='point'){armL=`<path d="M58 190 L20 140" stroke="#000" stroke-width="26" stroke-linecap="round"/><path d="M58 190 L20 140" stroke="#fff" stroke-width="19" stroke-linecap="round"/><circle cx="17" cy="136" r="12" fill="${skin}" stroke="#000" stroke-width="4"/><path d="M8 130 l-16 -8" stroke="#000" stroke-width="7" stroke-linecap="round"/>`;}
+  if(mood==='give'){armL=`<path d="M58 190 L14 190" stroke="#000" stroke-width="26" stroke-linecap="round"/><path d="M58 190 L14 190" stroke="#fff" stroke-width="19" stroke-linecap="round"/><circle cx="10" cy="190" r="12" fill="${skin}" stroke="#000" stroke-width="4"/>`;}
+  return `<svg viewBox="${vb||'-20 0 250 340'}" class="m-${mood}"><g class="bob">
+  <rect x="80" y="262" width="26" height="62" fill="#222"/><rect x="114" y="262" width="26" height="62" fill="#222"/><ellipse cx="92" cy="326" rx="20" ry="9" fill="#000"/><ellipse cx="128" cy="326" rx="20" ry="9" fill="#000"/>
+  ${armL}<g class="armR">${armR}</g>
+  <ellipse cx="110" cy="222" rx="72" ry="66" fill="#fff" stroke="#000" stroke-width="4"/>
+  <rect x="76" y="200" width="68" height="78" rx="10" fill="#ffe3cc" stroke="#000" stroke-width="3"/><text x="110" y="246" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-weight="800" font-size="15">3/4</text>
+  <circle cx="92" cy="182" r="4" fill="#000"/><circle cx="128" cy="182" r="4" fill="#000"/>
+  <path d="M86 154 L134 154 L110 184 Z" fill="#d7392b" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="62" cy="112" r="10" fill="${face}" stroke="#000" stroke-width="4"/><circle cx="158" cy="112" r="10" fill="${face}" stroke="#000" stroke-width="4"/>
+  <circle cx="110" cy="114" r="48" fill="${face}" stroke="#000" stroke-width="4"/>
+  <circle cx="84" cy="126" r="8" fill="#f29c8a" opacity=".7"/><circle cx="136" cy="126" r="8" fill="#f29c8a" opacity=".7"/>
+  ${brows}<g class="eyes">${eyes}</g><ellipse cx="110" cy="122" rx="9" ry="8" fill="#e8a57f" stroke="#000" stroke-width="3"/>
+  <g class="mouth">${mouth}</g>
+  <path class="stache" d="M110 132 C96 124 80 128 74 140 C84 136 92 142 110 138 C128 142 136 136 146 140 C140 128 124 124 110 132 Z" fill="#111"/>
+  <path d="M66 70 L154 70 L154 52 C174 50 174 18 148 22 C146 2 122 -2 110 12 C98 -2 74 2 72 22 C46 18 46 50 66 52 Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="66" y="58" width="29.3" height="10" fill="#2e9d4a"/><rect x="95.3" y="58" width="29.4" height="10" fill="#fff"/><rect x="124.7" y="58" width="29.3" height="10" fill="#d7392b"/>
+  </g></svg>`;}
+
+
+const SALV_HEAD='40 -2 140 196';
+function setSalv(mood,think){const el=$('#salvAv');el.innerHTML=salvSVG(mood,SALV_HEAD);el.classList.toggle('thinking',!!think);}
+function setRob(mood){$('#robAv').innerHTML=robotSVG(mood,true);}
+function salvSay(t,mood='idle',think=false){$('#salvSay').innerHTML=t;setSalv(mood,think);}
+function robSay(t,mood='idle'){$('#robSay').innerHTML=t;setRob(mood);}
+
+/* =========================================================
+   ÀUDIO
+   ========================================================= */
+const OPT={snd:true,mus:true};
+let AC=null,MASTER=null,MUSIC=null,NOISE=null;
+function ac(){try{if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();const comp=AC.createDynamicsCompressor();comp.threshold.value=-10;comp.ratio.value=4;comp.connect(AC.destination);
+  MASTER=AC.createGain();MASTER.gain.value=1;MASTER.connect(comp);MUSIC=AC.createGain();MUSIC.gain.value=0;MUSIC.connect(comp);
+  const len=AC.sampleRate*.6;NOISE=AC.createBuffer(1,len,AC.sampleRate);const d=NOISE.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;}
+  if(AC.state==='suspended')AC.resume();return AC;}catch(e){return null;}}
+const mtof=m=>440*2**((m-69)/12);
+function osc(type,f,t,dur,vol,dest,att=.008){const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(dest);o.start(t);o.stop(t+dur+.05);return o;}
+function noise(t,dur,type,f,vol,q=1){const s=AC.createBufferSource();s.buffer=NOISE;const fl=AC.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=AC.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(fl).connect(g).connect(MASTER);s.start(t);s.stop(t+dur+.05);return fl;}
+/* Tarantel·la original (la mateixa del vídeo) */
+const MEL=[69,72,76,76,74,72, 71,72,74,72,71,69, 68,71,74,74,72,71, 69,71,72,71,69,68, 64,68,71,71,74,72, 71,69,71,68,64,64,
+           69,72,76,81,79,77, 76,74,72,69,69,0, 74,77,81,81,79,77, 76,72,69,72,76,76, 74,72,71,68,71,74, 72,71,69,69,0,0];
+const CHS=['Am','Am','E7','E7','E7','E7','Am','Am','Dm','Am','E7','Am'];
+const CHORD={Am:{b:45,t:[57,60,64]},E7:{b:40,t:[56,59,62]},Dm:{b:38,t:[53,57,62]}};
+const E8=.165;let mTimer=null,mNext=0,mStep=0;
+function mand(m,t){const f=mtof(m);osc('triangle',f,t,.13,.22,MUSIC);osc('square',f,t,.07,.045,MUSIC);osc('triangle',f,t+E8/2,.11,.14,MUSIC);}
+function accord(notes,t){const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1500;lp.connect(MUSIC);notes.forEach(n=>{osc('sawtooth',mtof(n),t,.12,.035,lp);});}
+function step(s,t){const bar=Math.floor(s/6),e=s%6,ch=CHORD[CHS[bar]],m=MEL[s];if(m)mand(m,t);if(e===0||e===3)osc('triangle',mtof(ch.b),t,.28,.32,MUSIC);else accord(ch.t,t);}
+function musicOn(){if(!OPT.mus||!ac()||mTimer)return;mNext=AC.currentTime+.08;mTimer=setInterval(()=>{while(mNext<AC.currentTime+.25){step(mStep,mNext);mStep=(mStep+1)%MEL.length;mNext+=E8;}},40);MUSIC.gain.setTargetAtTime(.2,AC.currentTime,.3);}
+function musicOff(){clearInterval(mTimer);mTimer=null;if(MUSIC)MUSIC.gain.setTargetAtTime(0,AC.currentTime,.1);}
+const SFX={
+  clack(){const t=AC.currentTime;noise(t,.05,'bandpass',2400,.9,2);osc('sine',190,t,.09,.45,MASTER,.002);noise(t+.07,.03,'bandpass',3200,.35,3);},
+  ding(){const t=AC.currentTime;osc('triangle',1175,t,.15,.3,MASTER);osc('triangle',1568,t+.11,.3,.3,MASTER);},
+  bonk(){const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.setValueAtTime(420,t);o.frequency.exponentialRampToValueAtTime(80,t+.45);g.gain.setValueAtTime(.32,t);g.gain.exponentialRampToValueAtTime(.0001,t+.5);o.connect(g).connect(MASTER);o.start(t);o.stop(t+.55);},
+  pick(){const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(500,t);o.frequency.exponentialRampToValueAtTime(900,t+.08);g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.0001,t+.12);o.connect(g).connect(MASTER);o.start(t);o.stop(t+.15);},
+  combo(){const t=AC.currentTime;[69,73,76,81,76,81].forEach((m,i)=>{osc('triangle',mtof(m),t+i*.08,.12,.28,MASTER);osc('triangle',mtof(m),t+i*.08+.04,.1,.18,MASTER);});},
+  slurp(){const t=AC.currentTime,fl=noise(t,.55,'bandpass',300,.7,6);fl.frequency.setValueAtTime(300,t);fl.frequency.exponentialRampToValueAtTime(2600,t+.5);
+    const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(300,t+.5);o.frequency.exponentialRampToValueAtTime(1400,t+.6);g.gain.setValueAtTime(.0001,t+.49);g.gain.exponentialRampToValueAtTime(.35,t+.51);g.gain.exponentialRampToValueAtTime(.0001,t+.66);o.connect(g).connect(MASTER);o.start(t+.48);o.stop(t+.7);},
+  zzzt(){const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),l=AC.createOscillator(),lg=AC.createGain();o.type='sawtooth';o.frequency.value=95;l.type='square';l.frequency.value=22;lg.gain.value=.25;l.connect(lg).connect(g.gain);g.gain.setValueAtTime(.25,t);g.gain.setValueAtTime(.25,t+.55);g.gain.exponentialRampToValueAtTime(.0001,t+.7);o.connect(g).connect(MASTER);o.start(t);l.start(t);o.stop(t+.72);l.stop(t+.72);noise(t,.6,'highpass',5000,.18);},
+  miau(){const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),v=AC.createOscillator(),vg=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(520,t);o.frequency.linearRampToValueAtTime(880,t+.22);o.frequency.linearRampToValueAtTime(430,t+.65);v.frequency.value=7;vg.gain.value=18;v.connect(vg).connect(o.frequency);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.06);g.gain.exponentialRampToValueAtTime(.0001,t+.7);o.connect(g).connect(MASTER);o.start(t);v.start(t);o.stop(t+.75);v.stop(t+.75);},
+  siren(){const t=AC.currentTime;for(let i=0;i<4;i++){osc('triangle',i%2?660:880,t+i*.18,.17,.3,MASTER);}},
+  grumble(){const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=700;o.type='sawtooth';o.frequency.setValueAtTime(140,t);o.frequency.linearRampToValueAtTime(85,t+.5);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.55);o.connect(lp).connect(g).connect(MASTER);o.start(t);o.stop(t+.6);},
+  deal(){for(let i=0;i<6;i++){const t=AC.currentTime+i*.09;noise(t,.04,'bandpass',2600,.6,2);}},
+  fanfare(){[523,659,784,1047,784,1047].forEach((f,i)=>osc('triangle',f,AC.currentTime+i*.11,.22,.3,MASTER));},
+  sad(){[392,370,349,330].forEach((f,i)=>osc('triangle',f,AC.currentTime+i*.2,.3,.25,MASTER));}
+};
+function sfx(n){if(!OPT.snd||!ac())return;try{SFX[n]();}catch(e){}}
+
+/* =========================================================
+   NIVELLS I FITXES
+   ========================================================= */
+const LEVELS=[
+  {name:'🥗 Antipasto',short:'antipasto',maxD:12,pick:5,pool:[[1,2],[1,3],[2,3],[1,4],[3,4]],rep:{pz:.55,nm:.35,w:.10},cheatP:.25,maxCheats:1},
+  {name:'🍝 Primo',short:'primo',maxD:20,pick:6,pool:[[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6]],rep:{pz:.2,nm:.45,w:.35},cheatP:.35,maxCheats:2},
+  {name:'🍕 Secondo',short:'secondo',maxD:24,pick:7,pool:[[1,2],[2,3],[3,4],[2,5],[3,5],[4,5],[5,6],[3,8],[5,8],[3,7],[2,7],[4,7]],rep:{pz:.15,nm:.45,w:.40},cheatP:.45,maxCheats:3}
+];
+let UID=0;
+function forms(v,maxD){const out=[];for(let k=1;k*v[1]<=maxD;k++)out.push({n:k*v[0],d:k*v[1]});return out;}
+function pickRep(L,d){const r=Math.random();let rep=r<L.rep.pz?'pz':r<L.rep.pz+L.rep.nm?'nm':'w';if(rep==='pz'&&d>12)rep='nm';return rep;}
+function makeTile(L,vals,force){
+  const v1=force||rnd(vals),dbl=Math.random()<.12;let v2=v1;
+  if(!dbl){const others=vals.filter(v=>v!==v1);v2=rnd(others);}
+  const f1=rnd(forms(v1,L.maxD));let f2;
+  if(dbl){const fs=forms(v2,L.maxD).filter(f=>!same(f,f1));f2=fs.length?rnd(fs):null;if(!f2){v2=rnd(vals.filter(v=>v!==v1));f2=rnd(forms(v2,L.maxD));}}
+  else f2=rnd(forms(v2,L.maxD));
+  const a={...f1,rep:pickRep(L,f1.d)},b={...f2,rep:pickRep(L,f2.d)};
+  if(a.rep===b.rep&&a.rep==='pz'&&Math.random()<.5)b.rep='nm';
+  return {id:++UID,a,b};
+}
+const isDbl=t=>eq(t.a,t.b);
+
+/* =========================================================
+   ESTAT DEL JOC
+   ========================================================= */
+const G={name:'',lvl:0,cheese:0,rounds:[],pizza:8,t0:0};
+let R=null;
+const endOf=side=>side==='L'?R.chain[0].L:R.chain[R.chain.length-1].R;
+function tryFit(t,side){const e=endOf(side);
+  if(fits(t.a,e))return {X:t.a,Y:t.b};
+  if(fits(t.b,e))return {X:t.b,Y:t.a};
+  return null;}
+function validMoves(hand){const out=[];hand.forEach(t=>['L','R'].forEach(s=>{if(tryFit(t,s))out.push({t,side:s});}));return out;}
+function place(t,side,X,Y,bad){const ent={t,dbl:isDbl(t)&&!bad,bad:!!bad};
+  if(side==='R'){ent.L=X;ent.R=Y;R.chain.push(ent);}else{ent.R=X;ent.L=Y;R.chain.unshift(ent);}
+  R.lastPlaced={id:t.id,side};R.moves++;return ent;}
+
+function startRound(){
+  const L=LEVELS[G.lvl];UID=0;
+  const vals=shuffle(L.pool.slice()).slice(0,L.pick);
+  let tiles,first,tries=0;
+  // Repartiment equilibrat: cada valor surt el mateix nombre de vegades i l'alumne sempre pot començar jugant
+  do{tries++;UID=0;tiles=shuffle(Array.from({length:21},(_,i)=>makeTile(L,vals,vals[i%vals.length])));
+    let si=tiles.findIndex(t=>!isDbl(t));if(si<0)si=0;first=tiles.splice(si,1)[0];
+    R={chain:[{t:first,L:first.a,R:first.b}]};
+  }while(tries<200&&validMoves(tiles.slice(0,6)).length<2);
+  R={L,vals,hand:tiles.slice(0,6),salv:tiles.slice(6,12),pou:tiles.slice(12),chain:[{t:first,L:first.a,R:first.b,dbl:false}],
+     turn:'p',sel:null,busy:false,errors:0,streak:0,maxStreak:0,meat:3,pending:null,draws:0,moves:0,catAt:3+Math.floor(Math.random()*4),catDone:false,
+     caught:0,missed:0,falseAcc:0,cheats:0,placed:0,pPassed:false,sPassed:false,hintId:null,cheese0:G.cheese,lastPlaced:{id:first.id,side:'R'}};
+  $('#platName').textContent=L.name;
+  show('scrGame');$('#actions').classList.remove('hide');
+  const intro=[
+    `Benvenuto! Comencem per l'antipasto. Fàcil, fàcil…`,
+    `Ara el primo. Aquí ja no hi ha tantes pizzes, eh?`,
+    `El secondo! Les fraccions s'assemblen molt… vigila bé.`][G.lvl];
+  salvSay(intro,'happy');
+  robSay(G.lvl===0?`Tria una fitxa i toca l'extrem on vols posar-la. Ha de ser <b>equivalent</b>, no igual!`:`Recorda el truc del producte en creu: ${F(1,2)} i ${F(2,4)} → 1·4 = 2·2.`,'happy');
+  sfx('deal');renderAll(true);
+}
+
+/* =========================================================
+   PINTAR
+   ========================================================= */
+function renderAll(fresh){renderEnds();renderChain(fresh);renderHand();renderMisc();}
+function renderEnds(){['L','R'].forEach(s=>{const h=endOf(s),b=$('#end'+s);
+  b.innerHTML=`<span class="lab">${s==='L'?'◀ Esquerra':'Dreta ▶'}</span>${halfHTML(h)}`;
+  b.setAttribute('aria-label',`Extrem ${s==='L'?'esquerre':'dret'}: ${halfLabel(h)}`);
+  b.classList.toggle('target',!!R.sel&&R.turn==='p'&&!R.busy);});}
+function renderChain(fresh){const c=$('#chain');
+  c.innerHTML=R.chain.map(e=>`<div class="ct ${e.dbl?'dbl':''} ${e.bad?'bad':''} ${!fresh&&R.lastPlaced&&e.t.id===R.lastPlaced.id?'new':''}" title="${esc(halfLabel(e.L)+' | '+halfLabel(e.R))}">${halfHTML(e.L)}${halfHTML(e.R)}</div>`).join('');
+  requestAnimationFrame(()=>{c.scrollLeft=R.lastPlaced&&R.lastPlaced.side==='L'?0:c.scrollWidth;});}
+function renderHand(newId){const h=$('#hand');
+  h.innerHTML=R.hand.map(t=>`<button class="tile ${R.sel===t.id?'sel':''} ${R.hintId===t.id?'hint':''} ${newId===t.id?'new':''}" data-id="${t.id}" aria-pressed="${R.sel===t.id}" aria-label="Fitxa: ${esc(halfLabel(t.a))} i ${esc(halfLabel(t.b))}">${halfHTML(t.a)}${halfHTML(t.b)}</button>`).join('');
+  h.classList.toggle('off',R.turn!=='p'||R.busy);}
+function renderMisc(){
+  $('#salvBacks').innerHTML='<i></i>'.repeat(Math.min(R.salv.length,8))+`<b>${R.salv.length}</b>`;
+  $('#pou').innerHTML=POU+`<b>${R.pou.length}</b>`;
+  $('#deco').innerHTML=pizzaSVG(8,G.pizza)+`Pizza: ${G.pizza}/8`;
+  $('#cCheese').textContent='🧀 '+G.cheese;$('#cMeat').textContent='🧆 '+R.meat;
+  const my=R.turn==='p'&&!R.busy;
+  $('#bDraw').textContent=R.pou.length?`🍝 Roba del plat`:`✋ Passo`;
+  $('#bDraw').disabled=!my;$('#bHint').disabled=!my||R.meat<=0;
+  $('#bCheat').disabled=!my||!R.pending;
+  $('#turnLab').textContent=my?'Et toca a tu':R.turn==='x'?'Fi del plat!':'Juga en Salvatore…';}
+function bump(id){const e=$(id);e.classList.remove('bump');void e.offsetWidth;e.classList.add('bump');}
+function addCheese(n){G.cheese=Math.max(0,G.cheese+n);bump('#cCheese');}
+
+/* =========================================================
+   TORN DE L'ALUMNE
+   ========================================================= */
+$('#hand').addEventListener('click',e=>{const b=e.target.closest('.tile');if(!b||R.turn!=='p'||R.busy)return;
+  const id=+b.dataset.id;R.sel=R.sel===id?null:id;sfx('pick');renderHand();renderEnds();
+  if(R.sel)robSay('Ara toca l\'extrem on la vols posar: esquerra o dreta.','think');});
+['L','R'].forEach(s=>$('#end'+s).addEventListener('click',()=>{if(R.turn!=='p'||R.busy)return;
+  if(!R.sel){robSay('Primer tria una de les teves fitxes, a baix.','think');sfx('pick');return;}attempt(s);}));
+
+function missedCheatNote(){if(!R.pending)return '';const p=R.pending;R.pending=null;
+  if(p.cheat){R.missed++;return `<br><small>Mmm… jo revisaria la d'en Salvatore: ${ft(p.X)} i ${ft(p.E)} no són equivalents (${cross(p.X,p.E)}).</small>`;}
+  return '';}
+
+function attempt(side){
+  const t=R.hand.find(x=>x.id===R.sel);if(!t)return;const e=endOf(side),fit=tryFit(t,side);
+  if(fit){
+    R.hand=R.hand.filter(x=>x!==t);R.sel=null;R.hintId=null;
+    const ent=place(t,side,fit.X,fit.Y);R.placed++;R.streak++;R.maxStreak=Math.max(R.maxStreak,R.streak);R.pPassed=false;R.sPassed=false;
+    let gain=ent.dbl?2:1,msg;
+    sfx('clack');setTimeout(()=>sfx('ding'),120);
+    if(ent.dbl)msg=`Fitxa doble! ${ft(fit.X)} = ${ft(fit.Y)}. Doble formatge!`;
+    else msg=`${rnd(['Perfetto!','Bip-bip, equivalent!','Molt bé!','Exacte!'])} ${ft(fit.X)} = ${ft(e)} perquè ${cross(fit.X,e)}.`;
+    if(R.streak%3===0){gain+=2;msg=`<b>MAMMA MIA! Tres seguides!</b> +2 🧀 extra.`;setTimeout(()=>sfx('combo'),300);}
+    addCheese(gain);
+    robSay(msg+missedCheatNote(),'happy');
+    renderAll();catCheck();
+    if(!R.hand.length)return finishSoon('p',900);
+    return nextTurn();
+  }
+  // no encaixa
+  const identical=[t.a,t.b].some(h=>same(h,e));
+  const b=$(`.tile[data-id="${t.id}"]`);if(b){b.classList.remove('bounce');void b.offsetWidth;b.classList.add('bounce');}
+  sfx('bonk');
+  if(identical&&![t.a,t.b].some(h=>!same(h,e)&&eq(h,e))){
+    robSay(`És la mateixa fracció, ${ft(e)}! Al dominó de les equivalents cal una manera <b>diferent</b> d'escriure-la. Prova-ho amb una altra.`,'think');
+    return;}
+  R.errors++;R.streak=0;
+  const h=Math.abs(val(t.a)-val(e))<Math.abs(val(t.b)-val(e))?t.a:t.b;
+  robSay(`${rnd(['Oh-oh…','Error als meus circuits… i als teus!','Uiii…'])} ${ft(h)} i ${ft(e)} no són equivalents: ${cross(h,e)}.`+missedCheatNote(),'oops');
+  salvSay(rnd(['Ah-ah! Ara em toca a mi.','Mamma mia… ara jugo jo!','Hehe. El meu torn.']),'happy');
+  R.sel=null;renderAll();
+  nextTurn();
+}
+
+$('#bDraw').addEventListener('click',()=>{if(R.turn!=='p'||R.busy)return;
+  const had=validMoves(R.hand).length>0;R.hintId=null;R.sel=null;
+  if(!R.pou.length){ // passar
+    R.pPassed=true;
+    robSay((had?'Psst… tenies una fitxa que hi encaixava!':'Cap fitxa encaixa. Passem.')+missedCheatNote(),had?'oops':'think');
+    if(R.sPassed)return finishSoon('block',900);renderAll();return nextTurn();}
+  const t=R.pou.pop();R.hand.push(t);R.draws++;sfx('slurp');
+  if(R.draws%3===0){
+    robSay('Slurp! …bzzzt! Els espaguetis i els circuits no s\'avenen gaire.','oops');
+    const av=$('#robAv');setTimeout(()=>{sfx('zzzt');av.classList.add('zap');const s=document.createElement('span');s.className='smoke';s.textContent='💨';av.appendChild(s);setTimeout(()=>{av.classList.remove('zap');s.remove();},1400);},450);
+  }else robSay(had?'Psst… ja en tenies una que hi encaixava. Però bé, una fitxa més!':'Una fitxa nova, amb gust d\'espagueti.',had?'think':'idle');
+  renderHand(t.id);renderEnds();renderMisc();
+});
+
+$('#bHint').addEventListener('click',()=>{if(R.turn!=='p'||R.busy||R.meat<=0)return;
+  const mv=validMoves(R.hand);
+  if(!mv.length){robSay(R.pou.length?'Cap de les teves fitxes encaixa. Roba del plat!':'Cap fitxa encaixa i el plat és buit: toca passar.','think');return;}
+  R.meat--;bump('#cMeat');const m=rnd(mv);R.hintId=m.t.id;R.sel=null;sfx('pick');
+  robSay(`Nyam, gràcies per la mandonguilla! Prova la fitxa que brilla a l'extrem <b>${m.side==='L'?'esquerre':'dret'}</b>. Fes el producte en creu per comprovar-ho.`,'think');
+  renderAll();});
+
+$('#bCheat').addEventListener('click',()=>{if(R.turn!=='p'||R.busy||!R.pending)return;
+  const p=R.pending;R.pending=null;
+  if(p.cheat){
+    R.caught++;addCheese(3);sfx('siren');
+    const i=R.chain.findIndex(x=>x.t.id===p.t.id);if(i>=0)R.chain.splice(i,1);
+    R.salv.push(p.t);if(R.pou.length)R.salv.push(R.pou.pop());R.lastPlaced=null;
+    salvSay(rnd(['Porca… ehm! Era una prova, eh? Per veure si estaves atent!','Io? Trampa? Bé… potser una miqueta.']),'shock');
+    robSay(`Enxampat! ${ft(p.X)} i ${ft(p.E)} no són equivalents: ${cross(p.X,p.E)}. +3 🧀 i en Salvatore roba una fitxa de càstig.`,'happy');
+  }else{
+    R.falseAcc++;addCheese(-1);sfx('grumble');
+    salvSay(rnd(['Io? Trampa? Mai! La meva nonna em miraria malament des del cel…','Offeso! Aquesta era perfetta!']),'shock');
+    robSay(`Era correcta: ${ft(p.X)} = ${ft(p.E)} perquè ${cross(p.X,p.E)}. −1 🧀.`,'oops');
+  }
+  renderAll();});
+
+/* =========================================================
+   TORN D'EN SALVATORE
+   ========================================================= */
+function nextTurn(){R.turn='s';R.busy=true;renderAll();const r=R;setTimeout(()=>{if(R===r)salvTurn();},1100);}
+async function salvTurn(){
+  if(!R)return;
+  const r0=R;salvSay(rnd(['Mmm…','Vediamo…','Un moment…']),'idle',true);
+  await wait(1300);if(R!==r0)return;
+  let mv=validMoves(R.salv);
+  while(!mv.length&&R.pou.length){R.salv.push(R.pou.pop());sfx('slurp');salvSay(rnd(['Uff, un altre espagueti…','Aquest plat no s\'acaba mai!','Robo, robo…']),'idle',true);renderMisc();await wait(900);if(R!==r0)return;mv=validMoves(R.salv);}
+  // trampa?
+  let cheat=null;
+  if(R.cheats<R.L.maxCheats&&R.salv.length>1&&Math.random()<R.L.cheatP){
+    const cands=[];R.salv.forEach(t=>['L','R'].forEach(s=>{const E=endOf(s);[[t.a,t.b],[t.b,t.a]].forEach(([X,Y])=>{if(!eq(X,E)&&Math.abs(val(X)-val(E))<.2&&!eq(X,Y))cands.push({t,side:s,X,Y,E});});}));
+    if(cands.length)cheat=rnd(cands);}
+  if(cheat){
+    R.cheats++;R.salv=R.salv.filter(x=>x!==cheat.t);place(cheat.t,cheat.side,cheat.X,cheat.Y,false);
+    R.pending={cheat:true,t:cheat.t,X:cheat.X,E:cheat.E};R.pPassed=R.sPassed=false;sfx('clack');
+    salvSay(rnd(['Ecco! Perfettamente equivalente… eh… sí, sí.','Aquesta va aquí. Segur. Seguríssim.','Ecco!','Guarda e impara.']),'happy');
+  }else if(mv.length){
+    const m=rnd(mv),f=tryFit(m.t,m.side),E=endOf(m.side);R.salv=R.salv.filter(x=>x!==m.t);place(m.t,m.side,f.X,f.Y,false);
+    R.pending={cheat:false,t:m.t,X:f.X,E};R.pPassed=R.sPassed=false;sfx('clack');
+    salvSay(rnd(['Ecco!','Guarda e impara.','Questa va qui.','Mmm… perfetto.','Com la pasta al dente!']),'happy');
+  }else{
+    R.sPassed=true;R.pending=null;salvSay('Passo… però només per educació.','idle');
+    if(R.pPassed)return finishSoon('block',1000);
+  }
+  catCheck();
+  if(!R.salv.length)return finishSoon('s',1000);
+  R.turn='p';R.busy=false;renderAll();
+  if(R.pending)robSay('Et toca! Si creus que en Salvatore ha fet trampa, prem 🕵️ <b>Trampa!</b> abans de jugar.','idle');
+}
+
+/* El gat */
+function catCheck(){if(R.catDone||R.moves<R.catAt||G.pizza<=5)return;R.catDone=true;
+  const c=$('#cat');c.classList.remove('go');void c.offsetWidth;c.classList.add('go');setTimeout(()=>sfx('miau'),500);
+  setTimeout(()=>{G.pizza--;renderMisc();
+    const extra=G.pizza===6?` O sigui… ${F(3,4)}!`:G.pizza===5?' Aquest gat no té fons!':'';
+    robSay(`Un gat s'ha endut un tros de pizza! Queden ${F(G.pizza,8)}.${extra}`,'wow');},1600);}
+
+/* =========================================================
+   FI DE PLAT I DIPLOMA
+   ========================================================= */
+function finishSoon(how,ms){R.busy=true;R.turn='x';R.sel=null;renderAll();const r=R;setTimeout(()=>{if(R===r)endRound(how);},ms);}
+function endRound(how){
+  R.busy=true;R.turn='x';if(R.pending&&R.pending.cheat)R.missed++;R.pending=null;
+  let won;if(how==='p')won=true;else if(how==='s')won=false;else won=R.hand.length<=R.salv.length;
+  if(won)addCheese(5);
+  const faults=R.errors+R.missed,stars=faults===0?3:faults<=2?2:1;
+  const rec={name:R.L.name,won,stars,placed:R.placed,errors:R.errors,caught:R.caught,missed:R.missed,cheese:G.cheese-R.cheese0};
+  G.rounds.push(rec);$('#actions').classList.add('hide');
+  won?sfx('fanfare'):sfx('sad');
+  const salvLine=won?'Porca miseria…<br>vull dir: <b>bravissimo!</b>':'La cucina è mia!<br>Però la revenja t\'espera al pròxim plat.';
+  const last=G.lvl>=LEVELS.length-1;
+  $('#scrRound').innerHTML=`<h2>${R.L.name}: ${won?'guanyat!':'perdut'}</h2>
+    ${how==='block'?`<p class="note">La taula s'ha tancat: ningú no podia jugar. Guanya qui té menys fitxes a la mà (tu ${R.hand.length}, en Salvatore ${R.salv.length}).</p>`:''}
+    <div class="stars" aria-label="${stars} estrelles de 3">${[1,2,3].map(i=>`<span class="${i<=stars?'':'off'}">⭐</span>`).join('')}</div>
+    <div class="sv">${salvSVG(won?'shock':'happy')}</div>
+    <p class="quote">${salvLine}</p>
+    <table class="stats"><tbody>
+      <tr><td>Fitxes ben col·locades</td><td>${rec.placed}</td></tr>
+      <tr><td>Errors</td><td>${rec.errors}</td></tr>
+      <tr><td>Trampes enxampades</td><td>${rec.caught}</td></tr>
+      <tr><td>Trampes que se t'han escapat</td><td>${rec.missed}</td></tr>
+      <tr><td>Formatge d'aquest plat${won?' (amb +5 per guanyar)':''}</td><td>🧀 ${rec.cheese}</td></tr>
+    </tbody></table>
+    <p class="note">${stars===3?'Cap error ni cap trampa escapada. Chef!':stars===2?'Molt bé! Amb menys errors arribaràs a les 3 estrelles.':'Fixa\'t en el producte en creu abans de posar cada fitxa.'}</p>
+    <button class="btn primary big" id="bNext">${last?'Veure el diploma':'Següent plat: '+LEVELS[G.lvl+1].name}</button>`;
+  show('scrRound');window.scrollTo(0,0);
+  $('#bNext').onclick=()=>{if(last)return finale();G.lvl++;startRound();window.scrollTo(0,0);};
+}
+function finale(){
+  const tot=k=>G.rounds.reduce((s,r)=>s+r[k],0),st=tot('stars'),master=st>=6;
+  const d=new Date(),mins=Math.max(1,Math.round((Date.now()-G.t0)/60000));
+  const when=d.toLocaleDateString('ca-ES',{day:'numeric',month:'long',year:'numeric'})+' · '+d.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'});
+  sfx('fanfare');musicOn();
+  $('#scrEnd').innerHTML=`<div class="diploma">
+      <p class="kind">${master?'Diploma de Mestre del dominó':'Diploma d\'Aprenent del dominó'} de fraccions equivalents</p>
+      <p class="nm">${esc(G.name)}</p>
+      <div class="stars" aria-label="${st} estrelles de 9">${'⭐'.repeat(st)}<span class="off">${'⭐'.repeat(9-st)}</span></div>
+      <p class="when">${when} · ${mins} min de joc</p>
+      <table class="stats"><thead><tr><th>Plat</th><th>Resultat</th></tr></thead><tbody>
+      ${G.rounds.map(r=>`<tr><td>${r.name}</td><td>${r.won?'guanyat':'perdut'} · ${'⭐'.repeat(r.stars)}</td></tr>`).join('')}
+      <tr><td>Errors</td><td>${tot('errors')}</td></tr>
+      <tr><td>Trampes enxampades</td><td>${tot('caught')} de ${tot('caught')+tot('missed')}</td></tr>
+      <tr><td>Formatge total</td><td>🧀 ${G.cheese}</td></tr></tbody></table>
+      <p class="forteacher">📱 Ensenya aquesta pantalla al professor.</p>
+    </div>
+    <p class="quote">${master?'Bravissimo! Ets més ràpid que el meu forn de llenya.':'Molt bé! Torna-hi i seràs Mestre del dominó.'}</p>
+    <div><button class="btn primary big" id="bAgain">Tornar a jugar</button></div>
+    <div class="sig">Matemàtiques · Ins Júlia Minguell, Badalona · Fet amb IA</div>`;
+  show('scrEnd');window.scrollTo(0,0);
+  $('#bAgain').onclick=()=>{G.lvl=0;G.cheese=0;G.rounds=[];G.pizza=8;G.t0=Date.now();startRound();window.scrollTo(0,0);};
+}
+function show(id){['scrStart','scrGame','scrRound','scrEnd'].forEach(s=>$('#'+s).classList.toggle('hide',s!==id));}
+
+/* =========================================================
+   INICI
+   ========================================================= */
+$('#heroRob').innerHTML=robotSVG('wave',true);
+$('#heroSalv').innerHTML=salvSVG('happy');
+$('#heroTile').innerHTML=`<div class="tile" style="margin:auto;transform:rotate(-8deg)">${halfHTML({n:3,d:4,rep:'pz'})}${halfHTML({n:6,d:8,rep:'nm'})}</div>`;
+$('#bTest').onclick=()=>{OPT.snd=true;sfx('clack');setTimeout(()=>sfx('ding'),200);setTimeout(()=>sfx('miau'),700);};
+function startGame(){const n=$('#name').value.trim();
+  if(!n){$('#nameErr').textContent='Escriu el teu nom per poder ensenyar el diploma al final.';$('#name').focus();return;}
+  G.name=n;G.lvl=0;G.cheese=0;G.rounds=[];G.pizza=8;G.t0=Date.now();ac();musicOn();startRound();window.scrollTo(0,0);}
+$('#bStart').onclick=startGame;
+$('#name').addEventListener('keydown',e=>{if(e.key==='Enter')startGame();});
+$('#bSnd').onclick=()=>{OPT.snd=!OPT.snd;$('#bSnd').setAttribute('aria-pressed',OPT.snd);$('#bSnd').textContent=OPT.snd?'🔊':'🔇';};
+$('#bMus').onclick=()=>{OPT.mus=!OPT.mus;$('#bMus').setAttribute('aria-pressed',OPT.mus);OPT.mus?musicOn():musicOff();};
+</script>
+</body>
+</html>
