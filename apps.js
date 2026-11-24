@@ -3,7 +3,7 @@
 // ------------------------------------------------------------
 //  Per afegir una app, copia una línia { ... }, i canvia:
 //    titol   → nom de l'app
-//    materia → geo | biogeo | mates | docencia
+//    materia → gica2 | bigica1 | biogeo4 | steam | mates | docencia
 //    nivell  → p. ex. "4t ESO", "2n Batx" (pot quedar buit "")
 //    desc    → una frase curta (pot quedar buida "")
 //    url     → adreça completa (https://...) o carpeta del repositori
@@ -13,28 +13,31 @@
 // ============================================================
 
 const MATERIES = [
-  { id: "geo",      nom: "Geologia i CCAA" },
-  { id: "biogeo",   nom: "Biologia i Geologia" },
+  { id: "gica2",    nom: "Geologia i CCAA · 2n Batx" },
+  { id: "bigica1",  nom: "Biologia, Geologia i CCAA · 1r Batx" },
+  { id: "biogeo4",  nom: "Biologia i Geologia · 4t ESO" },
+  { id: "steam",    nom: "STEAM" },
   { id: "mates",    nom: "Matemàtiques" },
   { id: "docencia", nom: "Docència" },
 ];
 
 const APPS = [
-  { titol: "Laboratori de marees",   materia: "geo",      nivell: "2n Batx", desc: "Simulador de marees: Lluna, Sol, marees vives i mortes.", url: "geologia-ccaa/marees/" },
-  { titol: "Simulador d'eclipsis",   materia: "geo",      nivell: "",        desc: "Sol, Terra i Lluna: fases, eclipsis reals 2026–2028.", url: "geologia-ccaa/eclipsis/" },
-  { titol: "Fases de la Lluna",      materia: "geo",      nivell: "",        desc: "El cel de l'observador, l'òrbita des de l'espai i reptes.", url: "geologia-ccaa/fases-lluna/" },
+  { titol: "Laboratori de marees",   materia: "gica2",    nivell: "", desc: "Simulador de marees: Lluna, Sol, marees vives i mortes.", url: "geologia-ccaa/marees/" },
+  { titol: "Simulador d'eclipsis",   materia: "gica2",    nivell: "", desc: "Sol, Terra i Lluna: fases, eclipsis reals 2026–2028.", url: "geologia-ccaa/eclipsis/" },
+  { titol: "Fases de la Lluna",      materia: "gica2",    nivell: "", desc: "El cel de l'observador, l'òrbita des de l'espai i reptes.", url: "geologia-ccaa/fases-lluna/" },
 
-  { titol: "El cicle de les roques", materia: "biogeo",   nivell: "1r Batx", desc: "Processos que transformen unes roques en altres.", url: "biogeo/cicle-roques/" },
-  { titol: "Tectònica de plaques",   materia: "biogeo",   nivell: "1r Batx", desc: "Mapa de plaques, límits i contextos tectònics.", url: "https://profejuanalcolea.github.io/TECTONICPLATE/" },
-  { titol: "Els terratrèmols",       materia: "biogeo",   nivell: "1r Batx", desc: "Magnitud i intensitat.", url: "biogeo/terratremols/" },
+  { titol: "El cicle de les roques", materia: "bigica1",  nivell: "", desc: "Processos que transformen unes roques en altres.", url: "biogeo/cicle-roques/" },
+  { titol: "Tectònica de plaques",   materia: "bigica1",  nivell: "", desc: "Mapa de plaques, límits i contextos tectònics.", url: "https://profejuanalcolea.github.io/TECTONICPLATE/" },
+  { titol: "Els terratrèmols",       materia: "bigica1",  nivell: "", desc: "Magnitud i intensitat.", url: "biogeo/terratremols/" },
 
-  { titol: "L'hora i el Sol",        materia: "biogeo",   nivell: "4t ESO",  desc: "Fusos horaris, terminador i canvi d'hora.", url: "" },
-  { titol: "On aterrem? (Mart)",     materia: "biogeo",   nivell: "4t ESO",  desc: "Projecte STEAM: on aterrar a Mart.", url: "" },
-  { titol: "Mitosi amb Tradescantia",materia: "biogeo",   nivell: "4t ESO",  desc: "Pràctica de laboratori.", url: "" },
+  { titol: "L'hora i el Sol",        materia: "biogeo4",  nivell: "", desc: "Fusos horaris, terminador i canvi d'hora.", url: "" },
+  { titol: "Mitosi amb Tradescantia",materia: "biogeo4",  nivell: "", desc: "Pràctica de laboratori.", url: "" },
 
-  { titol: "Pizzeria Tres Quarts",   materia: "mates",    nivell: "",        desc: "Joc de fraccions.", url: "" },
-  { titol: "Operació Fracció",       materia: "mates",    nivell: "",        desc: "Escape room de fraccions.", url: "" },
-  { titol: "Fraccions per objectius",materia: "mates",    nivell: "",        desc: "Reptes encadenats.", url: "" },
+  { titol: "On aterrem? (Mart)",     materia: "steam",    nivell: "4t ESO", desc: "Missió a Mart: on aterrar segons la geomorfologia.", url: "" },
+
+  { titol: "Pizzeria Tres Quarts",   materia: "mates",    nivell: "", desc: "Joc de fraccions.", url: "" },
+  { titol: "Operació Fracció",       materia: "mates",    nivell: "", desc: "Escape room de fraccions.", url: "" },
+  { titol: "Fraccions per objectius",materia: "mates",    nivell: "", desc: "Reptes encadenats.", url: "" },
 
   { titol: "Calculadora nota PAU",   materia: "docencia", nivell: "2n Batx", desc: "Nota d'accés i d'admissió.", url: "" },
 ];
