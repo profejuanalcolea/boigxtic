@@ -24,6 +24,10 @@ const APPS = [
   { titol: "Simulador d'eclipsis",   materia: "geo",      nivell: "",        desc: "Sol, Terra i Lluna: fases, eclipsis reals 2026–2028.", url: "geologia-ccaa/eclipsis/" },
   { titol: "Fases de la Lluna",      materia: "geo",      nivell: "",        desc: "El cel de l'observador, l'òrbita des de l'espai i reptes.", url: "geologia-ccaa/fases-lluna/" },
 
+  { titol: "El cicle de les roques", materia: "biogeo",   nivell: "1r Batx", desc: "Processos que transformen unes roques en altres.", url: "biogeo/cicle-roques/" },
+  { titol: "Tectònica de plaques",   materia: "biogeo",   nivell: "1r Batx", desc: "Mapa de plaques, límits i contextos tectònics.", url: "https://profejuanalcolea.github.io/TECTONICPLATE/" },
+  { titol: "Els terratrèmols",       materia: "biogeo",   nivell: "1r Batx", desc: "Magnitud i intensitat.", url: "biogeo/terratremols/" },
+
   { titol: "L'hora i el Sol",        materia: "biogeo",   nivell: "4t ESO",  desc: "Fusos horaris, terminador i canvi d'hora.", url: "" },
   { titol: "On aterrem? (Mart)",     materia: "biogeo",   nivell: "4t ESO",  desc: "Projecte STEAM: on aterrar a Mart.", url: "" },
   { titol: "Mitosi amb Tradescantia",materia: "biogeo",   nivell: "4t ESO",  desc: "Pràctica de laboratori.", url: "" },

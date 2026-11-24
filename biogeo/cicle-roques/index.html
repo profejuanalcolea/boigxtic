@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El cicle de les roques</title>
+<style>
+:root{--k:#111;--w:#fff;--o:#E8731A;--o2:#FDEBDC;--g:#5f5f5f;--l:#e4e4e4}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--k);background:var(--w);font-size:19px;line-height:1.45}
+header{display:flex;align-items:center;gap:20px;padding:14px 28px;border-bottom:3px solid var(--k);flex-wrap:wrap}
+header h1{font-size:26px;margin:0;letter-spacing:-.01em}
+header h1 span{color:var(--o)}
+nav{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+nav button{font:inherit;font-weight:650;border:2px solid var(--k);background:var(--w);padding:8px 18px;border-radius:999px;cursor:pointer}
+nav button.on{background:var(--k);color:var(--w)}
+nav button:focus-visible,.btn:focus-visible,.chip:focus-visible{outline:3px solid var(--o);outline-offset:2px}
+main{padding:22px 28px 10px}
+section{display:none}section.on{display:block}
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:28px;align-items:start}
+.lab{font-size:14px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--o);margin:0 0 6px}
+h2{font-size:30px;margin:0 0 8px;line-height:1.2}
+h3{font-size:22px;margin:0 0 8px}
+.help{color:var(--g);font-size:17px;margin:0 0 16px}
+.opts{display:grid;gap:10px}
+.opt{font:inherit;text-align:left;border:2px solid var(--k);background:var(--w);padding:13px 18px;border-radius:12px;cursor:pointer;color:var(--k)}
+.opt:hover,.opt:focus-visible{background:var(--o2);border-color:var(--o);outline:none}
+.bar{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{font:inherit;font-size:17px;font-weight:650;border:2px solid var(--k);background:var(--w);color:var(--k);padding:8px 16px;border-radius:8px;cursor:pointer}
+.btn.pri{background:var(--o);border-color:var(--o);color:var(--w)}
+.btn:disabled{opacity:.35;cursor:default}
+.panel{border:2px solid var(--k);border-radius:14px;padding:18px 20px}
+.path{list-style:none;margin:0;padding:0;counter-reset:s}
+.path li{counter-increment:s;padding:8px 0 8px 40px;position:relative;border-bottom:1px solid var(--l);font-size:17px}
+.path li:before{content:counter(s);position:absolute;left:0;top:9px;width:28px;height:28px;border-radius:50%;background:var(--k);color:var(--w);font-size:14px;font-weight:700;display:grid;place-items:center}
+.path li b{display:block;font-size:14px;color:var(--g);font-weight:600}
+.empty{color:var(--g);font-size:17px}
+.tag{display:inline-block;font-size:15px;font-weight:700;padding:3px 10px;border-radius:6px;margin-bottom:8px;border:2px solid var(--k)}
+.tag.I{background:var(--o);border-color:var(--o);color:var(--w)}
+.tag.M{background:var(--k);color:var(--w)}
+.tag.S{background:var(--w);color:var(--k)}
+.rock h2{font-size:40px;margin-bottom:4px}
+.rock dl{margin:14px 0 0}
+.rock dt{font-size:14px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--o);margin-top:12px}
+.rock dd{margin:2px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+.chip{font:inherit;font-size:16px;border:2px solid var(--k);background:var(--w);color:var(--k);padding:5px 12px;border-radius:999px;cursor:pointer}
+.chip.on{background:var(--o);border-color:var(--o);color:var(--w);font-weight:650}
+.flab{font-weight:700;font-size:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.card{font:inherit;text-align:left;border:2px solid var(--k);background:var(--w);color:var(--k);border-radius:12px;padding:10px 14px;cursor:pointer}
+.card:hover,.card:focus-visible{border-color:var(--o);background:var(--o2);outline:none}
+.card strong{display:block;font-size:20px}
+.card span{font-size:14px;color:var(--g)}
+.count{font-size:22px;font-weight:750;margin:0 0 12px}
+.count em{color:var(--o);font-style:normal}
+.seg{display:inline-flex;border:2px solid var(--k);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.seg button{font:inherit;font-weight:650;border:0;background:var(--w);color:var(--k);padding:7px 16px;cursor:pointer}
+.seg button.on{background:var(--k);color:var(--w)}
+.sample{border:3px dashed var(--k);border-radius:14px;padding:18px 22px;font-size:22px;margin-bottom:16px}
+.fb{border-radius:12px;padding:14px 18px;margin-top:14px;font-size:18px}
+.fb.ok{background:var(--o2);border:2px solid var(--o)}
+.fb.ko{background:#f2f2f2;border:2px solid var(--k)}
+.opt.right{background:var(--o);border-color:var(--o);color:var(--w)}
+.opt.wrong{text-decoration:line-through;opacity:.55}
+.score{font-weight:750;font-size:20px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modal.on{display:flex}
+.modal .box{background:var(--w);border-radius:16px;max-width:760px;width:100%;max-height:92vh;overflow:auto;padding:24px 28px;border:3px solid var(--k)}
+svg{width:100%;height:auto;display:block}
+.node rect{fill:var(--w);stroke:var(--k);stroke-width:3}
+.node.dash rect{stroke-dasharray:8 6}
+.node text{font-size:21px;font-weight:750;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.node{cursor:pointer}
+.node:hover rect{fill:var(--o2)}
+.node.cur rect{fill:var(--o);stroke:var(--o)}
+.node.cur text{fill:var(--w)}
+.node.goal rect{stroke:var(--o);stroke-width:5}
+.arr{cursor:pointer}
+.arr .hit{stroke:transparent;stroke-width:26;fill:none}
+.arr .vis{fill:none;stroke-width:5}
+.arr.int .vis{stroke:var(--o)}
+.arr.ext .vis{stroke:var(--k)}
+.arr text{font-size:16px;font-weight:650;paint-order:stroke;stroke:var(--w);stroke-width:6px;stroke-linejoin:round;text-anchor:middle}
+.arr.int text{fill:#b3520a}
+.arr:hover .vis,.arr.sel .vis{stroke-width:9}
+.arr.done .vis{stroke-width:10;stroke-dasharray:none}
+.arr.bad .vis{stroke:#999}
+.legend{display:flex;gap:22px;font-size:16px;margin-top:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:34px;height:6px;vertical-align:middle;margin-right:6px;border-radius:3px}
+footer{padding:8px 28px 18px;color:var(--g);font-size:14px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}header{padding:12px 16px}main{padding:16px}}
+</style>
+</head>
+<body>
+<header><h1>El cicle de les roques</h1></header>
+<main>
+<section id="cicle" class="on">
+  <div class="grid">
+    <div>
+      <svg viewBox="0 0 820 590" id="cycle" aria-label="Diagrama del cicle de les roques">
+        <defs>
+          <marker id="mo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#E8731A"/></marker>
+          <marker id="mk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#111"/></marker>
+        </defs>
+        <g id="arrows"></g>
+        <g id="nodes"></g>
+      </svg>
+      <div class="legend">
+        <span><i style="background:#E8731A"></i>Processos interns (energia interna de la Terra)</span>
+        <span><i style="background:#111"></i>Processos externs (energia solar i gravetat)</span>
+      </div>
+    </div>
+    <aside class="panel" id="cinfo"></aside>
+  </div>
+</section>
+</main>
+<footer>J Alcolea · Ins Júlia Minguell · Ciències de la Terra</footer>
+<script>
+/* ================== 3. CICLE DE LES ROQUES ================== */
+const N = {
+ sedim:{x:410,y:60,w:180,h:56,l:"Sediments",dash:1,t:"Sediments",d:"Fragments de roca (clasts), ions dissolts i restes d'éssers vius alliberats per la meteorització, transportats i acumulats en una conca sedimentària. Encara no són roca: per ser-ho els falta la diagènesi.",ex:"Graves, sorres, llims, fangs, fang calcari, closques."},
+ ign:{x:130,y:250,w:190,h:64,l:"Roques ígnies",t:"Roques ígnies (magmàtiques)",d:"Endògenes. Es formen per refredament i cristal·lització d'un magma: plutòniques o intrusives (en profunditat, lentament), volcàniques o efusives (en superfície, ràpidament) i filonianes (en esquerdes). La major part del volum de l'escorça és d'origen magmàtic.",ex:"Granit, gabre, peridotita · basalt, andesita, riolita, obsidiana · pòrfir, aplita, pegmatita."},
+ sedR:{x:690,y:250,w:250,h:64,l:"Roques sedimentàries",t:"Roques sedimentàries",d:"Exògenes. Es formen a la superfície per diagènesi de sediments o per precipitació química i activitat biològica. Cobreixen el 75 % de la superfície terrestre, però només són el 5 % del volum de l'escorça.",ex:"Conglomerat, gres, lutita · calcària, dolomia · guix, halita · sílex · carbons."},
+ mag:{x:240,y:460,w:160,h:56,l:"Magma",dash:1,t:"Magma",d:"Material fos a l'interior de l'escorça o del mantell superior. Es genera per fusió (anatèxia) de roques preexistents: en principi, qualsevol roca pot fondre's si arriba a la temperatura necessària. Segons el contingut en sílice (SiO₂): àcid (més del 66 %), intermedi (52-66 %) i bàsic (45-52 %).",ex:"Magmes basàltics (dorsals, punts calents), andesítics (subducció), granítics (anatèxia de l'escorça continental)."},
+ met:{x:580,y:460,w:250,h:64,l:"Roques metamòrfiques",t:"Roques metamòrfiques",d:"Endògenes. Es formen a partir d'altres roques que, sense fondre's, canvien de minerals i de textura per l'augment de pressió i/o temperatura.",ex:"Pissarra, fil·lita, esquist, gneis (regional) · marbre, quarsita, cornubianita (contacte) · amfibolita, migmatita."}
+};
+const A = [
+ {id:"a1",f:"mag",to:"ign",k:"int",d:"M215,432 Q150,380 135,286",lx:95,ly:372,l:"Cristal·lització",t:"Refredament i cristal·lització",x:"Quan el magma perd temperatura i pressió, els minerals cristal·litzen en un ordre determinat (sèries de Bowen): primer l'olivina i la plagiòclasi càlcica i, al final, el quars, el feldspat potàssic i la moscovita. La velocitat de refredament fixa la textura: lenta → granular (plutòniques); ràpida → afanítica o vítria (volcàniques); en dues etapes → porfírica.",p:"Per què un granit i una riolita tenen la mateixa composició però textures diferents?"},
+ {id:"a2",f:"ign",to:"sedim",k:"ext",d:"M150,218 Q185,92 316,62",lx:150,ly:132,l:"Meteorització i erosió",t:"Meteorització, erosió, transport i sedimentació",x:"Una roca formada en profunditat primer ha d'aflorar: l'aixecament (orogènesi) i l'erosió dels materials de sobre la porten a la superfície. Allà l'aigua, el gel, els canvis de temperatura i els éssers vius la meteoritzen; els agents geològics (rius, vent, glaceres, mar) n'erosionen i transporten els fragments fins a una conca, on es dipositen. Al llarg del transport els clasts s'arrodoneixen i se seleccionen per mida.",p:"Per què l'arcosa indica que l'àrea font era granítica i propera?"},
+ {id:"a3",f:"sedim",to:"sedR",k:"ext",d:"M502,58 Q662,66 690,214",lx:660,ly:118,l:"Diagènesi",t:"Diagènesi",x:"Conjunt de canvis que transformen el sediment en roca: compactació (el pes dels materials de sobre redueix la porositat i n'expulsa els fluids), cimentació (precipiten ciments: carbonat de calci, òxids de ferro, sílice, sulfat de calci) i recristal·lització (per exemple, l'aragonita de les closques passa a calcita). Té lloc en els primers quilòmetres de profunditat.",p:"Quina diferència hi ha entre compactació i cimentació? Quina afecta més una lutita i quina un gres?"},
+ {id:"a8",f:"sedR",to:"sedim",k:"ext",d:"M638,218 Q560,160 474,90",lx:548,ly:196,l:"Erosió",t:"Meteorització i erosió d'una roca sedimentària",x:"Una roca sedimentària que aflora també es pot meteoritzar i erosionar: els seus clasts tornen a la conca i formen una nova roca sedimentària. Els còdols d'un conglomerat poden ser, de fet, fragments d'una altra roca sedimentària més antiga.",p:"Com podries reconèixer, en un conglomerat, que alguns còdols venen d'una roca sedimentària anterior?"},
+ {id:"a4",f:"sedR",to:"met",k:"int",d:"M690,282 Q702,372 642,426",lx:752,ly:370,l:"Metamorfisme",t:"Metamorfisme d'una roca sedimentària",x:"Si la roca s'enfonsa (enterrament, col·lisió de plaques), augmenten la pressió i la temperatura. A partir d'uns 200 °C i uns 6 km de profunditat, la diagènesi dona pas al metamorfisme: els minerals es transformen en estat sòlid, sense fondre's. Si domina la pressió → metamorfisme regional (argila → pissarra → fil·lita → esquist → gneis). Si domina la temperatura → metamorfisme de contacte (calcària → marbre, gres → quarsita, argila → cornubianita).",p:"Una lutita pot donar una pissarra o una cornubianita. De què depèn?"},
+ {id:"a6",f:"ign",to:"met",k:"int",d:"M200,284 Q330,402 456,440",lx:322,ly:418,l:"Metamorfisme",t:"Metamorfisme d'una roca ígnia",x:"Les roques ígnies també poden patir metamorfisme: un granit pot esdevenir un gneis, i un basalt o un gabre, una amfibolita (els piroxens es transformen en amfíbols).",p:"Quina diferència observaries entre un granit i el gneis que se n'ha format?"},
+ {id:"a7",f:"met",to:"sedim",k:"ext",d:"M560,426 Q470,252 420,92",lx:458,ly:300,l:"Aflorament i erosió",t:"Aflorament i erosió d'una roca metamòrfica",x:"Les roques metamòrfiques es formen en profunditat; només es poden meteoritzar quan l'aixecament tectònic i l'erosió de les roques de sobre les fan aflorar. A partir d'aquí el procés és el mateix que per a qualsevol roca.",p:"Per què és un indici de molta erosió trobar gneis a la superfície?"},
+ {id:"a9",f:"met",to:"met",k:"int",d:"M610,494 C600,560 800,570 712,474",lx:700,ly:578,l:"Augment de grau",t:"Nou metamorfisme: augment de grau",x:"Una roca metamòrfica pot tornar a patir metamorfisme si la pressió i la temperatura continuen canviant. Així es forma la sèrie de grau creixent d'una mateixa argila: pissarra → fil·lita → esquist → gneis. A cada pas, la roca es transforma en estat sòlid, els minerals recristal·litzen i els cristalls creixen, mentre no s'arribi a la temperatura de fusió. Quan una roca ha passat per diversos episodis metamòrfics se'n diu polimetamorfisme.",p:"Per què els cristalls d'un gneis són més grans que els d'una pissarra, si totes dues poden venir de la mateixa argila?"},
+ {id:"a5",f:"met",to:"mag",k:"int",d:"M458,466 L324,466",lx:391,ly:500,l:"Fusió (anatèxia)",t:"Fusió o anatèxia",x:"Si la temperatura continua pujant, la roca comença a fondre's. La migmatita és l'estat intermedi: una part fosa i una part sòlida. Primer fonen els minerals que cristal·litzen a temperatures més baixes (quars, feldspats, mica), per això el magma d'anatèxia acostuma a ser àcid, granític: és l'altra cara de les sèries de Bowen.",p:"Per què la fusió parcial de l'escorça continental produeix magmes àcids?"}
+];
+const NS="http://www.w3.org/2000/svg";
+
+function buildCycle(){
+  const ga=document.getElementById("arrows"), gn=document.getElementById("nodes");
+  A.forEach(a=>{
+    const g=document.createElementNS(NS,"g"); g.setAttribute("class","arr "+a.k); g.dataset.id=a.id;
+    g.innerHTML=`<path class="hit" d="${a.d}"/><path class="vis" d="${a.d}" marker-end="url(#${a.k==="int"?"mo":"mk"})"/><text x="${a.lx}" y="${a.ly}">${a.l}</text>`;
+    g.onclick=()=>clickArrow(a);
+    ga.appendChild(g);
+  });
+  for(const id in N){
+    const n=N[id], g=document.createElementNS(NS,"g"); g.setAttribute("class","node"+(n.dash?" dash":"")); g.dataset.id=id;
+    g.innerHTML=`<rect x="${n.x-n.w/2}" y="${n.y-n.h/2}" width="${n.w}" height="${n.h}" rx="14"/><text x="${n.x}" y="${n.y}">${n.l}</text>`;
+    g.onclick=()=>clickNode(id);
+    gn.appendChild(g);
+  }
+  cIntro();
+}
+function cIntro(){
+  document.getElementById("cinfo").innerHTML=`<p class="lab">Com funciona</p><h3>Toca un requadre o una fletxa</h3><p>Cada element del diagrama explica el procés, les condicions en què passa i quines roques en resulten. Cada fletxa té una pregunta per comprovar si l'has entès.</p><p class="help">Fixa't en els colors: el cicle combina processos interns (taronja) i externs (negre). A la PAU sovint et demanen identificar quin tipus de procés hi actua.</p>`;
+}
+function clearSel(){ document.querySelectorAll(".arr").forEach(x=>x.classList.remove("sel","bad")); }
+function clickNode(id){
+    clearSel(); const n=N[id];
+  document.getElementById("cinfo").innerHTML=`<p class="lab">${n.dash?"Estat intermedi":"Grup de roques"}</p><h3>${n.t}</h3><p>${n.d}</p><p><b>Exemples:</b> ${n.ex}</p>`;
+}
+function clickArrow(a){
+  clearSel(); document.querySelector(`.arr[data-id="${a.id}"]`).classList.add("sel");
+  document.getElementById("cinfo").innerHTML=`<p class="lab">${a.k==="int"?"Procés intern":"Procés extern"} · ${N[a.f].l} → ${N[a.to].l}</p><h3>${a.t}</h3><p>${a.x}</p><div class="fb ok"><b>Pregunta per pensar:</b> ${a.p}</div>`;
+}
+
+buildCycle();
+</script>
+</body>
+</html>

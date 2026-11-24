@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Els terratrèmols · magnitud i intensitat</title>
+<style>
+:root{--k:#111;--w:#fff;--o:#E8731A;--o2:#FDEBDC;--g:#5f5f5f;--l:#e4e4e4}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--k);background:var(--w);font-size:19px;line-height:1.45}
+header{display:flex;align-items:center;gap:20px;padding:14px 28px;border-bottom:3px solid var(--k);flex-wrap:wrap}
+header h1{font-size:26px;margin:0}
+nav{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+nav button{font:inherit;font-weight:650;border:2px solid var(--k);background:var(--w);color:var(--k);padding:8px 18px;border-radius:999px;cursor:pointer}
+nav button.on{background:var(--k);color:var(--w)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--o);outline-offset:2px}
+main{padding:22px 28px 8px}
+section{display:none}section.on{display:block}
+.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:26px;align-items:start}
+.lab{font-size:14px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--o);margin:0 0 6px}
+h2{font-size:28px;margin:0 0 10px;line-height:1.2}
+h3{font-size:21px;margin:0 0 8px}
+.help{color:var(--g);font-size:16px;margin:4px 0 12px}
+.panel{border:2px solid var(--k);border-radius:14px;padding:16px 20px}
+.panel+.panel{margin-top:14px}
+table.cmp{width:100%;border-collapse:collapse;font-size:18px}
+table.cmp th,table.cmp td{border-bottom:1px solid var(--l);padding:9px 12px;text-align:left;vertical-align:top}
+table.cmp thead th{font-size:22px;border-bottom:3px solid var(--k)}
+table.cmp thead th.m{color:var(--o)}
+table.cmp tbody th{font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--g);width:17%}
+.defs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.def{border:2px solid var(--k);border-radius:12px;padding:12px 16px;font-size:17px}
+.def b{display:block;font-size:19px}
+.rng{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:8px 0}
+.rng label{font-weight:650;font-size:17px}
+.rng output{font-weight:800;font-size:22px;min-width:64px;text-align:right}
+input[type=range]{width:100%;accent-color:#E8731A}
+.big{font-size:34px;font-weight:800;color:var(--o);line-height:1.1}
+.barw{height:16px;background:var(--l);border-radius:8px;overflow:hidden;margin:6px 0 2px}
+.barw i{display:block;height:100%;background:var(--o)}
+.err{border-left:5px solid var(--o);padding:6px 12px;margin:8px 0;font-size:17px}
+.err b{display:block}
+.ems{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin:8px 0}
+.ems button{font:inherit;font-weight:800;font-size:17px;border:2px solid var(--k);border-radius:8px;padding:6px 0;cursor:pointer;background:var(--w);color:var(--k)}
+.ems button.on{outline:3px solid var(--k);outline-offset:1px}
+.emsd{min-height:82px;font-size:17px}
+canvas{display:block;width:100%;height:auto;border:2px solid var(--k);border-radius:12px;cursor:crosshair;background:#fff}
+.btn{font:inherit;font-size:17px;font-weight:650;border:2px solid var(--k);background:var(--w);color:var(--k);padding:7px 14px;border-radius:8px;cursor:pointer}
+.btn.pri{background:var(--o);border-color:var(--o);color:var(--w)}
+.btn.on{background:var(--k);color:var(--w)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+table.towns{width:100%;border-collapse:collapse;font-size:17px}
+table.towns td{padding:4px 6px;border-bottom:1px solid var(--l)}
+table.towns td:last-child{font-weight:800;text-align:right}
+table.towns tr.sel td{background:var(--o2)}
+.fb{border-radius:12px;padding:12px 16px;margin-top:12px;font-size:17px}
+.fb.ok{background:var(--o2);border:2px solid var(--o)}
+.fb.ko{background:#f2f2f2;border:2px solid var(--k)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:17px}
+.kv span:nth-child(even){font-weight:800;text-align:right}
+input[type=number]{font:inherit;font-size:20px;width:120px;padding:4px 8px;border:2px solid var(--k);border-radius:8px}
+.seg{display:inline-flex;border:2px solid var(--k);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.seg button{font:inherit;font-weight:650;border:0;background:var(--w);color:var(--k);padding:7px 16px;cursor:pointer}
+.seg button.on{background:var(--k);color:var(--w)}
+footer{padding:8px 28px 18px;color:var(--g);font-size:14px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}.defs{grid-template-columns:1fr}main{padding:16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Els terratrèmols</h1>
+  <nav>
+    <button class="on" data-tab="t1">1 · Magnitud i intensitat</button>
+    <button data-tab="t2">2 · Mapa d'isosistes</button>
+    <button data-tab="t3">3 · Sismograma</button>
+  </nav>
+</header>
+<main>
+
+<!-- ============ 1 ============ -->
+<section id="t1" class="on">
+  <div class="grid">
+    <div>
+      <table class="cmp">
+        <thead><tr><th></th><th class="m">Magnitud</th><th>Intensitat</th></tr></thead>
+        <tbody>
+          <tr><th>Què mesura</th><td>L'<b>energia alliberada</b> al focus del terratrèmol.</td><td>Els <b>efectes</b> en un lloc concret: sobre les persones, els edificis i el terreny.</td></tr>
+          <tr><th>Com s'obté</th><td>Instrumentalment: a partir de l'amplitud de les ones registrades als sismogrames.</td><td>Per observació: danys, enquestes a la població, efectes al terreny.</td></tr>
+          <tr><th>Escales</th><td>Richter (M<sub>L</sub>) i magnitud de moment (M<sub>w</sub>), la més usada avui.</td><td>EMS-98 (l'actual a Europa), MSK i Mercalli modificada. Totes tenen 12 graus equivalents.</td></tr>
+          <tr><th>Rang de valors</th><td><b>Oberta</b>, sense màxim. Nombres aràbics amb decimals (p. ex. 6,8). El més gran registrat: 9,5 (Xile, 1960).</td><td>Del <b>I al XII</b>, en xifres romanes i sense decimals (es pot escriure VI-VII).</td></tr>
+          <tr><th>Tipus d'escala</th><td><b>Logarítmica</b>: cada punt equival a una amplitud 10 vegades més gran i unes 32 vegades més energia.</td><td><b>Qualitativa</b> (descriptiva) i ordinal.</td></tr>
+          <tr><th>Valors per terratrèmol</th><td><b>Un de sol.</b> L'energia alliberada és una.</td><td><b>Molts</b>, un per a cada lloc. En general disminueix amb la distància a l'epicentre. Se sol donar la màxima (I<sub>0</sub>).</td></tr>
+          <tr><th>De què depèn</th><td>De la mida de la ruptura de la falla i del seu desplaçament.</td><td>Magnitud, profunditat del focus, distància, tipus de sòl, vulnerabilitat de les construccions.</td></tr>
+          <tr><th>Com es representa</th><td>Un valor numèric.</td><td><b>Mapa d'isosistes</b>: línies que uneixen els punts d'igual intensitat.</td></tr>
+        </tbody>
+      </table>
+      <div class="defs">
+        <div class="def"><b>Hipocentre o focus</b>Punt de l'interior de la Terra on s'origina el terratrèmol (on comença la ruptura de la falla).</div>
+        <div class="def"><b>Epicentre</b>Punt de la superfície situat just a sobre de l'hipocentre. Normalment hi trobem la intensitat màxima.</div>
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <p class="lab">Escala d'intensitat EMS-98 · toca un grau</p>
+        <div class="ems" id="ems"></div>
+        <div class="emsd" id="emsd"></div>
+      </div>
+    </div>
+    <aside>
+      <div class="panel">
+        <p class="lab">Una escala logarítmica</p>
+        <h3>Quantes vegades més gran és…?</h3>
+        <div class="rng"><label for="ma">Terratrèmol A</label><input type="range" id="ma" min="2" max="9.5" step="0.1" value="5"><output id="oma"></output></div>
+        <div class="rng"><label for="mb">Terratrèmol B</label><input type="range" id="mb" min="2" max="9.5" step="0.1" value="7"><output id="omb"></output></div>
+        <p style="margin:10px 0 0">Energia alliberada per B respecte A:</p>
+        <div class="big" id="ener"></div>
+        <div class="barw"><i id="enerbar"></i></div>
+        <p class="help" id="amp"></p>
+      </div>
+      <div class="panel">
+        <p class="lab">Errors típics a l'examen</p>
+        <div class="err"><b>«L'escala de Richter va de l'1 al 10.»</b>És oberta: no té màxim. El que passa és que la Terra no acumula prou energia per superar valors d'uns 9,5.</div>
+        <div class="err"><b>«Un M 6 és el doble que un M 3.»</b>Allibera unes 32.000 vegades més energia.</div>
+        <div class="err"><b>«Aquell terratrèmol va tenir intensitat VII.»</b>Incomplet: la intensitat és d'un lloc. Cal dir on, o que és la intensitat màxima.</div>
+        <div class="err"><b>«Més magnitud vol dir més danys.»</b>No sempre: la intensitat també depèn de la profunditat, del sòl i de la vulnerabilitat i l'exposició de la població.</div>
+        <div class="err"><b>Escriure la magnitud en xifres romanes, o la intensitat amb decimals.</b>Magnitud 6,8 · intensitat IX.</div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="t2">
+  <div class="grid">
+    <div>
+      <canvas id="map" width="820" height="520" aria-label="Mapa d'isosistes"></canvas>
+      <div class="ems" id="mleg" style="margin-top:8px"></div>
+      <p class="help">Colors de la paleta ShakeMap de l'USGS per a l'escala de Mercalli modificada (els graus són equivalents als de l'EMS-98). Toca el mapa per moure l'epicentre (✕) i un poble per veure-hi els efectes. Model simplificat, només per a ús didàctic.</p>
+    </div>
+    <aside>
+      <div class="panel">
+        <p class="lab">El terratrèmol</p>
+        <div class="rng"><label for="mm">Magnitud</label><input type="range" id="mm" min="3" max="7.5" step="0.1" value="5.5"><output id="omm"></output></div>
+        <div class="rng"><label for="mh">Profunditat</label><input type="range" id="mh" min="2" max="60" step="1" value="10"><output id="omh"></output></div>
+        <div class="bar"><button class="btn" id="sed">Efecte dels sediments tous: no</button></div>
+        <p style="margin:12px 0 0">Intensitat a l'epicentre (I<sub>0</sub>): <b class="big" id="i0" style="font-size:28px"></b></p>
+      </div>
+      <div class="panel" id="town"><p class="lab">Poble</p><p class="help" style="margin:0">Toca un poble del mapa.</p></div>
+      <div class="panel">
+        <p class="lab">Intensitat a cada poble</p>
+        <table class="towns" id="towns"></table>
+      </div>
+    </aside>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <p class="lab">Prova-ho</p>
+    <p style="margin:0">1) Deixa la magnitud fixa i augmenta la <b>profunditat</b>: què passa amb I<sub>0</sub> i amb l'amplada de les isosistes? &nbsp;2) Activa l'efecte dels <b>sediments tous</b>: per què les isosistes s'allarguen seguint la plana del riu? &nbsp;3) Per què les isosistes són el·líptiques i no circulars? Fixa't en la <b>falla</b>. &nbsp;4) Busca dues combinacions de magnitud i profunditat que donin la mateixa I<sub>0</sub>.</p>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="t3">
+  <div class="seg">
+    <button class="on" data-smode="exp">Explora el sismograma</button>
+    <button data-smode="rep">Repte: calcula la distància</button>
+  </div>
+  <canvas id="sis" width="1100" height="330" aria-label="Sismograma"></canvas>
+  <div class="grid" style="margin-top:14px">
+    <div class="panel" id="sctrl"></div>
+    <div class="panel" id="sinfo"></div>
+  </div>
+</section>
+</main>
+<footer>J Alcolea · Ins Júlia Minguell · Ciències de la Terra</footer>
+
+<script>
+const ROM=["","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
+const EMS=[null,
+ ["No sentit","Només el registren els sismògrafs."],
+ ["Amb prou feines sentit","El noten molt poques persones en repòs, sobretot als pisos alts."],
+ ["Feble","El noten poques persones dins dels edificis. Els objectes penjats oscil·len lleugerament."],
+ ["Àmpliament observat","El nota molta gent dins dels edificis i poca a l'exterior. Vibren finestres, portes i plats."],
+ ["Fort","El nota la majoria de la gent a dins i alguns a fora. Molts es desperten. Els objectes penjats oscil·len molt i alguns objectes cauen."],
+ ["Lleugerament danyós","Molta gent s'espanta i surt al carrer. Danys lleus en molts edificis: esquerdes fines i caiguda de trossos d'arrebossat."],
+ ["Danyós","La majoria de la gent s'espanta. Els mobles es desplacen. Molts edificis ordinaris tenen danys moderats: esquerdes a les parets i caiguda de xemeneies."],
+ ["Molt danyós","Costa mantenir-se dret. Molts edificis tenen danys greus i alguns de vulnerables s'enfonsen parcialment."],
+ ["Destructiu","Pànic general. Molts edificis vulnerables s'ensorren i fins i tot els ben construïts tenen danys importants."],
+ ["Molt destructiu","Molts edificis ben construïts s'ensorren o tenen danys molt greus."],
+ ["Devastador","La major part dels edificis, inclosos els ben construïts, s'ensorren."],
+ ["Completament devastador","Pràcticament totes les construccions queden destruïdes. El paisatge canvia."]];
+// Paleta ShakeMap de l'USGS per a la intensitat de Mercalli modificada (X+ en una sola classe; XI i XII enfosquits)
+const PAL=[null,"#FFFFFF","#BFCCFF","#BFCCFF","#99FFFF","#80FF80","#FFFF00","#FFC800","#FF9100","#FF0000","#C80000","#A00000","#800000"];
+function col(i){return PAL[Math.max(1,Math.min(12,i))];}
+function mix(a,b,t){return a.map((v,i)=>v+(b[i]-v)*t);}
+const fmt=(x,d=1)=>x.toFixed(d).replace(".",",");
+function big(n){ if(n<10) return fmt(n,1); return Math.round(n).toLocaleString("ca-ES"); }
+
+/* ---------- 1 ---------- */
+const emsEl=document.getElementById("ems");
+for(let i=1;i<=12;i++){const b=document.createElement("button");b.textContent=ROM[i];b.style.background=col(i);if(i>=9)b.style.color="#fff";b.onclick=()=>emsShow(i);emsEl.appendChild(b);}
+function emsShow(i){ [...emsEl.children].forEach((b,j)=>b.classList.toggle("on",j===i-1)); document.getElementById("emsd").innerHTML=`<b style="font-size:20px">${ROM[i]} · ${EMS[i][0]}</b><br>${EMS[i][1]}`; }
+emsShow(6);
+function upLog(){
+  const a=+ma.value,b=+mb.value,d=b-a;
+  oma.textContent=fmt(a);omb.textContent=fmt(b);
+  const e=Math.pow(10,1.5*d), A=Math.pow(10,d);
+  ener.textContent= d>=0? `× ${big(e)}` : `÷ ${big(1/e)}`;
+  enerbar.style.width=Math.min(100,Math.abs(1.5*d)/(1.5*7.5)*100)+"%";
+  amp.innerHTML= d===0? "Mateixa magnitud: mateixa energia i mateixa amplitud d'ona." :
+   `Diferència de ${fmt(Math.abs(d))} punts → l'amplitud de les ones és ${big(d>0?A:1/A)} vegades ${d>0?"més gran":"més petita"} i l'energia, ${big(d>0?e:1/e)} vegades ${d>0?"més gran":"més petita"} (energia ≈ ×32 per cada punt).`;
+}
+ma.oninput=mb.oninput=upLog; upLog();
+
+/* ---------- 2 · ISOSISTES ---------- */
+const mc=document.getElementById("map"),mx=mc.getContext("2d");
+const W=820,H=520,KM=0.25; // km per px
+let ep={x:300,y:250}, sedOn=false, selTown=null;
+const towns=[
+ {n:"Castellfosc",x:340,y:205},{n:"Riudeserra",x:430,y:300},{n:"La Plana",x:560,y:330},
+ {n:"Vilallonga del Riu",x:660,y:395},{n:"Montaltet",x:180,y:120},{n:"Sant Pere de Roca",x:120,y:380},
+ {n:"Coll de Bruc",x:470,y:110},{n:"Mas de l'Om",x:760,y:180},{n:"Torrefreda",x:250,y:470},{n:"Vilagrava",x:700,y:480}];
+// plana de sediments: banda al voltant d'un riu
+const river=[[380,520],[430,430],[500,370],[600,345],[700,330],[820,300]];
+function distSeg(px,py,a,b){const dx=b[0]-a[0],dy=b[1]-a[1];let t=((px-a[0])*dx+(py-a[1])*dy)/(dx*dx+dy*dy);t=Math.max(0,Math.min(1,t));const x=a[0]+t*dx-px,y=a[1]+t*dy-py;return Math.hypot(x,y);}
+function dRiver(x,y){let d=1e9;for(let i=0;i<river.length-1;i++)d=Math.min(d,distSeg(x,y,river[i],river[i+1]));return d;}
+function inSed(x,y){return dRiver(x,y)<38;}
+const FA=-0.6; // orientació de la falla (rad), NE-SW
+function site(x,y){return 0.12*Math.sin(x/95+1.3)*Math.cos(y/80)+0.08*Math.sin((x+y)/60+.7)+0.05*Math.cos((x-2*y)/45);}
+function I0(){const M=+mm.value,h=+mh.value;return 1.5*M-3*Math.log10(h)+2.5;}
+function intensity(x,y){
+  const h=+mh.value, dx=x-ep.x, dy=y-ep.y;
+  const u=dx*Math.cos(FA)+dy*Math.sin(FA), v=-dx*Math.sin(FA)+dy*Math.cos(FA);
+  const d=Math.hypot(u/1.35,v)*KM, R=Math.hypot(d,h);
+  let I=I0()-3*Math.log10(R/h)-0.002*(R-h)+site(x,y);
+  if(sedOn){const r=dRiver(x,y); I+=1.15*Math.exp(-Math.pow(r/34,2));}
+  return Math.max(0,Math.min(12,I));
+}
+const hc=document.createElement("canvas");hc.width=hc.height=10;{const c=hc.getContext("2d");c.strokeStyle="rgba(0,0,0,.28)";c.lineWidth=1.5;c.beginPath();c.moveTo(0,10);c.lineTo(10,0);c.stroke();}
+const cls=I=>Math.max(1,Math.min(12,Math.round(I)));
+function drawMap(){
+  const S=2,cw=W/S,ch=H/S,g=[];
+  for(let j=0;j<ch;j++){g[j]=[];for(let i=0;i<cw;i++){g[j][i]=cls(intensity(i*S+S/2,j*S+S/2));}}
+  for(let j=0;j<ch;j++)for(let i=0;i<cw;i++){mx.fillStyle=col(g[j][i]);mx.fillRect(i*S,j*S,S,S);}
+  // plana sedimentària
+  {const o=document.createElement("canvas");o.width=W;o.height=H;const c=o.getContext("2d");c.lineCap="round";c.lineJoin="round";
+   const path=()=>{c.beginPath();river.forEach((p,i)=>i?c.lineTo(...p):c.moveTo(...p));};
+   c.strokeStyle="rgba(43,108,176,.9)";c.lineWidth=79;path();c.stroke();c.globalCompositeOperation="destination-out";c.strokeStyle="#000";c.lineWidth=75;path();c.stroke();
+   mx.drawImage(o,0,0);}
+  // falla
+  {const L=120;mx.save();mx.strokeStyle="#111";mx.lineWidth=3;mx.setLineDash([10,6]);mx.beginPath();mx.moveTo(ep.x-L*Math.cos(FA),ep.y-L*Math.sin(FA));mx.lineTo(ep.x+L*Math.cos(FA),ep.y+L*Math.sin(FA));mx.stroke();mx.restore();
+   mx.font="italic 600 14px system-ui";mx.lineJoin="round";mx.lineWidth=4;mx.strokeStyle="#fff";const fx=ep.x+L*Math.cos(FA)+6,fy=ep.y+L*Math.sin(FA);mx.strokeText("falla",fx,fy);mx.fillStyle="#111";mx.fillText("falla",fx,fy);}
+  // isosistes (límits entre classes)
+  mx.fillStyle="#111";
+  for(let j=0;j<ch;j++)for(let i=0;i<cw;i++){
+    if(i<cw-1&&g[j][i]!==g[j][i+1])mx.fillRect((i+1)*S-1,j*S,2,S);
+    if(j<ch-1&&g[j][i]!==g[j+1][i])mx.fillRect(i*S,(j+1)*S-1,S,2);
+  }
+  // riu
+  mx.strokeStyle="#2b6cb0";mx.lineWidth=4;mx.setLineDash([]);mx.beginPath();river.forEach((p,i)=>i?mx.lineTo(...p):mx.moveTo(...p));mx.stroke();
+  mx.font="italic 600 15px system-ui";mx.lineJoin="round";mx.lineWidth=4;mx.strokeStyle="#fff";mx.strokeText("riu Llobet",735,288);mx.fillStyle="#2b6cb0";mx.fillText("riu Llobet",735,288);mx.font="600 14px system-ui";mx.strokeText("plana al·luvial (sediments tous)",440,505);mx.fillStyle="#1d4f85";mx.fillText("plana al·luvial (sediments tous)",440,505);
+  // etiquetes de grau: al llarg d'una línia cap al costat més ample
+  const dir = ep.x<W/2?1:-1; const row=Math.max(0,Math.min(ch-1,Math.floor((ep.y-26)/S)));
+  let k=0,i0=Math.floor(ep.x/S);
+  while(true){const i=i0+dir*k; if(i<0||i>=cw)break; const c=g[row][i]; let k2=k; while(true){const j=i0+dir*(k2+1); if(j<0||j>=cw||g[row][j]!==c)break; k2++;}
+    const mid=i0+dir*(k+k2)/2; if(Math.abs(k2-k)>=10) label(ROM[c],mid*S+S/2,row*S+8,c); k=k2+1;}
+  // pobles
+  towns.forEach(t=>{const sel=t===selTown;mx.beginPath();mx.arc(t.x,t.y,sel?9:7,0,7);mx.fillStyle=sel?"#E8731A":"#111";mx.fill();mx.lineWidth=2;mx.strokeStyle="#fff";mx.stroke();
+    mx.font="600 15px system-ui";mx.lineJoin="round";mx.lineWidth=4;mx.strokeStyle="rgba(255,255,255,.9)";mx.strokeText(t.n,t.x+11,t.y+5);mx.fillStyle="#111";mx.fillText(t.n,t.x+11,t.y+5);});
+  // epicentre
+  mx.strokeStyle="#111";mx.lineWidth=4;mx.beginPath();mx.moveTo(ep.x-10,ep.y-10);mx.lineTo(ep.x+10,ep.y+10);mx.moveTo(ep.x+10,ep.y-10);mx.lineTo(ep.x-10,ep.y+10);mx.stroke();
+  mx.strokeStyle="#fff";mx.lineWidth=1.5;mx.stroke();
+  // escala
+  mx.fillStyle="#111";mx.fillRect(20,H-28,80,5);mx.font="600 14px system-ui";mx.fillText("20 km",36,H-34);
+  mx.font="700 15px system-ui";mx.fillText("N ↑",W-46,28);
+  document.getElementById("i0").textContent=ROM[cls(I0())];
+  renderTowns();
+}
+function label(t,x,y,c){mx.lineJoin="round";mx.font="800 20px system-ui";mx.textAlign="center";mx.lineWidth=5;mx.strokeStyle=c>=9?"#111":"#fff";mx.strokeText(t,x,y);mx.fillStyle=c>=9?"#fff":"#111";mx.fillText(t,x,y);mx.textAlign="start";}
+function renderTowns(){
+  const rows=towns.map(t=>({t,d:Math.hypot(t.x-ep.x,t.y-ep.y)*KM,I:cls(intensity(t.x,t.y))})).sort((a,b)=>a.d-b.d);
+  document.getElementById("towns").innerHTML="<tr><td><b>Poble</b></td><td><b>Distància</b></td><td>Int.</td></tr>"+rows.map(r=>`<tr class="${r.t===selTown?"sel":""}"><td>${r.t.n}${sedOn&&inSed(r.t.x,r.t.y)?" ·  <small>sediments</small>":""}</td><td>${Math.round(r.d)} km</td><td>${ROM[r.I]}</td></tr>`).join("");
+  if(selTown){const t=selTown,I=cls(intensity(t.x,t.y)),d=Math.hypot(t.x-ep.x,t.y-ep.y)*KM,s=sedOn&&inSed(t.x,t.y);
+    document.getElementById("town").innerHTML=`<p class="lab">Poble</p><h3>${t.n}</h3><p style="margin:0">A ${Math.round(d)} km de l'epicentre${s?", sobre sediments tous":""}.</p><p style="margin:6px 0 0"><b class="big" style="font-size:30px">${ROM[I]}</b> &nbsp;<b>${EMS[I][0]}</b></p><p style="margin:4px 0 0">${EMS[I][1]}</p>${s?`<p class="help">Els sediments tous i poc consolidats amplifiquen les ones: aquí la intensitat és un grau més alta que sobre roca.</p>`:""}`;}
+}
+{const lg=document.getElementById("mleg");for(let i=1;i<=12;i++){const b=document.createElement("button");b.textContent=ROM[i];b.style.background=col(i);if(i>=9)b.style.color="#fff";b.style.cursor="default";b.tabIndex=-1;lg.appendChild(b);}}
+mc.onclick=e=>{const r=mc.getBoundingClientRect(),x=(e.clientX-r.left)*W/r.width,y=(e.clientY-r.top)*H/r.height;
+  const t=towns.find(t=>Math.hypot(t.x-x,t.y-y)<16);
+  if(t){selTown=t;}else{ep={x,y};}
+  drawMap();};
+function upMap(){omm.textContent=fmt(+mm.value);omh.textContent=mh.value+" km";drawMap();}
+mm.oninput=mh.oninput=upMap;
+sed.onclick=()=>{sedOn=!sedOn;sed.textContent="Efecte dels sediments tous: "+(sedOn?"sí":"no");sed.classList.toggle("on",sedOn);drawMap();};
+
+/* ---------- 3 · SISMOGRAMA ---------- */
+const sc=document.getElementById("sis"),sx=sc.getContext("2d");
+const SW=1100,SH=330,T=160,L0=50,R0=20,Y0=SH/2-10; // eix del temps 0..T s
+const VP=6,VS=3.5,VL=3;
+const tx=t=>L0+t/T*(SW-L0-R0);
+const xt=x=>(x-L0)/(SW-L0-R0)*T;
+let sMode="exp", sd=150, sM=5, showArr=true, picks=[], quake=null;
+function ampMM(d,M){const dt=d/VS-d/VP;return Math.pow(10,M-3*Math.log10(8*dt)+2.92);}
+function env(t,t0,tau){if(t<t0)return 0;const u=t-t0;return (1-Math.exp(-u/0.7))*Math.exp(-u/tau);}
+function trace(d,M){
+  const tp=d/VP,ts=d/VS,tl=d/VL,A=ampMM(d,M);
+  const S=Math.max(5,Math.min(118,10+22*(Math.log10(A)+1)));
+  const pts=[];
+  for(let k=0;k<=2200;k++){const t=k/2200*T;
+    let v=0.9*Math.sin(2*Math.PI*1.37*t)+0.6*Math.sin(2*Math.PI*2.11*t+1);
+    v+=0.36*S*env(t,tp,5+0.04*d)*(Math.sin(2*Math.PI*0.9*t)*0.7+Math.sin(2*Math.PI*1.6*t+.5)*0.3);
+    v+=S*env(t,ts,8+0.06*d)*(Math.sin(2*Math.PI*0.55*(t-ts))*0.75+Math.sin(2*Math.PI*1.1*t)*0.25);
+    v+=0.8*S*env(t,tl,14+0.08*d)*Math.sin(2*Math.PI*(0.16+0.04*Math.exp(-(t-tl)/20))*(t-tl));
+    pts.push([tx(t),Y0-v]);}
+  return {tp,ts,tl,A,pts};
+}
+function drawSis(){
+  const d=sMode==="exp"?sd:quake.d, M=sMode==="exp"?sM:quake.M, tr=trace(d,M);
+  sx.clearRect(0,0,SW,SH);sx.fillStyle="#fff";sx.fillRect(0,0,SW,SH);
+  sx.font="600 14px system-ui";sx.textAlign="center";
+  for(let t=0;t<=T;t+=10){const x=tx(t);sx.strokeStyle=t%50===0?"#bbb":"#e6e6e6";sx.lineWidth=1;sx.beginPath();sx.moveTo(x,12);sx.lineTo(x,SH-36);sx.stroke();sx.fillStyle="#5f5f5f";sx.fillText(t,x,SH-24);}
+  sx.fillText("temps des de l'inici del terratrèmol (s)",SW/2,SH-2);sx.textAlign="start";
+  sx.strokeStyle="#111";sx.lineWidth=1.6;sx.beginPath();tr.pts.forEach((p,i)=>i?sx.lineTo(...p):sx.moveTo(...p));sx.stroke();
+  const mark=(t,l,c,ly=30)=>{const x=tx(t);sx.strokeStyle=c;sx.lineWidth=3;sx.setLineDash([6,5]);sx.beginPath();sx.moveTo(x,14);sx.lineTo(x,SH-40);sx.stroke();sx.setLineDash([]);sx.fillStyle=c;sx.font="800 18px system-ui";sx.fillText(l,x+6,ly);};
+  if(sMode==="exp"&&showArr){mark(tr.tp,"P","#E8731A",30);mark(tr.ts,"S","#E8731A",54);mark(tr.tl,"Superficials","#111",78);}
+  if(sMode==="rep"){picks.forEach((t,i)=>mark(t,i?"S?":"P?","#E8731A"));}
+  return tr;
+}
+function sExp(){
+  document.getElementById("sctrl").innerHTML=`<p class="lab">L'estació i el terratrèmol</p>
+   <div class="rng"><label for="sdist">Distància a l'epicentre</label><input type="range" id="sdist" min="20" max="420" step="5" value="${sd}"><output id="osd"></output></div>
+   <div class="rng"><label for="smag">Magnitud</label><input type="range" id="smag" min="2.5" max="7" step="0.1" value="${sM}"><output id="osm"></output></div>
+   <div class="bar"><button class="btn ${showArr?"on":""}" id="sarr">Mostra les arribades: ${showArr?"sí":"no"}</button></div>
+   <p class="help">Les ones P (primàries) són les més ràpides i arriben primer; les S (secundàries), després; les superficials, les últimes i amb més amplitud. Com més lluny és l'estació, més s'allunyen les arribades P i S.</p>`;
+  sdist.oninput=e=>{sd=+e.target.value;upExp();};smag.oninput=e=>{sM=+e.target.value;upExp();};
+  sarr.onclick=()=>{showArr=!showArr;sExp();};
+  upExp();
+}
+function upExp(){
+  osd.textContent=sd+" km";osm.textContent=fmt(sM);
+  const tr=drawSis(),dt=tr.ts-tr.tp;
+  document.getElementById("sinfo").innerHTML=`<p class="lab">Lectura del sismograma</p><div class="kv">
+   <span>Arribada de les ones P</span><span>${fmt(tr.tp)} s</span>
+   <span>Arribada de les ones S</span><span>${fmt(tr.ts)} s</span>
+   <span>Interval S–P</span><span>${fmt(dt)} s</span>
+   <span>Distància ≈ 8,4 × (S–P)</span><span>${Math.round(8.4*dt)} km</span>
+   <span>Amplitud màxima de les ones S</span><span>${A2(tr.A)} mm</span></div>
+   <p class="help">Velocitats usades: P = 6 km/s, S = 3,5 km/s, superficials = 3 km/s. Amb la mateixa distància, si puja la magnitud només canvia l'<b>amplitud</b>: les arribades no es mouen. El traç està comprimit perquè es vegin bé tant els terratrèmols petits com els grans.</p>`;
+}
+const A2=a=>a<1?fmt(a,2):a<10?fmt(a,1):Math.round(a).toLocaleString("ca-ES");
+function sRep(){
+  quake={d:Math.round(40+Math.random()*340),M:Math.round((3+Math.random()*3)*10)/10};picks=[];
+  document.getElementById("sctrl").innerHTML=`<p class="lab">Repte</p><h3>A quina distància és l'epicentre?</h3>
+   <p style="margin:0 0 8px">1) Toca el sismograma on arriben les ones <b>P</b>. 2) Toca on arriben les ones <b>S</b>. 3) Calcula la distància: <b>d ≈ 8,4 × (t<sub>S</sub> − t<sub>P</sub>)</b>.</p>
+   <div class="bar" style="align-items:center"><input type="number" id="guess" min="0" step="1" placeholder="km"> <span>km</span> <button class="btn pri" id="chk">Comprova</button><button class="btn" id="nq">Un altre terratrèmol</button></div><div id="rfb"></div>`;
+  chk.onclick=check;nq.onclick=sRep;
+  upRep();
+}
+function upRep(){
+  drawSis();
+  const dt=picks.length===2?picks[1]-picks[0]:null;
+  document.getElementById("sinfo").innerHTML=`<p class="lab">Les teves lectures</p><div class="kv">
+   <span>t<sub>P</sub></span><span>${picks[0]!=null?fmt(picks[0])+" s":"—"}</span>
+   <span>t<sub>S</sub></span><span>${picks[1]!=null?fmt(picks[1])+" s":"—"}</span>
+   <span>Interval S–P</span><span>${dt!=null?fmt(dt)+" s":"—"}</span></div>
+   <p class="help">Un tercer toc esborra les marques. Fixa't en el primer canvi clar respecte del soroll de fons: la P és petita; la S, un salt d'amplitud més gran.</p>`;
+}
+function check(){
+  const g=+guess.value, d=quake.d, tr=trace(d,quake.M), err=Math.abs(g-d)/d;
+  if(!guess.value){rfb.innerHTML=`<div class="fb ko">Escriu primer la distància que has calculat.</div>`;return;}
+  rfb.innerHTML=`<div class="fb ${err<=0.15?"ok":"ko"}"><b>${err<=0.15?"Correcte!":"Revisa-ho."}</b> La distància real és <b>${d} km</b> (P a ${fmt(tr.tp)} s, S a ${fmt(tr.ts)} s, S–P = ${fmt(tr.ts-tr.tp)} s). ${err<=0.15?"":"Comprova que has marcat el primer canvi de cada tipus d'ona i que has multiplicat l'interval per 8,4."}</div>`;
+  showArrRep(tr);
+}
+function showArrRep(tr){const m=(t,l)=>{const x=tx(t);sx.strokeStyle="#111";sx.lineWidth=3;sx.beginPath();sx.moveTo(x,14);sx.lineTo(x,SH-40);sx.stroke();sx.fillStyle="#111";sx.font="800 18px system-ui";sx.fillText(l,x+6,52);};m(tr.tp,"P real");m(tr.ts,"S real");}
+sc.onclick=e=>{ if(sMode!=="rep")return; const r=sc.getBoundingClientRect(),x=(e.clientX-r.left)*SW/r.width,t=xt(x); if(t<0||t>T)return;
+  if(picks.length>=2)picks=[]; else picks.push(t); picks.sort((a,b)=>a-b); upRep(); };
+document.querySelectorAll("[data-smode]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-smode]").forEach(x=>x.classList.toggle("on",x===b));sMode=b.dataset.smode;sMode==="exp"?sExp():sRep();});
+
+/* ---------- pestanyes ---------- */
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll("main section").forEach(s=>s.classList.toggle("on",s.id===b.dataset.tab));});
+upMap(); sExp();
+</script>
+</body>
+</html>
