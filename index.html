@@ -55,6 +55,14 @@
   section h2 { font-size:1.6rem; margin:30px 0 14px; display:flex; align-items:center; gap:12px; }
   section h2::before { content:""; width:14px; height:28px; background:var(--taronja); border-radius:3px; }
   section h2 .n { color:var(--gris); font-weight:400; font-size:1rem; }
+  section h2 { cursor:pointer; user-select:none; }
+  section h2:hover { color:var(--taronja); }
+  section h2 .fl { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; transition:transform .2s; color:var(--gris); }
+  section.plegat h2 .fl { transform:rotate(-90deg); }
+  section.plegat .graella { display:none; }
+  section.plegat h2 { margin-bottom:0; }
+  #plegaTot { font:inherit; font-size:.95rem; font-weight:600; background:none; border:0; color:var(--gris); cursor:pointer; margin-left:auto; padding:6px 4px; }
+  #plegaTot:hover { color:var(--taronja); }
   .graella { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
   .targeta { border:2px solid var(--linia); border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:8px; transition:border-color .15s; }
   .targeta:hover { border-color:var(--taronja); }
@@ -64,7 +72,7 @@
   .targeta .desc { margin:0; color:var(--gris); font-size:1rem; flex:1; }
   .etiquetes { display:flex; gap:6px; flex-wrap:wrap; }
   .etiqueta { font-size:.8rem; font-weight:700; padding:2px 10px; border-radius:999px; background:var(--suau); }
-  .etiqueta.proves { background:transparent; border:1.5px dashed var(--taronja); color:var(--taronja); }
+  .etiqueta.beta { background:transparent; border:1.5px dashed var(--taronja); color:var(--taronja); }
   .versions { font-size:.9rem; color:var(--gris); }
   .versions a { color:var(--negre); font-weight:600; }
   .versions a:hover { color:var(--taronja); }
@@ -188,12 +196,17 @@
   const esExterna = u => /^https?:\/\//.test(u) && new URL(u).host !== location.host;
   const net = s => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
+  let PLEGATS = new Set(); try { PLEGATS = new Set(JSON.parse(localStorage.getItem("boigxtic-plegats") || "[]")); } catch (e) {}
+  const desaPlegats = () => { try { localStorage.setItem("boigxtic-plegats", JSON.stringify([...PLEGATS])); } catch (e) {} };
   function pinta() {
     const filtre = location.hash.slice(1);
     const q = net(cerca.value);
 
     menu.innerHTML = `<a href="#" class="${filtre ? "" : "actiu"}">Totes</a>` +
-      MATERIES.map(m => `<a href="#${m.id}" class="${filtre === m.id ? "actiu" : ""}">${m.nom}</a>`).join("");
+      MATERIES.map(m => `<a href="#${m.id}" class="${filtre === m.id ? "actiu" : ""}">${m.nom}</a>`).join("") +
+      (!filtre && !q ? `<button id="plegaTot">${PLEGATS.size === MATERIES.length ? "Desplega-ho tot" : "Plega-ho tot"}</button>` : "");
+    const pt = document.getElementById("plegaTot");
+    if (pt) pt.onclick = () => { PLEGATS = PLEGATS.size === MATERIES.length ? new Set() : new Set(MATERIES.map(m => m.id)); desaPlegats(); pinta(); };
 
     contingut.innerHTML = "";
     MATERIES.filter(m => !filtre || m.id === filtre).forEach(m => {
@@ -202,7 +215,10 @@
       if (q && !apps.length) return;
 
       const s = document.createElement("section");
-      s.innerHTML = `<h2>${m.nom} <span class="n">${apps.length}</span></h2><div class="graella"></div>`;
+      const plegat = !q && !filtre && PLEGATS.has(m.id);
+      s.className = plegat ? "plegat" : "";
+      s.innerHTML = `<h2 title="Clica per plegar o desplegar"><svg class="fl" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>${m.nom} <span class="n">${apps.length}</span></h2><div class="graella"></div>`;
+      s.querySelector("h2").onclick = () => { if (q || filtre) return; PLEGATS.has(m.id) ? PLEGATS.delete(m.id) : PLEGATS.add(m.id); desaPlegats(); pinta(); };
       const g = s.querySelector(".graella");
       if (!apps.length) g.innerHTML = `<p class="buit">Encara no hi ha apps.</p>`;
 
@@ -216,7 +232,7 @@
             ${a.nivell ? `<span class="etiqueta">${a.nivell}</span>` : ""}
             ${ext ? `<span class="etiqueta ext">🔗 externa</span>` : ""}
             ${a.url ? "" : `<span class="etiqueta">pendent</span>`}
-            ${a.estat === "proves" ? `<span class="etiqueta proves" title="Encara s'hi està treballant: pot tenir errors o canviar">🧪 en proves</span>` : ""}
+            ${a.estat === "beta" ? `<span class="etiqueta beta" title="Versió beta: encara s'hi està treballant, pot tenir errors o canviar">🧪 beta</span>` : ""}
           </div>
           <p class="desc">${a.desc || ""}</p>
           <div class="botons">

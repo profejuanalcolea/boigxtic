@@ -9,7 +9,7 @@
 //    url     → adreça completa (https://...) o carpeta del repositori
 //              (p. ex. "mates/pizzeria/"). Si està buida "", la targeta
 //              surt com a "pendent".
-//    estat   → opcional: "proves" posa l'etiqueta «🧪 en proves»
+//    estat   → opcional: "beta" posa l'etiqueta «🧪 beta»
 //    versions→ opcional: altres versions, p. ex. [ { nom: "Versió 1", url: "..." } ]
 //  Compte amb les comes entre línies!
 // ============================================================
@@ -54,7 +54,7 @@ const APPS = [
 
   { titol: "Missió Mart",            materia: "steam",    nivell: "4t ESO", desc: "Exercicis de la missió amb la Laika: mode alumne i mode professorat.", url: "steam/missio-mart/" },
   { titol: "Terraformació",          materia: "steam",    nivell: "4t ESO", desc: "Canviem Mart o ens adaptem? (V2)", url: "steam/terraformacio/" },
-  { titol: "On aterrem? (Mart)",     materia: "steam",    nivell: "4t ESO", estat: "proves", desc: "Missió a Mart: on aterrar segons la geomorfologia.", url: "steam/on-aterrem/",
+  { titol: "On aterrem? (Mart)",     materia: "steam",    nivell: "4t ESO", estat: "beta", desc: "Missió a Mart: on aterrar segons la geomorfologia.", url: "steam/on-aterrem/",
     versions: [ { nom: "Versió 1", url: "steam/on-aterrem-v1/" } ] },
 
   { titol: "Pizzeria Tres Quarts",   materia: "mates",    nivell: "", desc: "Com s'escriuen les fraccions en català, amb en FR-4C.", url: "mates/pizzeria/" },
