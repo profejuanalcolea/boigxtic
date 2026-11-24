@@ -24,6 +24,7 @@ const MATERIES = [
 
 const APPS = [
   { titol: "Laboratori de marees",   materia: "gica2",    nivell: "", desc: "Simulador de marees: Lluna, Sol, marees vives i mortes.", url: "geologia-ccaa/marees/" },
+  { titol: "Operació Perfil",        materia: "gica2",    nivell: "", desc: "Mapa topogràfic, escala, càlculs i perfil, com a la PAU.", url: "geologia-ccaa/operacio-perfil/" },
   { titol: "Simulador d'eclipsis",   materia: "gica2",    nivell: "", desc: "Sol, Terra i Lluna: fases, eclipsis reals 2026–2028.", url: "geologia-ccaa/eclipsis/" },
   { titol: "Fases de la Lluna",      materia: "gica2",    nivell: "", desc: "El cel de l'observador, l'òrbita des de l'espai i reptes.", url: "geologia-ccaa/fases-lluna/" },
   { titol: "Translació",             materia: "gica2",    nivell: "", desc: "La translació de la Terra: equinoccis, solsticis i estacions.", url: "geologia-ccaa/translacio/" },
@@ -41,6 +42,7 @@ const APPS = [
   { titol: "Viatge a l'interior de la Terra", materia: "bigica1", nivell: "", desc: "Explorador: mètodes d'estudi, ones sísmiques i capes de la Terra.", url: "biogeo/interior-terra/" },
   { titol: "Les capes de la Terra",  materia: "bigica1",  nivell: "", desc: "L'estructura interna de la Terra, capa a capa.", url: "biogeo/capes-terra/" },
   { titol: "Viatge al centre de la Terra", materia: "bigica1", nivell: "", desc: "Un viatge des de l'escorça fins al nucli.", url: "biogeo/viatge-centre-terra/" },
+  { titol: "Timeline · Història de la Vida", materia: "bigica1", nivell: "", desc: "Joc de cartes: ordena els esdeveniments a la línia del temps.", url: "biogeo/timeline-vida/" },
   { titol: "Prediu l'Ou",            materia: "bigica1",  nivell: "", desc: "Prediccions abans de la pràctica de l'ou a la salmorra.", url: "biogeo/prediu-ou/" },
   { titol: "L'Ou a la Salmorra",     materia: "bigica1",  nivell: "", desc: "La pràctica de densitat: l'ou a l'aigua salada.", url: "biogeo/ou-salmorra/" },
 
@@ -62,4 +64,5 @@ const APPS = [
 
   { titol: "Els models atòmics",     materia: "altres",   nivell: "4t ESO", desc: "Dalton, Thomson, Rutherford, Bohr i el model actual, amb l'Einsteinet.", url: "altres/models-atomics/" },
   { titol: "Models atòmics (mòbil)", materia: "altres",   nivell: "4t ESO", desc: "La mateixa presentació, en vertical per al mòbil.", url: "altres/models-atomics-mobil/" },
+  { titol: "Repàs d'electrònica analògica", materia: "altres", nivell: "4t ESO", desc: "Tecnologia: formulari, teoria, exercicis resolts i preguntes.", url: "altres/electronica/" },
 ];

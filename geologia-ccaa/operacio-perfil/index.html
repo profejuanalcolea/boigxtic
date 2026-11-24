@@ -1,0 +1,1254 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Operació Perfil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EDEFEA; --card:#FFFFFF; --ink:#1B2326; --muted:#566264; --line:#D2D7CF;
+  --paper:#F6F5EE; --accent:#E2601A; --accent-ink:#A9440C; --accent-soft:#FCE7DA;
+  --ok:#1D8657; --ok-soft:#DCF1E6; --bad:#BF3434; --bad-soft:#F7E0E0;
+  --water:#2E7DB5; --chip:#E4E8E2;
+  --display:'Barlow Condensed','Arial Narrow',Arial,sans-serif;
+  --body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 2px rgba(20,30,30,.06),0 8px 24px rgba(20,30,30,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F1516; --card:#172022; --ink:#E5EBE8; --muted:#9BA9A8; --line:#293536;
+    --paper:#ECEADF; --accent:#F27A33; --accent-ink:#FF9D63; --accent-soft:#3A2518;
+    --ok:#4CC28D; --ok-soft:#163226; --bad:#F06C6C; --bad-soft:#3A1C1C; --water:#5AA8DD; --chip:#223032;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1516; --card:#172022; --ink:#E5EBE8; --muted:#9BA9A8; --line:#293536;
+  --paper:#ECEADF; --accent:#F27A33; --accent-ink:#FF9D63; --accent-soft:#3A2518;
+  --ok:#4CC28D; --ok-soft:#163226; --bad:#F06C6C; --bad-soft:#3A1C1C; --water:#5AA8DD; --chip:#223032;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;padding:0 16px}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.05;text-wrap:balance;margin:0}
+p{margin:0}
+b,strong{font-weight:700}
+.wrap{max-width:1140px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.num,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---------- header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin:0 -16px;padding:10px 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.01em;text-transform:uppercase;background:none;border:0;padding:0}
+.brand svg{flex:none}
+.nav{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.nav button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;font-size:15px;display:flex;gap:7px;align-items:center}
+.nav button .n{font-family:var(--display);font-weight:700;color:var(--accent-ink);font-size:17px}
+.nav button[aria-current="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.nav button[aria-current="true"] .n{color:var(--accent)}
+.nav .mini-bar{display:none;width:28px;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.nav .mini-bar i{display:block;height:100%;background:var(--accent);width:0}
+.score{display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);border-radius:10px;padding:5px 12px 5px 10px}
+.score .pts{font-family:var(--display);font-weight:800;font-size:24px;line-height:1}
+.score .rank{font-size:12px;line-height:1.15;opacity:.85}
+.score .rank b{display:block;font-size:14px;opacity:1;color:var(--accent)}
+
+/* ---------- layout blocks */
+main{padding-block:26px 60px}
+.view{display:flex;flex-direction:column;gap:28px}
+.part-head{display:grid;gap:10px;padding-top:10px}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink)}
+.part-head h2{font-size:clamp(40px,6vw,64px);font-weight:800;text-transform:uppercase;letter-spacing:-.005em}
+.lead{font-size:19px;max-width:68ch;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow)}
+.card h3{font-size:30px;font-weight:700;margin-bottom:10px}
+.card h4{font-size:22px;font-weight:700;margin-bottom:6px}
+.card p+p{margin-top:10px}
+.prose{max-width:70ch}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+.sec-title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sec-title h3{font-size:34px;font-weight:800;text-transform:uppercase}
+.sec-title .tag{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.fitxa{border-top:3px solid var(--ink);padding-top:12px}
+.fitxa h4{font-size:24px;font-weight:700}
+.fitxa .f{font-family:var(--mono);font-size:16px;background:var(--chip);border-radius:8px;padding:10px 12px;margin-top:10px;overflow-x:auto}
+.kbd{font-family:var(--mono);font-size:.92em;background:var(--chip);padding:1px 6px;border-radius:5px}
+.hl{background:linear-gradient(transparent 58%,var(--accent-soft) 58%)}
+ul.clean{margin:8px 0 0;padding-left:20px}
+ul.clean li+li{margin-top:6px}
+
+/* PAU callout */
+.pau{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--accent-soft);border-radius:14px;padding:18px 20px}
+.pau .stamp{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--accent-ink);color:var(--accent-ink);border-radius:6px;padding:4px 8px;transform:rotate(-4deg);white-space:nowrap}
+.pau p{max-width:80ch}
+@media (max-width:560px){.pau{grid-template-columns:1fr}}
+
+/* maps */
+.mapbox{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative}
+.mapbox svg{display:block;width:100%;height:auto}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.scroll-x > .inner{min-width:600px}
+svg text{font-family:var(--body)}
+.caption{font-size:14px;color:var(--muted);margin-top:8px}
+
+/* questions */
+.qs{display:grid;gap:14px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:12px}
+.q.solved{border-color:var(--ok);background:linear-gradient(var(--ok-soft),var(--ok-soft)) padding-box}
+.q-t{font-size:17px}
+.q-head{display:flex;gap:10px;align-items:baseline}
+.lvl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:5px;padding:2px 6px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.lvl.pau{background:var(--accent);color:#fff}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1.5px solid var(--line);background:var(--card);border-radius:9px;padding:8px 13px;font-size:15.5px;text-align:left}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.ans{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ans input{font-family:var(--mono);font-size:17px;width:150px;padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink)}
+.ans .unit{font-family:var(--mono);color:var(--muted);min-width:18px}
+.btn{border:0;background:var(--ink);color:var(--bg);border-radius:9px;padding:9px 15px;font-weight:700;font-size:15.5px}
+.btn.acc{background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.fb{font-size:15.5px;border-radius:9px;padding:10px 12px}
+.fb.ok{background:var(--ok-soft);color:var(--ink)}
+.fb.ok::before{content:"Correcte! ";font-weight:700;color:var(--ok)}
+.fb.bad{background:var(--bad-soft)}
+.fb.info{background:var(--chip)}
+.q .mini{width:100%;max-width:300px;display:block;border-radius:8px;border:1px solid var(--line);background:#F6F5EE}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+
+/* labs */
+.lab{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.lab{grid-template-columns:1fr}}
+.ctrl{display:grid;gap:6px;margin-top:12px}
+.ctrl label{font-size:14px;color:var(--muted)}
+.ctrl input[type=range]{width:100%;accent-color:var(--accent)}
+.readout{font-family:var(--display);font-weight:700;font-size:40px;line-height:1}
+.readout small{font-size:18px;color:var(--muted);font-weight:600}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:6px 12px;font-size:15px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+canvas{display:block;width:100%;height:auto;border-radius:10px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:34px;align-items:center;padding-top:10px}
+@media (max-width:900px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(56px,9vw,112px);font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:.88}
+.hero h1 span{color:var(--accent)}
+.hero .lead{margin-top:18px}
+.hero-fig{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px;box-shadow:var(--shadow)}
+.hero-fig svg{display:block;width:100%;height:auto}
+.draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 3.2s .6s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.missions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.missions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.missions{grid-template-columns:1fr}}
+.mission{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:8px;box-shadow:var(--shadow);transition:transform .15s}
+.mission:hover{transform:translateY(-2px);border-color:var(--ink)}
+.mission .n{font-family:var(--display);font-weight:800;font-size:44px;line-height:.9;color:var(--accent)}
+.mission h3{font-size:25px;font-weight:700}
+.mission p{font-size:14.5px;color:var(--muted)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .5s}
+.ranks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ranks span{font-size:14px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--muted)}
+.ranks span.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* stepper */
+.stepper{display:flex;gap:8px;flex-wrap:wrap}
+.stepper button{display:flex;gap:8px;align-items:center;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-size:15px}
+.stepper button .k{font-family:var(--display);font-weight:800;font-size:20px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--chip)}
+.stepper button[aria-current="true"]{border-color:var(--ink)}
+.stepper button[aria-current="true"] .k{background:var(--accent);color:#fff}
+.stepper button.done .k{background:var(--ok);color:#fff}
+.stepper button:disabled{opacity:.45;cursor:not-allowed}
+.counter{font-family:var(--display);font-size:26px;font-weight:700}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.check li.ok{color:var(--ok)}
+.check li.ok::marker{content:"✓  "}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-weight:700;opacity:0;transition:.3s;z-index:50;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast b{color:var(--accent)}
+.next-part{display:flex;justify-content:flex-end}
+select{font:inherit;font-size:16px;padding:7px 10px;border-radius:9px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+input.cognom-in,.tform input{font:inherit;font-size:17px;padding:9px 11px;border:1.5px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);width:100%}
+.tform{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
+@media (max-width:640px){.tform{grid-template-columns:1fr}}
+.codebox{display:inline-block;font-family:var(--mono);font-weight:600;font-size:clamp(28px,6vw,44px);letter-spacing:.08em;background:var(--ink);color:var(--accent);padding:8px 18px;border-radius:12px}
+.codebtn{padding:7px 12px;font-size:14.5px}
+.linkbtn{background:none;border:0;padding:0;text-decoration:underline;color:var(--muted);font-size:14px}
+table.res{border-collapse:collapse;width:100%;font-size:15px;min-width:640px}
+table.res th,table.res td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+table.res th{font-family:var(--display);font-size:16px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+table.res td.n{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.rm{background:none;border:0;color:var(--bad);font-size:16px}
+textarea.csv{width:100%;min-height:8rem;font-family:var(--mono);font-size:13px;border:1.5px solid var(--line);border-radius:9px;padding:8px;background:var(--card);color:var(--ink);margin-top:8px}
+footer{border-top:1px solid var(--line);padding-block:20px 40px;color:var(--muted);font-size:14px}
+table.conv{border-collapse:collapse;font-size:15.5px;width:100%}
+table.conv td,table.conv th{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left}
+table.conv th{font-family:var(--display);font-size:17px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.draw{stroke-dashoffset:0}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <button class="brand" data-go="inici" aria-label="Inici">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 24c4-1 5-6 9-9s8-2 10-6 5-5 5-5"/><ellipse cx="15" cy="15" rx="12" ry="9"/><ellipse cx="15" cy="14" rx="7" ry="5"/></g><circle cx="15" cy="13.5" r="2" fill="#E2601A"/></svg>
+      Operació Perfil
+    </button>
+    <nav class="nav" aria-label="Parts">
+      <button data-go="p1"><span class="n">1</span>El mapa<span class="mini-bar"><i data-bar="p1"></i></span></button>
+      <button data-go="p2"><span class="n">2</span>L'escala<span class="mini-bar"><i data-bar="p2"></i></span></button>
+      <button data-go="p3"><span class="n">3</span>Càlculs<span class="mini-bar"><i data-bar="p3"></i></span></button>
+      <button data-go="p4"><span class="n">4</span>El perfil<span class="mini-bar"><i data-bar="p4"></i></span></button>
+    </nav>
+    <button class="btn ghost codebtn" data-go="codi">Codi per al profe</button>
+    <div class="score" aria-live="polite"><span class="pts num" id="pts">0</span><span class="rank">punts<b id="rankName">Aprenent</b></span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ INICI ============ -->
+<section class="view" id="inici">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Geologia i Ciències Ambientals · 2n Batxillerat</div>
+      <h1>Operació<br><span>Perfil</span></h1>
+      <p class="lead">A la PAU hi ha un mapa topogràfic gairebé cada any: una illa volcànica, una tirolina, el planeta Arrakis de <i>Dune</i>... i sempre et demanen el mateix: llegir les corbes, calcular un pendent i dibuixar un perfil. Aquí aprendràs a fer-ho <b>pas a pas</b> fins que et surti sol.</p>
+      <div class="ctrl" style="max-width:340px;margin-top:20px"><label for="cognom">El teu primer cognom (per al codi del professor)</label><input id="cognom" class="cognom-in" autocomplete="family-name" maxlength="30" placeholder="Ex.: Puig"></div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn acc" data-go="p1">Comença la missió</button>
+        <button class="btn ghost" data-go="p4">Vés directe al perfil</button>
+      </div>
+    </div>
+    <figure class="hero-fig" style="margin:0">
+      <svg id="heroMap" viewBox="0 0 600 360" aria-label="Mapa topogràfic d'una illa volcànica"></svg>
+      <svg id="heroProf" viewBox="0 0 600 120" aria-label="Perfil topogràfic de l'illa"></svg>
+    </figure>
+  </div>
+
+  <div class="missions">
+    <button class="mission" data-go="p1"><span class="n">1</span><h3>Llegir el mapa</h3><p>Corbes de nivell, equidistància i formes del relleu.</p><div class="bar"><i data-bar="p1"></i></div></button>
+    <button class="mission" data-go="p2"><span class="n">2</span><h3>Dominar l'escala</h3><p>Escala numèrica i gràfica, i com passar d'una a l'altra.</p><div class="bar"><i data-bar="p2"></i></div></button>
+    <button class="mission" data-go="p3"><span class="n">3</span><h3>Calcular</h3><p>Distàncies, desnivell, distància real i pendent.</p><div class="bar"><i data-bar="p3"></i></div></button>
+    <button class="mission" data-go="p4"><span class="n">4</span><h3>Fer el perfil</h3><p>La xuleta, l'escala vertical i el dibuix final.</p><div class="bar"><i data-bar="p4"></i></div></button>
+  </div>
+
+  <div class="card">
+    <h3>Com funciona</h3>
+    <p class="prose">Cada part comença amb una explicació curta, un laboratori interactiu i preguntes que van de fàcils a nivell PAU. Si l'encertes al primer intent guanyes <b>10 punts</b>; al segon, <b>5</b>. Amb els punts puges de rang. El progrés es guarda en aquest navegador.</p>
+    <div class="ranks" id="ranks"></div>
+  </div>
+</section>
+
+<!-- ============ PART 1 ============ -->
+<section class="view" id="p1" hidden>
+  <div class="part-head">
+    <div class="eyebrow">Part 1 · El mapa topogràfic</div>
+    <h2>Llegir el relleu en un full pla</h2>
+    <p class="lead">Un mapa topogràfic representa el relleu (que és en 3D) sobre un paper (2D), vist des de dalt i reduït a escala. El truc per fer-ho són les <b>corbes de nivell</b>.</p>
+  </div>
+
+  <div class="card">
+    <div class="sec-title"><h3>Laboratori: inunda l'illa</h3><span class="tag">corbes de nivell = línies de costa</span></div>
+    <p class="prose">Imagina que el nivell del mar puja de mica en mica. Cada vegada que puja, la <b>línia de costa</b> nova envolta l'illa a una altitud concreta. Si dibuixes totes aquestes costes vistes des de dalt, obtens les corbes de nivell. Mou el control i observa-ho a la vista de dalt i al tall lateral.</p>
+    <div class="lab" style="margin-top:14px">
+      <div>
+        <div class="mapbox"><canvas id="floodTop" width="600" height="360"></canvas></div>
+        <div class="mapbox" style="margin-top:10px"><canvas id="floodSec" width="600" height="170"></canvas></div>
+      </div>
+      <div>
+        <div class="readout"><span id="lvlOut">0</span> <small>m sobre el nivell actual</small></div>
+        <div class="ctrl"><label for="lvl">Nivell del mar</label><input type="range" id="lvl" min="0" max="380" step="10" value="0"></div>
+        <div class="ctrl"><label>Equidistància de les corbes</label>
+          <div class="seg" id="eqSeg"><button data-eq="25" aria-pressed="false">25 m</button><button data-eq="50" aria-pressed="true">50 m</button><button data-eq="100" aria-pressed="false">100 m</button></div>
+        </div>
+        <p id="floodTxt" style="margin-top:16px"></p>
+        <ul class="clean" style="margin-top:12px;font-size:15.5px">
+          <li>Fixa't que al costat <b>est</b> de l'illa les corbes estan més juntes: el vessant és més dret.</li>
+          <li>Al cim del volcà hi ha un <b>cràter</b>: si puges fins a 300 m, apareix un llac a dins.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card fitxa">
+      <h4>Isolínies</h4>
+      <p>Una <b>isolínia</b> és una línia que uneix punts que tenen el mateix valor d'una variable. Les corbes de nivell són isolínies d'<b>altitud</b>. En trobaràs d'altres a CTMA: <i>isòbares</i> (pressió), <i>isotermes</i> (temperatura), <i>isohietes</i> (precipitació).</p>
+    </div>
+    <div class="card fitxa">
+      <h4>Equidistància</h4>
+      <p>És la diferència d'altitud entre dues corbes de nivell <b>consecutives</b>. Sempre és la mateixa en tot el mapa. Cada 5 corbes n'hi ha una de més gruixuda amb el número: la <b>corba mestra</b>.</p>
+      <div class="f">equidistància = (diferència entre dues mestres) ÷ (nombre d'espais entre elles)</div>
+      <p style="margin-top:10px;font-size:15px">Error típic: comptar <i>línies</i> en lloc d'<i>espais</i>. Entre 500 i 600 hi ha 4 línies fines, però 5 espais: 100 ÷ 5 = 20 m.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title"><h3>Les lleis de les corbes de nivell</h3></div>
+    <div class="grid3" style="margin-top:12px">
+      <div><h4>Mai es creuen</h4><p>Un punt no pot tenir dues altituds (excepte en un extraplom, molt rar).</p></div>
+      <div><h4>Són tancades</h4><p>Totes es tanquen sobre si mateixes, dins o fora del mapa.</p></div>
+      <div><h4>Juntes = pendent</h4><p>Com més juntes, més pendent. Molt separades: terreny planer.</p></div>
+      <div><h4>Cims i cràters</h4><p>Són corbes tancades concèntriques. Mira els números: si augmenten cap al centre és un cim; si disminueixen, una depressió.</p></div>
+      <div><h4>La V de les valls</h4><p>En una vall (riu) les corbes fan una V que apunta <b>aigües amunt</b>, cap a les cotes altes.</p></div>
+      <div><h4>La V de les carenes</h4><p>En una carena la V apunta <b>aigües avall</b>, cap a les cotes baixes.</p></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><h3>Posa't a prova</h3><span class="tag">isolínies i equidistància</span></div>
+  <div class="qgrid" id="p1qA"></div>
+
+  <div class="sec-title"><h3>Identifica el relleu</h3><span class="tag">6 mapes · quina forma és?</span></div>
+  <p class="prose" style="margin-top:-14px">Llegeix els números de les corbes mestres abans de respondre: dues formes poden semblar iguals i ser l'una el contrari de l'altra.</p>
+  <div class="qgrid" id="p1qB"></div>
+
+  <div class="sec-title"><h3>Nivell PAU</h3></div>
+  <div class="qgrid" id="p1qC"></div>
+
+  <div class="pau"><span class="stamp">PAU 2023 · juny</span><p>A l'illa volcànica de Purtuallo calia <b>situar els quatre cims</b> sobre el mapa, ordenar-los del més alt al més baix i indicar-ne l'alçària. Només es pot fer si saps llegir l'equidistància i les corbes tancades.</p></div>
+  <div class="next-part"><button class="btn acc" data-go="p2">Següent: l'escala →</button></div>
+</section>
+
+<!-- ============ PART 2 ============ -->
+<section class="view" id="p2" hidden>
+  <div class="part-head">
+    <div class="eyebrow">Part 2 · L'escala</div>
+    <h2>Quant fa 1 cm de veritat?</h2>
+    <p class="lead">L'escala és la relació entre una distància al mapa i la mateixa distància al terreny. Sense escala, un mapa és només un dibuix bonic.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card fitxa">
+      <h4>Escala numèrica</h4>
+      <p>S'escriu com una fracció: <span class="kbd">1:25 000</span>. Vol dir que <b>1 unitat al mapa = 25 000 unitats reals</b> (les mateixes unitats!). 1 cm al mapa són 25 000 cm = 250 m.</p>
+      <div class="f">escala = distància al mapa ÷ distància real</div>
+      <p style="margin-top:10px">Com més gran el denominador, <b>més petita</b> és l'escala i menys detall té el mapa. Un 1:10 000 és una escala més gran que un 1:100 000.</p>
+    </div>
+    <div class="card fitxa">
+      <h4>Escala gràfica</h4>
+      <p>És un segment dividit en trams on cada tram indica la distància real que representa.</p>
+      <svg viewBox="0 0 320 54" style="width:100%;max-width:360px;margin-top:10px" aria-label="Escala gràfica d'exemple">
+        <g font-size="12" fill="currentColor" text-anchor="middle" font-family="JetBrains Mono,monospace">
+          <rect x="20" y="18" width="70" height="9" fill="currentColor"/><rect x="90" y="18" width="70" height="9" fill="none" stroke="currentColor"/><rect x="160" y="18" width="70" height="9" fill="currentColor"/><rect x="230" y="18" width="70" height="9" fill="none" stroke="currentColor"/>
+          <text x="20" y="44">0</text><text x="90" y="44">250</text><text x="160" y="44">500</text><text x="230" y="44">750</text><text x="300" y="44">1000 m</text>
+        </g></svg>
+      <p style="margin-top:8px">Avantatge clau: si amplies o redueixes el mapa (fotocòpia, pantalla), l'escala gràfica <b>canvia de mida amb el mapa</b> i continua sent correcta. La numèrica, no.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title"><h3>Laboratori d'escales</h3><span class="tag">numèrica ⇄ gràfica</span></div>
+    <div class="lab" style="margin-top:12px">
+      <div>
+        <div class="scroll-x"><div class="inner"><svg id="scaleLab" viewBox="0 0 620 150" style="width:100%" aria-label="Escala gràfica i regle"></svg></div></div>
+        <div class="ctrl"><label for="scSlider">Escala numèrica</label><input type="range" id="scSlider" min="0" max="7" step="1" value="3"></div>
+      </div>
+      <div>
+        <div class="readout" id="scOut">1:25 000</div>
+        <p id="scTxt" style="margin-top:12px"></p>
+        <table class="conv" style="margin-top:14px">
+          <tr><th>De cm a...</th><th>Fes</th></tr>
+          <tr><td>metres</td><td>÷ 100 (treu 2 zeros)</td></tr>
+          <tr><td>quilòmetres</td><td>÷ 100 000 (treu 5 zeros)</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card prose">
+    <h3>Passar de gràfica a numèrica</h3>
+    <p>1. Mesura amb el regle quants <b>cm</b> fa un tram de l'escala gràfica. 2. Passa la distància real que indica a <b>cm</b>. 3. Divideix: distància real (cm) ÷ distància al mapa (cm) = denominador.</p>
+    <div class="fitxa"><div class="f">Exemple: 2 cm ↔ 500 m → 50 000 cm ÷ 2 cm = 25 000 → escala 1:25 000</div></div>
+    <p style="margin-top:12px">I a l'inrevés: amb 1:50 000, 1 cm = 500 m. Per dibuixar un tram d'1 km necessites 2 cm.</p>
+  </div>
+
+  <div class="sec-title"><h3>Exercicis</h3><span class="tag">de fàcil a PAU</span></div>
+  <div class="qs" id="p2q"></div>
+
+  <div class="pau"><span class="stamp">PAU 2026 · juny</span><p>L'escala del mapa era gràfica: <b>1,4 cm equivalien a 500 m</b>. La correcció mesurava el tall (5,1 cm) i el convertia a metres amb aquesta equivalència: 5,1 × 500 ÷ 1,4 ≈ 1 821 m. Si domines la regla de tres amb l'escala gràfica, tens mig exercici fet.</p></div>
+  <div class="next-part"><button class="btn acc" data-go="p3">Següent: càlculs →</button></div>
+</section>
+
+<!-- ============ PART 3 ============ -->
+<section class="view" id="p3" hidden>
+  <div class="part-head">
+    <div class="eyebrow">Part 3 · Càlculs sobre el mapa</div>
+    <h2>Quatre dades, un triangle</h2>
+    <p class="lead">Tot el que et demanaran es resol amb un triangle rectangle: el costat horitzontal és la distància al mapa, el vertical és el desnivell i la hipotenusa és el camí real.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card fitxa"><h4>1 · Distància horitzontal</h4><p>Mesura amb el regle i multiplica per l'escala.</p><div class="f">D<sub>h</sub> = d<sub>mapa</sub> × denominador</div><p style="margin-top:8px;font-size:15px">Can Serra – Puig Serra: 3 cm × 10 000 = 30 000 cm = <b>300 m</b></p></div>
+    <div class="card fitxa"><h4>2 · Desnivell</h4><p>Resta les altituds dels dos punts (llegides de les corbes o de les cotes).</p><div class="f">Δh = h<sub>alt</sub> − h<sub>baix</sub></div><p style="margin-top:8px;font-size:15px">725 m − 500 m = <b>225 m</b></p></div>
+    <div class="card fitxa"><h4>3 · Distància real</h4><p>La hipotenusa del triangle (Pitàgores). És el que recorres de veritat caminant o el cable d'una tirolina.</p><div class="f">D<sub>r</sub> = √(Δh² + D<sub>h</sub>²)</div><p style="margin-top:8px;font-size:15px">√(225² + 300²) = <b>375 m</b></p></div>
+    <div class="card fitxa"><h4>4 · Pendent</h4><p>Quants metres puges per cada 100 m que avances en horitzontal.</p><div class="f">pendent (%) = Δh ÷ D<sub>h</sub> × 100</div><p style="margin-top:8px;font-size:15px">225 ÷ 300 × 100 = <b>75 %</b></p></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title"><h3>Laboratori del triangle</h3><span class="tag">mou els controls</span></div>
+    <div class="lab" style="margin-top:12px">
+      <div class="mapbox" style="background:var(--card)"><svg id="tri" viewBox="0 0 520 300" aria-label="Triangle del pendent"></svg></div>
+      <div>
+        <div class="ctrl"><label for="dhS">Desnivell Δh: <b id="dhV" class="num"></b></label><input type="range" id="dhS" min="0" max="600" step="5" value="225"></div>
+        <div class="ctrl"><label for="dxS">Distància horitzontal D<sub>h</sub>: <b id="dxV" class="num"></b></label><input type="range" id="dxS" min="50" max="1000" step="10" value="300"></div>
+        <div class="grid2" style="margin-top:16px;gap:10px">
+          <div><div class="readout" id="prV"></div><small class="caption">pendent</small></div>
+          <div><div class="readout" id="agV"></div><small class="caption">angle</small></div>
+          <div><div class="readout" id="drV" style="font-size:30px"></div><small class="caption">distància real</small></div>
+        </div>
+        <p style="margin-top:12px;font-size:15px">Compte: un pendent del <b>100 %</b> no és vertical, és un angle de <b>45°</b> (puges tant com avances). L'angle es calcula amb <span class="kbd">arctan(Δh ÷ D<sub>h</sub>)</span>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title"><h3>Exercici guiat sobre el mapa</h3><span class="tag">Serra de Can Pedrís · E 1:25 000</span></div>
+    <p class="prose">Fes servir el <b>regle virtual</b>: clica sobre A i després sobre B (s'enganxa als punts). Llegeix les altituds comptant corbes des de la mestra més propera. Equidistància: <b>50 m</b>.</p>
+    <div class="lab" style="margin-top:12px">
+      <div>
+        <div class="mapbox"><svg id="serra" aria-label="Mapa topogràfic de la Serra de Can Pedrís" style="cursor:crosshair"></svg></div>
+        <div class="row" style="margin-top:8px"><span class="caption" id="rulerOut" style="margin:0">Regle: clica el primer punt.</span><button class="btn ghost" id="newEx">Nou exercici</button></div>
+      </div>
+      <div class="qs" id="p3guided"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title"><h3>Entrenament ràpid</h3><span class="tag">problemes aleatoris tipus PAU</span></div>
+    <p class="prose">Cada clic genera un problema nou. Els marcats com a <span class="lvl pau">PAU</span> estan basats en exàmens reals.</p>
+    <div class="qs" id="p3quick" style="margin-top:12px"></div>
+    <div class="row" style="margin-top:12px"><button class="btn acc" id="newQuick">Nou problema</button></div>
+  </div>
+
+  <div class="pau"><span class="stamp">PAU 2024 · setembre</span><p>Una <b>tirolina</b> uneix un castell i un monument. Primer calia deduir, amb el mapa, quin era el punt de sortida (el més alt) i després calcular la <b>longitud total</b> del cable (distància real) i el <b>pendent mitjà</b>. A la PAU 2023 el pendent es calculava així: 875 m ÷ 7 666 m × 100 = 11,4 %.</p></div>
+  <div class="next-part"><button class="btn acc" data-go="p4">Següent: el perfil →</button></div>
+</section>
+
+<!-- ============ PART 4 ============ -->
+<section class="view" id="p4" hidden>
+  <div class="part-head">
+    <div class="eyebrow">Part 4 · El perfil topogràfic</div>
+    <h2>De les corbes al tall, pas a pas</h2>
+    <p class="lead">Un perfil topogràfic és el dibuix del relleu que veuries si tallessis el terreny amb un ganivet al llarg d'una línia. Farem el de l'illa de Sa Cendra, de A a B.</p>
+  </div>
+
+  <div class="stepper" id="stepper"></div>
+  <div id="stepBody"></div>
+
+  <div class="card">
+    <div class="sec-title"><h3>Repte final</h3><span class="tag">un tall nou cada vegada</span></div>
+    <p class="prose">Quan hagis acabat el perfil guiat, genera una línia de tall aleatòria sobre la mateixa illa i torna a fer els passos tu sol/a. Cada perfil completat suma punts.</p>
+    <div class="row" style="margin-top:12px"><button class="btn acc" id="newProfile">Nou perfil aleatori</button><span class="caption" id="profCount" style="margin:0"></span></div>
+  </div>
+
+  <div class="card">
+    <h3>El que et puntuen a la PAU</h3>
+    <ul class="clean">
+      <li><b>Orientació</b> als extrems del perfil (p. ex. W–E o NO–SE). Si no hi és, perds punts.</li>
+      <li><b>Escala vertical</b> (i l'horitzontal, que és la del mapa). A la PAU 2026 t'imposaven 1:100 000 de vertical.</li>
+      <li>Punts ben traslladats i <b>forma natural</b>: cims arrodonits, valls on toca, sense rectes ni esglaons.</li>
+      <li>El que et demanin a sobre: una cota, la zona amb neu, el nivell d'un llac, la colada de lava...</li>
+    </ul>
+  </div>
+  <div class="pau"><span class="stamp">PAU 2023 · criteris</span><p>Criteri de correcció oficial (0,7 punts): <i>“Tall topogràfic amb escala vertical i horitzontal. S'hi observa el perfil topogràfic i s'hi marca el punt que es demana a la pregunta. L'orientació W-E hi és inclosa.”</i> A la PAU 2025, els talls geològics es dibuixaven sobre un perfil topogràfic: sense saber fer-lo, no pots fer el tall.</p></div>
+</section>
+
+<!-- ============ CODI ============ -->
+<section class="view" id="codi" hidden>
+  <div class="part-head"><div class="eyebrow">Entrega</div><h2>El teu codi per al profe</h2>
+  <p class="lead">El codi guarda els teus punts i el progrés de cada part. Va lligat al teu cognom: si un company copia el teu codi amb el seu cognom, no serà vàlid. Pots generar-lo tantes vegades com vulguis; l'últim és el que val.</p></div>
+  <div class="card">
+    <div class="ctrl" style="max-width:360px"><label for="cognom2">Primer cognom</label><input id="cognom2" class="cognom-in" autocomplete="family-name" maxlength="30" placeholder="Ex.: Puig"></div>
+    <div id="codeOut" style="margin-top:16px"></div>
+  </div>
+</section>
+
+<!-- ============ PROFESSOR ============ -->
+<section class="view" id="prof" hidden>
+  <div class="part-head"><div class="eyebrow">Tauler del professor</div><h2>Resultats de la classe</h2>
+  <p class="lead">Cada alumne us dona el seu primer cognom i el codi. El codi va lligat al cognom (majúscules i accents no importen). Els resultats es desen només en aquest dispositiu.</p></div>
+  <div class="card">
+    <div class="tform"><div class="ctrl"><label for="tname">Primer cognom</label><input id="tname" autocomplete="off" placeholder="Com l'ha escrit l'alumne"></div>
+    <div class="ctrl"><label for="tcode">Codi</label><input id="tcode" class="num" autocomplete="off" placeholder="XXXX-XXXX" maxlength="11" style="text-transform:uppercase"></div>
+    <button class="btn acc" id="addRes">Afegir</button></div>
+    <div id="tmsg" style="margin-top:10px"></div>
+    <div id="tres" style="margin-top:14px"></div>
+  </div>
+</section>
+
+<footer class="wrap"><button class="linkbtn" data-go="prof">Tauler del professor</button> · Operació Perfil · Material per a 2n de Batxillerat · Institut Júlia Minguell, Badalona · Mapes de relleu generats per a l'activitat (llocs fictics).</footer>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =============== estat i punts =============== */
+const TARGET={p1:12,p2:9,p3:12,p4:6};
+const RANKS=[[0,'Aprenent'],[80,'Lector/a de mapes'],[200,'Topògraf/a'],[350,'Geòleg/loga de camp'],[520,'Mestre/a de la PAU']];
+const ST={score:0,prog:{p1:0,p2:0,p3:0,p4:0},done:{},profiles:0};
+try{const s=JSON.parse(localStorage.getItem('operacioPerfil')||'null');if(s){Object.assign(ST,s);ST.prog=Object.assign({p1:0,p2:0,p3:0,p4:0},s.prog||{});ST.done=s.done||{};}}catch(e){}
+function save(){try{localStorage.setItem('operacioPerfil',JSON.stringify(ST))}catch(e){}}
+function rankOf(p){let r=RANKS[0][1];for(const [m,n] of RANKS)if(p>=m)r=n;return r}
+function hud(){
+  document.getElementById('pts').textContent=ST.score;
+  document.getElementById('rankName').textContent=rankOf(ST.score);
+  document.querySelectorAll('[data-bar]').forEach(b=>{const p=b.dataset.bar;b.style.width=Math.min(100,ST.prog[p]/TARGET[p]*100)+'%'});
+  document.getElementById('ranks').innerHTML=RANKS.map(([m,n])=>`<span class="${ST.score>=m?'on':''}">${n} · ${m}</span>`).join('');
+}
+let toastT;
+function toast(h){const t=document.getElementById('toast');t.innerHTML=h;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2300)}
+function award(part,id,pts){
+  if(ST.done[id])return;ST.done[id]=1;
+  const before=rankOf(ST.score);ST.score+=pts;ST.prog[part]=(ST.prog[part]||0)+1;save();hud();
+  const after=rankOf(ST.score);
+  toast(after!==before?`Nou rang: <b>${after}</b>`:`<b>+${pts}</b> punts`);
+}
+
+/* =============== utilitats =============== */
+const $=s=>document.querySelector(s);
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const fmt=(v,d=0)=>Number(v).toLocaleString('ca-ES',{maximumFractionDigits:d,minimumFractionDigits:0,useGrouping:false});
+const sc=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+function parseNum(s){
+  s=String(s).trim().replace(/[\s  ]/g,'');
+  if(s.includes(':'))s=s.split(':').pop();
+  s=s.replace(/[a-zA-Z%°º]+$/,'');
+  if(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s))s=s.replace(/\./g,'');
+  s=s.replace(',','.');
+  const v=parseFloat(s);return isNaN(v)?null:v;
+}
+const NS='http://www.w3.org/2000/svg';
+function E(tag,a,p){const e=document.createElementNS(NS,tag);if(a)for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function T(p,x,y,txt,a={}){const t=E('text',Object.assign({x,y},a),p);t.textContent=txt;return t}
+function svgPt(svg,ev){const p=svg.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* =============== motor de relleu =============== */
+function G(x,y,cx,cy,h,sx,sy,r=0){const c=Math.cos(r),s=Math.sin(r),dx=x-cx,dy=y-cy,u=dx*c+dy*s,v=-dx*s+dy*c;return h*Math.exp(-(u*u/(2*sx*sx)+v*v/(2*sy*sy)))}
+function nz(x,y,a){return a*(Math.sin(x*.021+1.7)*Math.cos(y*.017+.3)+.6*Math.sin(x*.047-y*.036+2.1)+.35*Math.cos(x*.083+y*.061))}
+function dPoly(x,y,P){let m=1e9;for(let i=0;i<P.length-1;i++){const [x1,y1]=P[i],[x2,y2]=P[i+1],dx=x2-x1,dy=y2-y1;let t=((x-x1)*dx+(y-y1)*dy)/(dx*dx+dy*dy);t=Math.max(0,Math.min(1,t));const d=Math.hypot(x-x1-t*dx,y-y1-t*dy);if(d<m)m=d}return m}
+
+function MapM(o){
+  const m=Object.assign({step:3,idx:5,upc:30,sea:false,lab:10},o);
+  m.mpu=m.scale/100/m.upc; // metres per unitat
+  const nx=Math.floor(m.W/m.step)+1,ny=Math.floor(m.H/m.step)+1,v=new Float32Array(nx*ny);let mn=1e9,mx=-1e9;
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const h=m.fn(i*m.step,j*m.step);v[j*nx+i]=h;if(h<mn)mn=h;if(h>mx)mx=h}
+  Object.assign(m,{nx,ny,v,min:mn,max:mx,cache:{}});
+  m.levels=[];for(let L=Math.ceil(mn/m.eq)*m.eq;L<=mx;L+=m.eq){if(m.sea&&L<0)continue;m.levels.push(L)}
+  return m;
+}
+const TAB={1:[['L','B']],2:[['B','R']],3:[['L','R']],4:[['T','R']],5:[['T','R'],['L','B']],6:[['T','B']],7:[['T','L']],8:[['T','L']],9:[['T','B']],10:[['T','L'],['R','B']],11:[['T','R']],12:[['L','R']],13:[['R','B']],14:[['L','B']]};
+function march(m,L){
+  if(m.cache[L])return m.cache[L];
+  const {nx,ny,v,step:s}=m,out=[];
+  for(let j=0;j<ny-1;j++)for(let i=0;i<nx-1;i++){
+    const a=v[j*nx+i],b=v[j*nx+i+1],c=v[(j+1)*nx+i+1],d=v[(j+1)*nx+i];
+    const id=(a>L?8:0)|(b>L?4:0)|(c>L?2:0)|(d>L?1:0);if(id===0||id===15)continue;
+    const P={T:()=>[(i+(L-a)/(b-a))*s,j*s],R:()=>[(i+1)*s,(j+(L-b)/(c-b))*s],B:()=>[(i+(L-d)/(c-d))*s,(j+1)*s],L:()=>[i*s,(j+(L-a)/(d-a))*s]};
+    for(const [p,q] of TAB[id]){const A=P[p](),B=P[q]();out.push(A[0],A[1],B[0],B[1])}
+  }
+  return m.cache[L]=out;
+}
+function lerp3(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]}
+const HYP=[[0,[221,232,208]],[.35,[238,236,214]],[.7,[236,220,194]],[1,[222,199,171]]];
+function hypCol(z,m){
+  if(m.sea&&z<0)return lerp3([206,228,240],[168,204,226],Math.min(1,-z/70));
+  const lo=m.sea?0:m.min;let t=(z-lo)/(m.max-lo);t=Math.max(0,Math.min(1,t));
+  for(let i=0;i<HYP.length-1;i++){const [t0,c0]=HYP[i],[t1,c1]=HYP[i+1];if(t<=t1)return lerp3(c0,c1,(t-t0)/(t1-t0))}
+  return HYP[3][1];
+}
+function tintURL(m){
+  if(m._tint)return m._tint;
+  const k=2,w=Math.ceil(m.W/k),h=Math.ceil(m.H/k),cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const ctx=cv.getContext('2d'),img=ctx.createImageData(w,h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=hypCol(m.fn(x*k,y*k),m),o=(y*w+x)*4;img.data[o]=c[0];img.data[o+1]=c[1];img.data[o+2]=c[2];img.data[o+3]=255}
+  ctx.putImageData(img,0,0);return m._tint=cv.toDataURL();
+}
+function drawMap(svg,m,opt={}){
+  svg.innerHTML='';svg.setAttribute('viewBox',`0 0 ${m.W} ${m.H}`);
+  E('rect',{x:0,y:0,width:m.W,height:m.H,fill:'#F6F5EE'},svg);
+  if(opt.tint!==false)E('image',{href:tintURL(m),x:0,y:0,width:m.W,height:m.H,preserveAspectRatio:'none'},svg);
+  const gC=E('g',{fill:'none','stroke-linecap':'round','stroke-linejoin':'round'},svg);
+  const gL=E('g',{'font-size':m.lab,'font-weight':700,fill:'#7A4318','text-anchor':'middle','dominant-baseline':'central',stroke:'#F3EFE2','stroke-width':3.2,'paint-order':'stroke'},svg);
+  const idxStep=m.eq*m.idx,placed=[],maxPer=opt.maxLabels||3;
+  for(const L of m.levels){
+    const seg=march(m,L);if(!seg.length)continue;
+    let d='';for(let k=0;k<seg.length;k+=4)d+=`M${seg[k].toFixed(1)} ${seg[k+1].toFixed(1)}L${seg[k+2].toFixed(1)} ${seg[k+3].toFixed(1)}`;
+    const isI=((L%idxStep)+idxStep)%idxStep===0,coast=m.sea&&L===0,thick=isI&&!opt.uniform;
+    E('path',{d,stroke:coast?'#2B5F86':thick?'#8A4E22':opt.uniform?'#A0683C':'#B98457','stroke-width':coast?1.7:thick?1.5:opt.uniform?.9:.8},gC);
+    if(isI&&!coast&&opt.labels!==false){
+      let n=0;const stepK=4*Math.max(3,Math.floor(seg.length/4/7));
+      for(let k=Math.floor(stepK/2/4)*4;k<seg.length&&n<maxPer;k+=stepK){
+        const x=(seg[k]+seg[k+2])/2,y=(seg[k+1]+seg[k+3])/2,mg=m.lab*1.6;
+        if(x<mg||y<mg||x>m.W-mg||y>m.H-mg)continue;
+        if(placed.some(p=>Math.hypot(p[0]-x,p[1]-y)<(opt.labelGap||m.W/5)))continue;
+        let ang=Math.atan2(seg[k+3]-seg[k+1],seg[k+2]-seg[k])*180/Math.PI;if(ang>90)ang-=180;if(ang<-90)ang+=180;
+        T(gL,x.toFixed(1),y.toFixed(1),String(L),{transform:`rotate(${ang.toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})`});
+        placed.push([x,y]);n++;
+      }
+    }
+  }
+  return E('g',{},svg);
+}
+function peak(g,x,y,name,alt){
+  E('path',{d:`M${x} ${y-6}L${x+5.5} ${y+4}L${x-5.5} ${y+4}Z`,fill:'#1B2326'},g);
+  const t=T(g,x+8,y-4,name,{'font-size':11,'font-weight':700,fill:'#1B2326',stroke:'#F6F5EE','stroke-width':3,'paint-order':'stroke'});
+  if(alt!=null)T(g,x+8,y+9,`${alt} m`,{'font-size':10,fill:'#1B2326','font-family':'JetBrains Mono,monospace',stroke:'#F6F5EE','stroke-width':3,'paint-order':'stroke'});
+}
+function marker(g,x,y,lab,col='#E2601A'){
+  E('circle',{cx:x,cy:y,r:5.5,fill:col,stroke:'#fff','stroke-width':2},g);
+  T(g,x+9,y-7,lab,{'font-size':15,'font-weight':800,fill:col,stroke:'#fff','stroke-width':3.5,'paint-order':'stroke','font-family':'Barlow Condensed,sans-serif'});
+}
+function scaleBar(g,m,meters,x,y){
+  const len=meters/m.mpu;
+  for(let i=0;i<4;i++)E('rect',{x:x+i*len/4,y,width:len/4,height:6,fill:i%2?'#fff':'#1B2326',stroke:'#1B2326','stroke-width':.8},g);
+  const lab=v=>v>=1000?`${fmt(v/1000,2)} km`:`${v} m`;
+  const a={'font-size':10,'text-anchor':'middle',fill:'#1B2326','font-family':'JetBrains Mono,monospace',stroke:'#F6F5EE','stroke-width':3,'paint-order':'stroke'};
+  T(g,x,y+17,'0',a);T(g,x+len/2,y+17,String(meters/2),a);T(g,x+len,y+17,lab(meters),a);
+  T(g,x+len/2,y-6,`E 1:${sc(m.scale)}`,Object.assign({},a,{'font-size':11,'font-weight':700}));
+}
+function north(g,x,y){E('path',{d:`M${x} ${y-14}L${x+6} ${y+6}L${x} ${y+2}L${x-6} ${y+6}Z`,fill:'#1B2326'},g);T(g,x,y-18,'N',{'font-size':12,'font-weight':800,'text-anchor':'middle',fill:'#1B2326'})}
+function peakMax(m,x,y,r=30){let best=-1e9;for(let dx=-r;dx<=r;dx+=2)for(let dy=-r;dy<=r;dy+=2){const h=m.fn(x+dx,y+dy);if(h>best)best=h}return Math.round(best)}
+
+/* =============== mapes =============== */
+// Illa de Sa Cendra (volcànica) · E 1:20 000 · equidistància 50 m
+function islandFn(x,y){
+  const r=Math.hypot(x-340,(y-170)/.78),R=22,D=120,H=560,k=88;
+  const cone=r>=R?H*Math.exp(-r/k):H*Math.exp(-R/k)-D*Math.pow(1-(r/R)**2,1.5);
+  const r2=Math.hypot(x-165,(y-215)/.85);
+  return -70+cone+300*Math.exp(-r2/62)+nz(x,y,7);
+}
+const ISLAND=MapM({fn:islandFn,W:600,H:360,eq:50,idx:2,scale:20000,upc:30,sea:true,step:3});
+ISLAND.A0=[30,222];ISLAND.B0=[585,148];
+
+// Serra de Can Pedrís · E 1:25 000 · equidistància 50 m
+const RIVER=[[640,30],[565,140],[505,250],[385,330],[235,392],[0,418]];
+function serraFn(x,y){
+  let h=170+.55*(440-y)+G(x,y,230,150,640,95,75)+G(x,y,455,122,470,70,58)+G(x,y,140,275,250,110,36,.55)+nz(x,y,10);
+  h-=70*Math.exp(-dPoly(x,y,RIVER)/28);return h;
+}
+const SERRA=MapM({fn:serraFn,W:640,H:440,eq:50,idx:5,scale:25000,upc:32,step:3,lab:11});
+
+/* =============== components de pregunta =============== */
+function lvlTag(l){return l?`<span class="lvl ${l==='PAU'?'pau':''}">${l}</span>`:''}
+function mountMC(host,it){
+  const d=document.createElement('div');d.className='q';
+  d.innerHTML=`<div class="q-head">${lvlTag(it.lvl)}<p class="q-t">${it.q}</p></div>${it.html||''}<div class="opts">${it.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}</div><div class="fb" hidden></div>`;
+  host.appendChild(d);if(it.after)it.after(d);
+  let tries=0,done=false;const fb=d.querySelector('.fb');
+  if(ST.done[it.id]){done=true;d.classList.add('solved');d.querySelectorAll('.opt')[it.ok].classList.add('ok');fb.hidden=false;fb.className='fb ok';fb.innerHTML=it.exp||''}
+  d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    if(done)return;const i=+b.dataset.i;tries++;fb.hidden=false;
+    if(i===it.ok){done=true;b.classList.add('ok');d.classList.add('solved');fb.className='fb ok';fb.innerHTML=it.exp||'';if(it.part)award(it.part,it.id,tries===1?10:tries===2?5:2);it.onOk&&it.onOk()}
+    else{b.classList.add('bad');b.disabled=true;fb.className='fb bad';fb.innerHTML=(it.why&&it.why[i])||'No és aquesta. Torna-ho a provar.'}
+  });
+  return d;
+}
+let qn=0;
+function mountNum(host,it){
+  const d=document.createElement('div');d.className='q';const id='in_'+(it.fid||it.id||('q'+(qn++))).replace(/[^\w]/g,'_');
+  d.innerHTML=`<div class="q-head">${lvlTag(it.lvl)}<p class="q-t">${it.q}</p></div>${it.html||''}
+  <div class="ans"><input id="${id}" inputmode="decimal" autocomplete="off" aria-label="Resposta"><span class="unit">${it.unit||''}</span><button class="btn chk">Comprova</button>${it.hint?'<button class="btn ghost hint">Pista</button>':''}<button class="btn ghost sol" hidden>Solució</button></div><div class="fb" hidden></div>`;
+  host.appendChild(d);if(it.after)it.after(d);
+  const inp=d.querySelector('input'),fb=d.querySelector('.fb');let tries=0,done=false;
+  const tol=it.tol||{abs:0};
+  const ok=v=>Math.abs(v-it.ans)<=Math.max(tol.abs||0,(tol.rel||0)*Math.abs(it.ans))+1e-6;
+  function check(){
+    if(done)return;const v=parseNum(inp.value);fb.hidden=false;
+    if(v===null){fb.className='fb info';fb.innerHTML='Escriu un número (pots fer servir coma decimal).';return}
+    tries++;
+    if(ok(v)){done=true;d.classList.add('solved');inp.disabled=true;fb.className='fb ok';fb.innerHTML=it.exp||'';if(it.part)award(it.part,it.id,tries===1?10:tries===2?5:2);it.onOk&&it.onOk(v)}
+    else{fb.className='fb bad';let msg='Encara no. ';if(it.warn){const w=it.warn(v);if(w)msg=w+' '}
+      fb.innerHTML=msg+(tries>=2&&it.hint?`<br><b>Pista:</b> ${it.hint}`:'');if(tries>=3)d.querySelector('.sol').hidden=false}
+  }
+  d.querySelector('.chk').onclick=check;inp.addEventListener('keydown',e=>{if(e.key==='Enter')check()});
+  const h=d.querySelector('.hint');if(h)h.onclick=()=>{fb.hidden=false;fb.className='fb info';fb.innerHTML='<b>Pista:</b> '+it.hint};
+  d.querySelector('.sol').onclick=()=>{fb.hidden=false;fb.className='fb info';fb.innerHTML='<b>Solució:</b> '+(it.exp||fmt(it.ans,2))};
+  if(ST.done[it.id]&&it.keep!==false){done=true;d.classList.add('solved');inp.value=fmt(it.ans,2);inp.disabled=true;fb.hidden=false;fb.className='fb ok';fb.innerHTML=it.exp||''}
+  return d;
+}
+
+/* =============== navegació =============== */
+const VIEWS=['inici','p1','p2','p3','p4','codi','prof'];
+function show(v){
+  if(!VIEWS.includes(v))v='inici';
+  VIEWS.forEach(x=>document.getElementById(x).hidden=x!==v);
+  document.querySelectorAll('.nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===v?'true':'false'));
+  try{history.replaceState(null,'','#'+v)}catch(e){location.hash=v}
+  window.scrollTo({top:0,behavior:reduced?'auto':'smooth'});
+  if(v==='p1')floodDraw();
+  if(v==='codi')renderCode();
+  if(v==='prof')renderProf();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)show(b.dataset.go)});
+
+/* =============== HERO =============== */
+function profileOf(m,A,B,N=600){
+  const len=Math.hypot(B[0]-A[0],B[1]-A[1]),hs=[];
+  for(let i=0;i<=N;i++){const t=i/N;hs.push(m.fn(A[0]+t*(B[0]-A[0]),A[1]+t*(B[1]-A[1])))}
+  const marks=[];
+  for(let i=0;i<N;i++){const h1=hs[i],h2=hs[i+1];for(const L of m.levels){if((h1<L&&h2>=L)||(h1>=L&&h2<L)){const t=(i+(L-h1)/(h2-h1))/N;marks.push({d:t*len,t,L})}}}
+  marks.sort((a,b)=>a.d-b.d);
+  const clean=[];for(const mk of marks){const p=clean[clean.length-1];if(p&&p.L===mk.L&&mk.d-p.d<4){clean.pop();continue}clean.push(mk)}
+  return {len,hs,N,marks:clean};
+}
+function hero(){
+  const svg=$('#heroMap'),g=drawMap(svg,ISLAND,{maxLabels:1,labelGap:45,uniform:true});
+  const [A,B]=[ISLAND.A0,ISLAND.B0];
+  E('line',{x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:'#E2601A','stroke-width':2.2,'stroke-dasharray':'7 5'},g);
+  marker(g,A[0],A[1],'A');marker(g,B[0],B[1],'B');north(g,570,40);scaleBar(g,ISLAND,1000,40,322);
+  const P=profileOf(ISLAND,A,B),ps=$('#heroProf');
+  const k=(600-40)/P.len,y=h=>100-Math.max(h,0)*.2;
+  E('rect',{x:0,y:0,width:600,height:120,fill:'#F6F5EE'},ps);
+  for(let L=0;L<=400;L+=100){E('line',{x1:20,x2:580,y1:y(L),y2:y(L),stroke:'#D8D3C3','stroke-width':.8},ps);T(ps,16,y(L)+3,String(L),{'font-size':8,'text-anchor':'end',fill:'#7A6A55','font-family':'JetBrains Mono,monospace'})}
+  let d='';P.hs.forEach((h,i)=>{d+=(i?'L':'M')+(20+i/P.N*P.len*k).toFixed(1)+' '+y(h).toFixed(1)});
+  E('path',{d:d+`L580 ${y(0)}L20 ${y(0)}Z`,fill:'#E6D3B6',opacity:.8},ps);
+  E('path',{d,fill:'none',stroke:'#E2601A','stroke-width':2.4,class:'draw'},ps);
+  T(ps,22,114,'A',{'font-weight':800,fill:'#E2601A','font-size':13});T(ps,572,114,'B',{'font-weight':800,fill:'#E2601A','font-size':13});
+}
+
+/* =============== PART 1 · inundació =============== */
+let floodEq=50;const FL={};
+function floodInit(){
+  const W=600,H=360,hs=new Float32Array(W*H);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++)hs[y*W+x]=islandFn(x,y);
+  FL.hs=hs;FL.base=new Uint8ClampedArray(W*H*4);
+  for(let i=0;i<W*H;i++){const c=hypCol(hs[i],ISLAND);FL.base[i*4]=c[0];FL.base[i*4+1]=c[1];FL.base[i*4+2]=c[2];FL.base[i*4+3]=255}
+  FL.P=profileOf(ISLAND,ISLAND.A0,ISLAND.B0,500);
+  $('#lvl').addEventListener('input',floodDraw);
+  document.querySelectorAll('#eqSeg button').forEach(b=>b.onclick=()=>{floodEq=+b.dataset.eq;document.querySelectorAll('#eqSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));floodDraw()});
+}
+function segsPath(ctx,seg){ctx.beginPath();for(let k=0;k<seg.length;k+=4){ctx.moveTo(seg[k],seg[k+1]);ctx.lineTo(seg[k+2],seg[k+3])}ctx.stroke()}
+function floodDraw(){
+  if(!FL.hs)return;
+  const lvl=+$('#lvl').value;$('#lvlOut').textContent=lvl;
+  const cv=$('#floodTop'),W=600,H=360,dpr=Math.min(2,window.devicePixelRatio||1);
+  if(cv.width!==W*dpr){cv.width=W*dpr;cv.height=H*dpr}
+  const ctx=cv.getContext('2d');
+  const img=new ImageData(new Uint8ClampedArray(FL.base),W,H);
+  for(let i=0;i<W*H;i++){const h=FL.hs[i];if(h<lvl&&(lvl>0||h<0)){const t=Math.min(1,(lvl-h)/160);img.data[i*4]=190-70*t;img.data[i*4+1]=218-50*t;img.data[i*4+2]=236-20*t}}
+  const off=document.createElement('canvas');off.width=W;off.height=H;off.getContext('2d').putImageData(img,0,0);
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.drawImage(off,0,0);
+  ctx.lineCap='round';
+  for(let L=floodEq;L<=400;L+=floodEq){ctx.strokeStyle='rgba(150,95,55,.9)';ctx.lineWidth=.95;segsPath(ctx,march(ISLAND,L))}
+  ctx.strokeStyle='#1E4E73';ctx.lineWidth=2.8;segsPath(ctx,march(ISLAND,lvl===0?0:lvl));
+  const [A,B]=[ISLAND.A0,ISLAND.B0];ctx.setLineDash([7,5]);ctx.strokeStyle='#E2601A';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(...A);ctx.lineTo(...B);ctx.stroke();ctx.setLineDash([]);
+  ctx.font='700 16px "Barlow Condensed",sans-serif';ctx.fillStyle='#E2601A';ctx.fillText('A',A[0]+6,A[1]-8);ctx.fillText('B',B[0]-14,B[1]-8);
+  // tall
+  const cs=$('#floodSec'),SH=170;if(cs.width!==W*dpr){cs.width=W*dpr;cs.height=SH*dpr}
+  const c2=cs.getContext('2d');c2.setTransform(dpr,0,0,dpr,0,0);c2.fillStyle='#F6F5EE';c2.fillRect(0,0,W,SH);
+  const P=FL.P,x=i=>40+i/P.N*540,y=h=>150-h*.33;
+  c2.fillStyle='rgba(46,125,181,.35)';c2.fillRect(40,y(lvl),540,150-y(lvl)+12);
+  c2.font='10px "JetBrains Mono",monospace';
+  for(let L=0;L<=400;L+=floodEq){c2.strokeStyle='rgba(120,100,80,.35)';c2.setLineDash([3,4]);c2.beginPath();c2.moveTo(40,y(L));c2.lineTo(580,y(L));c2.stroke();c2.setLineDash([]);c2.fillStyle='#6d5d4a';c2.textAlign='right';c2.fillText(L,34,y(L)+3)}
+  c2.beginPath();c2.moveTo(40,y(0)+12);P.hs.forEach((h,i)=>c2.lineTo(x(i),y(Math.max(h,-30))));c2.lineTo(580,y(0)+12);c2.closePath();c2.fillStyle='#D9C09A';c2.fill();c2.strokeStyle='#7A4318';c2.lineWidth=1.6;c2.stroke();
+  c2.strokeStyle='#1E4E73';c2.lineWidth=2.2;c2.beginPath();c2.moveTo(40,y(lvl));c2.lineTo(580,y(lvl));c2.stroke();
+  for(const mk of P.marks){if(mk.L%floodEq)continue;const xx=40+mk.t*540;c2.fillStyle=mk.L===lvl?'#1E4E73':'#8A4E22';c2.beginPath();c2.arc(xx,y(mk.L),mk.L===lvl?4.5:2.6,0,7);c2.fill()}
+  c2.fillStyle='#E2601A';c2.font='700 15px "Barlow Condensed",sans-serif';c2.textAlign='left';c2.fillText('A',42,164);c2.textAlign='right';c2.fillText('B',578,164);
+  c2.fillStyle='#566264';c2.font='11px "Atkinson Hyperlegible",sans-serif';c2.textAlign='left';c2.fillText('Tall lateral A–B',46,16);
+  $('#floodTxt').innerHTML=lvl===0?'Ara la costa és la corba de <b>0 m</b>. Puja el mar i mira com la línia blava fosca ressegueix sempre una corba de nivell.':
+    `Amb el mar a <b>${lvl} m</b>, la nova línia de costa (blau fosc) és exactament la corba de nivell de ${lvl} m. Els punts del tall lateral són els llocs on la línia A–B talla cada corba: ${lvl%floodEq?'aquest nivell no coincideix amb cap corba dibuixada amb aquesta equidistància.':'el punt blau és la costa actual.'}`;
+}
+
+/* =============== PART 1 · preguntes =============== */
+function miniSvg(m,opt={}){const s=document.createElementNS(NS,'svg');s.setAttribute('class','mini');drawMap(s,m,Object.assign({maxLabels:2,labelGap:55},opt));return s}
+function eqSvg(m,ms){
+  const s=miniSvg(m,{labels:false});
+  // cotes de les corbes mestres al llarg d'un radi des del cim cap a l'oest-sud-oest
+  let cx=122,cy=92,best=-1e9;for(let x=80;x<=165;x+=2)for(let y=55;y<=130;y+=2){const h=m.fn(x,y);if(h>best){best=h;cx=x;cy=y}}
+  const g=E('g',{'font-size':11,'font-weight':700,fill:'#7A4318','text-anchor':'middle','dominant-baseline':'central',stroke:'#F3EFE2','stroke-width':3.4,'paint-order':'stroke'},s);
+  const ux=-.93,uy=.37;
+  for(const L of ms){let prev=m.fn(cx,cy);for(let d=1;d<200;d+=.5){const x=cx+ux*d,y=cy+uy*d;if(x<8||y<8||y>172)break;const h=m.fn(x,y);if(prev>=L&&h<L){T(g,x.toFixed(1),y.toFixed(1),String(L),{transform:`rotate(68 ${x.toFixed(1)} ${y.toFixed(1)})`});break}prev=h}}
+  return s;
+}
+function drawRiver(svg){
+  if(!svg||svg.querySelector('.riu'))return;const g=E('g',{class:'riu'},svg);
+  let d='';for(let y=0;y<=180;y+=4){const x=120-.25*(y-90)+2*Math.sin(y*.09);d+=(y?'L':'M')+x.toFixed(1)+' '+y}
+  E('path',{d,fill:'none',stroke:'#2E7DB5','stroke-width':3,'stroke-linecap':'round'},g);
+  for(const y of [60,140]){const x=120-.25*(y-90);E('path',{d:`M${x-6} ${y-5}L${x+.5} ${y+5}L${x+5} ${y-6}`,fill:'none',stroke:'#1F5C8A','stroke-width':2.2,'stroke-linecap':'round','stroke-linejoin':'round'},g)}
+  T(g,120-.25*(165-90)+10,165,'riu',{'font-size':11,'font-style':'italic','font-weight':700,fill:'#1F5C8A',stroke:'#F6F5EE','stroke-width':3,'paint-order':'stroke'});
+}
+function morphSvg(m,cfg){
+  const s=miniSvg(m,{labels:false,uniform:true});
+  const g=E('g',{'font-size':10.5,'font-weight':700,fill:'#7A4318','text-anchor':'middle','dominant-baseline':'central',stroke:'#F3EFE2','stroke-width':3.4,'paint-order':'stroke'},s);
+  const gs=E('g',{},s);
+  // cotes dels punts singulars (cims i fons)
+  const spots=(cfg.spots||[]).map(([x0,y0,sg])=>{let bx=x0,by=y0,bv=sg*m.fn(x0,y0);for(let x=x0-25;x<=x0+25;x++)for(let y=y0-25;y<=y0+25;y++){const v=sg*m.fn(x,y);if(v>bv){bv=v;bx=x;by=y}}return [bx,by,sg,Math.round(bv*sg)]});
+  for(const [x,y,sg,h] of spots){
+    if(sg>0)E('path',{d:`M${x} ${y-4.5}L${x+4} ${y+2.5}L${x-4} ${y+2.5}Z`,fill:'#1B2326'},gs);else E('circle',{cx:x,cy:y,r:2.4,fill:'#1B2326'},gs);
+    T(gs,x,y+11,String(h),{'font-size':10,'text-anchor':'middle',fill:'#1B2326','font-family':'JetBrains Mono,monospace',stroke:'#F6F5EE','stroke-width':3,'paint-order':'stroke'});
+  }
+  // una sola cota per cada corba de 100 en 100 m, al llarg d'un radi
+  const [sx,sy,ux,uy]=cfg.ray,done=new Set();let prev=m.fn(sx,sy);
+  for(let d=.5;d<320;d+=.5){const x=sx+ux*d,y=sy+uy*d;if(x<4||y<4||x>m.W-4||y>m.H-4)break;const h=m.fn(x,y);
+    for(let L=Math.ceil(Math.min(prev,h)/100)*100;L<=Math.max(prev,h);L+=100){
+      if(done.has(L)||!((prev<L&&h>=L)||(prev>=L&&h<L)))continue;done.add(L);
+      if(x<12||y<10||x>m.W-12||y>m.H-10)continue;
+      if(spots.some(p=>Math.hypot(p[0]-x,p[1]-y)<18))continue;
+      const gx=m.fn(x+1,y)-m.fn(x-1,y),gy=m.fn(x,y+1)-m.fn(x,y-1);let ang=Math.atan2(gx,-gy)*180/Math.PI;if(ang>90)ang-=180;if(ang<-90)ang+=180;
+      T(g,x.toFixed(1),y.toFixed(1),String(L),{transform:`rotate(${ang.toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})`});
+    }
+    prev=h}
+  return s;
+}
+function buildP1(){
+  const A=$('#p1qA');
+  mountMC(A,{id:'p1-iso',part:'p1',lvl:'Fàcil',q:'Com s\'anomenen les isolínies que uneixen punts amb la mateixa <b>pressió atmosfèrica</b>?',opts:['Isotermes','Isòbares','Isohietes','Corbes de nivell'],ok:1,exp:'Les isòbares (del grec <i>baros</i>, pes) uneixen punts d\'igual pressió. Les corbes de nivell ho fan amb l\'altitud.'});
+  const EQ=[{e:10,base:305},{e:20,base:410},{e:50,base:525}];
+  EQ.forEach((c,i)=>{
+    const m=MapM({fn:(x,y)=>c.base+G(x,y,122,92,c.e*13.2,58,44,.4)+nz(x,y,c.e*.05),W:240,H:180,eq:c.e,idx:5,scale:10000,step:3,lab:10});
+    const ms=m.levels.filter(L=>L%(c.e*5)===0);
+    mountNum(A,{id:'p1-eq'+c.e,part:'p1',lvl:i===2?'Mitjà':'Fàcil',q:`Quina és l'<b>equidistància</b> d'aquest mapa?`,unit:'m',ans:c.e,after:d=>d.querySelector('.q-head').after(eqSvg(m,ms)),
+      hint:`Busca dues corbes mestres amb número (${ms.slice(0,2).join(' i ')}). Compta els <b>espais</b> entre elles, no les línies.`,
+      exp:`Entre ${ms[0]} i ${ms[1]} hi ha 4 corbes fines, és a dir 5 espais: ${ms[1]-ms[0]} ÷ 5 = <b>${c.e} m</b>.`,
+      warn:v=>Math.abs(v-(c.e*5)/4)<.01?'Has dividit entre les línies (4) en lloc dels espais (5).':null});
+  });
+
+  const OPTS=['Muntanya (turó)','Cràter / depressió','Vall fluvial','Serralada','Coll','Mola (relleu en graons)'];
+  const sig=z=>1/(1+Math.exp(-z));
+  const molaFn=(x,y)=>{const dx=x-118,dy=(y-92)/.78,r=Math.hypot(dx,dy),t=Math.atan2(dy,dx);
+    const notch=(c,w,dep)=>{let d=Math.abs(t-c);if(d>Math.PI)d=2*Math.PI-d;return dep*Math.exp(-d*d/(2*w*w))};
+    const R1=90+7*Math.sin(3*t+.5)+5*Math.sin(5*t+1.3)+3*Math.sin(9*t+.2)-notch(2.3,.13,20)-notch(-.7,.1,16)-notch(.9,.09,12);
+    const R2=44+6*Math.sin(2*t+2)+4*Math.sin(4*t+.7)+2.5*Math.sin(7*t+1.1)-notch(-2.6,.16,10);
+    return 290+.1*(180-y)+150*sig((R1-r)/3)+150*sig((R2-r)/2.8)+.35*Math.max(0,Math.min(R1-r,R1-R2))+.15*Math.max(0,R2-r)+nz(x,y,2.5)};
+  const vallFn=(x,y)=>300+1.4*(180-y)-60*Math.exp(-Math.abs(x-120+.25*(y-90))/16)+nz(x,y,3);
+  const MS=[
+    {k:0,fn:(x,y)=>350+G(x,y,125,95,200,48,36,.3)+nz(x,y,3),ray:[125,95,-.9,.45],spots:[[125,95,1]],exp:'Corbes tancades concèntriques i els números <b>augmenten</b> cap al centre, fins a la cota del cim: és una muntanya.'},
+    {k:2,fn:vallFn,ray:[40,176,0,-1],spots:[],exp:'Les corbes fan una V que apunta cap a les cotes <b>altes</b> (al nord): és una vall per on baixa un riu.'},
+    {k:1,fn:(x,y)=>{const r=Math.hypot(x-120,(y-90)/.82),R=62;const outer=290+180*Math.exp(-((r-R)**2)/(2*24*24));if(r>=R)return outer+nz(x,y,3);const k=1/(1+Math.exp(-12/4.5));return 330+140/(1+Math.exp(-(r-50)/4.5))/k+.004*r*r*0+nz(x,y,2)},ray:[120,90,.2,1],spots:[[120,90,-1],[58,90,1]],exp:'Són corbes tancades, però cap a dins els números <b>baixen</b> (fins a la cota del fons): és una depressió tancada, com el cràter d\'un volcà.'},
+    {k:4,fn:(x,y)=>290+G(x,y,62,95,170,40,46)+G(x,y,182,85,160,40,46)+nz(x,y,3),ray:[62,95,.1,1],spots:[[62,95,1],[182,85,1]],exp:'Dos cims separats per una zona més baixa entre ells: el punt baix entre dos cims és un <b>coll</b>, el pas natural per creuar la muntanya.'},
+    {k:5,fn:molaFn,ray:[120,92,1,-.05],spots:[[120,92,1]],exp:'Dues franges de corbes juntes (dos <b>cingles</b>) separades per replans on les corbes s\'espaien. El cim és pla. És un relleu en graons, com la <b>Mola</b> de Sant Llorenç del Munt, típic de capes horitzontals de roques dures (conglomerats) i toves alternades.'},
+    {k:3,fn:(x,y)=>290+G(x,y,55,130,150,32,30)+G(x,y,122,88,180,34,28)+G(x,y,192,50,150,30,26)+G(x,y,122,90,95,100,22,-.55)+nz(x,y,3),ray:[122,88,.5,.86],spots:[[55,130,1],[122,88,1],[192,50,1]],exp:'Diversos cims alineats i units per una carena: és una <b>serralada</b>.'}
+  ];
+  const B=$('#p1qB');
+  MS.forEach((s,i)=>{const m=MapM({fn:s.fn,W:240,H:180,eq:20,idx:5,scale:10000,step:2,lab:10});
+    let sv;mountMC(B,{id:'p1-morf'+i,part:'p1',lvl:i<2?'Fàcil':'Mitjà',q:`Mapa ${i+1}: quina forma del relleu representa? <span class="caption">(equidistància 20 m)</span>`,opts:OPTS,ok:s.k,exp:s.exp,after:d=>{sv=morphSvg(m,s);d.querySelector('.q-head').after(sv);if(s.k===2&&ST.done['p1-morf'+i])drawRiver(sv)},onOk:()=>{if(s.k===2)drawRiver(sv)}})});
+
+  const C=$('#p1qC');
+  const asymS={fn:(x,y)=>{const sx=x>120?20:62;return 290+200*Math.exp(-((x-120)**2)/(2*sx*sx)-((y-90)**2)/(2*45*45))+nz(x,y,2)},ray:[120,90,-1,.15],spots:[[120,90,1]]};
+  const asym=MapM({fn:asymS.fn,W:240,H:180,eq:20,idx:5,scale:10000,step:2,lab:10});
+  mountMC(C,{id:'p1-asym',part:'p1',lvl:'Mitjà',q:'Per quin vessant pujaries si vols l\'ascensió més <b>suau</b>? (el nord és a dalt)',opts:['Nord','Sud','Est','Oest'],ok:3,after:d=>d.querySelector('.q-head').after(morphSvg(asym,asymS)),exp:'A l\'oest les corbes estan molt més separades: per cada metre que puges avances més en horitzontal, és a dir, menys pendent. A l\'est estan molt juntes: vessant abrupte.'});
+  const vall=MapM({fn:vallFn,W:240,H:180,eq:20,idx:5,scale:10000,step:2,lab:10});
+  let fluxSv;mountMC(C,{id:'p1-flux',part:'p1',lvl:'Mitjà',q:'En aquesta vall circula un riu. Cap a on corre l\'aigua?',opts:['Cap al nord','Cap al sud','No es pot saber'],ok:1,after:d=>{fluxSv=morphSvg(vall,MS[1]);d.querySelector('.q-head').after(fluxSv);if(ST.done['p1-flux'])drawRiver(fluxSv)},onOk:()=>drawRiver(fluxSv),exp:'La V de les corbes apunta aigües amunt (cap al nord, on hi ha les cotes altes). L\'aigua baixa cap a les cotes baixes: <b>cap al sud</b>. Ara el riu està dibuixat al mapa.'});
+  mountMC(C,{id:'p1-rule',part:'p1',lvl:'PAU',q:'Un company diu que en un mapa ha trobat dues corbes de nivell de 400 m i 450 m que es creuen. Què li respons?',opts:['És normal en zones muntanyoses','És impossible: un punt no pot tenir dues altituds','Passa quan hi ha un riu','Vol dir que l\'equidistància és 50 m'],ok:1,exp:'Les corbes de nivell <b>mai es creuen</b>: al punt de tall hi hauria dues altituds diferents alhora. Només es poden tocar en un penya-segat vertical.'});
+}
+
+/* =============== PART 2 =============== */
+const SCALES=[5000,10000,20000,25000,50000,100000,200000,1000000];
+function scaleLab(){
+  const s=SCALES[+$('#scSlider').value],svg=$('#scaleLab');svg.innerHTML='';
+  const cm=100,x0=40;$('#scOut').textContent='1:'+sc(s);
+  const mPerCm=s/100,lab=v=>v>=1000?`${fmt(v/1000,2)} km`:`${fmt(v,1)} m`;
+  for(let i=0;i<5;i++)E('rect',{x:x0+i*cm,y:26,width:cm,height:12,fill:i%2?'none':'currentColor',stroke:'currentColor','stroke-width':1.2},svg);
+  for(let i=0;i<=5;i++)T(svg,x0+i*cm,18,i===5?lab(mPerCm*5):lab(mPerCm*i).replace(/ (m|km)$/,''),{'font-size':12,'text-anchor':'middle',fill:'currentColor','font-family':'JetBrains Mono,monospace'});
+  E('rect',{x:x0-10,y:66,width:520,height:44,fill:'#F2D9A6',stroke:'#B88A3A',rx:3},svg);
+  for(let mm=0;mm<=500;mm+=10){const X=x0+mm;const big=mm%100===0,mid=mm%50===0;E('line',{x1:X,x2:X,y1:66,y2:66+(big?18:mid?12:7),stroke:'#3B2A10','stroke-width':big?1.4:.8},svg);if(big)T(svg,X,100,String(mm/100),{'font-size':12,'text-anchor':'middle',fill:'#3B2A10','font-family':'JetBrains Mono,monospace'})}
+  T(svg,x0+505,100,'cm',{'font-size':11,fill:'#3B2A10'});
+  T(svg,x0,138,'Regle (cm del mapa)',{'font-size':12,fill:'currentColor'});
+  $('#scTxt').innerHTML=`1 cm al mapa = ${sc(s)} cm reals = <b>${lab(mPerCm)}</b>.<br>Cada tram de l'escala gràfica fa 1 cm. ${s<=10000?'Escala <b>gran</b>: molt detall, poca superfície.':s>=200000?'Escala <b>petita</b>: poc detall, molta superfície.':'Escala mitjana, típica dels mapes topogràfics d\'excursió.'}`;
+}
+function graphicScaleSVG(cmLen,meters,parts){
+  const u=44,x0=20,W=cmLen*u+60;
+  let s=`<svg viewBox="0 0 ${W} 104" style="width:100%;max-width:${Math.round(W*1.1)}px;color:inherit" aria-label="Escala gràfica amb regle"><g fill="currentColor" font-family="JetBrains Mono,monospace" font-size="11" text-anchor="middle">`;
+  for(let i=0;i<parts;i++)s+=`<rect x="${x0+i*cmLen*u/parts}" y="16" width="${cmLen*u/parts}" height="9" fill="${i%2?'none':'currentColor'}" stroke="currentColor"/>`;
+  for(let i=0;i<=parts;i++)s+=`<text x="${x0+i*cmLen*u/parts}" y="11">${i===parts?meters+' m':Math.round(meters/parts*i)}</text>`;
+  s+=`</g><rect x="${x0-6}" y="40" width="${cmLen*u+36}" height="40" rx="3" fill="#F2D9A6" stroke="#B88A3A"/>`;
+  for(let mm=0;mm<=Math.ceil(cmLen)*10+5;mm++){const X=x0+mm*u/10;if(X>x0+cmLen*u+26)break;const big=mm%10===0,mid=mm%5===0;s+=`<line x1="${X}" x2="${X}" y1="40" y2="${40+(big?16:mid?11:6)}" stroke="#3B2A10" stroke-width="${big?1.3:.7}"/>`;if(big)s+=`<text x="${X}" y="72" font-size="11" text-anchor="middle" fill="#3B2A10" font-family="JetBrains Mono,monospace">${mm/10}</text>`}
+  return s+`<text x="${x0}" y="98" font-size="11" fill="currentColor">regle en cm</text></svg>`;
+}
+function buildP2(){
+  $('#scSlider').addEventListener('input',scaleLab);scaleLab();
+  const H=$('#p2q');
+  const s1=25000;
+  mountNum(H,{id:'p2-1',part:'p2',lvl:'Fàcil',q:`Un mapa té escala <b>1:${sc(s1)}</b>. Quants <b>metres</b> reals representa 1 cm del mapa?`,unit:'m',ans:250,hint:'1 cm × 25 000 = 25 000 cm. Ara passa els cm a metres.',exp:'1 cm × 25 000 = 25 000 cm = <b>250 m</b> (de cm a m, treu dos zeros).',warn:v=>v===25000?'Això són centímetres! Passa-ho a metres.':null});
+  mountNum(H,{id:'p2-2',part:'p2',lvl:'Fàcil',q:'Amb un mapa 1:50 000 mesures 6,4 cm entre dos pobles. Quina és la distància real en <b>km</b>?',unit:'km',ans:3.2,tol:{abs:.01},hint:'6,4 × 50 000 = 320 000 cm. De cm a km, treu 5 zeros.',exp:'6,4 cm × 50 000 = 320 000 cm = <b>3,2 km</b>.'});
+  mountNum(H,{id:'p2-3',part:'p2',lvl:'Mitjà',q:'Dues ciutats són a 13 km. Quants <b>cm</b> les separen en un mapa 1:200 000?',unit:'cm',ans:6.5,tol:{abs:.01},hint:'Passa 13 km a cm (1 300 000 cm) i divideix pel denominador.',exp:'13 km = 1 300 000 cm → 1 300 000 ÷ 200 000 = <b>6,5 cm</b>.'});
+  mountNum(H,{id:'p2-4',part:'p2',lvl:'Mitjà',q:'Mesura l\'escala gràfica amb el regle. Quina és l\'<b>escala numèrica</b>? (escriu només el denominador o 1:X)',unit:'',ans:25000,html:graphicScaleSVG(4,1000,4),hint:'La barra de 1 000 m mesura 4 cm. Passa 1 000 m a cm i divideix entre 4.',exp:'4 cm ↔ 1 000 m = 100 000 cm → 100 000 ÷ 4 = 25 000 → <b>1:25 000</b>.'});
+  mountNum(H,{id:'p2-5',part:'p2',lvl:'Mitjà',q:'I aquesta? Calcula l\'escala numèrica.',unit:'',ans:40000,html:graphicScaleSVG(2.5,1000,2),hint:'Fixa\'t bé on acaba la barra al regle: no és un nombre enter de cm.',exp:'2,5 cm ↔ 1 000 m = 100 000 cm → 100 000 ÷ 2,5 = 40 000 → <b>1:40 000</b>.'});
+  mountNum(H,{id:'p2-6',part:'p2',lvl:'Mitjà',q:'Vols dibuixar l\'escala gràfica d\'un mapa <b>1:40 000</b> amb un tram que representi <b>1 km</b>. Quants cm ha de fer el tram?',unit:'cm',ans:2.5,tol:{abs:.01},hint:'1 km = 100 000 cm. Divideix-ho pel denominador.',exp:'100 000 cm ÷ 40 000 = <b>2,5 cm</b>.'});
+  mountNum(H,{id:'p2-7',part:'p2',lvl:'PAU',q:'PAU 2026: l\'escala gràfica indicava que <b>1,4 cm equivalen a 500 m</b>. Quina és l\'escala numèrica aproximada?',unit:'',ans:35714,tol:{rel:.02},hint:'500 m = 50 000 cm. Divideix entre 1,4.',exp:'50 000 cm ÷ 1,4 cm ≈ 35 714 → <b>1:35 714</b> (aprox. 1:36 000). Per això a la PAU és més pràctic fer una regla de tres directa amb l\'escala gràfica.'});
+  mountMC(H,{id:'p2-8',part:'p2',lvl:'PAU',q:'Fotocopies un mapa ampliat al <b>200 %</b>. Quina afirmació és correcta?',opts:['L\'escala numèrica continua sent la mateixa','L\'escala gràfica continua sent vàlida','Les dues escales deixen de ser vàlides','L\'escala numèrica passa a tenir el doble de denominador'],ok:1,
+    why:{0:'No: ara 1 cm del paper representa la meitat de distància. La numèrica ha canviat.',3:'Al revés: en ampliar, el denominador es fa la meitat (escala més gran).'},
+    exp:'L\'escala gràfica s\'amplia igual que el mapa, per tant continua sent vàlida. La numèrica ja no ho és: 1:25 000 ampliat al 200 % passa a ser 1:12 500.'});
+  mountNum(H,{id:'p2-9',part:'p2',lvl:'PAU',q:'Una distància fa <b>8 cm</b> en un mapa 1:25 000. Quants cm farà la mateixa distància en un mapa <b>1:50 000</b>?',unit:'cm',ans:4,tol:{abs:.01},hint:'Calcula primer la distància real i després passa-la a l\'altre mapa. O pensa: si el denominador es duplica...',exp:'Real: 8 × 25 000 = 200 000 cm = 2 km. En el 1:50 000: 200 000 ÷ 50 000 = <b>4 cm</b>. Doble de denominador → la meitat de cm.'});
+}
+
+/* =============== PART 3 =============== */
+function tri(){
+  const dh=+$('#dhS').value,dx=+$('#dxS').value,svg=$('#tri');svg.innerHTML='';
+  const k=Math.min(420/dx,230/Math.max(dh,1)),x0=50,y0=265,X=x0+dx*k,Y=y0-dh*k;
+  E('path',{d:`M${x0} ${y0}L${X} ${y0}L${X} ${Y}Z`,fill:'rgba(226,96,26,.12)',stroke:'none'},svg);
+  E('line',{x1:x0,y1:y0,x2:X,y2:y0,stroke:'currentColor','stroke-width':2.5},svg);
+  E('line',{x1:X,y1:y0,x2:X,y2:Y,stroke:'#2E7DB5','stroke-width':2.5},svg);
+  E('line',{x1:x0,y1:y0,x2:X,y2:Y,stroke:'#E2601A','stroke-width':3.5},svg);
+  E('path',{d:`M${X-12} ${y0}L${X-12} ${y0-12}L${X} ${y0-12}`,fill:'none',stroke:'currentColor'},svg);
+  const ang=Math.atan2(dh,dx);E('path',{d:`M${x0+40} ${y0}A40 40 0 0 0 ${x0+40*Math.cos(ang)} ${y0-40*Math.sin(ang)}`,fill:'none',stroke:'currentColor'},svg);
+  const dr=Math.hypot(dh,dx),a={'font-size':15,fill:'currentColor','font-family':'JetBrains Mono,monospace'};
+  T(svg,(x0+X)/2,y0+22,`Dₕ = ${dx} m`,Object.assign({},a,{'text-anchor':'middle'}));
+  T(svg,Math.min(X+8,440),(y0+Y)/2,`Δh = ${dh} m`,Object.assign({},a,{fill:'#2E7DB5'}));
+  T(svg,(x0+X)/2-20,(y0+Y)/2-10,`Dᵣ = ${fmt(dr,0)} m`,Object.assign({},a,{fill:'#E2601A','text-anchor':'end','font-weight':600}));
+  $('#dhV').textContent=dh+' m';$('#dxV').textContent=dx+' m';
+  $('#prV').textContent=fmt(dh/dx*100,1)+' %';$('#agV').textContent=fmt(ang*180/Math.PI,1)+'°';$('#drV').textContent=fmt(dr,0)+' m';
+}
+const EX={ruler:[]};
+function drawSerra(){
+  const svg=$('#serra'),g=drawMap(svg,SERRA,{maxLabels:3,labelGap:110});
+  let d='';RIVER.forEach((p,i)=>d+=(i?'L':'M')+p[0]+' '+p[1]);
+  E('path',{d,fill:'none',stroke:'#2E7DB5','stroke-width':2.4,'stroke-linejoin':'round'},g);
+  T(g,300,352,'Riera de Sant Jaume',{'font-size':11,'font-style':'italic',fill:'#1F5C8A',transform:'rotate(-24 300 352)',stroke:'#F6F5EE','stroke-width':3,'paint-order':'stroke'});
+  peak(g,230,150,"Puig de l'Àliga",peakMax(SERRA,230,150));peak(g,455,122,'Turó del Corb',peakMax(SERRA,455,122));
+  E('rect',{x:120,y:398,width:16,height:10,fill:'#1B2326'},g);T(g,142,407,'Can Pedrís',{'font-size':11,'font-weight':700,fill:'#1B2326',stroke:'#F6F5EE','stroke-width':3,'paint-order':'stroke'});
+  north(g,610,50);scaleBar(g,SERRA,1000,470,412);
+  EX.gOver=E('g',{},svg);EX.gRuler=E('g',{},svg);
+  marker(EX.gOver,EX.A.x,EX.A.y,'A');marker(EX.gOver,EX.B.x,EX.B.y,'B');
+  EX.ruler=[];$('#rulerOut').textContent='Regle: clica el primer punt.';
+}
+function pickOnLevel(m,L,margin=40){
+  const s=march(m,L),c=[];for(let k=0;k<s.length;k+=4){const x=(s[k]+s[k+2])/2,y=(s[k+1]+s[k+3])/2;if(x>margin&&y>margin&&x<m.W-margin&&y<m.H-margin-30)c.push({x,y,L})}
+  return c.length?rnd(c):null;
+}
+function newEx(){
+  for(let t=0;t<300;t++){
+    const La=rnd([250,300,350,400,450]),Lb=rnd([650,700,750,800,850]);
+    const A=pickOnLevel(SERRA,La),B=pickOnLevel(SERRA,Lb);if(!A||!B)continue;
+    const d=Math.hypot(A.x-B.x,A.y-B.y);if(d<130||d>380)continue;
+    if(dPoly(A.x,A.y,RIVER)<25)continue;
+    EX.A=A;EX.B=B;EX.dist=d;break;
+  }
+  drawSerra();guided();
+}
+function guided(){
+  const H=$('#p3guided');H.innerHTML='';
+  const {A,B}=EX,m=SERRA,cm=EX.dist/m.upc,Dh=EX.dist*m.mpu,dh=B.L-A.L,Dr=Math.hypot(Dh,dh),p=dh/Dh*100,key=`${A.L}-${B.L}-${Math.round(EX.dist)}`;
+  const cmR=Math.round(cm*10)/10;
+  mountNum(H,{id:'g1'+key,part:'p3',lvl:'Pas 1',q:'Altitud del punt <b>A</b>?',unit:'m',ans:A.L,hint:'A és sobre una corba de nivell. Busca la corba mestra més propera (250, 500...) i compta de 50 en 50.',exp:`A és sobre la corba de <b>${A.L} m</b>.`});
+  mountNum(H,{id:'g2'+key,part:'p3',lvl:'Pas 2',q:'Altitud del punt <b>B</b>?',unit:'m',ans:B.L,hint:'Compta corbes des de la mestra de 750 m o de 500 m.',exp:`B és sobre la corba de <b>${B.L} m</b>.`});
+  mountNum(H,{id:'g3'+key,part:'p3',lvl:'Pas 3',q:'<b>Desnivell</b> entre A i B?',unit:'m',ans:dh,exp:`${B.L} − ${A.L} = <b>${dh} m</b>.`});
+  mountNum(H,{id:'g4'+key,part:'p3',lvl:'Pas 4',q:'Distància entre A i B <b>al mapa</b> (fes servir el regle)?',unit:'cm',ans:cmR,tol:{abs:.2},hint:'Clica A i després B sobre el mapa. El regle t\'indica els cm.',exp:`Al mapa hi ha <b>${fmt(cmR,1)} cm</b>.`});
+  mountNum(H,{id:'g5'+key,part:'p3',lvl:'Pas 5',q:'<b>Distància horitzontal</b> real (E 1:25 000)?',unit:'m',ans:Dh,tol:{rel:.05},hint:'Multiplica els cm per 25 000 i passa el resultat a metres.',exp:`${fmt(cmR,1)} cm × 25 000 = ${sc(cmR*25000)} cm = <b>${fmt(cmR*250)} m</b>.`,warn:v=>Math.abs(v-Dh*100)<Dh*5?'Sembla que són centímetres. Passa-ho a metres.':null});
+  mountNum(H,{id:'g6'+key,part:'p3',lvl:'Pas 6',q:'<b>Distància real</b> (el camí inclinat)?',unit:'m',ans:Dr,tol:{rel:.05},hint:'Pitàgores: √(desnivell² + distància horitzontal²).',exp:`√(${dh}² + ${fmt(Dh)}²) ≈ <b>${fmt(Dr)} m</b>.`});
+  mountNum(H,{id:'g7'+key,part:'p3',lvl:'Pas 7',q:'<b>Pendent mitjà</b> entre A i B?',unit:'%',ans:p,tol:{rel:.07},hint:'Desnivell ÷ distància horitzontal × 100. Compte: no divideixis per la distància real.',exp:`${dh} ÷ ${fmt(Dh)} × 100 ≈ <b>${fmt(p,1)} %</b>. Això vol dir que puges ${fmt(p,0)} m per cada 100 m que avances.`,warn:v=>Math.abs(v-dh/Dr*100)<1?'Has dividit per la distància real. El pendent es calcula amb la distància horitzontal.':null});
+}
+function serraClick(ev){
+  const p=svgPt($('#serra'),ev);let pt=[p.x,p.y];
+  for(const q of [EX.A,EX.B])if(Math.hypot(q.x-p.x,q.y-p.y)<16)pt=[q.x,q.y];
+  if(EX.ruler.length>=2)EX.ruler=[];EX.ruler.push(pt);
+  const g=EX.gRuler;g.innerHTML='';
+  E('circle',{cx:EX.ruler[0][0],cy:EX.ruler[0][1],r:3,fill:'#1B2326'},g);
+  if(EX.ruler.length===2){
+    const [a,b]=EX.ruler,d=Math.hypot(b[0]-a[0],b[1]-a[1]),ux=(b[0]-a[0])/d,uy=(b[1]-a[1])/d,nx=-uy,ny=ux;
+    E('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:'#1B2326','stroke-width':1.6},g);
+    const u=SERRA.upc;for(let s=0;s<=d+.1;s+=u/2){const big=Math.abs(s/u-Math.round(s/u))<.01,L=big?7:4;E('line',{x1:a[0]+ux*s-nx*L,y1:a[1]+uy*s-ny*L,x2:a[0]+ux*s+nx*L,y2:a[1]+uy*s+ny*L,stroke:'#1B2326','stroke-width':1},g)}
+    E('circle',{cx:b[0],cy:b[1],r:3,fill:'#1B2326'},g);
+    const cm=d/u,mx=(a[0]+b[0])/2+nx*18,my=(a[1]+b[1])/2+ny*18;
+    T(g,mx,my,`${fmt(cm,1)} cm`,{'font-size':14,'font-weight':700,'text-anchor':'middle',fill:'#1B2326',stroke:'#fff','stroke-width':4,'paint-order':'stroke','font-family':'JetBrains Mono,monospace'});
+    $('#rulerOut').innerHTML=`Regle: <b>${fmt(cm,1)} cm</b> al mapa. Clica de nou per mesurar una altra distància.`;
+  }else $('#rulerOut').textContent='Regle: ara clica el segon punt.';
+}
+const QUICK=[
+  ()=>{const s=rnd([10000,20000,25000]),d=rnd([2.4,3.5,4.2,5.6]),h1=rnd([320,410,480]),dh=rnd([90,150,210,260]),Dh=d*s/100,p=dh/Dh*100;
+    return {lvl:'Mitjà',q:`Mapa 1:${sc(s)}. El punt P és a ${h1} m i el punt Q a ${h1+dh} m. Al mapa estan separats ${fmt(d,1)} cm. Calcula el <b>pendent mitjà</b>.`,unit:'%',ans:p,tol:{rel:.03},exp:`D<sub>h</sub> = ${fmt(d,1)} × ${sc(s)} cm = ${fmt(Dh)} m · Δh = ${dh} m · pendent = ${dh} ÷ ${fmt(Dh)} × 100 = <b>${fmt(p,1)} %</b>`}},
+  ()=>{const Dh=rnd([400,600,800,1200]),dh=rnd([150,300,450]),Dr=Math.hypot(Dh,dh);
+    return {lvl:'Fàcil',q:`Un camí salva un desnivell de ${dh} m en una distància horitzontal de ${Dh} m. Quina és la <b>distància real</b> que camines?`,unit:'m',ans:Dr,tol:{rel:.02},exp:`√(${dh}² + ${Dh}²) = <b>${fmt(Dr)} m</b>`}},
+  ()=>{const p=rnd([6,8,12,15]),km=rnd([1.5,2.5,4]),dh=p/100*km*1000;
+    return {lvl:'Mitjà',q:`Una carretera té un pendent constant del ${p} %. Si avances ${fmt(km,1)} km en horitzontal, quants <b>metres</b> puges?`,unit:'m',ans:dh,tol:{rel:.01},exp:`Δh = ${p}/100 × ${fmt(km*1000)} m = <b>${fmt(dh)} m</b>`}},
+  ()=>{const hc=rnd([612,585,640]),hm=rnd([420,437,395]),d=rnd([3.8,4.2,4.6]),Dh=d*100,dh=hc-hm,Dr=Math.hypot(Dh,dh),p=dh/Dh*100;
+    return {lvl:'PAU',q:`Tirolina (PAU 2024): surt d'un castell a ${hc} m i arriba a un monument a ${hm} m. En el mapa 1:10 000 estan separats ${fmt(d,1)} cm. Quina és la <b>longitud del cable</b>?`,unit:'m',ans:Dr,tol:{rel:.03},exp:`D<sub>h</sub> = ${fmt(d,1)} × 10 000 = ${fmt(Dh)} m · Δh = ${dh} m · longitud = √(${dh}² + ${fmt(Dh)}²) = <b>${fmt(Dr)} m</b>. Pendent mitjà: ${dh} ÷ ${fmt(Dh)} × 100 = ${fmt(p,1)} %. El punt de sortida és el castell, perquè és el més alt.`}},
+  ()=>{const p=rnd([10,25,50,100,150]),a=Math.atan(p/100)*180/Math.PI;
+    return {lvl:'Mitjà',q:`Un vessant té un pendent del ${p} %. Quin <b>angle</b> forma amb l'horitzontal?`,unit:'°',ans:a,tol:{abs:.6},exp:`angle = arctan(${p}/100) = <b>${fmt(a,1)}°</b>${p===100?'. Un 100 % és 45°, no vertical!':''}`}},
+  ()=>{const h1=rnd([125,180,240]),h2=rnd([1000,1100,950]),km=rnd([7.66,6.2,8.4]),p=(h2-h1)/(km*1000)*100;
+    return {lvl:'PAU',q:`Com a la PAU 2023: el punt X és a ${h1} m i el punt Y a ${h2} m. La distància horitzontal entre ells és de ${fmt(km,2)} km. Calcula el <b>pendent</b>.`,unit:'%',ans:p,tol:{rel:.03},exp:`(${h2} − ${h1}) ÷ ${fmt(km*1000)} × 100 = <b>${fmt(p,1)} %</b>. Recorda passar els km a metres!`,warn:v=>Math.abs(v-(h2-h1)/km*100)<5?'Has deixat la distància en km. Passa-la a metres.':null}},
+  ()=>{const s=rnd([20000,25000,50000]),p=rnd([20,30,40]),dh=rnd([200,300,400]),Dh=dh/p*100,cm=Dh*100/s;
+    return {lvl:'PAU',q:`En un mapa 1:${sc(s)} vols traçar un camí amb un pendent del ${p} % que salvi ${dh} m de desnivell. Quants <b>cm</b> ha de fer el camí al mapa?`,unit:'cm',ans:cm,tol:{rel:.03},exp:`D<sub>h</sub> = ${dh} ÷ ${p} × 100 = ${fmt(Dh)} m = ${sc(Dh*100)} cm → ÷ ${sc(s)} = <b>${fmt(cm,2)} cm</b>`}}
+];
+let qCount=0;
+function newQuick(){
+  const H=$('#p3quick');H.innerHTML='';const f=QUICK[qCount%QUICK.length];qCount++;
+  const it=f();it.part='p3';it.id='quick-'+qCount+'-'+Math.round(it.ans*100)+'-'+Date.now();it.fid='quick';it.keep=false;
+  mountNum(H,it);
+}
+function buildP3(){
+  ['#dhS','#dxS'].forEach(s=>$(s).addEventListener('input',tri));tri();
+  $('#serra').addEventListener('click',serraClick);$('#newEx').onclick=newEx;newEx();
+  $('#newQuick').onclick=newQuick;newQuick();
+}
+
+/* =============== PART 4 · perfil pas a pas =============== */
+const DIRS=['N','NE','E','SE','S','SO','O','NO'];
+const PB={A:ISLAND.A0,B:ISLAND.B0,step:1,done:{},placed:{},strip:false,mode:'none',guided:true};
+const VS=10000,UPC=ISLAND.upc,KV=UPC*100/VS; // unitats per metre vertical
+function setupProfile(){
+  PB.P=profileOf(ISLAND,PB.A,PB.B,800);PB.placed={};PB.strip=false;PB.mode='none';
+  const dx=PB.B[0]-PB.A[0],dy=PB.B[1]-PB.A[1];const deg=(Math.atan2(dx,-dy)*180/Math.PI+360)%360;const i=Math.round(deg/45)%8;
+  PB.dirR=DIRS[i];PB.dirL=DIRS[(i+4)%8];
+  PB.ymax=Math.ceil((Math.max(...PB.P.hs)+1)/50)*50;
+}
+const STEPS=['La xuleta','Escala vertical','Traspassa els punts','Forma natural','Escala i orientació'];
+function stepper(){
+  const s=$('#stepper');s.innerHTML='';
+  STEPS.forEach((t,i)=>{const n=i+1,b=document.createElement('button');b.innerHTML=`<span class="k">${PB.done[n]?'✓':n}</span>${t}`;
+    b.setAttribute('aria-current',PB.step===n?'true':'false');if(PB.done[n])b.classList.add('done');
+    b.disabled=n>1&&!PB.done[n-1]&&!PB.done[n];b.onclick=()=>{PB.step=n;renderStep()};s.appendChild(b)});
+}
+function stepDone(n){if(!PB.done[n]){PB.done[n]=true;award('p4','prof-step'+n+(PB.guided?'':'-'+PB.round),15)}stepper();const nb=document.getElementById('nextStep');if(nb)nb.disabled=false}
+function nextBtn(n){return `<div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn acc" id="nextStep" ${PB.done[n]?'':'disabled'}>${n<5?'Següent pas →':'Perfil acabat'}</button></div>`}
+function bindNext(n){const b=document.getElementById('nextStep');if(b)b.onclick=()=>{if(n<5){PB.step=n+1;renderStep();document.getElementById('stepper').scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'})}else finishProfile()}}
+
+function drawIslandLine(svg,withStrip){
+  const g=drawMap(svg,ISLAND,{maxLabels:1,labelGap:45,uniform:true});const [A,B]=[PB.A,PB.B];T(g,34,300,'Equidistància: 50 m',{'font-size':11,'font-weight':700,fill:'#1B2326',stroke:'#F6F5EE','stroke-width':3,'paint-order':'stroke'});
+  E('line',{x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:'#E2601A','stroke-width':2,'stroke-dasharray':'7 5'},g);
+  marker(g,A[0],A[1],'A');marker(g,B[0],B[1],'B');north(g,572,40);scaleBar(g,ISLAND,1000,34,322);
+  const gs=E('g',{},svg);if(withStrip)placeStrip(gs,false);return gs;
+}
+function placeStrip(g,animate){
+  const [A,B]=[PB.A,PB.B],len=PB.P.len,ux=(B[0]-A[0])/len,uy=(B[1]-A[1])/len,nx=-uy,ny=ux,w=13;
+  const corner=(s,o)=>[A[0]+ux*s+nx*o,A[1]+uy*s+ny*o];
+  const c=[corner(-6,-w),corner(len+6,-w),corner(len+6,0),corner(-6,0)];
+  E('path',{d:'M'+c.map(p=>p.join(' ')).join('L')+'Z',fill:'#FFFFFF',opacity:.92,stroke:'#8A7A62','stroke-width':.8},g);
+  const marks=PB.P.marks;
+  const add=(mk,i)=>{const a=corner(mk.d,-w),b=corner(mk.d,0);E('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:mk.L%100===0?'#7A4318':'#B98457','stroke-width':1.1},g);
+    const t=corner(mk.d,-w-3-(i%2)*9);T(g,t[0],t[1],String(mk.L),{'font-size':7.5,'text-anchor':'middle',fill:'#7A4318','font-family':'JetBrains Mono,monospace',stroke:'#fff','stroke-width':2.4,'paint-order':'stroke'})};
+  const ends=()=>{for(const [s,l] of [[0,'A'],[len,'B']]){const a=corner(s,-w),b=corner(s,0);E('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:'#E2601A','stroke-width':2},g)}};
+  ends();
+  if(animate&&!reduced){marks.forEach((mk,i)=>setTimeout(()=>add(mk,i),120+i*110))}else marks.forEach(add);
+}
+function stripSVG(){
+  const len=PB.P.len,W=len+60,svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox',`0 0 ${W} 74`);svg.style.width='100%';
+  E('rect',{x:24,y:34,width:len+12,height:22,fill:'#fff',stroke:'#8A7A62'},svg);
+  PB.P.marks.forEach(mk=>{const X=30+mk.d;E('line',{x1:X,x2:X,y1:34,y2:48,stroke:'#7A4318','stroke-width':1},svg);T(svg,X,28,String(mk.L),{'font-size':8,'text-anchor':'start',fill:'#7A4318',transform:`rotate(-60 ${X} 28)`,'font-family':'JetBrains Mono,monospace'})});
+  for(const [s,l] of [[0,'A'],[len,'B']]){E('line',{x1:30+s,x2:30+s,y1:30,y2:60,stroke:'#E2601A','stroke-width':2},svg);T(svg,30+s,71,l,{'font-size':12,'font-weight':800,'text-anchor':'middle',fill:'#E2601A'})}
+  return svg;
+}
+
+/* gràfic del perfil */
+function graph(opt={}){
+  const P=PB.P,len=P.len,X0=58,top=22,ymax=PB.ymax,y0=top+ymax*KV,W=X0+len+40,H=y0+(opt.strip?70:34);
+  const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.width='100%';svg.style.display='block';
+  E('rect',{x:0,y:0,width:W,height:H,fill:'#FBFAF5'},svg);
+  const x=d=>X0+d,y=h=>y0-h*KV;
+  let mm='';for(let X=X0;X<=X0+len+.1;X+=UPC/10)mm+=`M${X.toFixed(1)} ${top}V${y0}`;for(let h=0;h<=ymax;h+=10)mm+=`M${X0} ${y(h).toFixed(1)}H${(X0+len).toFixed(1)}`;
+  E('path',{d:mm,stroke:'#EAD9C4','stroke-width':.35},svg);
+  let big='';for(let X=X0;X<=X0+len+.1;X+=UPC)big+=`M${X.toFixed(1)} ${top}V${y0}`;for(let h=0;h<=ymax;h+=50)big+=`M${X0} ${y(h).toFixed(1)}H${(X0+len).toFixed(1)}`;
+  E('path',{d:big,stroke:'#DDBF9E','stroke-width':.7},svg);
+  E('line',{x1:X0,y1:top-6,x2:X0,y2:y0,stroke:'#1B2326','stroke-width':1.2},svg);E('line',{x1:X0,y1:y0,x2:X0+len,y2:y0,stroke:'#1B2326','stroke-width':1.2},svg);
+  for(let h=0;h<=ymax;h+=50)T(svg,X0-6,y(h)+3,String(h),{'font-size':9,'text-anchor':'end',fill:'#1B2326','font-family':'JetBrains Mono,monospace'});
+  T(svg,X0-6,top-10,'m',{'font-size':9,'text-anchor':'end',fill:'#1B2326'});
+  if(opt.strip){
+    E('rect',{x:X0-6,y:y0+6,width:len+12,height:20,fill:'#fff',stroke:'#8A7A62'},svg);
+    P.marks.forEach(mk=>{const X=x(mk.d);E('line',{x1:X,x2:X,y1:y0+6,y2:y0+18,stroke:'#7A4318','stroke-width':1},svg);T(svg,X,y0+34,String(mk.L),{'font-size':7.5,'text-anchor':'end',fill:'#7A4318',transform:`rotate(-60 ${X} ${y0+34})`,'font-family':'JetBrains Mono,monospace'})});
+  }
+  if(opt.cols)P.marks.forEach((mk,i)=>{const X=x(mk.d);E('line',{x1:X,x2:X,y1:top,y2:y0,stroke:PB.placed[i]!=null?'rgba(226,96,26,.15)':'rgba(226,96,26,.5)','stroke-width':1,'stroke-dasharray':'3 3'},svg)});
+  if(opt.natural||opt.lines){
+    const sea=E('rect',{x:X0,y:y(0),width:len,height:1.5,fill:'#2E7DB5'},svg);
+  }
+  if(opt.lines){let d=`M${x(0)} ${y(0)}`;P.marks.forEach(mk=>d+=`L${x(mk.d).toFixed(1)} ${y(mk.L).toFixed(1)}`);d+=`L${x(len)} ${y(0)}`;E('path',{d,fill:'none',stroke:'#BF3434','stroke-width':1.8,'stroke-dasharray':opt.natural?'5 4':'none'},svg)}
+  if(opt.natural){let d='';P.hs.forEach((h,i)=>d+=(i?'L':'M')+x(i/P.N*len).toFixed(1)+' '+y(Math.max(h,0)).toFixed(1));
+    E('path',{d:d+`L${x(len)} ${y0}L${x(0)} ${y0}Z`,fill:'rgba(217,192,154,.55)'},svg);E('path',{d,fill:'none',stroke:'#7A4318','stroke-width':2.2},svg)}
+  if(opt.points)P.marks.forEach((mk,i)=>{const v=PB.placed[i];if(v==null&&!opt.allPts)return;const h=v==null?mk.L:v;const ok=h===mk.L;
+    E('circle',{cx:x(mk.d),cy:y(h),r:3.6,fill:ok?'#1D8657':'#BF3434',stroke:'#fff','stroke-width':1.2},svg)});
+  if(opt.ends){E('circle',{cx:x(0),cy:y(0),r:3.6,fill:'#E2601A'},svg);E('circle',{cx:x(len),cy:y(0),r:3.6,fill:'#E2601A'},svg)}
+  T(svg,x(0),top-8,'A',{'font-size':13,'font-weight':800,'text-anchor':'middle',fill:'#E2601A'});T(svg,x(len),top-8,'B',{'font-size':13,'font-weight':800,'text-anchor':'middle',fill:'#E2601A'});
+  if(opt.orient){const a={'font-size':18,'font-weight':800,fill:'#1B2326','font-family':'Barlow Condensed,sans-serif'};T(svg,x(0)+6,top+6,opt.orient[0],a);T(svg,x(len)-6,top+6,opt.orient[1],Object.assign({},a,{'text-anchor':'end'}));
+    T(svg,X0+len/2,H-8,`E. horitzontal 1:${sc(ISLAND.scale)} · E. vertical 1:${sc(VS)} · exageració vertical ×${ISLAND.scale/VS}`,{'font-size':10,'text-anchor':'middle',fill:'#1B2326','font-family':'JetBrains Mono,monospace'})}
+  svg._m={X0,top,y0,len};return svg;
+}
+function wrapGraph(svg){const w=document.createElement('div');w.className='mapbox scroll-x';const i=document.createElement('div');i.className='inner';i.style.minWidth='640px';i.appendChild(svg);w.appendChild(i);return w}
+
+function renderStep(){
+  stepper();const n=PB.step,body=$('#stepBody');body.innerHTML='';
+  const card=document.createElement('div');card.className='card';body.appendChild(card);
+  if(n===1){
+    card.innerHTML=`<div class="sec-title"><h3>Pas 1 · La xuleta</h3><span class="tag">una tira de paper</span></div>
+    <div class="lab" style="margin-top:12px"><div><div class="mapbox"><svg id="s1map" aria-label="Mapa de l'illa amb la línia de tall"></svg></div></div>
+    <div class="prose"><p>Col·loca el cantell d'una tira de paper (la <b>xuleta</b>) sobre la línia A–B. Marca-hi:</p>
+    <ul class="clean"><li>els extrems <b>A</b> i <b>B</b>;</li><li>cada punt on la línia talla una <b>corba de nivell</b>, amb la seva altitud;</li><li>els cims, rius i la línia de costa si n'hi ha.</li></ul>
+    <p style="margin-top:10px">Truc: escriu les altituds a la xuleta a mesura que marques. Comença per les corbes mestres i dedueix les fines comptant.</p>
+    <div class="row" style="margin-top:14px"><button class="btn acc" id="putStrip">Col·loca la xuleta</button></div></div></div>
+    <div id="s1strip" style="margin-top:14px"></div><div class="qs" id="s1q" style="margin-top:14px"></div>${nextBtn(1)}`;
+    const svg=$('#s1map');const gs=drawIslandLine(svg,PB.strip);
+    const showStrip=()=>{const h=$('#s1strip');h.innerHTML='<h4 style="font-family:var(--display);font-size:22px;margin-bottom:6px">La teva xuleta</h4><p class="caption" style="margin:0 0 6px">'+PB.P.marks.length+' marques entre A i B.</p>';const w=document.createElement('div');w.className='mapbox scroll-x';const i=document.createElement('div');i.className='inner';i.appendChild(stripSVG());w.appendChild(i);h.appendChild(w)};
+    if(PB.strip)showStrip();
+    $('#putStrip').onclick=()=>{if(PB.strip)return;PB.strip=true;placeStrip(gs,true);setTimeout(()=>{showStrip();check1()},reduced?0:PB.P.marks.length*110+200)};
+    let mcOk=!!PB.done[1];
+    const check1=()=>{if(PB.strip&&mcOk)stepDone(1)};
+    mountMC($('#s1q'),{id:'s1q'+(PB.guided?'':PB.round),lvl:'Clau',q:'Quina d\'aquestes coses <b>no</b> cal marcar a la xuleta?',opts:['Els extrems A i B','Els talls amb les corbes de nivell','El nom dels cims','La línia de costa i els rius'],ok:2,exp:'El nom no cal: el que importa és la <b>posició i l\'altitud</b>. Els extrems, les corbes, els cims, la costa i els rius sí que es marquen.',onOk:()=>{mcOk=true;check1()}});
+    bindNext(1);
+  }
+  if(n===2){
+    card.innerHTML=`<div class="sec-title"><h3>Pas 2 · L'escala vertical</h3><span class="tag">l'eix de les altituds</span></div>
+    <div class="prose"><p>L'eix horitzontal del perfil té la mateixa escala que el mapa (1:${sc(ISLAND.scale)}), perquè hi enganxes la xuleta. L'eix vertical el tries tu: ha de fer que el perfil càpiga al paper i que el relleu es vegi bé.</p>
+    <p>Si l'escala vertical és més gran que l'horitzontal, el relleu es veu exagerat. L'<b>exageració vertical</b> és:</p>
+    <div class="fitxa"><div class="f">exageració = denominador horitzontal ÷ denominador vertical</div></div>
+    <p style="margin-top:10px">A l'illa, les altituds van de <b>0</b> a uns <b>${PB.ymax-50}–${PB.ymax} m</b>, i el paper mil·limetrat té <b>5 cm</b> d'alçada útil.</p></div>
+    <div class="qs" id="s2q" style="margin-top:14px"></div>${nextBtn(2)}`;
+    let a=!!PB.done[2],b=!!PB.done[2];const chk=()=>{if(a&&b)stepDone(2)};
+    mountMC($('#s2q'),{id:'s2a',lvl:'Mitjà',q:'Quina escala vertical tries?',opts:['1:2 000 (1 cm = 20 m)','1:5 000 (1 cm = 50 m)','1:10 000 (1 cm = 100 m)','1:50 000 (1 cm = 500 m)'],ok:2,
+      why:{0:'400 m serien 20 cm: no cap al paper.',1:'400 m serien 8 cm: no cap en 5 cm.',3:'400 m serien 0,8 cm: el perfil quedaria aixafat i no veuries res.'},
+      exp:'Amb 1:10 000, 400 m són 4 cm: cap en 5 cm i aprofita bé el paper.',onOk:()=>{a=true;chk()}});
+    mountNum($('#s2q'),{id:'s2b',lvl:'Mitjà',q:`Amb escala horitzontal 1:${sc(ISLAND.scale)} i vertical 1:10 000, quina és l'<b>exageració vertical</b>?`,unit:'×',ans:2,hint:'Divideix els denominadors: horitzontal ÷ vertical.',exp:'20 000 ÷ 10 000 = <b>2</b>: el relleu es veu el doble d\'alt del que és. Cal indicar-ho sempre.',onOk:()=>{b=true;chk()}});
+    mountMC($('#s2q'),{id:'s2c',lvl:'PAU',q:'PAU 2026 (Arrakis): l\'escala vertical imposada era <b>1:100 000</b>. Quants metres representa cada cm de l\'eix vertical?',opts:['100 m','1 000 m','10 000 m','100 000 m'],ok:1,part:'p4',exp:'100 000 cm = <b>1 000 m</b>. Per tant, els 3 000 m a partir dels quals hi havia neu quedaven a 3 cm de la base.'});
+    bindNext(2);
+  }
+  if(n===3){
+    card.innerHTML=`<div class="sec-title"><h3>Pas 3 · Traspassa els punts</h3><span class="tag">xuleta → paper mil·limetrat</span></div>
+    <p class="prose">Enganxa la xuleta a l'eix horitzontal. Sobre cada marca, puja fins a l'altitud que hi has escrit i fes un punt. <b>Clica sobre cada línia taronja a l'altura correcta</b> (es corregeix al moment: verd bé, vermell malament; torna a clicar per canviar-lo).</p>
+    <div class="row" style="margin-top:10px"><span class="counter" id="cnt"></span><button class="btn ghost" id="hintPt">Pista</button><button class="btn ghost" id="fillPt" disabled>Omple els que falten</button></div>
+    <div id="g3" style="margin-top:10px"></div>
+    <p class="caption">Cada quadre gran fa 1 cm: en horitzontal són ${fmt(ISLAND.scale/100)} m i en vertical 100 m. Les línies de 50 m estan marcades amb números.</p>${nextBtn(3)}`;
+    const redraw=()=>{const h=$('#g3');h.innerHTML='';const s=graph({strip:true,cols:true,points:true,ends:true});h.appendChild(wrapGraph(s));s.style.cursor='crosshair';s.addEventListener('click',ev=>click3(s,ev));upd()};
+    const upd=()=>{const tot=PB.P.marks.length,ok=PB.P.marks.filter((mk,i)=>PB.placed[i]===mk.L).length;$('#cnt').textContent=`${ok} / ${tot} punts correctes`;$('#fillPt').disabled=ok<6||ok===tot;if(ok===tot)stepDone(3)};
+    const click3=(s,ev)=>{const p=svgPt(s,ev),m=s._m;let best=-1,bd=1e9;PB.P.marks.forEach((mk,i)=>{const d=Math.abs(m.X0+mk.d-p.x);if(d<bd){bd=d;best=i}});if(bd>9)return;
+      let h=Math.round((m.y0-p.y)/KV/50)*50;h=Math.max(0,Math.min(PB.ymax,h));PB.placed[best]=h;redraw();
+      if(h!==PB.P.marks[best].L)toast('Aquest punt no és a l\'altitud de la marca. Mira el número de la xuleta.')};
+    $('#hintPt').onclick=()=>{const i=PB.P.marks.findIndex((mk,i)=>PB.placed[i]!==mk.L);if(i<0)return;toast(`La marca ${i+1} (comptant des d'A) és a <b>${PB.P.marks[i].L} m</b>`)};
+    $('#fillPt').onclick=()=>{PB.P.marks.forEach((mk,i)=>PB.placed[i]=mk.L);redraw()};
+    redraw();bindNext(3);
+  }
+  if(n===4){
+    card.innerHTML=`<div class="sec-title"><h3>Pas 4 · Dona-li forma natural</h3><span class="tag">res de rectes</span></div>
+    <div class="lab" style="margin-top:10px"><div><div class="seg" id="modeSeg"><button data-m="lines">Unir amb rectes</button><button data-m="natural">Forma natural</button><button data-m="both">Comparar</button></div><div id="g4" style="margin-top:10px"></div></div>
+    <div class="prose"><ul class="clean"><li>Uneix els punts amb una línia <b>suau i contínua</b>, a mà alçada.</li>
+    <li>Un <b>cim</b> ha de pujar per sobre de la darrera corba, però sense arribar a la següent. No el deixis pla ni punxegut.</li>
+    <li>Un <b>cràter</b> o una vall baixen per sota de la darrera corba, sense arribar a la següent.</li>
+    <li>On les marques estan juntes, el perfil és dret; on estan separades, suau.</li></ul></div></div>
+    <div class="qs" id="s4q" style="margin-top:14px"></div>${nextBtn(4)}`;
+    const draw=()=>{const h=$('#g4');h.innerHTML='';h.appendChild(wrapGraph(graph({lines:PB.mode!=='natural',natural:PB.mode!=='lines',points:true,allPts:true})));document.querySelectorAll('#modeSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===PB.mode||(PB.mode==='none'&&b.dataset.m==='lines')?'true':'false'))};
+    if(PB.mode==='none')PB.mode='lines';
+    document.querySelectorAll('#modeSeg button').forEach(b=>b.onclick=()=>{PB.mode=b.dataset.m==='both'?'both':b.dataset.m;draw()});draw();
+    let a=!!PB.done[4],b=!!PB.done[4];const chk=()=>{if(a&&b)stepDone(4)};
+    mountMC($('#s4q'),{id:'s4a',lvl:'Mitjà',q:'Tens dues marques consecutives de <b>350 m</b> i entre elles, al mapa, hi ha un <b>cim</b> sense cap més corba. Com ho dibuixes?',opts:['Una línia plana a 350 m','Puja per sobre de 350 m sense arribar a 400 m, arrodonit','Puja fins a 400 m en punxa','Baixa per sota de 350 m'],ok:1,exp:'Si hi hagués arribat a 400 m, hi hauria una corba de 400. Com que no n\'hi ha, el cim és entre 350 i 400 m.',onOk:()=>{a=true;chk()}});
+    mountMC($('#s4q'),{id:'s4b',lvl:'PAU',q:'I si entre les dues marques de 350 m hi ha el <b>cràter</b> del volcà (corbes tancades que baixen cap a dins)?',opts:['Puja per sobre de 350 m','El perfil baixa per sota de 350 m dins el cràter','Una línia plana a 350 m','No es pot dibuixar'],ok:1,exp:'Dins el cràter l\'altitud disminueix: el perfil fa una cubeta. Mira el perfil de la forma natural: al mig de l\'illa hi ha la vora del cràter i el fons a sota de 300 m.',onOk:()=>{b=true;chk()}});
+    bindNext(4);
+  }
+  if(n===5){
+    card.innerHTML=`<div class="sec-title"><h3>Pas 5 · Escala i orientació</h3><span class="tag">el que més punts fa perdre</span></div>
+    <p class="prose">Un perfil sense orientació ni escala no puntua sencer. Mira el mapa: cap a on queda A i cap a on queda B? (el nord és a dalt)</p>
+    <div class="lab" style="margin-top:12px"><div class="mapbox"><svg id="s5map" aria-label="Mapa amb la línia de tall"></svg></div>
+    <div><div class="grid2" style="gap:12px">
+      <div class="ctrl"><label for="oL">Orientació a l'extrem A</label><select id="oL">${DIRS.map(d=>`<option>${d}</option>`).join('')}</select></div>
+      <div class="ctrl"><label for="oR">Orientació a l'extrem B</label><select id="oR">${DIRS.map(d=>`<option>${d}</option>`).join('')}</select></div>
+      <div class="ctrl"><label for="eH">Escala horitzontal</label><input id="eH" class="num" style="padding:8px;border-radius:9px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)" placeholder="1:..."></div>
+      <div class="ctrl"><label for="eV">Escala vertical</label><input id="eV" class="num" style="padding:8px;border-radius:9px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)" placeholder="1:..."></div>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn acc" id="chk5">Comprova</button></div><div class="fb" id="fb5" hidden style="margin-top:10px"></div>
+    <p class="caption">O = oest (a la PAU també s'escriu W). NO = nord-oest, SO = sud-oest.</p></div></div>
+    <div id="g5" style="margin-top:14px"></div>${nextBtn(5)}`;
+    drawIslandLine($('#s5map'),false);
+    const g5=()=>{const h=$('#g5');h.innerHTML='';h.appendChild(wrapGraph(graph({natural:true,orient:PB.done[5]?[PB.dirL,PB.dirR]:null})))};g5();
+    if(PB.done[5]){$('#oL').value=PB.dirL;$('#oR').value=PB.dirR;$('#eH').value='1:20 000';$('#eV').value='1:10 000'}
+    $('#chk5').onclick=()=>{const fb=$('#fb5');fb.hidden=false;const errs=[];
+      if($('#oL').value!==PB.dirL||$('#oR').value!==PB.dirR)errs.push('L\'orientació no és correcta: mira cap a quin punt cardinal apunta la línia des del centre cap a cada extrem.');
+      if(parseNum($('#eH').value)!==ISLAND.scale)errs.push('L\'escala horitzontal és la mateixa que la del mapa.');
+      if(parseNum($('#eV').value)!==VS)errs.push('L\'escala vertical és la que has triat al pas 2.');
+      if(errs.length){fb.className='fb bad';fb.innerHTML=errs.join('<br>')}else{fb.className='fb ok';fb.innerHTML=`Orientació ${PB.dirL}–${PB.dirR}, E.H. 1:20 000, E.V. 1:10 000. El perfil ja està complet!`;stepDone(5);g5()}};
+    bindNext(5);
+  }
+}
+function finishProfile(){
+  ST.profiles=(ST.profiles||0)+1;save();
+  award('p4','profile-complete-'+(PB.guided?'guiat':PB.round),20);
+  toast('Perfil completat! Prova el <b>repte final</b> amb un tall nou.');
+  $('#profCount').textContent=`Perfils completats: ${ST.profiles}`;
+  document.getElementById('newProfile').scrollIntoView({behavior:reduced?'auto':'smooth',block:'center'});
+}
+function randomLine(){
+  for(let t=0;t<200;t++){
+    const cx=250+Math.random()*160,cy=130+Math.random()*80,th=Math.random()*Math.PI,ux=Math.cos(th),uy=Math.sin(th);
+    const ext=s=>{let d=0,last=null;while(true){d+=2;const x=cx+s*ux*d,y=cy+s*uy*d;if(x<12||y<12||x>588||y>348)return last;last=[x,y];if(islandFn(x,y)<-20&&d>40){for(let e=0;e<8;e++){d+=2;const X=cx+s*ux*d,Y=cy+s*uy*d;if(X<12||Y<12||X>588||Y>348)break;last=[X,Y]}return last}}};
+    let A=ext(-1),B=ext(1);if(!A||!B)continue;if(islandFn(...A)>-5||islandFn(...B)>-5)continue;
+    if(A[0]>B[0]){const k=A;A=B;B=k}
+    const len=Math.hypot(B[0]-A[0],B[1]-A[1]);if(len<280)continue;
+    return [A.map(v=>Math.round(v)),B.map(v=>Math.round(v))];
+  }
+  return [ISLAND.A0,ISLAND.B0];
+}
+function buildP4(){
+  setupProfile();renderStep();
+  $('#profCount').textContent=ST.profiles?`Perfils completats: ${ST.profiles}`:'';
+  $('#newProfile').onclick=()=>{const [A,B]=randomLine();PB.A=A;PB.B=B;PB.guided=false;PB.round=Date.now();
+    const keep2=PB.done[2];PB.done={};if(keep2)PB.done[2]=true;
+    setupProfile();PB.step=1;renderStep();document.getElementById('stepper').scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'});toast('Nou tall generat. Comença per la xuleta!')};
+}
+
+/* =============== codi per al professor =============== */
+const B32='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+const normName=t=>String(t).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function h8(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h&255}
+function makeCode(name){
+  const c=x=>BigInt(Math.max(0,Math.min(15,x|0)));
+  let n=BigInt(Math.min(2047,ST.score));
+  for(const p of ['p1','p2','p3','p4'])n=(n<<4n)|c(ST.prog[p]);
+  n=(n<<4n)|c(ST.profiles||0);
+  n=(n<<8n)|BigInt(h8('perfil26|'+normName(name)+'|'+n.toString()));
+  let s='';for(let i=0;i<8;i++){s=B32[Number(n&31n)]+s;n>>=5n}
+  return s.slice(0,4)+'-'+s.slice(4);
+}
+function readCode(name,code){
+  const c=String(code).toUpperCase().replace(/[^0-9A-Z]/g,'');if(c.length!==8)return null;
+  let n=0n;for(const ch of c){const i=B32.indexOf(ch);if(i<0)return null;n=(n<<5n)|BigInt(i)}
+  const cs=Number(n&255n);n>>=8n;if(cs!==h8('perfil26|'+normName(name)+'|'+n.toString()))return null;
+  const prof=Number(n&15n);n>>=4n;const pr={};for(const p of ['p4','p3','p2','p1']){pr[p]=Number(n&15n);n>>=4n}
+  const score=Number(n);if(score>2047)return null;
+  return {score,prog:pr,profiles:prof};
+}
+function getName(){try{return localStorage.getItem('operacioPerfilCognom')||''}catch(e){return ''}}
+function setName(v){try{localStorage.setItem('operacioPerfilCognom',v)}catch(e){}}
+document.querySelectorAll('.cognom-in').forEach(i=>{i.value=getName();i.addEventListener('input',()=>{setName(i.value.trim());document.querySelectorAll('.cognom-in').forEach(o=>{if(o!==i)o.value=i.value});if(!$('#codi').hidden)renderCode()})});
+function renderCode(){
+  const name=getName().trim(),o=$('#codeOut');
+  if(!name){o.innerHTML='<div class="fb info">Escriu el teu primer cognom per generar el codi.</div>';return}
+  const pc=p=>Math.round(Math.min(1,ST.prog[p]/TARGET[p])*100);
+  o.innerHTML=`<div>Codi de <b>${name.replace(/[<>&]/g,'')}</b>:</div><div style="margin:8px 0"><span class="codebox">${makeCode(name)}</span></div>
+  <p class="caption">${ST.score} punts · ${rankOf(ST.score)} · Part 1: ${pc('p1')} % · Part 2: ${pc('p2')} % · Part 3: ${pc('p3')} % · Part 4: ${pc('p4')} % · Perfils completats: ${ST.profiles||0}</p>
+  <p style="margin-top:8px">Apunta'l o fes-ne una captura i dona'l al professor amb el teu cognom escrit igual.</p>`;
+}
+const PKEY='operacioPerfilProf';
+function loadRes(){try{return JSON.parse(localStorage.getItem(PKEY)||'[]')}catch(e){return []}}
+function saveRes(r){try{localStorage.setItem(PKEY,JSON.stringify(r))}catch(e){}}
+const escH=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function renderProf(){
+  const R=loadRes().sort((a,b)=>b.score-a.score),h=$('#tres');
+  const pc=(r,p)=>Math.round(Math.min(1,r.prog[p]/TARGET[p])*100)+' %';
+  if(!R.length){h.innerHTML='<p class="caption">Encara no hi ha cap resultat.</p>';return}
+  h.innerHTML=`<div class="scroll-x"><table class="res"><thead><tr><th>#</th><th>Cognom</th><th>Punts</th><th>Rang</th><th>P1 mapa</th><th>P2 escala</th><th>P3 càlculs</th><th>P4 perfil</th><th>Perfils</th><th></th></tr></thead><tbody>
+  ${R.map((r,i)=>`<tr><td class="n">${i+1}</td><td><b>${escH(r.name)}</b></td><td class="n">${r.score}</td><td>${rankOf(r.score)}</td><td class="n">${pc(r,'p1')}</td><td class="n">${pc(r,'p2')}</td><td class="n">${pc(r,'p3')}</td><td class="n">${pc(r,'p4')}</td><td class="n">${r.profiles}</td><td><button class="rm" data-k="${escH(r.key)}" aria-label="Esborrar">✕</button></td></tr>`).join('')}
+  </tbody></table></div>
+  <div class="row" style="margin-top:12px"><button class="btn ghost" id="copyRes">Copiar la taula (per a Excel)</button><button class="btn ghost" id="clearRes">Esborrar-ho tot</button></div><div id="csvArea"></div>`;
+  h.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{saveRes(loadRes().filter(r=>r.key!==b.dataset.k));renderProf()});
+  let armed=false;$('#clearRes').onclick=e=>{if(!armed){armed=true;e.target.textContent='Clica de nou per confirmar';return}saveRes([]);renderProf()};
+  $('#copyRes').onclick=()=>{
+    const txt=['Posició\tCognom\tPunts\tRang\tP1 mapa\tP2 escala\tP3 càlculs\tP4 perfil\tPerfils',...R.map((r,i)=>[i+1,r.name,r.score,rankOf(r.score),pc(r,'p1'),pc(r,'p2'),pc(r,'p3'),pc(r,'p4'),r.profiles].join('\t'))].join('\n');
+    const fb=()=>{$('#csvArea').innerHTML=`<p class="caption">Selecciona el text i copia'l (Ctrl+C):</p><textarea class="csv" readonly>${escH(txt)}</textarea>`;const t=$('#csvArea textarea');t.focus();t.select()};
+    try{navigator.clipboard.writeText(txt).then(()=>{$('#csvArea').innerHTML='<div class="fb info" style="margin-top:8px">Taula copiada. Enganxa-la a Excel o al Full de càlcul.</div>'},fb)}catch(e){fb()}
+  };
+}
+$('#addRes').onclick=()=>{
+  const name=$('#tname').value.trim(),code=$('#tcode').value.trim(),m=$('#tmsg');
+  if(!name||!code){m.innerHTML='<div class="fb bad">Cal el cognom i el codi.</div>';return}
+  const v=readCode(name,code);
+  if(!v){m.innerHTML='<div class="fb bad">Codi no vàlid per a aquest cognom. Comproveu el codi i que el cognom sigui el mateix que va escriure l\'alumne.</div>';return}
+  const key=normName(name),all=loadRes(),was=all.some(r=>r.key===key);
+  saveRes(all.filter(r=>r.key!==key).concat([Object.assign({key,name,at:Date.now()},v)]));
+  m.innerHTML=`<div class="fb info">Afegit: ${escH(name)}, ${v.score} punts${was?' (resultat anterior actualitzat)':''}</div>`;
+  $('#tname').value='';$('#tcode').value='';$('#tname').focus();renderProf();
+};
+$('#tcode').addEventListener('keydown',e=>{if(e.key==='Enter')$('#addRes').click()});
+
+/* =============== arrencada =============== */
+hud();hero();floodInit();buildP1();buildP2();buildP3();buildP4();
+show((location.hash||'#inici').slice(1));
+</script>
+
+</body></html>
