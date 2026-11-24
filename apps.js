@@ -22,6 +22,7 @@ const MATERIES = [
 const APPS = [
   { titol: "Laboratori de marees",   materia: "geo",      nivell: "2n Batx", desc: "Simulador de marees: Lluna, Sol, marees vives i mortes.", url: "geologia-ccaa/marees/" },
   { titol: "Simulador d'eclipsis",   materia: "geo",      nivell: "",        desc: "Sol, Terra i Lluna: fases, eclipsis reals 2026–2028.", url: "geologia-ccaa/eclipsis/" },
+  { titol: "Fases de la Lluna",      materia: "geo",      nivell: "",        desc: "El cel de l'observador, l'òrbita des de l'espai i reptes.", url: "geologia-ccaa/fases-lluna/" },
 
   { titol: "L'hora i el Sol",        materia: "biogeo",   nivell: "4t ESO",  desc: "Fusos horaris, terminador i canvi d'hora.", url: "" },
   { titol: "On aterrem? (Mart)",     materia: "biogeo",   nivell: "4t ESO",  desc: "Projecte STEAM: on aterrar a Mart.", url: "" },
