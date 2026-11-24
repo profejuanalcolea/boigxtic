@@ -1,0 +1,694 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>On em situo?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#fff;--ink:#111;--muted:#7a7a7a;--line:#e9e9e9;--or:#ff6a00;--or2:#fff1e6}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Archivo,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select{font:inherit}
+.hide{display:none!important}
+.or{color:var(--or)}
+.muted{color:var(--muted)}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--bg)}
+.center{align-items:center;justify-content:center;text-align:center;padding:24px}
+.kicker{font-size:clamp(12px,1.25vw,24px);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;gap:.8em;align-items:center;flex-wrap:wrap}
+.tag{border:1.5px solid var(--ink);color:var(--ink);border-radius:999px;padding:.12em .7em;font-size:.85em;letter-spacing:.04em}
+.tag.or{border-color:var(--or);color:var(--or)}
+.btn{background:var(--or);color:#fff;padding:14px 30px;border-radius:999px;font-weight:800;font-size:18px;transition:transform .1s,background .2s}
+.btn:hover{background:#e55f00}.btn:active{transform:scale(.97)}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.field{width:100%;padding:14px 18px;border:1.5px solid var(--ink);border-radius:14px;font-size:18px;outline:none}
+.field:focus{border-color:var(--or)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:999px;font-weight:600;z-index:99;opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.on{opacity:1}
+
+/* ---------- tria / pin / join ---------- */
+.logo{font-weight:800;font-size:clamp(40px,7vw,110px);letter-spacing:-.03em;line-height:1}
+.logo span{color:var(--or)}
+.sub{font-size:clamp(16px,1.6vw,26px);color:var(--muted);margin:14px 0 36px}
+.card{width:min(760px,100%);display:flex;flex-direction:column;gap:18px;text-align:left}
+.card h2{font-size:clamp(26px,3vw,44px);font-weight:800;letter-spacing:-.02em}
+.avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px}
+.avb{font-size:32px;height:58px;border-radius:14px;border:1.5px solid var(--line);background:#fff;transition:transform .1s}
+.avb:hover{transform:scale(1.08)}
+.avb.sel{border:2.5px solid var(--or);background:var(--or2)}
+.avb:disabled{opacity:.15;cursor:not-allowed;transform:none}
+.err{color:var(--or);font-weight:600;min-height:1.3em}
+.linkbtn{color:var(--muted);text-decoration:underline;margin-top:40px;font-size:15px}
+
+/* ---------- alumne ---------- */
+#alumne .top{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;border-bottom:1px solid var(--line)}
+.me{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+.me .e{font-size:30px}
+.stmr{font-weight:800;font-size:28px;font-variant-numeric:tabular-nums}
+.abody{flex:1;display:flex;flex-direction:column;justify-content:center;padding:4vh 6vw;overflow:auto}
+.sfrase{font-size:clamp(24px,3.4vw,52px);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin:12px 0 7vh}
+.slider{position:relative;padding-top:64px}
+.bub{position:absolute;top:0;font-size:46px;transform:translateX(-50%);transition:left .05s;pointer-events:none;line-height:1}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:6px;background:linear-gradient(90deg,#dcdcdc,var(--or));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:var(--ink);border:4px solid #fff;box-shadow:0 0 0 2px var(--ink);cursor:grab}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--ink);border:4px solid #fff;box-shadow:0 0 0 2px var(--ink);cursor:grab}
+.lbls{display:flex;justify-content:space-between;margin-top:12px;color:var(--muted);font-weight:600;font-size:clamp(13px,1.3vw,18px)}
+.vrow{display:flex;align-items:center;justify-content:space-between;margin-top:5vh;gap:20px}
+.val{font-size:clamp(36px,5vw,72px);font-weight:800;font-variant-numeric:tabular-nums}
+.sent{margin-top:14px;font-weight:600;color:var(--muted)}
+.sent.ok{color:var(--ink)}
+.wait{text-align:center}
+.wait .e{font-size:clamp(70px,10vw,140px);display:block;animation:bob 2.4s ease-in-out infinite}
+.wait h2{font-size:clamp(26px,3.4vw,48px);font-weight:800;margin-top:14px}
+.wait p{color:var(--muted);font-size:20px;margin-top:8px}
+.mine{font-size:clamp(40px,6vw,90px);font-weight:800;color:var(--or)}
+.amsg{border-left:6px solid var(--or);padding:10px 18px;font-size:clamp(18px,2vw,28px);font-weight:600;margin-top:24px;text-align:left}
+
+/* ---------- professor ---------- */
+#profe header{height:8vh;min-height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 3vw;border-bottom:1px solid var(--line);font-size:clamp(13px,1.35vw,26px)}
+.brand{font-weight:800;display:flex;gap:1.2vw;align-items:baseline}
+.brand b span{color:var(--or)}
+.brand .prog{color:var(--muted);font-weight:600}
+.hr{display:flex;gap:2vw;align-items:center;font-weight:600}
+.dot{width:.65em;height:.65em;border-radius:50%;background:var(--ink);display:inline-block}
+.dot.off{background:var(--or);animation:blink .8s steps(2) infinite}
+.timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:clamp(22px,2.8vw,58px);min-width:3.6ch;text-align:right}
+.timer.warn{color:var(--or)}
+.timer.zero{color:var(--or);animation:blink .5s steps(2) infinite}
+#stage{flex:1;position:relative;padding:3.5vh 5vw;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+footer.ctrl{height:9vh;min-height:54px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 2vw;gap:1vw}
+.grp{display:flex;gap:.6vw;align-items:center}
+.cb{height:6vh;min-height:38px;min-width:6vh;padding:0 1.1vw;border:1.5px solid var(--ink);border-radius:999px;font-weight:600;font-size:clamp(12px,1.05vw,20px);display:inline-flex;align-items:center;justify-content:center;gap:.4em;background:#fff;white-space:nowrap}
+.cb:hover{background:var(--ink);color:#fff}
+.cb.pri{background:var(--or);border-color:var(--or);color:#fff}
+.cb.pri:hover{background:#e55f00}
+.cb.pulse{animation:pulse 1s infinite}
+.cb.on{background:var(--ink);color:#fff}
+
+.frase{font-size:clamp(28px,4.4vw,92px);line-height:1.1;font-weight:800;letter-spacing:-.025em;max-width:86vw;margin:2vh 0 4vh}
+.frase.sm{font-size:clamp(20px,2.6vw,54px);margin:.8vh 0 1vh}
+.instr{font-size:clamp(14px,1.5vw,28px);color:var(--muted);font-weight:600}
+.votestat{font-size:clamp(16px,1.8vw,34px);font-weight:600;margin-top:2vh}
+.votestat b{font-size:1.9em;color:var(--or);font-weight:800}
+.avrow{display:flex;flex-wrap:wrap;gap:.9vw;margin-top:2vh}
+.chip{display:flex;flex-direction:column;align-items:center;gap:.25em;width:6.2vw;font-size:clamp(10px,.95vw,18px);font-weight:600}
+.chip .e{font-size:clamp(24px,3vw,58px);width:1.45em;height:1.45em;border-radius:50%;display:grid;place-items:center;background:var(--or2);line-height:1}
+.chip .n{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip.off{opacity:.22;filter:grayscale(1)}
+.chip.new .e{animation:popin .45s cubic-bezier(.2,1.6,.4,1)}
+
+.portada{display:grid;grid-template-columns:1.45fr 1fr;gap:4vw;align-items:center}
+.portada h1{font-size:clamp(30px,4.3vw,88px);line-height:1.04;font-weight:800;letter-spacing:-.03em;margin:1.4vh 0 3vh}
+.normes{list-style:none;counter-reset:n;display:flex;flex-direction:column;gap:1.3vh}
+.normes li{counter-increment:n;font-size:clamp(14px,1.55vw,30px);font-weight:600;display:flex;gap:.8em;align-items:baseline}
+.normes li::before{content:counter(n);color:var(--or);font-weight:800}
+.qrbox{display:flex;flex-direction:column;align-items:center;gap:1.6vh}
+#qr{padding:1vw;border:1.5px solid var(--ink);border-radius:18px;background:#fff;min-height:10vh;display:grid;place-items:center}
+#qr img,#qr canvas{display:block}
+.lnk{font-size:clamp(12px,1.15vw,22px);font-weight:600;word-break:break-all;text-align:center;max-width:32vw}
+.entrats{margin-top:3vh;border-top:1px solid var(--line);padding-top:2vh}
+.entrats .kicker b{color:var(--or)}
+
+.escala{position:relative;height:42vh;margin:1vh 3vw 0}
+.pile{position:absolute;left:0;right:0;top:0;bottom:7.5vh}
+.track{position:absolute;left:0;right:0;bottom:5.6vh;height:8px;border-radius:4px;background:linear-gradient(90deg,#d9d9d9,var(--or))}
+.ticks{position:absolute;left:0;right:0;bottom:0;height:4.6vh;font-size:clamp(12px,1.2vw,22px);font-weight:600;color:var(--muted)}
+.ticks span{position:absolute;top:0}
+.ticks .t0{left:0}.ticks .t50{left:50%;transform:translateX(-50%)}.ticks .t100{right:0}
+.mean{position:absolute;bottom:4.2vh;width:0;height:0;border-left:.7vw solid transparent;border-right:.7vw solid transparent;border-bottom:1.1vw solid var(--ink);transform:translateX(-50%)}
+.it{position:absolute;transform:translateX(-50%);width:calc(var(--av) * 1.7);display:flex;justify-content:center}
+.it .in{display:flex;flex-direction:column;align-items:center;animation:drop .6s cubic-bezier(.2,1.5,.4,1) both;animation-delay:var(--d)}
+.noanim .it .in{animation:none}
+.it .e{font-size:var(--av);line-height:1.05}
+.it .n{font-size:max(10px,calc(var(--av) * .3));font-weight:600;white-space:nowrap;max-width:calc(var(--av) * 1.7);overflow:hidden;text-overflow:ellipsis}
+.stats{font-size:clamp(13px,1.35vw,26px);color:var(--muted);font-weight:600;margin-top:.6vh}
+.stats b{color:var(--ink)}
+.missatge{margin-top:2vh;border-left:.45vw solid var(--or);padding:.8vh 1.4vw;font-size:clamp(17px,2vw,40px);font-weight:600;max-width:82vw;line-height:1.25}
+.missatge.anim{animation:fade .7s both;animation-delay:var(--d)}
+.sense{font-size:clamp(11px,1vw,18px);color:var(--muted);margin-top:1.2vh}
+
+.huge{font-size:clamp(34px,5.6vw,120px);font-weight:800;line-height:1.05;letter-spacing:-.03em;max-width:86vw}
+.huge.anim{animation:rise .9s both}
+.subhuge{font-size:clamp(20px,2.6vw,54px);font-weight:600;margin-top:4vh;color:var(--muted)}
+.subhuge.anim{animation:fade 1s both;animation-delay:1.4s}
+.carta p{font-size:clamp(19px,2.55vw,54px);font-weight:600;line-height:1.28;margin:1.4vh 0;max-width:80vw;opacity:0;animation:fade 1s forwards;animation-delay:var(--d)}
+.carta p.kicker{margin-bottom:2vh;font-size:clamp(12px,1.25vw,24px);font-weight:600}
+
+#cfg{position:fixed;inset:0;background:rgba(255,255,255,.96);display:flex;align-items:center;justify-content:center;z-index:50}
+#cfg .card{border:1.5px solid var(--ink);border-radius:22px;padding:30px;background:#fff;max-height:92vh;overflow:auto}
+#cfg label{font-weight:600;display:flex;flex-direction:column;gap:6px}
+#cfg .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#cfg hr{border:0;border-top:1px solid var(--line)}
+.btn.warn{background:#fff;color:var(--or);border:1.5px solid var(--or)}
+.btn.warn.armed{background:var(--or);color:#fff}
+
+@keyframes blink{50%{opacity:.25}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,106,0,.55)}50%{box-shadow:0 0 0 .8vw rgba(255,106,0,0)}}
+@keyframes popin{0%{transform:scale(0)}100%{transform:scale(1)}}
+@keyframes drop{0%{opacity:0;transform:translateY(-40vh)}60%{opacity:1}100%{transform:translateY(0)}}
+@keyframes fade{from{opacity:0;transform:translateY(1.2vh)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(4vh)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+</style>
+</head>
+<body>
+
+<div id="carrega" class="screen center"><div><div class="logo">On em <span>situo?</span></div><p class="sub" id="carregaTxt">Connectant…</p></div></div>
+
+<div id="tria" class="screen center hide">
+  <div>
+    <div class="logo">On em <span>situo?</span></div>
+    <p class="sub">Tutoria · 2n de Batxillerat</p>
+    <button class="btn" id="bAlumne">Sóc alumne/a</button>
+    <div><button class="linkbtn" id="bProfe">Accés professor</button></div>
+  </div>
+</div>
+
+<div id="pin" class="screen center hide">
+  <div class="card">
+    <h2>Accés professor</h2>
+    <input class="field" id="pinIn" type="password" placeholder="PIN" autocomplete="off">
+    <input class="field" id="linkIn" type="url" placeholder="Enllaç per als alumnes (pàgina de Google Sites)">
+    <p class="muted">L'enllaç serveix per generar el QR. El pots canviar després a ⚙.</p>
+    <p class="err" id="pinErr"></p>
+    <div><button class="btn" id="pinGo">Entra</button> <button class="btn ghost" id="pinBack">Enrere</button></div>
+  </div>
+</div>
+
+<div id="join" class="screen center hide">
+  <div class="card">
+    <h2>Posa el teu nom i tria un avatar</h2>
+    <input class="field" id="nomIn" maxlength="20" placeholder="El teu nom de pila" autocomplete="off">
+    <div class="avgrid" id="avGrid"></div>
+    <p class="err" id="joinErr"></p>
+    <div><button class="btn" id="joinGo">Entra</button> <button class="btn ghost" id="joinBack">Enrere</button></div>
+  </div>
+</div>
+
+<div id="alumne" class="screen hide">
+  <div class="top"><div class="me" id="meBox"></div><div class="stmr" id="stmr"></div></div>
+  <div class="abody" id="abody"></div>
+</div>
+
+<div id="profe" class="screen hide">
+  <header>
+    <div class="brand"><b>On em <span>situo?</span></b><span class="prog" id="prog"></span></div>
+    <div class="hr"><span id="nAl"></span><span class="dot" id="conn" title="Connexió"></span><span class="timer" id="tmr"></span></div>
+  </header>
+  <div id="stage"></div>
+  <footer class="ctrl">
+    <div class="grp">
+      <button class="cb" id="cPrev" title="Anterior (←)">←</button>
+      <button class="cb pri" id="cMain"></button>
+      <button class="cb" id="cNext" title="Següent (→)">→</button>
+    </div>
+    <div class="grp">
+      <button class="cb" data-t="30">30 s</button>
+      <button class="cb" data-t="60">1 min</button>
+      <button class="cb" data-t="120">2 min</button>
+      <button class="cb" data-t="300">5 min</button>
+      <button class="cb" id="cPlay" title="Inicia / pausa (T)">▶</button>
+      <button class="cb" id="cReset" title="Reinicia">↺</button>
+    </div>
+    <div class="grp">
+      <button class="cb" id="cSo" title="Sons (S)">🔊</button>
+      <button class="cb" id="cFull" title="Pantalla completa (F)">⛶</button>
+      <button class="cb" id="cCfg" title="Configuració">⚙</button>
+    </div>
+  </footer>
+</div>
+
+<div id="cfg" class="hide">
+  <div class="card">
+    <h2>Configuració</h2>
+    <label>Enllaç per als alumnes (QR)<input class="field" id="cfgLink" type="url"></label>
+    <label>Compte enrere automàtic a cada frase
+      <select class="field" id="cfgAuto">
+        <option value="0">Desactivat</option><option value="20">20 s</option><option value="30">30 s</option>
+        <option value="45">45 s</option><option value="60">1 min</option><option value="90">1 min 30 s</option>
+      </select>
+    </label>
+    <div class="row"><button class="btn" id="cfgSave">Desa</button><button class="btn ghost" id="cfgClose">Tanca</button><button class="btn ghost" id="cfgHome">Torna a la portada</button></div>
+    <hr>
+    <p class="muted">Esborrar demana dos clics seguits.</p>
+    <div class="row">
+      <button class="btn warn" id="delVots">Esborra les respostes</button>
+      <button class="btn warn" id="delTot">Esborra alumnes i respostes</button>
+    </div>
+    <hr>
+    <div class="row"><button class="btn ghost" id="cfgOut">Surt del mode professor</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, inMemoryPersistence, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ================= CONFIGURACIÓ FIREBASE ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyCCT3YmTp0Y6mwwIG-OvmaQxvh3uP-gc08",
+  authDomain: "tutoria-e4dd2.firebaseapp.com",
+  databaseURL: "https://tutoria-e4dd2-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "tutoria-e4dd2",
+  storageBucket: "tutoria-e4dd2.firebasestorage.app",
+  messagingSenderId: "922205017183",
+  appId: "1:922205017183:web:defb49fd4049065fc8b7ea"
+};
+
+/* ================= CONTINGUT ================= */
+const PREGUNTES = [
+  {f:"Tinc bona actitud i treballo de valent, encara que em costi.", k:"treballo de valent", m:"L'esforç és la base. Al Batxillerat, la millor eina és una bona organització.", pos:true},
+  {f:"Participo i aporto coses a la classe.", k:"aporto", m:"Preguntar en veu alta ajuda tota la classe, no només a tu.", pos:true},
+  {f:"Vaig començar bé, però després de l'estiu m'he desconnectat.", k:"desconnectat", m:"Tornar a connectar costa, però és l'única manera d'enganxar-se i treure les matèries."},
+  {f:"M'adormo o desconnecto a classe.", k:"M'adormo", m:"Si t'adorms a classe, el problema comença la nit abans. Pantalles fora una hora abans de dormir."},
+  {f:"Faig servir l'ordinador per jugar quan s'hauria de treballar.", k:"per jugar", m:"Si no el necessites, tanca'l. Si està obert, et guanya."},
+  {f:"Faig servir la IA per fer la feina, no per entendre-la.", k:"la IA", m:"Demana-li que t'expliqui, no que t'ho faci. A l'examen hi vas sol.", debat:true},
+  {f:"He millorat respecte a l'any passat.", k:"millorat", m:"Això demostra que es pot. Repeteix el que et va funcionar.", pos:true},
+  {f:"Rendeixo per sota del que podria.", k:"per sota", m:"La capacitat no aprova. Aprova el que fas amb ella.", debat:true},
+  {f:"Visc de renda del que vaig aprendre l'any passat.", k:"de renda", m:"La renda s'acaba a la segona avaluació. Comença a estalviar ara."},
+  {f:"No prenc apunts a algunes matèries.", k:"apunts", m:"Escriure és el primer repàs. Sense apunts, a casa comences de zero."},
+  {f:"No faig els deures o no sé quins són.", k:"deures", m:"Agenda única i un company de referència. Excuses, zero."},
+  {f:"Hi ha matèries en què rendeixo molt bé.", k:"molt bé", m:"Fes servir el que saps fer: ajuda un company en aquella matèria.", pos:true},
+  {f:"Tinc matèries suspeses que no em preocupen prou.", k:"suspeses", m:"Una suspesa de 2n no desapareix. Comença cada sessió d'estudi per ella.", debat:true},
+  {f:"Parlo massa a classe.", k:"Parlo massa", m:"Canviar de lloc no és un càstig, és una eina."},
+  {f:"Arribo tard o falto a primera hora.", k:"primera hora", m:"La primera hora és la que més costa recuperar."},
+  {f:"El meu treball de recerca va endarrerit.", k:"treball de recerca", m:"Una fita per setmana, pactada amb el tutor. Sense fita, no hi ha feina."},
+  {f:"Em cuido: descanso, faig esport, menjo bé i dormo prou.", k:"Em cuido", m:"Cuidar-te també és estudiar: descans, esport, bon menjar, son… i algun caprici de tant en tant.", pos:true},
+  {f:"Com a grup, ens ajudem poc.", k:"ens ajudem poc", m:"Ningú aprova sol 2n de Batxillerat. Escollim avui com ens ajudem.", debat:true},
+  {f:"Ho vols intentar de veritat?", k:"de veritat", m:"Ho has dit davant de tothom. A la segona avaluació en parlem.", final:true}
+];
+const NQ = PREGUNTES.length - 1; // 18 frases + la pregunta final
+const SL = [{tipus:"portada"}];
+for (let i = 0; i < NQ; i++) SL.push({tipus:"q", q:i});
+SL.push({tipus:"oportunitat"}, {tipus:"futur"}, {tipus:"q", q:NQ});
+
+const CARTA = [
+  "Sóc tu, d'aquí a vuit mesos.",
+  "Ja ha acabat el curs. Ja saps les notes. Ja saps si has fet la PAU o el cicle que volies.",
+  "El que tinc ara depèn del que facis aquest novembre, no del que diguis avui.",
+  "No et demano que ho facis perfecte. Et demano que <span class=\"or\">ho intentis de veritat</span>."
+];
+
+const AVATARS = ["🦊","🐼","🐨","🐯","🦁","🐸","🐙","🦉","🐧","🐢","🦄","🐝","🦋","🐬","🐳","🦖","🐲","🌵","🌻","🍄","🔥","⚡","🌙","⭐","🚀","🎸","🎧","🏀","⚽","🎲","🍕","🍩","🥑","🌈","🧊","👾"];
+
+/* ================= UTILITATS ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function hl(p){ const t = esc(p.f); if(!p.k) return t; const k = esc(p.k); return t.replace(k, `<span class="or">${k}</span>`); }
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem("oes_"+k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem("oes_"+k, JSON.stringify(v)); }catch(e){} }
+};
+let toastT;
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"), 3200); }
+function show(id){ document.querySelectorAll(".screen").forEach(el => el.classList.toggle("hide", el.id !== id)); }
+function fatal(msg){ show("carrega"); $("#carregaTxt").textContent = msg; }
+function labelOf(sl){
+  if(sl.tipus === "portada") return "Portada";
+  if(sl.tipus === "oportunitat") return "Tancament";
+  if(sl.tipus === "futur") return "Missatge del futur";
+  return PREGUNTES[sl.q].final ? "Última pregunta" : `Frase ${sl.q+1} / ${NQ}`;
+}
+function zona(v){ return v <= 20 ? "No va amb mi" : v >= 80 ? "Sóc jo" : "En part"; }
+
+const cfg = { link: LS.get("link", ""), auto: LS.get("auto", 30), so: LS.get("so", true) };
+
+/* ================= SONS ================= */
+let ac = null;
+function A(){ if(!cfg.so) return null; try{ ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if(ac.state === "suspended") ac.resume(); return ac; }catch(e){ return null; } }
+function tone(f, d, o = {}){
+  const a = A(); if(!a) return;
+  const t = a.currentTime + (o.at || 0), osc = a.createOscillator(), g = a.createGain();
+  osc.type = o.type || "sine"; osc.frequency.setValueAtTime(f, t);
+  if(o.f2) osc.frequency.exponentialRampToValueAtTime(o.f2, t + d);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(o.v || .15, t + .01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  osc.connect(g).connect(a.destination); osc.start(t); osc.stop(t + d + .05);
+}
+const SFX = {
+  pop:   () => tone(520, .13, {type:"triangle", v:.2, f2:950}),
+  join:  () => { tone(523, .12, {v:.16}); tone(784, .2, {v:.16, at:.1}); },
+  next:  () => tone(280, .28, {v:.08, f2:720}),
+  reveal:() => [523,659,784,1047].forEach((f,i) => tone(f, .2, {type:"triangle", v:.15, at:i*.08})),
+  tick:  () => tone(1400, .04, {type:"square", v:.035}),
+  alarm: () => { for(let r = 0; r < 3; r++) for(let i = 0; i < 3; i++) tone(i % 2 ? 988 : 784, .16, {type:"square", v:.13, at:r*.7 + i*.18}); }
+};
+
+/* ================= FIREBASE ================= */
+const app = initializeApp(firebaseConfig);
+let auth;
+try { auth = initializeAuth(app, {persistence:[indexedDBLocalPersistence, browserLocalPersistence, inMemoryPersistence]}); }
+catch(e){ auth = initializeAuth(app, {persistence: inMemoryPersistence}); }
+const db = getDatabase(app);
+const R = {
+  estat: ref(db, "sessio/estat"), alumnes: ref(db, "sessio/alumnes"), vots: ref(db, "sessio/vots"),
+  off: ref(db, ".info/serverTimeOffset"), conn: ref(db, ".info/connected")
+};
+
+let uid = null, isProfe = false, ui = "tria", started = false;
+let estat = {s:0, fase:"obert"}, estatRaw = null, alumnes = {}, vots = {};
+let offset = 0, connected = true;
+const got = {estat:false, alumnes:false, vots:false, profe:false};
+const now = () => Date.now() + offset;
+function remaining(t){ if(!t) return null; return t.run ? Math.max(0, t.endAt - now()) : Math.max(0, t.rest ?? 0); }
+function fmt(ms){ const s = Math.ceil(ms/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }
+const permErr = e => fatal("No es pot llegir la base de dades (" + (e && e.code || e) + "). Revisa que les regles de Firebase estiguin publicades.");
+
+onAuthStateChanged(auth, u => { if(u && !started){ uid = u.uid; started = true; start(); } });
+signInAnonymously(auth).catch(e => fatal("No s'ha pogut connectar (" + e.code + "). Comprova que l'accés anònim està activat a Firebase."));
+
+async function start(){
+  onValue(R.off, s => { offset = s.val() || 0; });
+  onValue(R.conn, s => { connected = !!s.val(); const d = $("#conn"); if(d) d.classList.toggle("off", !connected); });
+  onValue(R.estat, s => {
+    estatRaw = s.val(); estat = estatRaw || {s:0, fase:"obert"};
+    if(!(estat.s >= 0 && estat.s < SL.length)) estat.s = 0;
+    got.estat = true; render();
+  }, permErr);
+  onValue(R.alumnes, s => { alumnes = s.val() || {}; got.alumnes = true; render(); }, permErr);
+  onValue(R.vots, s => { vots = s.val() || {}; got.vots = true; render(); }, permErr);
+  try { const p = await get(ref(db, "profes/" + uid)); isProfe = p.exists(); } catch(e){ isProfe = false; }
+  got.profe = true; render();
+  setInterval(loop, 200);
+}
+
+function render(){
+  if(!(got.estat && got.alumnes && got.vots && got.profe)) return;
+  if(isProfe) return renderProfe();
+  if(alumnes[uid]) return renderAlumne();
+  lastAKey = null;
+  if(ui === "pin"){ show("pin"); return; }
+  if(ui === "join"){ show("join"); buildGrid(); return; }
+  show("tria");
+}
+
+/* ================= TRIA / PIN / JOIN ================= */
+$("#bAlumne").onclick = () => { ui = "join"; render(); setTimeout(()=>$("#nomIn").focus(), 50); };
+$("#bProfe").onclick = () => { ui = "pin"; $("#linkIn").value = cfg.link; render(); setTimeout(()=>$("#pinIn").focus(), 50); };
+$("#pinBack").onclick = $("#joinBack").onclick = () => { ui = "tria"; render(); };
+$("#pinIn").onkeydown = e => { if(e.key === "Enter") $("#pinGo").click(); };
+$("#pinGo").onclick = async () => {
+  const pin = $("#pinIn").value.trim(); if(!pin) return;
+  $("#pinErr").textContent = "";
+  try {
+    await set(ref(db, "profes/" + uid), pin);
+    cfg.link = $("#linkIn").value.trim(); LS.set("link", cfg.link);
+    isProfe = true; A();
+    if(!estatRaw) await set(R.estat, {s:0, fase:"obert"});
+    render();
+  } catch(e){ $("#pinErr").textContent = "PIN incorrecte."; }
+};
+
+let selAv = null;
+function buildGrid(){
+  const taken = new Set(Object.entries(alumnes).filter(([u]) => u !== uid).map(([,a]) => a.av));
+  if(selAv && taken.has(selAv)) selAv = null;
+  const g = $("#avGrid");
+  if(!g.children.length) g.innerHTML = AVATARS.map(a => `<button class="avb" data-a="${a}">${a}</button>`).join("");
+  g.querySelectorAll(".avb").forEach(b => { b.disabled = taken.has(b.dataset.a); b.classList.toggle("sel", b.dataset.a === selAv); });
+}
+$("#avGrid").onclick = e => { const b = e.target.closest(".avb"); if(!b || b.disabled) return; selAv = b.dataset.a; buildGrid(); };
+$("#nomIn").onkeydown = e => { if(e.key === "Enter") $("#joinGo").click(); };
+$("#joinGo").onclick = async () => {
+  const nom = $("#nomIn").value.trim().slice(0, 20);
+  if(!nom){ $("#joinErr").textContent = "Escriu el teu nom."; return; }
+  if(!selAv){ $("#joinErr").textContent = "Tria un avatar."; return; }
+  $("#joinErr").textContent = "";
+  try { await set(ref(db, "sessio/alumnes/" + uid), {nom, av:selAv, t:Date.now()}); }
+  catch(e){ $("#joinErr").textContent = "No s'ha pogut entrar. Torna-ho a provar."; }
+};
+
+/* ================= VISTA ALUMNE ================= */
+let lastAKey = null;
+function myVote(qi){ const v = (vots["q"+qi] || {})[uid]; return typeof v === "number" ? v : undefined; }
+function renderAlumne(){
+  show("alumne");
+  const me = alumnes[uid];
+  $("#meBox").innerHTML = `<span class="e">${esc(me.av)}</span><span>${esc(me.nom)}</span>`;
+  const sl = SL[estat.s], key = `${estat.s}|${estat.fase}`;
+  const body = $("#abody");
+  if(key === lastAKey){
+    if(sl.tipus === "q" && estat.fase === "obert") updSent(sl.q);
+    return;
+  }
+  lastAKey = key;
+  if(sl.tipus === "q" && estat.fase === "obert"){
+    const p = PREGUNTES[sl.q], v = myVote(sl.q), val = v ?? 50;
+    body.innerHTML = `
+      <p class="kicker">${esc(labelOf(sl))}${p.pos ? '<span class="tag">✓ positiva</span>' : ""}</p>
+      <h2 class="sfrase">${hl(p)}</h2>
+      <div class="slider"><div class="bub" id="bub">${esc(me.av)}</div><input type="range" min="0" max="100" step="5" id="rng" value="${val}"></div>
+      <div class="lbls"><span>0% · No va amb mi</span><span>En part</span><span>Sóc jo · 100%</span></div>
+      <div class="vrow"><div class="val" id="valTxt"></div><button class="btn" id="send">Envia</button></div>
+      <p class="sent" id="sentTxt"></p>`;
+    const rng = $("#rng");
+    const pos = () => { const x = +rng.value; $("#bub").style.left = `calc(${x}% + ${(0.5 - x/100) * 34}px)`; $("#valTxt").innerHTML = `${x}% <span class="muted" style="font-size:.4em">${zona(x)}</span>`; };
+    rng.oninput = () => { pos(); dirty = true; updSent(sl.q); };
+    $("#send").onclick = async () => {
+      try { await set(ref(db, `sessio/vots/q${sl.q}/${uid}`), +rng.value); dirty = false; updSent(sl.q); }
+      catch(e){ toast("No s'ha pogut enviar. Torna-ho a provar."); }
+    };
+    dirty = false; pos(); updSent(sl.q);
+  } else if(sl.tipus === "q"){
+    const p = PREGUNTES[sl.q], v = myVote(sl.q);
+    body.innerHTML = `<div class="wait">
+      <p class="kicker" style="justify-content:center">${esc(labelOf(sl))}</p>
+      <div class="mine">${v === undefined ? "—" : v + "%"}</div>
+      <p class="muted" style="font-size:20px">${v === undefined ? "No has respost aquesta frase." : "La teva resposta"}</p>
+      <div class="amsg">${esc(p.m)}</div>
+      <p style="margin-top:24px;font-weight:600">Mira la pantalla.</p></div>`;
+  } else {
+    const t = sl.tipus === "portada" ? ["Ja hi ets!", "Espera que comenci."] : ["Mira la pantalla", ""];
+    body.innerHTML = `<div class="wait"><span class="e">${esc(me.av)}</span><h2>${t[0]}</h2><p>${t[1]}</p></div>`;
+  }
+}
+let dirty = false;
+function updSent(qi){
+  const el = $("#sentTxt"); if(!el) return;
+  const v = myVote(qi);
+  if(v === undefined){ el.textContent = "Encara no has enviat la resposta."; el.className = "sent"; }
+  else if(dirty){ el.textContent = `Has canviat la resposta (enviada: ${v}%). Prem «Envia».`; el.className = "sent"; }
+  else { el.textContent = `Enviat ✓ (${v}%). Pots canviar-ho fins que es tanqui.`; el.className = "sent ok"; }
+}
+
+/* ================= VISTA PROFESSOR ================= */
+let lastPKey = null, seen = new Set(), alarmFor = null, lastTick = null, prevNAl = -1;
+function renderProfe(){
+  show("profe");
+  const sl = SL[estat.s], key = `${estat.s}|${estat.fase}`, fresh = key !== lastPKey;
+  lastPKey = key;
+  const nAl = Object.keys(alumnes).length;
+  $("#prog").textContent = labelOf(sl);
+  $("#nAl").textContent = `👥 ${nAl}`;
+  $("#conn").classList.toggle("off", !connected);
+  const main = $("#cMain");
+  if(sl.tipus === "q"){ main.classList.remove("hide"); main.textContent = estat.fase === "obert" ? "Mostra resultat" : "Reobre la votació"; main.classList.toggle("pri", estat.fase === "obert"); }
+  else main.classList.add("hide");
+  $("#cSo").textContent = cfg.so ? "🔊" : "🔇";
+
+  const st = $("#stage");
+  if(sl.tipus === "portada"){
+    if(fresh){ st.innerHTML = portadaHTML(); drawQR(); seen = new Set(Object.keys(alumnes)); }
+    const ids = Object.keys(alumnes).sort((a,b) => (alumnes[a].t||0) - (alumnes[b].t||0));
+    const nous = ids.filter(u => !seen.has(u));
+    if(nous.length && !fresh) SFX.join();
+    $("#entrats").innerHTML = `<p class="kicker">Connectats: <b>${ids.length}</b></p><div class="avrow">${ids.map(u => chip(u, false, nous.includes(u))).join("")}</div>`;
+    ids.forEach(u => seen.add(u));
+  } else if(sl.tipus === "q" && estat.fase === "obert"){
+    const p = PREGUNTES[sl.q], vq = vots["q"+sl.q] || {};
+    if(fresh){
+      st.innerHTML = `
+        <p class="kicker">${esc(labelOf(sl))}${p.pos ? '<span class="tag">✓ positiva</span>' : ""}${p.debat ? '<span class="tag or">Debat</span>' : ""}</p>
+        <h2 class="frase">${hl(p)}</h2>
+        <p class="instr">Situa't de 0 a 100 al teu ordinador.</p>
+        <div id="vbox"></div>`;
+      seen = new Set(Object.keys(vq));
+    }
+    const ids = Object.keys(alumnes).sort((a,b) => (alumnes[a].t||0) - (alumnes[b].t||0));
+    const fets = ids.filter(u => typeof vq[u] === "number");
+    const nous = fets.filter(u => !seen.has(u));
+    if(nous.length && !fresh) SFX.pop();
+    fets.forEach(u => seen.add(u));
+    $("#vbox").innerHTML = `<p class="votestat"><b>${fets.length}</b> de ${ids.length} han respost</p>
+      <div class="avrow">${ids.map(u => chip(u, typeof vq[u] !== "number", nous.includes(u))).join("")}</div>`;
+  } else if(sl.tipus === "q"){
+    st.innerHTML = resultatHTML(sl.q, fresh);
+    if(fresh){
+      SFX.reveal();
+      const n = Math.min(st.querySelectorAll(".it").length, 25);
+      for(let i = 0; i < n; i++) setTimeout(SFX.pop, 450 + i*120);
+    }
+  } else if(fresh && sl.tipus === "oportunitat"){
+    st.innerHTML = `<h1 class="huge anim">L'equip de professors i professores us dona <span class="or">una oportunitat</span>.</h1><p class="subhuge anim">Ara depèn de vosaltres.</p>`;
+  } else if(fresh && sl.tipus === "futur"){
+    st.innerHTML = `<div class="carta"><p class="kicker" style="opacity:1;animation:none">Missatge des del juny de 2027</p>${CARTA.map((l,i) => `<p style="--d:${0.4 + i*2.4}s">${l}</p>`).join("")}</div>`;
+  }
+}
+function chip(u, off, nou){
+  const a = alumnes[u];
+  return `<div class="chip${off ? " off" : ""}${nou ? " new" : ""}"><div class="e">${esc(a.av)}</div><div class="n">${esc(a.nom)}</div></div>`;
+}
+function portadaHTML(){
+  return `<div class="portada">
+    <div>
+      <p class="kicker">Tutoria · 2n de Batxillerat</p>
+      <h1>El que ha vist <span class="or">l'equip de professors i professores</span></h1>
+      <ol class="normes">
+        <li>Entra a l'enllaç, posa el teu nom i tria un avatar.</li>
+        <li>A cada frase, situa't de 0 a 100.</li>
+        <li>Ningú comenta on s'ha posat un altre.</li>
+        <li>Qui es posa a 100% mereix respecte.</li>
+      </ol>
+    </div>
+    <div class="qrbox"><div id="qr"></div><p class="lnk">${esc(cfg.link.replace(/^https?:\/\//, ""))}</p></div>
+  </div>
+  <div class="entrats" id="entrats"></div>`;
+}
+function drawQR(){
+  const el = $("#qr"); if(!el) return;
+  el.innerHTML = "";
+  if(!cfg.link){ el.innerHTML = `<p class="muted" style="padding:2vh 2vw">Configura l'enllaç a ⚙</p>`; return; }
+  if(!window.QRCode){ el.innerHTML = `<p class="muted" style="padding:2vh 2vw">No s'ha pogut generar el QR</p>`; return; }
+  const sz = Math.round(Math.min(innerWidth * .2, innerHeight * .36));
+  new QRCode(el, {text: cfg.link, width: sz, height: sz, colorDark: "#111111", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M});
+}
+function resultatHTML(qi, anim){
+  const p = PREGUNTES[qi], vq = vots["q"+qi] || {};
+  const items = Object.entries(vq).filter(([u,v]) => typeof v === "number" && alumnes[u])
+    .map(([u,v]) => ({u, v, a:alumnes[u]})).sort((x,y) => x.v - y.v || x.a.nom.localeCompare(y.a.nom));
+  const bins = {};
+  items.forEach(it => { const b = Math.round(it.v / 5) * 5; (bins[b] = bins[b] || []).push(it); });
+  const maxStack = Math.max(1, ...Object.values(bins).map(l => l.length));
+  const av = `min(3.4vw, calc(32vh / ${maxStack} / 1.55))`;
+  let k = 0, pile = "";
+  Object.keys(bins).map(Number).sort((a,b) => a - b).forEach(b => bins[b].forEach((it, i) => {
+    pile += `<div class="it" style="left:${b}%;bottom:calc(${i} * var(--av) * 1.55)"><div class="in" style="--d:${(0.45 + k*0.12).toFixed(2)}s"><div class="e">${esc(it.a.av)}</div><div class="n">${esc(it.a.nom)}</div></div></div>`;
+    k++;
+  }));
+  const mean = items.length ? Math.round(items.reduce((s,it) => s + it.v, 0) / items.length) : null;
+  const sense = Object.keys(alumnes).filter(u => typeof vq[u] !== "number").map(u => esc(alumnes[u].nom));
+  const dMsg = anim ? (0.6 + k*0.12).toFixed(2) : 0;
+  return `
+    <p class="kicker">${esc(labelOf(SL[estat.s]))}${p.pos ? '<span class="tag">✓ positiva</span>' : ""}${p.debat ? '<span class="tag or">Debat</span>' : ""}</p>
+    <h2 class="frase sm">${hl(p)}</h2>
+    <div class="escala${anim ? "" : " noanim"}" style="--av:${av}">
+      <div class="pile">${pile}</div>
+      <div class="track"></div>
+      ${mean !== null ? `<div class="mean" style="left:${mean}%"></div>` : ""}
+      <div class="ticks"><span class="t0">0% · No va amb mi</span><span class="t50">En part</span><span class="t100">Sóc jo · 100%</span></div>
+    </div>
+    <p class="stats">${items.length ? `Mitjana del grup <b>${mean}%</b> · ${items.length} respostes` : "Cap resposta"}</p>
+    <div class="missatge${anim ? " anim" : ""}" style="--d:${dMsg}s">${esc(p.m)}</div>
+    ${sense.length ? `<p class="sense">Sense resposta: ${sense.join(", ")}</p>` : ""}`;
+}
+
+/* ---- accions del professor ---- */
+const wr = pr => pr.catch(e => toast("Error en desar: " + (e.code || e.message)));
+function go(n){
+  if(n < 0 || n >= SL.length) return;
+  const d = cfg.auto * 1000;
+  const t = (SL[n].tipus === "q" && d > 0) ? {run:true, endAt:now() + d, dur:d, rest:d} : null;
+  A(); SFX.next();
+  wr(update(R.estat, {s:n, fase:"obert", t}));
+}
+function reveal(){
+  const t = estat.t;
+  wr(update(R.estat, {fase:"resultat", t: t ? {...t, run:false, rest:remaining(t)} : null}));
+}
+function next(){ const sl = SL[estat.s]; if(sl.tipus === "q" && estat.fase === "obert") reveal(); else go(estat.s + 1); }
+function prev(){ go(estat.s - 1); }
+function setTimer(sec){ A(); const d = sec*1000; wr(update(R.estat, {t:{run:true, endAt:now() + d, dur:d, rest:d}})); }
+function togglePlay(){
+  A(); const t = estat.t;
+  if(!t) return setTimer(cfg.auto || 60);
+  if(t.run) return wr(update(R.estat, {t:{...t, run:false, rest:remaining(t)}}));
+  if((t.rest || 0) > 0) return wr(update(R.estat, {t:{...t, run:true, endAt:now() + t.rest}}));
+  setTimer((t.dur || 60000) / 1000);
+}
+function resetTimer(){ const t = estat.t; if(t) wr(update(R.estat, {t:{...t, run:false, rest:t.dur}})); }
+function fullscreen(){
+  const d = document.documentElement;
+  if(document.fullscreenElement) return document.exitFullscreen();
+  (d.requestFullscreen ? d.requestFullscreen() : Promise.reject()).catch(() => toast("Prem F11 per posar el navegador a pantalla completa."));
+}
+function toggleSo(){ cfg.so = !cfg.so; LS.set("so", cfg.so); $("#cSo").textContent = cfg.so ? "🔊" : "🔇"; if(cfg.so) SFX.pop(); }
+
+$("#cPrev").onclick = prev; $("#cNext").onclick = next;
+$("#cMain").onclick = () => estat.fase === "obert" ? reveal() : wr(update(R.estat, {fase:"obert"}));
+document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => setTimer(+b.dataset.t));
+$("#cPlay").onclick = togglePlay; $("#cReset").onclick = resetTimer;
+$("#cSo").onclick = toggleSo; $("#cFull").onclick = fullscreen;
+$("#cCfg").onclick = () => { $("#cfgLink").value = cfg.link; $("#cfgAuto").value = String(cfg.auto); $("#cfg").classList.remove("hide"); };
+$("#cfgClose").onclick = () => $("#cfg").classList.add("hide");
+$("#cfgSave").onclick = () => {
+  cfg.link = $("#cfgLink").value.trim(); cfg.auto = +$("#cfgAuto").value;
+  LS.set("link", cfg.link); LS.set("auto", cfg.auto);
+  $("#cfg").classList.add("hide"); if(SL[estat.s].tipus === "portada") drawQR();
+  const l = document.querySelector(".lnk"); if(l) l.textContent = cfg.link.replace(/^https?:\/\//, "");
+  toast("Configuració desada.");
+};
+$("#cfgHome").onclick = () => { $("#cfg").classList.add("hide"); go(0); };
+function armed(btn, fn){
+  btn.onclick = () => {
+    if(btn.classList.contains("armed")){ btn.classList.remove("armed"); fn(); return; }
+    btn.classList.add("armed"); const txt = btn.textContent; btn.textContent = "Segur? Clica de nou";
+    setTimeout(() => { btn.classList.remove("armed"); btn.textContent = txt; }, 3000);
+  };
+}
+armed($("#delVots"), () => wr(remove(R.vots)).then(() => toast("Respostes esborrades.")));
+armed($("#delTot"), () => Promise.all([remove(R.vots), remove(R.alumnes)])
+  .then(() => set(R.estat, {s:0, fase:"obert"})).then(() => { $("#cfg").classList.add("hide"); toast("Tot esborrat."); })
+  .catch(e => toast("Error: " + (e.code || e.message))));
+$("#cfgOut").onclick = async () => {
+  try { await remove(ref(db, "profes/" + uid)); } catch(e){}
+  isProfe = false; ui = "tria"; lastPKey = null; $("#cfg").classList.add("hide"); render();
+};
+
+document.addEventListener("keydown", e => {
+  if(!isProfe || e.target.matches("input,select,textarea")) return;
+  if(!$("#cfg").classList.contains("hide")){ if(e.key === "Escape") $("#cfg").classList.add("hide"); return; }
+  const k = e.key;
+  if(k === "ArrowRight" || k === "PageDown" || k === " " || k === "Enter"){ e.preventDefault(); next(); }
+  else if(k === "ArrowLeft" || k === "PageUp"){ e.preventDefault(); prev(); }
+  else if(k === "t" || k === "T") togglePlay();
+  else if(k === "f" || k === "F") fullscreen();
+  else if(k === "s" || k === "S") toggleSo();
+});
+
+/* ================= RELLOTGE ================= */
+function loop(){
+  const t = estat.t, r = remaining(t);
+  const txt = r === null ? "" : fmt(r);
+  const cls = r === null ? "timer" : r === 0 ? "timer zero" : r <= 5000 ? "timer warn" : "timer";
+  if(isProfe){
+    const el = $("#tmr"); el.textContent = txt; el.className = cls;
+    $("#cPlay").textContent = t && t.run ? "⏸" : "▶";
+    const sl = SL[estat.s];
+    $("#cMain").classList.toggle("pulse", sl.tipus === "q" && estat.fase === "obert" && r === 0);
+    if(t && t.run){
+      const sec = Math.ceil(r/1000);
+      if(r > 0 && sec <= 5 && sec !== lastTick){ lastTick = sec; SFX.tick(); }
+      if(r === 0 && alarmFor !== t.endAt){
+        alarmFor = t.endAt; lastTick = null; SFX.alarm();
+        wr(update(R.estat, {t:{...t, run:false, rest:0}}));
+      }
+    }
+  } else {
+    const el = $("#stmr"); if(el){ el.textContent = txt; el.className = "stmr " + cls.replace("timer", "").trim(); el.style.color = r !== null && r <= 5000 ? "var(--or)" : ""; }
+  }
+}
+</script>
+</body>
+</html>
+
+</body></html>

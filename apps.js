@@ -37,7 +37,8 @@ const APPS = [
 
   { titol: "Pizzeria Tres Quarts",   materia: "mates",    nivell: "", desc: "Joc de fraccions.", url: "" },
   { titol: "Operació Fracció",       materia: "mates",    nivell: "", desc: "Escape room de fraccions.", url: "" },
-  { titol: "Fraccions per objectius",materia: "mates",    nivell: "", desc: "Reptes encadenats.", url: "" },
+  { titol: "FR-4C",                  materia: "mates",    nivell: "4t ESO", desc: "Fraccions, enters i potències per objectius encadenats.", url: "https://profejuanalcolea.github.io/fr4c/" },
 
-  { titol: "Calculadora nota PAU",   materia: "docencia", nivell: "2n Batx", desc: "Nota d'accés i d'admissió.", url: "" },
+  { titol: "Calculadora d'accés a la universitat", materia: "docencia", nivell: "2n Batx", desc: "Nota d'accés i d'admissió, notes de tall i ponderacions.", url: "docencia/calculadora-pau/" },
+  { titol: "On em situo?",           materia: "docencia", nivell: "Tutoria", desc: "Cada alumne situa el seu avatar de 0 a 100 davant les frases de l'equip docent.", url: "docencia/on-em-situo/" },
 ];
