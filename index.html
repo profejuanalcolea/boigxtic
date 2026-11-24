@@ -226,7 +226,7 @@
         const t = document.createElement("div");
         t.className = "targeta" + (a.url ? "" : " pendent");
         const ext = a.url && esExterna(a.url);
-        const nf = a.novaFinestra ? ' target="_blank" rel="noopener"' : "";
+        const nf = (a.novaFinestra || a.finestra) ? ' target="_blank" rel="noopener"' : "";
         t.innerHTML = `
           <h3>${a.url ? `<a href="${a.url}"${nf}>${a.titol}</a>` : a.titol}</h3>
           <div class="etiquetes">
@@ -237,10 +237,16 @@
           </div>
           <p class="desc">${a.desc || ""}</p>
           <div class="botons">
-            <a class="obrir" href="${a.url}"${nf}>Obrir${a.novaFinestra ? " ↗" : ""}</a>
+            <a class="obrir" href="${a.url}"${nf}>Obrir${(a.novaFinestra || a.finestra) ? " ↗" : ""}</a>
             <button class="copiar">📋 Copiar enllaç</button>
           </div>
           ${(a.versions||[]).length ? `<div class="versions">Altres versions: ${a.versions.map(v => `<a href="${v.url}">${v.nom}</a>`).join(" · ")}</div>` : ""}`;
+        if (a.finestra) t.querySelectorAll(`a[href="${a.url}"]`).forEach(l => l.onclick = e => {
+          const w = a.finestra.w, h = a.finestra.h;
+          const x = Math.max(0, (screen.availWidth - w) / 2), y = Math.max(0, (screen.availHeight - h) / 2);
+          const f = window.open(a.url, "_blank", `popup,width=${w},height=${h},left=${x},top=${y}`);
+          if (f) e.preventDefault();   // si el navegador bloqueja la finestra, s'obre en una pestanya normal
+        });
         const b = t.querySelector(".copiar");
         b.onclick = () => {
           navigator.clipboard.writeText(urlAbsoluta(a.url)).then(() => {
