@@ -17,3 +17,6 @@ Portal d'apps de classe de J Alcolea (Ins Júlia Minguell).
 - https://profejuanalcolea.github.io/boigxtic/#docencia
 
 
+
+## Afegir apps sense ajuda
+https://profejuanalcolea.github.io/boigxtic/afegeix.html: omples el formulari i et prepara la línia d'`apps.js`' i els enllaços de GitHub.
