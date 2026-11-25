@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Afegeix una app · boigxtic</title>
+<link rel="icon" type="image/png" sizes="32x32" href="img/ammo-32.png">
+<style>
+  :root { --taronja:#f26b1d; --negre:#111; --gris:#666; --linia:#e5e5e5; --suau:#f3f3f3; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--negre); background:#fff; font-size:18px; }
+  header { display:flex; align-items:center; gap:14px; padding:16px 32px; border-bottom:4px solid var(--taronja); }
+  header img { width:44px; height:44px; }
+  header h1 { margin:0; font-size:1.6rem; }
+  header a { margin-left:auto; color:var(--gris); font-weight:600; text-decoration:none; }
+  header a:hover { color:var(--taronja); }
+  main { display:grid; grid-template-columns:minmax(380px,1fr) minmax(380px,1.1fr); gap:32px; padding:24px 32px 48px; max-width:1400px; }
+  @media (max-width:900px) { main { grid-template-columns:1fr; } }
+  h2 { font-size:1.2rem; margin:0 0 14px; display:flex; align-items:center; gap:10px; }
+  h2::before { content:""; width:10px; height:22px; background:var(--taronja); border-radius:3px; }
+  label { display:block; font-weight:700; margin:14px 0 6px; }
+  label small { font-weight:400; color:var(--gris); }
+  input[type=text], input[type=number], select, textarea { width:100%; font:inherit; padding:10px 12px; border:2px solid #bbb; border-radius:10px; background:#fff; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--taronja); }
+  textarea { resize:vertical; min-height:60px; }
+  .tipus { display:flex; gap:8px; }
+  .tipus button { flex:1; font:inherit; font-weight:700; padding:10px; border:2px solid var(--negre); background:#fff; border-radius:10px; cursor:pointer; }
+  .tipus button.on { background:var(--negre); color:#fff; }
+  .fila { display:flex; gap:10px; align-items:center; }
+  .chk { display:flex; align-items:center; gap:10px; font-weight:600; margin:10px 0; cursor:pointer; }
+  .chk input { width:20px; height:20px; accent-color:var(--taronja); }
+  .mida { display:none; gap:8px; align-items:center; margin-left:30px; }
+  .mida input { width:100px; }
+  .ajuda { font-size:.9rem; color:var(--gris); margin-top:4px; }
+  .err { color:#c62828; font-weight:600; font-size:.95rem; min-height:1.2em; margin-top:6px; }
+  pre { background:var(--negre); color:#fff; padding:16px; border-radius:10px; white-space:pre-wrap; word-break:break-all; font-size:.95rem; margin:0; }
+  .btn { display:inline-block; font:inherit; font-weight:700; padding:10px 18px; border-radius:10px; cursor:pointer; text-decoration:none; border:2px solid var(--taronja); background:var(--taronja); color:#fff; }
+  .btn.sec { background:#fff; color:var(--negre); border-color:var(--negre); }
+  .btn:disabled { opacity:.4; cursor:not-allowed; }
+  .btn.fet { background:var(--negre); border-color:var(--negre); }
+  ol { padding-left:22px; margin:10px 0 0; } ol li { margin:8px 0; line-height:1.4; }
+  code { background:var(--suau); padding:1px 6px; border-radius:5px; font-size:.92em; }
+  .card { border:2px solid var(--linia); border-radius:14px; padding:16px 18px; max-width:420px; }
+  .card h3 { margin:0 0 6px; font-size:1.2rem; }
+  .card .desc { color:var(--gris); margin:6px 0 10px; font-size:.95rem; }
+  .et { font-size:.78rem; font-weight:700; padding:2px 10px; border-radius:999px; background:var(--suau); margin-right:4px; }
+  .et.beta { background:transparent; border:1.5px dashed var(--taronja); color:var(--taronja); }
+  .bloc { margin-top:22px; }
+</style>
+</head>
+<body>
+<header>
+  <img src="img/ammo-32.png" alt="">
+  <h1>Afegeix una app</h1>
+  <a href="./">← Tornar al portal</a>
+</header>
+
+<main>
+  <section>
+    <h2>1 · Omple les dades</h2>
+
+    <label>On és l'app?</label>
+    <div class="tipus">
+      <button id="tExt" class="on" type="button">🔗 Ja està penjada en un altre lloc</button>
+      <button id="tPropi" type="button">📄 És un HTML meu</button>
+    </div>
+
+    <label for="titol">Títol</label>
+    <input type="text" id="titol" placeholder="p. ex. Laboratori de volcans">
+    <div class="err" id="errTitol"></div>
+
+    <label for="materia">Apartat</label>
+    <select id="materia"></select>
+
+    <label for="desc">Descripció <small>(una frase curta)</small></label>
+    <textarea id="desc" placeholder="p. ex. Simulador d'erupcions: tipus de magma i explosivitat."></textarea>
+
+    <label for="nivell">Etiqueta de nivell <small>(opcional: 4t ESO, 1r Batx…)</small></label>
+    <input type="text" id="nivell">
+
+    <div id="bExt">
+      <label for="url">Adreça de l'app</label>
+      <input type="text" id="url" placeholder="https://...">
+      <div class="err" id="errUrl"></div>
+    </div>
+    <div id="bPropi" style="display:none">
+      <label for="carpeta">Nom de la carpeta <small>(es crea sol a partir del títol; el pots canviar)</small></label>
+      <input type="text" id="carpeta">
+      <div class="ajuda" id="rutaFinal"></div>
+    </div>
+
+    <label>Opcions</label>
+    <label class="chk"><input type="checkbox" id="beta"> Etiqueta 🧪 beta</label>
+    <label class="chk"><input type="checkbox" id="nova"> S'obre en una pestanya nova</label>
+    <label class="chk"><input type="checkbox" id="fin"> S'obre en una finestra d'una mida concreta</label>
+    <div class="mida" id="mida">
+      <input type="number" id="fw" value="1200" min="200"> × <input type="number" id="fh" value="800" min="200"> píxels
+    </div>
+  </section>
+
+  <section>
+    <h2>2 · Així quedarà</h2>
+    <div class="card" id="vista"></div>
+
+    <div class="bloc">
+      <h2>3 · Copia la línia</h2>
+      <pre id="linia"></pre>
+      <div class="fila" style="margin-top:10px">
+        <button class="btn" id="copia" type="button">📋 Copia la línia</button>
+      </div>
+    </div>
+
+    <div class="bloc">
+      <h2>4 · Penja-ho a GitHub</h2>
+      <ol id="passos"></ol>
+    </div>
+  </section>
+</main>
+
+<script src="apps.js"></script>
+<script>
+  const REPO = "https://github.com/profejuanalcolea/boigxtic";
+  const CARPETES = { gica2:"geologia-ccaa", bigica1:"biogeo", biogeo4:"biogeo4", steam:"steam", mates:"mates", docencia:"docencia", altres:"altres" };
+  const $ = id => document.getElementById(id);
+  let propi = false, carpetaTocada = false;
+
+  $("materia").innerHTML = MATERIES.map(m => `<option value="${m.id}">${m.nom}</option>`).join("");
+
+  const slug = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/l·l/g, "ll").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+  const net = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+
+  function tipus(p) {
+    propi = p;
+    $("tExt").classList.toggle("on", !p); $("tPropi").classList.toggle("on", p);
+    $("bExt").style.display = p ? "none" : ""; $("bPropi").style.display = p ? "" : "none";
+    pinta();
+  }
+  $("tExt").onclick = () => tipus(false);
+  $("tPropi").onclick = () => tipus(true);
+  $("carpeta").addEventListener("input", () => { carpetaTocada = true; });
+  $("fin").addEventListener("change", () => { if ($("fin").checked) $("nova").checked = false; });
+  $("nova").addEventListener("change", () => { if ($("nova").checked) $("fin").checked = false; });
+  document.querySelectorAll("input,select,textarea").forEach(e => e.addEventListener("input", pinta));
+  document.querySelectorAll("input[type=checkbox],select").forEach(e => e.addEventListener("change", pinta));
+
+  function pinta() {
+    const titol = $("titol").value.trim(), mat = $("materia").value, desc = $("desc").value.trim().replace(/\s+/g, " ");
+    const nivell = $("nivell").value.trim(), beta = $("beta").checked, nova = $("nova").checked, fin = $("fin").checked;
+    $("mida").style.display = fin ? "flex" : "none";
+
+    if (propi && !carpetaTocada) $("carpeta").value = slug(titol);
+    const carpeta = slug($("carpeta").value || "");
+    const dir = `${CARPETES[mat] || mat}/${carpeta}`;
+    let url = propi ? (carpeta ? dir + "/" : "") : $("url").value.trim();
+
+    // comprovacions
+    let ok = true;
+    const repe = APPS.find(a => net(a.titol) === net(titol));
+    $("errTitol").textContent = !titol ? "" : repe ? `Ja hi ha una app amb aquest títol (${MATERIES.find(m => m.id === repe.materia)?.nom || repe.materia}).` : "";
+    if (!titol) ok = false;
+    if (!propi) {
+      const bona = /^https?:\/\/[^\s]+\.[^\s]+/.test(url);
+      $("errUrl").textContent = url && !bona ? "L'adreça ha de començar per https://" : "";
+      if (!bona) ok = false;
+    } else {
+      if (!carpeta) ok = false;
+      const ocupada = APPS.find(a => a.url === dir + "/");
+      $("rutaFinal").innerHTML = carpeta ? `L'HTML anirà a <code>${esc(dir)}/index.html</code>` + (ocupada ? ` <b style="color:#c62828">· Aquesta carpeta ja la fa servir «${esc(ocupada.titol)}»</b>` : "") : "";
+      if (ocupada) ok = false;
+    }
+
+    // línia d'apps.js
+    const camps = [`titol: ${JSON.stringify(titol)}`, `materia: ${JSON.stringify(mat)}`, `nivell: ${JSON.stringify(nivell)}`];
+    if (beta) camps.push(`estat: "beta"`);
+    if (nova) camps.push(`novaFinestra: true`);
+    if (fin) camps.push(`finestra: { w: ${+$("fw").value || 1200}, h: ${+$("fh").value || 800} }`);
+    camps.push(`desc: ${JSON.stringify(desc)}`, `url: ${JSON.stringify(url)}`);
+    const linia = `  { ${camps.join(", ")} },`;
+    $("linia").textContent = ok ? linia : "Omple el títol i " + (propi ? "el nom de la carpeta" : "l'adreça") + " per veure la línia.";
+    $("copia").disabled = !ok;
+    $("copia").dataset.text = linia;
+
+    // vista prèvia
+    $("vista").innerHTML = `<h3>${esc(titol || "Títol de l'app")}</h3>
+      <div>${nivell ? `<span class="et">${esc(nivell)}</span>` : ""}${beta ? `<span class="et beta">🧪 beta</span>` : ""}</div>
+      <p class="desc">${esc(desc || "Descripció de l'app.")}</p>
+      <span class="btn" style="pointer-events:none">Obrir${nova || fin ? " ↗" : ""}</span>
+      <span class="btn sec" style="pointer-events:none">📋 Copiar enllaç</span>`;
+
+    // passos
+    const ultima = [...APPS].reverse().find(a => a.materia === mat);
+    const on = ultima ? `just a sota de la línia de <b>«${esc(ultima.titol)}»</b>` : `dins de la llista <code>APPS</code>, abans de <code>];</code>`;
+    const passos = [];
+    if (propi) passos.push(
+      `Obre <a href="${REPO}/new/main/${encodeURI(dir)}?filename=index.html" target="_blank" rel="noopener">aquesta pàgina de GitHub</a>: ja té escrit el nom <code>${esc(dir)}/index.html</code>. Enganxa-hi tot el codi del teu HTML i clica <b>Commit changes</b>.`);
+    passos.push(
+      `Clica <b>📋 Copia la línia</b>.`,
+      `Obre <a href="${REPO}/edit/main/apps.js" target="_blank" rel="noopener">apps.js per editar-lo</a> i enganxa la línia ${on}.`,
+      `Clica <b>Commit changes</b>. En un o dos minuts surt al portal (si no, recarrega amb Ctrl + Shift + R).`);
+    $("passos").innerHTML = passos.map(p => `<li>${p}</li>`).join("");
+  }
+
+  $("copia").onclick = async () => {
+    const t = $("copia").dataset.text, b = $("copia");
+    try { await navigator.clipboard.writeText(t); }
+    catch (e) { const x = document.createElement("textarea"); x.value = t; document.body.appendChild(x); x.select(); document.execCommand("copy"); x.remove(); }
+    b.textContent = "✓ Copiada"; b.classList.add("fet");
+    setTimeout(() => { b.textContent = "📋 Copia la línia"; b.classList.remove("fet"); }, 1500);
+  };
+
+  pinta();
+</script>
+</body>
+</html>

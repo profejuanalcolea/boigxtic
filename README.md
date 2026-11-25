@@ -15,3 +15,5 @@ Portal d'apps de classe de J Alcolea (Ins Júlia Minguell).
 - https://profejuanalcolea.github.io/boigxtic/#steam
 - https://profejuanalcolea.github.io/boigxtic/#mates
 - https://profejuanalcolea.github.io/boigxtic/#docencia
+
+
