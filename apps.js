@@ -63,6 +63,7 @@ const APPS = [
   { titol: "Operació Fracció",       materia: "mates",    nivell: "", desc: "Escape room de fraccions: el laboratori precintat.", url: "mates/operacio-fraccio/" },
   { titol: "Dominó Tres Quarts",     materia: "mates",    nivell: "", estat: "beta", desc: "Dominó de fraccions equivalents.", url: "mates/domino/" },
   { titol: "FR-4C",                  materia: "mates",    nivell: "4t ESO", desc: "Fraccions, enters i potències per objectius encadenats.", url: "https://profejuanalcolea.github.io/fr4c/" },
+  { titol: "FR-4C · Simulacre SA2",  materia: "mates",    nivell: "4t ESO", estat: "beta", desc: "Simulacre d'àlgebra resolt pas a pas i exercicis similars per practicar sol.", url: "mates/simulacre-sa2/" },
 
   { titol: "Calculadora d'accés a la universitat", materia: "docencia", nivell: "2n Batx", desc: "Nota d'accés i d'admissió, notes de tall i ponderacions.", url: "docencia/calculadora-pau/" },
   { titol: "On em situo?",           materia: "docencia", nivell: "Tutoria", desc: "Cada alumne situa el seu avatar de 0 a 100 davant les frases de l'equip docent.", url: "docencia/on-em-situo/" },

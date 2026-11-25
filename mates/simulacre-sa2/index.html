@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FR-4C: prepara l'examen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* VOICE: un company robot pacient, frases curtes, res d'infantil
+   IDEA: la pissarra del profe on cada pas apareix i el canvi queda subratllat en taronja
+   PICTURE: la pissarra (pas a pas) + FR-4C amb el bocadill d'explicació
+   COLOUR and TYPE: negre / blanc / taronja; Atkinson Hyperlegible per al text, STIX per a les mates, cos gran
+   LAYOUT: apaïsat: llista d'exercicis | pissarra | robot */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#111111);--ink:light-dark(#111111,#f4f4f4);--mute:light-dark(#6b6b6b,#a9a9a9);--line:light-dark(#e2e2e2,#2c2c2c);--or:#ff7a00;--orS:light-dark(#fff1e3,#3a2410);--panel:light-dark(#f6f6f6,#1b1b1b)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+header{display:flex;align-items:center;gap:18px;padding:12px max(2vw,14px);background:#111;color:#fff;flex-wrap:wrap}
+header h1{font-size:24px;margin:0;font-weight:700}header h1 b{color:var(--or)}
+nav{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+nav button,.btn{font:inherit;font-size:18px;min-height:46px;padding:6px 18px;border-radius:10px;border:2px solid var(--or);background:transparent;color:inherit;cursor:pointer;font-weight:700}
+nav button[aria-current=true]{background:var(--or);color:#111}
+.btn.pri{background:var(--or);color:#111}.btn:disabled{opacity:.35;cursor:default}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+main{padding:16px max(2vw,14px)}
+.view{display:none}.view.on{display:block}
+/* intro */
+.intro{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:center;max-width:1240px;margin:0 auto}
+.intro h2{font-size:44px;line-height:1.05;margin:0 0 12px;text-wrap:balance}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:18px 0}
+.plan div{border:2px solid var(--line);border-radius:12px;padding:12px 14px}
+.plan b{display:block;color:var(--or);font-size:22px}
+.keys kbd{display:inline-block;border:2px solid var(--ink);border-bottom-width:4px;border-radius:7px;padding:0 9px;font:700 17px "Atkinson Hyperlegible",system-ui,sans-serif;margin:0 2px}
+.robotbig svg{width:100%;height:auto}
+/* treball */
+.work{display:grid;grid-template-columns:230px minmax(0,1fr) 300px;gap:18px;align-items:start}
+.list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 120px);overflow:auto;padding-right:4px}
+.list button{font:inherit;font-size:16px;text-align:left;padding:8px 10px;min-height:44px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:inherit;cursor:pointer;display:flex;gap:8px;align-items:center}
+.list button .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-weight:700}
+.list button[aria-current=true]{border-color:var(--or);background:var(--orS)}
+.list button[aria-current=true] .n{background:var(--or);color:#111}
+.list .st{margin-left:auto;font-weight:700}
+.board{border:3px solid var(--ink);border-radius:16px;padding:18px 22px 22px;min-height:520px;display:flex;flex-direction:column}
+.bhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.tema{font-size:16px;color:var(--mute);font-weight:700}
+.enun{font-size:20px;margin:4px 0 6px}
+.statement{font:30px/1.4 "STIX Two Text",serif;padding:10px 14px;background:var(--panel);border-radius:10px;margin-bottom:12px}
+.lines{flex:1;display:flex;flex-direction:column;gap:8px}
+.ln{font:30px/1.5 "STIX Two Text",serif;padding:6px 14px;border-left:6px solid transparent;border-radius:6px;opacity:.5;transition:opacity .3s}
+.ln.cur{opacity:1;border-left-color:var(--or);background:var(--orS)}
+.ln.cur .c{background:var(--or);color:#111;border-radius:6px;padding:0 5px;font-weight:600;animation:pop .45s}
+.ln .c{padding:0 5px}
+.ln.ghost{opacity:1;border:3px dashed var(--or);font:22px/1.4 "Atkinson Hyperlegible",system-ui,sans-serif;color:var(--mute);padding:14px}
+@keyframes pop{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.ln.cur .c{animation:none}}
+.sol{margin-top:14px;border:4px solid var(--or);border-radius:12px;padding:10px 16px;font:32px/1.4 "STIX Two Text",serif;display:none}
+.sol.on{display:block}.sol small{display:block;font:700 16px "Atkinson Hyperlegible",system-ui,sans-serif;color:var(--or)}
+.ctrl{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.bar{flex:1;height:10px;background:var(--panel);border-radius:6px;overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:var(--or);transition:width .3s}
+.pasn{font-weight:700;white-space:nowrap}
+/* fraccions, arrels */
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 3px;font-size:.85em}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 4px}
+.fr>span:last-child{padding:0 4px}
+.rt{white-space:nowrap}.rt>span{border-top:2px solid currentColor;padding:0 3px;margin-left:1px}
+sup{font-size:.6em}
+s.x{text-decoration:line-through 3px var(--or)}
+.ok{color:#1a9c4a;font-weight:700}.ko{color:#d62828;font-weight:700}
+.chk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 14px;align-items:stretch;font-size:.8em}
+.chk .ch{grid-column:1/-1;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.chk .cv{font-weight:600;background:var(--ink);color:var(--bg);border-radius:8px;padding:2px 10px;white-space:nowrap}
+.chk .cs{border:2px solid var(--line);border-radius:10px;padding:4px 10px 8px;background:var(--bg)}
+.chk small,.tests small{display:block;font:700 14px "Atkinson Hyperlegible",sans-serif;color:var(--mute)}
+.chk .cr{font:700 20px "Atkinson Hyperlegible",sans-serif;white-space:nowrap}
+.tests{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:6px 18px;font-size:.72em;align-items:center}
+.tests>div:nth-child(4n+1),.tests>div:nth-child(4n){font:700 18px "Atkinson Hyperlegible",sans-serif}
+@media(max-width:800px){.chk{grid-template-columns:minmax(0,1fr)}.chk .ch{grid-column:auto}.tests{grid-template-columns:auto minmax(0,1fr)}}
+/* robot */
+.bot{position:sticky;top:12px;display:flex;flex-direction:column;gap:10px}
+.bubble{position:relative;background:var(--panel);border:3px solid var(--ink);border-radius:16px;padding:14px 16px;font-size:20px;min-height:150px}
+.bubble:after{content:"";position:absolute;left:50%;bottom:-16px;border:14px solid transparent;border-top-color:var(--ink);border-bottom:0;margin-left:-14px}
+.bubble .alert{display:block;margin-top:8px;background:var(--or);color:#111;border-radius:8px;padding:6px 10px;font-weight:700;font-size:18px}
+.bot svg{width:190px;margin:0 auto;display:block}
+.self{display:none;gap:8px;flex-wrap:wrap}.self.on{display:flex}
+.self .btn{flex:1;font-size:16px}
+.repas{margin-top:22px;border-top:2px solid var(--line);padding-top:14px}
+.repas h3{margin:0 0 6px}
+@media(max-width:1000px){.work{grid-template-columns:minmax(0,1fr)}.list{flex-direction:row;overflow-x:auto;max-height:none}.list button{flex:none}.list button .t{display:none}.bot{position:static;flex-direction:row;align-items:center}.bot svg{width:110px;flex:none}.bubble:after{display:none}.intro{grid-template-columns:minmax(0,1fr)}.robotbig{max-width:220px}}
+@media(max-width:600px){.ln,.statement{font-size:22px}.intro h2{font-size:32px}}
+</style>
+</head>
+<body>
+<header>
+  <h1><b>FR-4C</b> · Preparem l'examen d'àlgebra</h1>
+  <nav>
+    <button data-v="intro" aria-current="true">1 · Presentació</button>
+    <button data-v="sim">2 · Simulacre resolt</button>
+    <button data-v="prac">3 · Ara tu</button>
+  </nav>
+</header>
+<main>
+  <section class="view on" id="intro">
+    <div class="intro">
+      <div>
+        <h2>Hola! Sóc FR-4C i aquest matí estudiem junts.</h2>
+        <p>Farem els <b>12 exercicis del simulacre</b> pas a pas. A cada pas jo t'explico <b>què fem i per què</b>, i el que canvia queda <span style="background:var(--or);color:#111;padding:0 6px;border-radius:5px;font-weight:700">marcat en taronja</span>.</p>
+        <p class="keys">Avança amb <kbd>→</kbd> o <kbd>Espai</kbd> · torna enrere amb <kbd>←</kbd>. També pots fer servir els botons.</p>
+        <div class="plan">
+          <div><b>Bloc 1 · 1h</b>Simulacre resolt, exercicis 1–6. Copia cada pas a la llibreta.</div>
+          <div><b>Descans · 15'</b>Aixeca't, beu aigua. De debò.</div>
+          <div><b>Bloc 2 · 1h</b>Simulacre resolt, exercicis 7–12.</div>
+          <div><b>Bloc 3 · 1h 30'</b>«Ara tu»: exercicis nous. Primer fes-los tu, després comprova pas a pas.</div>
+          <div><b>Final · 30'</b>Torna a fer els que has marcat «He de repassar». Apunta'ls per ensenyar-los al profe a la tarda.</div>
+        </div>
+        <p><b>Regla d'or:</b> no et limitis a mirar. Llegir una solució no és saber-la fer. Llibreta i llapis sempre!</p>
+        <button class="btn pri" data-go="sim">Comencem →</button>
+      </div>
+      <div class="robotbig" id="robotBig"></div>
+    </div>
+  </section>
+
+  <section class="view" id="sim">
+    <div class="work" data-mode="sim">
+      <div class="list" role="list"></div>
+      <div class="board"></div>
+      <aside class="bot"><div class="bubble"></div><div class="botimg"></div></aside>
+    </div>
+  </section>
+
+  <section class="view" id="prac">
+    <div class="work" data-mode="prac">
+      <div class="list" role="list"></div>
+      <div class="board"></div>
+      <aside class="bot"><div class="bubble"></div><div class="botimg"></div>
+        <div class="self"><button class="btn" data-self="ok">✓ M'ha sortit bé</button><button class="btn" data-self="rep">↺ He de repassar</button></div>
+      </aside>
+    </div>
+    <div class="repas"><h3>Per ensenyar al profe a la tarda</h3><p id="repList">Encara no has marcat cap exercici.</p></div>
+  </section>
+</main>
+
+<script>
+{
+const f=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const r=x=>`<span class="rt">√<span>${x}</span></span>`;
+const c=x=>`<b class="c">${x}</b>`;
+const x_=x=>`<s class="x">${x}</s>`;
+const i=x=>`<i>${x}</i>`;
+const OK='<span class="ok">✓</span>', KO='<span class="ko">✗</span>';
+/* comprovació: valor de x, costat esquerre, costat dret */
+const chk=(v,l,rr,ok,why)=>`<div class="chk"><div class="ch"><span class="cv">Si ${i('x')} = ${v}</span><span class="cr ${ok?'ok':'ko'}">${ok?'Els dos costats donen igual ✓':(why||'No donen igual')+' ✗'}</span></div><div class="cs"><small>Costat esquerre</small>${l}</div><div class="cs"><small>Costat dret</small>${rr}</div></div>`;
+const tests=rows=>`<div class="tests">${rows.map(([tros,v,calc,sg,ok])=>`<div>${tros}</div><div>${i('x')} = ${v}</div><div>${calc}</div><div class="${ok?'ok':'ko'}">${sg} ${ok?'✓':'✗'}</div>`).join('')}</div>`;
+
+/* recta numèrica: pts = punts marcats; segs = [a,b,tancatA,tancatB] amb ±Infinity */
+function nl(pts,segs){
+  const W=560,P=40,step=(W-2*P)/(pts.length+1),X=v=>v===-Infinity?8:v===Infinity?W-8:P+step*(pts.indexOf(v)+1);
+  let s=`<svg viewBox="0 0 ${W} 70" style="width:100%;max-width:560px;display:block" role="img" aria-label="recta numèrica"><line x1="4" y1="40" x2="${W-4}" y2="40" stroke="currentColor" stroke-width="2"/>`;
+  segs.forEach(([a,b,ca,cb])=>{s+=`<line x1="${X(a)}" y1="40" x2="${X(b)}" y2="40" stroke="#ff7a00" stroke-width="8" stroke-linecap="round"/>`;
+    [[a,ca],[b,cb]].forEach(([v,cl])=>{if(isFinite(v))s+=`<circle cx="${X(v)}" cy="40" r="8" fill="${cl?'#ff7a00':'var(--bg)'}" stroke="#ff7a00" stroke-width="3"/>`})});
+  pts.forEach(v=>s+=`<line x1="${X(v)}" y1="32" x2="${X(v)}" y2="48" stroke="currentColor" stroke-width="2"/><text x="${X(v)}" y="20" text-anchor="middle" font-size="18" fill="currentColor">${String(v).replace('-','−')}</text>`);
+  return s+'</svg>';
+}
+
+/* ---------- SIMULACRE ---------- */
+const SIM=[
+{tema:'Monomis',enun:'Simplifica al màxim:',st:`−3${i('a')}<sup>2</sup> · 2${i('ab')} · (−2${i('b')})<sup>2</sup> · (−${i('a')}<sup>3</sup>)`,
+ steps:[
+ {t:'Primer resolem la potència: (−2b)² = (−2)²·b² = 4b². Un nombre negatiu al quadrat dona positiu.',m:`−3${i('a')}<sup>2</sup> · 2${i('ab')} · ${c('4'+i('b')+'<sup>2</sup>')} · (−${i('a')}<sup>3</sup>)`},
+ {t:'Ordenem: els números junts, les a juntes i les b juntes. (Multiplicar es pot fer en qualsevol ordre.)',m:`${c('(−3·2·4·(−1))')} · ${c(`(${i('a')}<sup>2</sup>·${i('a')}·${i('a')}<sup>3</sup>)`)} · ${c(`(${i('b')}·${i('b')}<sup>2</sup>)`)}`},
+ {t:'Números: hi ha dos signes negatius → el resultat és positiu. 3·2·4·1 = 24.',m:`${c('24')} · (${i('a')}<sup>2</sup>·${i('a')}·${i('a')}<sup>3</sup>) · (${i('b')}·${i('b')}<sup>2</sup>)`},
+ {t:'Lletres: quan multipliquem potències de la mateixa base, SUMEM els exponents. La a sola és a¹.',a:'a² · a · a³ = a²⁺¹⁺³ = a⁶   i   b · b² = b¹⁺² = b³',m:`24 · ${c(i('a')+'<sup>6</sup>')} · ${c(i('b')+'<sup>3</sup>')}`}],
+ sol:`24${i('a')}<sup>6</sup>${i('b')}<sup>3</sup>`},
+{tema:'Binomis',enun:'Simplifica al màxim:',st:`(5${i('y')} − 2${i('x')})(3${i('y')} − 4${i('x')})`,
+ steps:[
+ {t:'Propietat distributiva: CADA terme del primer parèntesi multiplica CADA terme del segon. Surten 4 productes.',m:`${c(`5${i('y')}·3${i('y')}`)} + ${c(`5${i('y')}·(−4${i('x')})`)} + ${c(`(−2${i('x')})·3${i('y')}`)} + ${c(`(−2${i('x')})·(−4${i('x')})`)}`},
+ {t:'Fem cada producte: números amb números, lletres amb lletres. Vigila els signes: (−)·(−) = +.',m:`${c(`15${i('y')}<sup>2</sup>`)} ${c(`− 20${i('xy')}`)} ${c(`− 6${i('xy')}`)} ${c(`+ 8${i('x')}<sup>2</sup>`)}`},
+ {t:'Termes semblants (mateixa part de lletres): −20xy i −6xy. Els ajuntem: −20 − 6 = −26.',m:`15${i('y')}<sup>2</sup> ${c(`− 26${i('xy')}`)} + 8${i('x')}<sup>2</sup>`},
+ {t:'Ordenem de més grau a menys, començant per x². No és obligatori, però queda més net.',m:`${c(`8${i('x')}<sup>2</sup> − 26${i('xy')} + 15${i('y')}<sup>2</sup>`)}`}],
+ sol:`8${i('x')}<sup>2</sup> − 26${i('xy')} + 15${i('y')}<sup>2</sup>`},
+{tema:'Fraccions algebraiques',enun:'Simplifica al màxim:',st:f(`4${i('x')}<sup>2</sup> + 24${i('x')} + 36`,`4${i('x')}<sup>2</sup> − 36`),
+ steps:[
+ {t:'Busquem factor comú. Tots els números de dalt i de baix són múltiples de 4: el traiem fora.',m:f(`${c('4')}(${i('x')}<sup>2</sup> + 6${i('x')} + 9)`,`${c('4')}(${i('x')}<sup>2</sup> − 9)`)},
+ {t:'El 4 multiplica a dalt i a baix: es pot simplificar.',m:f(`${x_('4')}(${i('x')}<sup>2</sup> + 6${i('x')} + 9)`,`${x_('4')}(${i('x')}<sup>2</sup> − 9)`)+' = '+f(`${i('x')}<sup>2</sup> + 6${i('x')} + 9`,`${i('x')}<sup>2</sup> − 9`)},
+ {t:'Reconeixem identitats notables. Dalt: quadrat d\'una suma. Baix: diferència de quadrats.',a:'x² + 6x + 9 = (x + 3)²     x² − 9 = (x + 3)(x − 3)',m:f(c(`(${i('x')} + 3)<sup>2</sup>`),c(`(${i('x')} + 3)(${i('x')} − 3)`))},
+ {t:'(x+3)² = (x+3)(x+3). Ara el factor (x+3) és a dalt i a baix: el tatxem.',a:'Només es poden tatxar FACTORS (coses que multipliquen). Mai els x² d\'una suma!',m:f(`${x_(`(${i('x')} + 3)`)}(${i('x')} + 3)`,`${x_(`(${i('x')} + 3)`)}(${i('x')} − 3)`)+' = '+c(f(`${i('x')} + 3`,`${i('x')} − 3`))}],
+ sol:f(`${i('x')} + 3`,`${i('x')} − 3`)},
+{tema:'Equació amb identitats notables',enun:'Resol l\'equació:',st:`(3${i('x')} + 6)<sup>2</sup> − (3${i('x')} − 6)<sup>2</sup> = 60`,
+ steps:[
+ {t:'Desenvolupem les dues identitats notables. (a+b)² = a² + 2ab + b² i (a−b)² = a² − 2ab + b².',m:`${c(`(9${i('x')}<sup>2</sup> + 36${i('x')} + 36)`)} − ${c(`(9${i('x')}<sup>2</sup> − 36${i('x')} + 36)`)} = 60`},
+ {t:'Traiem el segon parèntesi. El signe − del davant CANVIA TOTS els signes de dins.',a:'Aquí és on més gent s\'equivoca!',m:`9${i('x')}<sup>2</sup> + 36${i('x')} + 36 ${c(`− 9${i('x')}<sup>2</sup> + 36${i('x')} − 36`)} = 60`},
+ {t:'Agrupem: 9x² − 9x² = 0 i 36 − 36 = 0. Només queden les x: 36x + 36x = 72x.',m:`${c(`72${i('x')}`)} = 60`},
+ {t:'Aïllem x: el 72 que multiplica passa a l\'altre costat dividint.',m:`${i('x')} = ${c(f('60','72'))}`},
+ {t:'Simplifiquem la fracció dividint dalt i baix per 12.',m:`${i('x')} = ${c(f('5','6'))}`}],
+ sol:`${i('x')} = ${f('5','6')}`},
+{tema:'Equació racional (proporció)',enun:'Resol l\'equació:',st:`${f(`${i('x')} + 7`,`17 − ${i('x')}`)} = ${f(`17 + ${i('x')}`,`${i('x')} − 7`)}`,
+ steps:[
+ {t:'Abans de res: x no pot ser 17 ni 7 (dividiríem per 0). Ara, com és una proporció, multipliquem EN CREU.',m:`${c(`(${i('x')} + 7)(${i('x')} − 7)`)} = ${c(`(17 + ${i('x')})(17 − ${i('x')})`)}`},
+ {t:'Les dues bandes són "suma per diferència": (a+b)(a−b) = a² − b².',m:`${c(`${i('x')}<sup>2</sup> − 49`)} = ${c(`289 − ${i('x')}<sup>2</sup>`)}`},
+ {t:'Passem les x² a l\'esquerra i els números a la dreta. El que canvia de costat, canvia de signe.',m:`${i('x')}<sup>2</sup> ${c(`+ ${i('x')}<sup>2</sup>`)} = 289 ${c('+ 49')}`},
+ {t:'Sumem.',m:`${c(`2${i('x')}<sup>2</sup>`)} = ${c('338')}`},
+ {t:'El 2 passa dividint: 338 : 2 = 169.',m:`${i('x')}<sup>2</sup> = ${c('169')}`},
+ {t:'Fem l\'arrel quadrada. Recorda: SEMPRE dues solucions, la positiva i la negativa.',m:`${i('x')} = ${c('±'+r('169'))} = ${c('±13')}`},
+ {t:'Comprovem x = 13. El posem a l\'equació ORIGINAL i calculem cada costat per separat: han de donar el mateix.',m:chk('13',`${f('13 + 7','17 − 13')} = ${f(20,4)} = 5`,`${f('17 + 13','13 − 7')} = ${f(30,6)} = 5`,true)},
+ {t:'Ara comprovem x = −13. Compte amb els signes: posa sempre el negatiu entre parèntesis.',m:chk('−13',`${f('(−13) + 7','17 − (−13)')} = ${f('−6',30)} = ${f('−1',5)}`,`${f('17 + (−13)','(−13) − 7')} = ${f(4,'−20')} = ${f('−1',5)}`,true)}],
+ sol:`${i('x')}<sub>1</sub> = 13 &nbsp;&nbsp; ${i('x')}<sub>2</sub> = −13`},
+{tema:'Equació irracional (amb arrel)',enun:'Quina és la solució?',st:`2 − ${r(`3${i('x')}<sup>2</sup> − 2`)} = ${i('x')}`,
+ steps:[
+ {t:'Primer AÏLLEM l\'arrel: que quedi tota sola en un costat. Passem la x a l\'esquerra i l\'arrel a la dreta.',m:`2 − ${i('x')} = ${c(r(`3${i('x')}<sup>2</sup> − 2`))}`},
+ {t:'Elevem els dos costats al quadrat per eliminar l\'arrel. Compte: (2 − x)² és una identitat notable.',a:'(2 − x)² = 4 − 4x + x²   (no és 4 + x²!)',m:`${c(`4 − 4${i('x')} + ${i('x')}<sup>2</sup>`)} = ${c(`3${i('x')}<sup>2</sup> − 2`)}`},
+ {t:'Ho passem tot a un costat (a la dreta, perquè la x² hi és més gran i quedarà positiva).',m:`0 = ${c(`2${i('x')}<sup>2</sup> + 4${i('x')} − 6`)}`},
+ {t:'Tots els coeficients són parells: dividim tota l\'equació per 2. Més fàcil!',m:`${c(`${i('x')}<sup>2</sup> + 2${i('x')} − 3`)} = 0`},
+ {t:'Fórmula de l\'equació de 2n grau amb a = 1, b = 2, c = −3.',m:`${i('x')} = ${f(`−2 ± ${r('2<sup>2</sup> − 4·1·(−3)')}`,'2')} = ${c(f('−2 ± 4','2'))}`},
+ {t:'Les dues possibilitats: (−2 + 4)/2 = 1 i (−2 − 4)/2 = −3.',m:`${c(`${i('x')}<sub>1</sub> = 1`)} &nbsp; ${c(`${i('x')}<sub>2</sub> = −3`)}`},
+ {t:'En equacions amb arrels SEMPRE cal comprovar: elevar al quadrat pot fer aparèixer solucions falses. Comprovem x = 1.',m:chk('1',`2 − ${r('3·1<sup>2</sup> − 2')} = 2 − ${r(1)} = 1`,'1',true)},
+ {t:'Comprovem x = −3. També funciona: les dues solucions són bones.',m:chk('−3',`2 − ${r('3·(−3)<sup>2</sup> − 2')} = 2 − ${r(25)} = −3`,'−3',true)}],
+ sol:`${i('x')}<sub>1</sub> = 1 &nbsp;&nbsp; ${i('x')}<sub>2</sub> = −3`},
+{tema:'Equació biquadrada',enun:'Resol l\'equació:',st:`${i('x')}<sup>4</sup> − 5${i('x')}<sup>2</sup> − 36 = 0`,
+ steps:[
+ {t:'Només hi ha x⁴ i x²: és BIQUADRADA. Fem el canvi de variable x² = t (llavors x⁴ = t²).',m:`${c(`${i('t')}<sup>2</sup>`)} − 5${c(i('t'))} − 36 = 0`},
+ {t:'Ara és de 2n grau. Fórmula amb a = 1, b = −5, c = −36.',m:`${i('t')} = ${f(`5 ± ${r('25 + 144')}`,'2')} = ${c(f('5 ± 13','2'))}`},
+ {t:'Dues solucions per a t: (5 + 13)/2 = 9 i (5 − 13)/2 = −4.',m:`${c(`${i('t')}<sub>1</sub> = 9`)} &nbsp; ${c(`${i('t')}<sub>2</sub> = −4`)}`},
+ {t:'NO hem acabat! Ens demanen x. Desfem el canvi: x² = t → x = ±√t.',m:`${i('t')} = 9 → ${i('x')} = ±${r('9')} = ${c('±3')}`},
+ {t:'L\'altra: t = −4. No existeix cap nombre real que al quadrat doni negatiu.',a:'√(nombre negatiu) → no té solució real',m:`${i('t')} = −4 → ${i('x')} = ±${r('−4')} → ${c('no té solució')}`}],
+ sol:`${i('x')}<sub>1</sub> = 3 &nbsp;&nbsp; ${i('x')}<sub>2</sub> = −3`},
+{tema:'Factor comú',enun:'Quines són les solucions?',st:`(4${i('x')}<sup>2</sup> − 25)${i('x')}<sup>2</sup> − (4${i('x')}<sup>2</sup> − 25)·9 = 0`,
+ steps:[
+ {t:'NO ho desenvolupis! Mira: (4x² − 25) apareix als dos termes. És FACTOR COMÚ: el traiem fora.',m:`${c(`(4${i('x')}<sup>2</sup> − 25)`)}·(${i('x')}<sup>2</sup> − 9) = 0`},
+ {t:'Un producte val 0 només si algun dels factors val 0. Igualem cada factor a 0.',m:`${c(`4${i('x')}<sup>2</sup> − 25 = 0`)} &nbsp; o &nbsp; ${c(`${i('x')}<sup>2</sup> − 9 = 0`)}`},
+ {t:'Primer factor: 4x² = 25 → x² = 25/4 → arrel (dues solucions!).',m:`${i('x')}<sup>2</sup> = ${f(25,4)} → ${i('x')} = ${c('±'+f(5,2))}`},
+ {t:'Segon factor: x² = 9 → x = ±3.',m:`${i('x')}<sup>2</sup> = 9 → ${i('x')} = ${c('±3')}`}],
+ sol:`${i('x')} = ${f(5,2)}, &nbsp;${i('x')} = −${f(5,2)}, &nbsp;${i('x')} = 3, &nbsp;${i('x')} = −3`},
+{tema:'Equació logarítmica',enun:'Resol l\'equació:',st:`log(${i('x')}<sup>2</sup> + 5) = log(7${i('x')} − 1)`,
+ steps:[
+ {t:'Si log A = log B, llavors A = B. "Traiem" els logaritmes.',m:`${c(`${i('x')}<sup>2</sup> + 5`)} = ${c(`7${i('x')} − 1`)}`},
+ {t:'Ho passem tot a l\'esquerra: equació de 2n grau igualada a 0.',m:`${c(`${i('x')}<sup>2</sup> − 7${i('x')} + 6 = 0`)}`},
+ {t:'Fórmula amb a = 1, b = −7, c = 6.',m:`${i('x')} = ${f(`7 ± ${r('49 − 24')}`,'2')} = ${c(f('7 ± 5','2'))}`},
+ {t:'(7 + 5)/2 = 6 i (7 − 5)/2 = 1.',m:`${c(`${i('x')}<sub>1</sub> = 6`)} &nbsp; ${c(`${i('x')}<sub>2</sub> = 1`)}`},
+ {t:'Comprovem x = 6. A més d\'igualtat, el que hi ha DINS de cada log ha de ser positiu.',m:chk('6',`log(6<sup>2</sup> + 5) = log 41`,`log(7·6 − 1) = log 41`,true)},
+ {t:'Comprovem x = 1. També funciona.',m:chk('1',`log(1<sup>2</sup> + 5) = log 6`,`log(7·1 − 1) = log 6`,true)}],
+ sol:`${i('x')}<sub>1</sub> = 6 &nbsp;&nbsp; ${i('x')}<sub>2</sub> = 1`},
+{tema:'Equació exponencial',enun:'Resol l\'equació:',st:`256<sup>${i('x')}</sup> = 4·4<sup>2${i('x')} − 3</sup>`,
+ steps:[
+ {t:'Objectiu: tot en la MATEIXA BASE. 256 = 4·4·4·4 = 4⁴.',m:`${c('(4<sup>4</sup>)')}<sup>${i('x')}</sup> = 4·4<sup>2${i('x')} − 3</sup>`},
+ {t:'Potència d\'una potència: es MULTIPLIQUEN exponents. I el 4 sol és 4¹.',m:`4<sup>${c('4'+i('x'))}</sup> = ${c('4<sup>1</sup>')}·4<sup>2${i('x')} − 3</sup>`},
+ {t:'Producte de potències de la mateixa base: SUMEM exponents. 1 + 2x − 3 = 2x − 2.',m:`4<sup>4${i('x')}</sup> = 4<sup>${c('2'+i('x')+' − 2')}</sup>`},
+ {t:'Mateixa base a cada costat → els exponents han de ser iguals.',m:`${c(`4${i('x')} = 2${i('x')} − 2`)}`},
+ {t:'Equació de 1r grau: 4x − 2x = −2.',m:`2${i('x')} = −2 → ${c(`${i('x')} = −1`)}`},
+ {t:'Comprovem x = −1. Recorda: un exponent negatiu vol dir «1 partit per».',m:chk('−1',`256<sup>−1</sup> = ${f(1,256)}`,`4·4<sup>2·(−1) − 3</sup> = 4·4<sup>−5</sup> = 4<sup>−4</sup> = ${f(1,256)}`,true)}],
+ sol:`${i('x')} = −1`},
+{tema:'Inequació de 1r grau',enun:'Resol i expressa la solució en forma d\'interval:',st:`${i('x')} + (7 − ${i('x')})·3 ≤ 4${i('x')} − 5(3 + ${i('x')})`,
+ steps:[
+ {t:'Traiem parèntesis amb la distributiva. Compte amb el −5: multiplica el 3 I la x.',m:`${i('x')} ${c(`+ 21 − 3${i('x')}`)} ≤ 4${i('x')} ${c(`− 15 − 5${i('x')}`)}`},
+ {t:'Agrupem a cada costat: x − 3x = −2x i 4x − 5x = −x.',m:`21 ${c(`− 2${i('x')}`)} ≤ ${c(`−${i('x')}`)} − 15`},
+ {t:'Les x a l\'esquerra, els números a la dreta (canviant de signe en passar).',m:`−2${i('x')} ${c(`+ ${i('x')}`)} ≤ −15 ${c('− 21')}`},
+ {t:'Operem.',m:`${c(`−${i('x')}`)} ≤ ${c('−36')}`},
+ {t:'Per treure el signe − de la x, multipliquem per −1.',a:'⚠ Quan multipliques o divideixes per un NEGATIU, la desigualtat GIRA: ≤ passa a ≥',m:`${i('x')} ${c('≥')} 36`},
+ {t:'Ho dibuixem: tots els nombres de 36 cap a la dreta. El 36 hi és inclòs (punt ple) perquè és ≥.',m:nl([36],[[36,Infinity,true,false]])}],
+ sol:`[36, +∞) <small>Claudàtor [ perquè el 36 hi és. A l'infinit, sempre parèntesi.</small>`},
+{tema:'Inequació de 2n grau',enun:'Resol i expressa la solució en forma d\'interval:',st:`(${i('x')} − 3)(${i('x')} + 4) ≥ 0`,
+ steps:[
+ {t:'Busquem on val 0 cada factor. Aquests punts són les "fronteres".',m:`${i('x')} − 3 = 0 → ${c(`${i('x')} = 3`)} &nbsp;&nbsp; ${i('x')} + 4 = 0 → ${c(`${i('x')} = −4`)}`},
+ {t:'Els punts −4 i 3 parteixen la recta en 3 trossos: abans de −4, entre −4 i 3, i després de 3.',m:nl([-4,3],[])},
+ {t:'Provem UN número de cada tros i mirem el signe del resultat. Volem ≥ 0 (positiu o zero).',m:tests([['Tros esquerre','−5','(−5 − 3)(−5 + 4) = (−8)(−1) = 8','positiu',true],['Tros del mig','0','(0 − 3)(0 + 4) = (−3)(4) = −12','negatiu',false],['Tros dret','5','(5 − 3)(5 + 4) = (2)(9) = 18','positiu',true]])},
+ {t:'Ens quedem amb els trossos que surten positius. Com que és ≥, −4 i 3 també valen (punt ple).',m:nl([-4,3],[[-Infinity,-4,false,true],[3,Infinity,true,false]])}],
+ sol:`(−∞, −4] ∪ [3, +∞) <small>∪ vol dir "o": un tros o l'altre.</small>`}
+];
+
+/* ---------- ARA TU ---------- */
+const PRAC=[
+{tema:'Monomis',enun:'Simplifica al màxim:',st:`5${i('a')} · (−2${i('ab')}<sup>2</sup>) · (−3${i('b')})<sup>2</sup> · (−${i('a')}<sup>2</sup>)`,
+ steps:[
+ {t:'Resol primer la potència (−3b)².',m:`5${i('a')} · (−2${i('ab')}<sup>2</sup>) · ${c('9'+i('b')+'<sup>2</sup>')} · (−${i('a')}<sup>2</sup>)`},
+ {t:'Separa números, a i b.',m:`${c('(5·(−2)·9·(−1))')} · (${i('a')}·${i('a')}·${i('a')}<sup>2</sup>) · (${i('b')}<sup>2</sup>·${i('b')}<sup>2</sup>)`},
+ {t:'Calcula el número. Compta quants negatius hi ha.',m:`${c('90')} · (${i('a')}·${i('a')}·${i('a')}<sup>2</sup>) · (${i('b')}<sup>2</sup>·${i('b')}<sup>2</sup>)`},
+ {t:'Suma els exponents de cada lletra.',m:`90${c(i('a')+'<sup>4</sup>')}${c(i('b')+'<sup>4</sup>')}`}],
+ sol:`90${i('a')}<sup>4</sup>${i('b')}<sup>4</sup>`},
+{tema:'Binomis',enun:'Simplifica al màxim:',st:`(3${i('x')} − 2${i('y')})(4${i('x')} + 5${i('y')})`,
+ steps:[
+ {t:'Distributiva: escriu els 4 productes ja calculats.',m:`${c(`12${i('x')}<sup>2</sup>`)} ${c(`+ 15${i('xy')}`)} ${c(`− 8${i('xy')}`)} ${c(`− 10${i('y')}<sup>2</sup>`)}`},
+ {t:'Ajunta els termes semblants (els xy).',m:`12${i('x')}<sup>2</sup> ${c(`+ 7${i('xy')}`)} − 10${i('y')}<sup>2</sup>`}],
+ sol:`12${i('x')}<sup>2</sup> + 7${i('xy')} − 10${i('y')}<sup>2</sup>`},
+{tema:'Fraccions algebraiques',enun:'Simplifica al màxim:',st:f(`3${i('x')}<sup>2</sup> − 12${i('x')} + 12`,`3${i('x')}<sup>2</sup> − 12`),
+ steps:[
+ {t:'Treu factor comú a dalt i a baix.',m:f(`${c('3')}(${i('x')}<sup>2</sup> − 4${i('x')} + 4)`,`${c('3')}(${i('x')}<sup>2</sup> − 4)`)},
+ {t:'Simplifica el 3 i reconeix les identitats notables.',m:f(c(`(${i('x')} − 2)<sup>2</sup>`),c(`(${i('x')} + 2)(${i('x')} − 2)`))},
+ {t:'Tatxa el factor que es repeteix a dalt i a baix.',m:f(`${x_(`(${i('x')} − 2)`)}(${i('x')} − 2)`,`(${i('x')} + 2)${x_(`(${i('x')} − 2)`)}`)+' = '+c(f(`${i('x')} − 2`,`${i('x')} + 2`))}],
+ sol:f(`${i('x')} − 2`,`${i('x')} + 2`)},
+{tema:'Equació amb identitats notables',enun:'Resol l\'equació:',st:`(2${i('x')} + 5)<sup>2</sup> − (2${i('x')} − 5)<sup>2</sup> = 80`,
+ steps:[
+ {t:'Desenvolupa les dues identitats notables (amb el seu parèntesi).',m:`(4${i('x')}<sup>2</sup> + 20${i('x')} + 25) − (4${i('x')}<sup>2</sup> − 20${i('x')} + 25) = 80`},
+ {t:'Treu el parèntesi canviant TOTS els signes.',m:`4${i('x')}<sup>2</sup> + 20${i('x')} + 25 ${c(`− 4${i('x')}<sup>2</sup> + 20${i('x')} − 25`)} = 80`},
+ {t:'Simplifica: què s\'anul·la?',m:`${c(`40${i('x')}`)} = 80`},
+ {t:'Aïlla la x.',m:`${c(`${i('x')} = 2`)}`}],
+ sol:`${i('x')} = 2`},
+{tema:'Equació racional (proporció)',enun:'Resol l\'equació:',st:`${f(`${i('x')} + 1`,`7 − ${i('x')}`)} = ${f(`7 + ${i('x')}`,`${i('x')} − 1`)}`,
+ steps:[
+ {t:'Quins valors no pot prendre x? Després, multiplica en creu.',m:`(${i('x')} ≠ 7, ${i('x')} ≠ 1) &nbsp; ${c(`(${i('x')} + 1)(${i('x')} − 1) = (7 + ${i('x')})(7 − ${i('x')})`)}`},
+ {t:'Suma per diferència a cada costat.',m:`${c(`${i('x')}<sup>2</sup> − 1 = 49 − ${i('x')}<sup>2</sup>`)}`},
+ {t:'Agrupa les x² i els números.',m:`${c(`2${i('x')}<sup>2</sup> = 50`)} → ${i('x')}<sup>2</sup> = 25`},
+ {t:'Arrel quadrada: quantes solucions?',m:`${i('x')} = ${c('±5')}`},
+ {t:'Comprova x = 5 a l\'equació original: calcula cada costat per separat.',m:chk('5',`${f('5 + 1','7 − 5')} = ${f(6,2)} = 3`,`${f('7 + 5','5 − 1')} = ${f(12,4)} = 3`,true)},
+ {t:'Comprova x = −5. Negatius entre parèntesis!',m:chk('−5',`${f('(−5) + 1','7 − (−5)')} = ${f('−4',12)} = ${f('−1',3)}`,`${f('7 + (−5)','(−5) − 1')} = ${f(2,'−6')} = ${f('−1',3)}`,true)}],
+ sol:`${i('x')}<sub>1</sub> = 5 &nbsp;&nbsp; ${i('x')}<sub>2</sub> = −5`},
+{tema:'Equació irracional (amb arrel)',enun:'Quina és la solució? (Compte, aquesta té trampa!)',st:`1 − ${r(`2${i('x')}<sup>2</sup> − 14`)} = ${i('x')}`,
+ steps:[
+ {t:'Aïlla l\'arrel.',m:`1 − ${i('x')} = ${c(r(`2${i('x')}<sup>2</sup> − 14`))}`},
+ {t:'Eleva al quadrat els dos costats. (1 − x)² és identitat notable!',m:`${c(`1 − 2${i('x')} + ${i('x')}<sup>2</sup>`)} = ${c(`2${i('x')}<sup>2</sup> − 14`)}`},
+ {t:'Passa-ho tot a un costat.',m:`0 = ${c(`${i('x')}<sup>2</sup> + 2${i('x')} − 15`)}`},
+ {t:'Aplica la fórmula.',m:`${i('x')} = ${f(`−2 ± ${r('4 + 60')}`,2)} = ${f('−2 ± 8',2)} → ${c(`${i('x')}<sub>1</sub> = 3`)} &nbsp; ${c(`${i('x')}<sub>2</sub> = −5`)}`},
+ {t:'Comprova x = 3 a l\'equació ORIGINAL.',m:chk('3',`1 − ${r('2·3<sup>2</sup> − 14')} = 1 − ${r(4)} = −1`,'3',false)},
+ {t:'Comprova x = −5.',a:'x = 3 era FALSA: ha aparegut en elevar al quadrat. Per això sempre es comprova!',m:chk('−5',`1 − ${r('2·(−5)<sup>2</sup> − 14')} = 1 − ${r(36)} = −5`,'−5',true)}],
+ sol:`${i('x')} = −5 <small>(x = 3 no és solució)</small>`},
+{tema:'Equació biquadrada',enun:'Resol l\'equació:',st:`${i('x')}<sup>4</sup> − 3${i('x')}<sup>2</sup> − 4 = 0`,
+ steps:[
+ {t:'Canvi de variable.',m:`${i('x')}<sup>2</sup> = ${i('t')} → ${c(`${i('t')}<sup>2</sup> − 3${i('t')} − 4 = 0`)}`},
+ {t:'Resol l\'equació en t.',m:`${i('t')} = ${f(`3 ± ${r('9 + 16')}`,2)} = ${f('3 ± 5',2)} → ${c(`${i('t')} = 4`)}, ${c(`${i('t')} = −1`)}`},
+ {t:'Desfés el canvi per a cada t.',m:`${i('t')} = 4 → ${i('x')} = ${c('±2')} &nbsp;&nbsp; ${i('t')} = −1 → ${c('no té solució real')}`}],
+ sol:`${i('x')}<sub>1</sub> = 2 &nbsp;&nbsp; ${i('x')}<sub>2</sub> = −2`},
+{tema:'Factor comú',enun:'Quines són les solucions?',st:`(9${i('x')}<sup>2</sup> − 4)${i('x')}<sup>2</sup> − (9${i('x')}<sup>2</sup> − 4)·16 = 0`,
+ steps:[
+ {t:'Treu el factor comú (sense desenvolupar!).',m:`${c(`(9${i('x')}<sup>2</sup> − 4)`)}(${i('x')}<sup>2</sup> − 16) = 0`},
+ {t:'Iguala cada factor a 0 i resol el primer.',m:`9${i('x')}<sup>2</sup> = 4 → ${i('x')}<sup>2</sup> = ${f(4,9)} → ${i('x')} = ${c('±'+f(2,3))}`},
+ {t:'Resol el segon.',m:`${i('x')}<sup>2</sup> = 16 → ${i('x')} = ${c('±4')}`}],
+ sol:`${i('x')} = ±${f(2,3)}, &nbsp;${i('x')} = ±4`},
+{tema:'Equació logarítmica',enun:'Resol l\'equació: (també té trampa)',st:`log(${i('x')}<sup>2</sup> − 6) = log ${i('x')}`,
+ steps:[
+ {t:'Iguala el que hi ha dins dels logaritmes.',m:`${c(`${i('x')}<sup>2</sup> − 6 = ${i('x')}`)}`},
+ {t:'Passa-ho tot a un costat i resol.',m:`${i('x')}<sup>2</sup> − ${i('x')} − 6 = 0 → ${i('x')} = ${f(`1 ± ${r(25)}`,2)} → ${c('3')}, ${c('−2')}`},
+ {t:'Comprova x = 3.',m:chk('3',`log(3<sup>2</sup> − 6) = log 3`,'log 3',true)},
+ {t:'Comprova x = −2. Mira el costat dret!',a:'El log d\'un nombre negatiu NO existeix → x = −2 no és solució',m:chk('−2',`log((−2)<sup>2</sup> − 6) = log(−2)`,'log(−2)',false,'log de negatiu: no existeix')}],
+ sol:`${i('x')} = 3`},
+{tema:'Equació exponencial',enun:'Resol l\'equació:',st:`81<sup>${i('x')}</sup> = 3·3<sup>2${i('x')} − 5</sup>`,
+ steps:[
+ {t:'Escriu 81 com a potència de 3.',m:`${c('(3<sup>4</sup>)')}<sup>${i('x')}</sup> = 3·3<sup>2${i('x')} − 5</sup>`},
+ {t:'Potència de potència a l\'esquerra; producte de la mateixa base a la dreta.',m:`3<sup>${c('4'+i('x'))}</sup> = 3<sup>${c('2'+i('x')+' − 4')}</sup>`},
+ {t:'Iguala exponents i resol.',m:`4${i('x')} = 2${i('x')} − 4 → 2${i('x')} = −4 → ${c(`${i('x')} = −2`)}`}],
+ sol:`${i('x')} = −2`},
+{tema:'Inequació de 1r grau',enun:'Resol i expressa la solució en forma d\'interval:',st:`${i('x')} + (4 − ${i('x')})·2 ≥ 3${i('x')} − 2(${i('x')} − 5)`,
+ steps:[
+ {t:'Treu parèntesis. Compte: −2·(−5) = +10.',m:`${i('x')} ${c(`+ 8 − 2${i('x')}`)} ≥ 3${i('x')} ${c(`− 2${i('x')} + 10`)}`},
+ {t:'Agrupa a cada costat.',m:`8 − ${i('x')} ≥ ${i('x')} + 10`},
+ {t:'x a l\'esquerra, números a la dreta.',m:`${c(`−2${i('x')}`)} ≥ ${c('2')}`},
+ {t:'Divideix per −2. Què li passa al signe?',a:'Dividim per negatiu → la desigualtat GIRA',m:`${i('x')} ${c('≤')} −1`},
+ {t:'Dibuixa-ho a la recta.',m:nl([-1],[[-Infinity,-1,false,true]])}],
+ sol:'(−∞, −1]'},
+{tema:'Inequació de 2n grau',enun:'Resol i expressa la solució en forma d\'interval:',st:`(${i('x')} + 2)(${i('x')} − 5) ≤ 0`,
+ steps:[
+ {t:'Troba les fronteres (on cada factor val 0).',m:`${c(`${i('x')} = −2`)} &nbsp; ${c(`${i('x')} = 5`)}`},
+ {t:'Prova un número de cada tros. Ara volem ≤ 0 (negatiu o zero).',m:tests([['Tros esquerre','−3','(−3 + 2)(−3 − 5) = (−1)(−8) = 8','positiu',false],['Tros del mig','0','(0 + 2)(0 − 5) = (2)(−5) = −10','negatiu',true],['Tros dret','6','(6 + 2)(6 − 5) = (8)(1) = 8','positiu',false]])},
+ {t:'Queda el tros del mig, amb les fronteres incloses.',m:nl([-2,5],[[-2,5,true,true]])}],
+ sol:'[−2, 5] <small>Ara la solució és el tros del MIG: compara-ho amb l\'exercici 12 del simulacre.</small>'}
+];
+
+/* ---------- robot FR-4C ---------- */
+function robot(mood){
+  const eyes=mood==='happy'?'<path d="M70 92 q10 -12 20 0 M110 92 q10 -12 20 0" stroke="#ff7a00" stroke-width="6" fill="none" stroke-linecap="round"/>'
+   :mood==='think'?'<circle cx="80" cy="92" r="8" fill="#ff7a00"/><rect x="110" y="88" width="20" height="7" rx="3" fill="#ff7a00"/>'
+   :'<circle cx="80" cy="92" r="9" fill="#ff7a00"/><circle cx="120" cy="92" r="9" fill="#ff7a00"/>';
+  const mouth=mood==='happy'?'<path d="M82 112 q18 16 36 0" stroke="#ff7a00" stroke-width="5" fill="none" stroke-linecap="round"/>':'<rect x="86" y="112" width="28" height="5" rx="2.5" fill="#ff7a00"/>';
+  return `<svg viewBox="0 0 200 250" role="img" aria-label="Robot FR-4C">
+  <line x1="100" y1="22" x2="100" y2="48" stroke="#111" stroke-width="5"/><circle cx="100" cy="18" r="9" fill="#ff7a00" stroke="#111" stroke-width="4"/>
+  <rect x="40" y="48" width="120" height="96" rx="22" fill="#fff" stroke="#111" stroke-width="5"/>
+  <rect x="56" y="66" width="88" height="62" rx="12" fill="#111"/>${eyes}${mouth}
+  <rect x="28" y="84" width="12" height="28" rx="5" fill="#ff7a00" stroke="#111" stroke-width="4"/><rect x="160" y="84" width="12" height="28" rx="5" fill="#ff7a00" stroke="#111" stroke-width="4"/>
+  <rect x="86" y="144" width="28" height="10" fill="#111"/>
+  <rect x="52" y="154" width="96" height="70" rx="14" fill="#ff7a00" stroke="#111" stroke-width="5"/>
+  <text x="100" y="196" text-anchor="middle" font-family="Atkinson Hyperlegible,sans-serif" font-weight="700" font-size="22" fill="#111">FR-4C</text>
+  <rect x="24" y="162" width="28" height="12" rx="6" fill="#fff" stroke="#111" stroke-width="4" transform="rotate(${mood==='happy'?-35:20} 52 168)"/>
+  <rect x="148" y="162" width="28" height="12" rx="6" fill="#fff" stroke="#111" stroke-width="4" transform="rotate(${mood==='happy'?35:-20} 148 168)"/>
+  <rect x="66" y="224" width="22" height="18" rx="4" fill="#111"/><rect x="112" y="224" width="22" height="18" rx="4" fill="#111"/></svg>`;
+}
+document.getElementById('robotBig').innerHTML=robot('happy');
+
+/* ---------- estat ---------- */
+let marks={};try{marks=JSON.parse(localStorage.getItem('fr4c-marks')||'{}')}catch(e){}
+const saveMarks=()=>{try{localStorage.setItem('fr4c-marks',JSON.stringify(marks))}catch(e){}};
+const S={sim:{data:SIM,ex:0,k:0},prac:{data:PRAC,ex:0,k:0}};
+let view='intro';
+
+function render(mode){
+  const st=S[mode],E=st.data[st.ex],root=document.querySelector(`.work[data-mode=${mode}]`);
+  const prac=mode==='prac', n=E.steps.length;
+  /* sim: k = 0..n (passos mostrats). prac: k = 0..2n (cada pas: pista i després resultat) */
+  const total=prac?2*n:n, shown=prac?Math.floor(st.k/2):st.k, hint=prac&&st.k%2===1;
+  const done=st.k>=total;
+  root.querySelector('.list').innerHTML=st.data.map((e,j)=>`<button data-ex="${j}" aria-current="${j===st.ex}"><span class="n">${j+1}</span><span class="t">${e.tema}</span><span class="st">${prac&&marks[j]?(marks[j]==='ok'?'✓':'↺'):''}</span></button>`).join('');
+  let lines=E.steps.slice(0,shown).map((s,j)=>`<div class="ln${j===shown-1&&!hint?' cur':''}">${s.m}</div>`).join('');
+  if(hint) lines+=`<div class="ln ghost">✏️ Fes aquest pas a la llibreta. Quan el tinguis, prem <b>→</b> per comprovar-lo.</div>`;
+  root.querySelector('.board').innerHTML=`
+    <div class="bhead"><span class="tema">${prac?'Ara tu':'Simulacre'} · Exercici ${st.ex+1} · ${E.tema}</span></div>
+    <div class="enun">${E.enun}</div>
+    <div class="statement">${E.st}</div>
+    <div class="lines">${lines}</div>
+    <div class="sol${done?' on':''}"><small>SOLUCIÓ</small>${E.sol}</div>
+    <div class="ctrl">
+      <button class="btn" data-a="prev" ${st.k===0?'disabled':''}>← Enrere</button>
+      <span class="pasn">${done?'Fet!':prac?`Pas ${Math.min(shown+1,n)} de ${n}`:`Pas ${shown} de ${n}`}</span>
+      <div class="bar"><i style="width:${st.k/total*100}%"></i></div>
+      ${done?(st.ex<st.data.length-1?'<button class="btn pri" data-a="nextex">Següent exercici →</button>':''):`<button class="btn pri" data-a="next">${prac?(hint?'Comprova el pas →':'Pista del pas →'):'Següent pas →'}</button>`}
+    </div>`;
+  let msg,mood='normal',alert='';
+  if(st.k===0) msg=prac?'Exercici nou! Primer intenta\'l SENCER a la llibreta, sense mirar. Després prem → i anirem comprovant pas a pas: primer et dic què toca fer, i després el resultat.':'Llegeix l\'enunciat i pensa: quin tipus d\'exercici és? Què faries primer? Després prem → i t\'ho explico pas a pas.';
+  else if(done){msg=prac?'Has acabat. Sigues sincer: t\'ha sortit bé o has de repassar-lo? Marca-ho a sota.':'Ja està! Ara tapa la pantalla i torna a fer-lo tu sol a la llibreta. Si t\'encalles, torna enrere amb ←.';mood='happy'}
+  else{const s=E.steps[hint?shown:shown-1];msg=hint?'<b>Què toca fer:</b> '+s.t:s.t;mood=hint?'think':'normal';if(s.a&&!hint)alert=`<span class="alert">${s.a}</span>`;if(s.a&&hint&&prac)alert=''}
+  root.querySelector('.bubble').innerHTML=msg+alert;
+  root.querySelector('.botimg').innerHTML=robot(mood);
+  const self=root.querySelector('.self');if(self)self.classList.toggle('on',done);
+  if(prac){const rep=Object.keys(marks).filter(j=>marks[j]==='rep').map(j=>`${+j+1} (${PRAC[j].tema})`);
+    document.getElementById('repList').textContent=rep.length?'Exercicis a repassar: '+rep.join(' · '):'Encara no has marcat cap exercici per repassar.';}
+}
+function move(mode,d){const st=S[mode],n=st.data[st.ex].steps.length,total=mode==='prac'?2*n:n;st.k=Math.max(0,Math.min(total,st.k+d));render(mode)}
+function setEx(mode,j){S[mode].ex=j;S[mode].k=0;render(mode)}
+function show(v){view=v;document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id===v));document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v));if(v!=='intro')render(v);window.scrollTo(0,0)}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.v)return show(b.dataset.v);
+  if(b.dataset.go)return show(b.dataset.go);
+  const w=b.closest('.work');if(!w)return;const mode=w.dataset.mode;
+  if(b.dataset.ex)setEx(mode,+b.dataset.ex);
+  else if(b.dataset.a==='next')move(mode,1);
+  else if(b.dataset.a==='prev')move(mode,-1);
+  else if(b.dataset.a==='nextex')setEx(mode,S[mode].ex+1);
+  else if(b.dataset.self){marks[S[mode].ex]=b.dataset.self;saveMarks();if(S[mode].ex<PRAC.length-1)setEx(mode,S[mode].ex+1);else render(mode)}
+});
+document.addEventListener('keydown',e=>{
+  if(view==='intro'||e.target.closest('input,textarea'))return;
+  if(e.target.closest('button')&&(e.key==='Enter'||e.key===' '))return;
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();const st=S[view],n=st.data[st.ex].steps.length,total=view==='prac'?2*n:n;if(st.k>=total&&st.ex<st.data.length-1)setEx(view,st.ex+1);else move(view,1)}
+  else if(e.key==='ArrowLeft'){e.preventDefault();move(view,-1)}
+});
+}
+</script>
+</body>
+</html>
