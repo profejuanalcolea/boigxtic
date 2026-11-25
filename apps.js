@@ -71,4 +71,6 @@ const APPS = [
   { titol: "Models atòmics (mòbil)", materia: "altres",   nivell: "4t ESO", desc: "La mateixa presentació, en vertical per al mòbil.", url: "altres/models-atomics-mobil/" },
   { titol: "Repàs d'electrònica analògica", materia: "altres", nivell: "4t ESO", desc: "Tecnologia: formulari, teoria, exercicis resolts i preguntes.", url: "altres/electronica/" },
   { titol: "L'Ammo al mar juràssic",  materia: "altres",   nivell: "", finestra: { w: 1200, h: 300 }, desc: "Animació: l'Ammo neda entre ictiosaures i treu el cap per veure dinosaures. Amb so.", url: "altres/ammo-banner/" },
+  { titol: "Revolucions", materia: "altres", nivell: "4t ESO", desc: "Revolucions historia", url: "altres/revolucions/" },
+  
 ];
